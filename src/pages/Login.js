@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 import Post from '../components/Post'
 
 export default function Login() {
@@ -9,6 +10,8 @@ export default function Login() {
             {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
             <div id="login" className='bg-jasmine w-[680px] h-[586px] rounded-[30px] '>
                 <h1>Log In</h1>
+
+                <div>Don`t have an account? <Link href={'/Register'}>Register</Link></div>
             </div>            
 
             {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
