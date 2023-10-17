@@ -1,25 +1,13 @@
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import Router from "next/router";
-import { auth } from '@/lib/firebase';
 
 export default function Home() {
 
-    const [ user, setUser ] = useState(null)
+    // no auth logic yet
     const router = Router;
-    
-    useEffect(() => {
-        auth.onAuthStateChanged((user) => {
-            if(user) {
-                setUser(user)
-                router.push('/Dashboard')
-            } else {
-                setUser(null)
-                router.push('/Login')
-            }
-        })
-    }, [router, user])
-
+    router.push('/Login');
+        
     return (
         <>
             <Head>
