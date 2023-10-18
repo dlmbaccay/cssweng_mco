@@ -1,8 +1,47 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Post from '../components/Post'
+import Router from 'next/router'
+import { auth } from '../../lib/firebase'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 
 export default function Login() {
+
+    const [ email, setEmail ] = useState('')
+    const [ password, setPassword ] = useState('')
+    const [ error, setError ] = useState('')
+    const router = Router;
+
+    const handleLogin = () => {
+        if (email === '' || password === '') {
+            setError('Please fill out all fields')
+            return
+        } else {
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user
+                    console.log(user)
+                    
+                    // clear fields
+                    setEmail('')
+                    setPassword('')
+
+                    // redirect to Login page
+                    router.push('/Home')
+                    // ...
+                })
+                .catch((error) => {
+                    const errorCode = error.code
+                    const errorMessage = error.message
+                    console.log(errorCode)
+                    console.log(errorMessage)
+                    setError(errorMessage)
+                    // ..
+                })
+        }
+    }
+            
 
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>
@@ -10,6 +49,25 @@ export default function Login() {
             {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
             <div id="login" className='bg-jasmine w-[680px] h-[586px] rounded-[30px] '>
                 <h1>Log In</h1>
+
+                <div> 
+                    <input 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        type="text" 
+                        placeholder='Email Address' /> 
+                </div>
+               
+                <div> 
+                    <input 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password" 
+                        placeholder='Password' /> 
+                </div>
+
+                <div> {error} </div>
+                <div> <button onClick={handleLogin}>Submit</button> </div>
 
                 <div>Don`t have an account? <Link href={'/Register'}>Register</Link></div>
             </div>            
