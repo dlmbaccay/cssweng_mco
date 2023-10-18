@@ -4,10 +4,6 @@ import Router from "next/router";
 import Login from "./Login";
 
 export default function Home() {
-
-    // no auth logic yet
-    const router = Router;
-    router.push('/Login');
         
     return (
         <>
