@@ -13,6 +13,10 @@
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-firebase-hooks": "^5.1.1",
+    "react-hook-form": "^7.47.0",
+    "react-hot-toast": "^2.4.1",
+    "react-markdown": "^9.0.0",
     "tailwind-scrollbar-hide": "^1.1.7"
   },
   "devDependencies": {

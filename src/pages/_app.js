@@ -1,12 +1,14 @@
 import '../styles/globals.css'
-import Layout from '../components/Layout'
-
+import { AuthProvider } from '../lib/context'
+import { Toaster } from 'react-hot-toast'
 
 function MyApp({ Component, pageProps }) {
+
   return (
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+  <AuthProvider>
+    <Component {...pageProps} />
+    <Toaster />
+  </AuthProvider>
   )
 }
 

@@ -2,23 +2,23 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Post from '../components/Post'
 import Router from 'next/router'
-import { auth } from '../../lib/firebase'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../lib/firebase'
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
+import toast from 'react-hot-toast'
 
 export default function Register() {
 
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
     const [ confirm_password, setConfirmPassword ] = useState('')
-    const [ error, setError ] = useState('')
     const router = Router;
 
     const handleSignUp = () => {
         if (email === '' || password === '' || confirm_password === '') {
-            setError('Please fill out all fields')
+            toast.error('Please fill out all fields')
             return
         } else if (password !== confirm_password) {
-            setError('Passwords do not match')
+            toast.error('Passwords do not match')
             return
         } else {
             createUserWithEmailAndPassword(auth, email, password)
@@ -32,6 +32,13 @@ export default function Register() {
                     setPassword('')
                     setConfirmPassword('')
 
+                    // send email verification 
+                    sendEmailVerification(auth.currentUser).then(() => {
+                        toast.success('Check your email to verify your account')
+                    }).catch((error) => {
+                        console.log(error)
+                    });
+
                     // redirect to Login page
                     router.push('/Login')
                     // ...
@@ -41,11 +48,15 @@ export default function Register() {
                     const errorMessage = error.message
                     console.log(errorCode)
                     console.log(errorMessage)
-                    setError(errorMessage)
+                    toast.error(errorMessage)
                     // ..
                 })
         }
     }
+
+    // email
+    // password
+    // confirm password
 
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>
@@ -59,7 +70,7 @@ export default function Register() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         type="text" 
-                        placeholder='Email Address' /> 
+                        placeholder=' Email Address' /> 
                 </div>
                
                 <div> 
@@ -67,7 +78,7 @@ export default function Register() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         type="password" 
-                        placeholder='Password' /> 
+                        placeholder=' Password' /> 
                 </div>
                
                 <div> 
@@ -75,10 +86,9 @@ export default function Register() {
                         value={confirm_password}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         type="password" 
-                        placeholder='Password' /> 
+                        placeholder=' Confirm Password' /> 
                 </div>
 
-                <div> {error} </div>
                 <div> <button onClick={handleSignUp}>Submit</button> </div>
 
                 <div>Already have an account? <Link href={'/Login'}>Log In</Link></div>

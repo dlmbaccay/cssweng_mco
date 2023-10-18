@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Post from '../components/Post'
 import Router from 'next/router'
-import { auth } from '../../lib/firebase'
+import { auth } from '../lib/firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import toast from 'react-hot-toast'
 
 export default function Login() {
 
@@ -55,7 +56,7 @@ export default function Login() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         type="text" 
-                        placeholder='Email Address' /> 
+                        placeholder=' Email Address' /> 
                 </div>
                
                 <div> 
@@ -63,7 +64,7 @@ export default function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         type="password" 
-                        placeholder='Password' /> 
+                        placeholder=' Password' /> 
                 </div>
 
                 <div> {error} </div>
