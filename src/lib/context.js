@@ -3,16 +3,14 @@
 // // export const UserContext = createContext({ user: null, username: null });
 // export const UserContent = createContext({ user : null });
 
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, createContext, useState, useEffect, useRef } from "react";
 import { auth, db } from "../lib/firebase";
 import Router from "next/router";
 import toast from "react-hot-toast";
 
 const AuthContext = React.createContext();
 
-export function useAuth() {
-    return useContext(AuthContext);
-}
+export const UserContext = createContext({ user: null, username: null });
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
@@ -24,15 +22,17 @@ export function AuthProvider({ children }) {
             setCurrentUser(user);
             setLoading(false);
             if (!user || !user.emailVerified) {
-                toast.error("Please verify your email");
                 router.push("/Login");
-            } else {
+            } else if (user && !user.username) {
+                router.push(`/AccountSetup`);
+            } else if (user && user.username) {
                 router.push("/Home");
             }
         });
 
         return unsubscribe;
-    }, [ router ]);
+    }, [ router, auth.currentUser ]);
+
     return (
         <AuthContext.Provider value={currentUser}>
             {!loading && children}

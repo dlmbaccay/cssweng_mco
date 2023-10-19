@@ -10,40 +10,48 @@ export default function Login() {
 
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
-    const [ error, setError ] = useState('')
     const router = Router;
 
     const handleLogin = () => {
-        if (email === '' || password === '') {
-            setError('Please fill out all fields')
-            return
-        } else {
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in 
-                    const user = userCredential.user
-                    console.log(user)
-                    
-                    // clear fields
-                    setEmail('')
-                    setPassword('')
-
-                    // redirect to Login page
-                    router.push('/Home')
-                    // ...
-                })
-                .catch((error) => {
-                    const errorCode = error.code
-                    const errorMessage = error.message
-                    console.log(errorCode)
-                    console.log(errorMessage)
-                    setError(errorMessage)
-                    // ..
-                })
-        }
+    if (email === '' || password === '') {
+        toast.error('Please fill out all fields')
+        return
     }
-            
 
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Check if the user's email is verified
+        const user = userCredential.user
+
+        if (!user.emailVerified) {
+            toast.error('Please verify your email before logging in')
+            return
+        }
+
+        // Signed in 
+        console.log(user)
+        
+        // Clear fields
+        setEmail('')
+        setPassword('')
+
+        // Redirect to Login page
+        // router.push('/Home')
+        // ...
+    })
+    .catch((error) => {
+        const errorCode = error.code
+        const errorMessage = error.message
+        console.log(errorCode)
+        console.log(errorMessage)
+
+        if (errorCode === 'auth/invalid-login-credentials') {
+            toast.error('Wrong email or password!')
+            return
+        }
+    })
+}
+            
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>
 
@@ -67,7 +75,6 @@ export default function Login() {
                         placeholder=' Password' /> 
                 </div>
 
-                <div> {error} </div>
                 <div> <button onClick={handleLogin}>Submit</button> </div>
 
                 <div>Don`t have an account? <Link href={'/Register'}>Register</Link></div>

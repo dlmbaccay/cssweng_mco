@@ -13,6 +13,10 @@ export default function Home() {
   return (
     <div>
 
+    <div>
+      {auth.currentUser.email};
+    </div>
+
     {/* sign out button */}
     <button onClick={() => auth.signOut()}>
       Sign Out
