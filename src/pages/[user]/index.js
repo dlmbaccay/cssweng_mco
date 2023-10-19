@@ -16,6 +16,11 @@ export default function UserProfilePage() {
         <p>Username: {username}</p>
         <p>Email: {user?.email}</p>
         <p>UID: {user?.uid}</p>
+        <p>
+
+          {/* profile picture */}
+
+        </p>
       </div>
 
       {/* back to home page*/}

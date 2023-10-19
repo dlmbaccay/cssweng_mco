@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { auth, storage, STATE_CHANGED, firestore } from '../lib/firebase';
 import Loader from './Loader';
+import { useUserData } from '../lib/hooks';
 
 // Uploads profile picture to Firebase Storage and updates user's Firestore document
-export default function UserPictureUploader({ userId }) {
+export default function UserPictureUploader() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [downloadURL, setDownloadURL] = useState(null);
+
+  const { user } = useUserData();
 
   // Creates a Firebase Upload Task
   const uploadFile = async (e) => {
@@ -15,7 +18,7 @@ export default function UserPictureUploader({ userId }) {
     const extension = file.type.split('/')[1];
 
     // Makes reference to the storage bucket location
-    const ref = storage.ref(`profilePictures/${userId}/${Date.now()}.${extension}`);
+    const ref = storage.ref(`profilePictures/${user.uid}/${Date.now()}.${extension}`);
     setUploading(true);
 
     // TODO: fix error where profilePictures/undefined is being created in storage
@@ -36,7 +39,7 @@ export default function UserPictureUploader({ userId }) {
           setUploading(false);
 
           // Update user's Firestore document with profile picture URL
-          const userRef = firestore.doc(`users/${userId}`);
+          const userRef = firestore.doc(`users/${user.uid}`);
           userRef.update({ profilePictureURL: url });
         });
     });
