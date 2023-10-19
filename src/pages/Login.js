@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Post from '../components/Post'
 import Router from 'next/router'
-import { auth } from '../lib/firebase'
+import { auth, firestore } from '../lib/firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import toast from 'react-hot-toast'
 
@@ -13,44 +13,64 @@ export default function Login() {
     const router = Router;
 
     const handleLogin = () => {
-    if (email === '' || password === '') {
-        toast.error('Please fill out all fields')
-        return
+        if (email === '' || password === '') {
+            toast.error('Please fill out all fields')
+            return
+        }
+
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            // Signed in 
+            const user = userCredential.user;
+
+            // Check if email is verified
+            if (!user.emailVerified) {
+                toast.error('Please verify your email before logging in');
+                return;
+            } 
+
+            return user;
+        })
+        .then((user) => {
+            // Fetch the username from Firestore
+            const ref = firestore.collection('users').doc(user.uid);
+
+            ref.get().then((doc) => {
+                const username = doc.data()?.username;
+
+                if (!username) {
+                    // If email is verified but no username, redirect to AccountSetup
+                    toast('Let`s set up you account!', {
+                        icon: '👏',
+                    });
+                    router.push('/AccountSetup');
+                } else {
+                    // If old user (email verified and has username), redirect to Home
+
+                    // Clear fields
+                    setEmail('');
+                    setPassword('');
+
+                    toast('Welcome back', {
+                        icon: '👏',
+                    });
+                    // Redirect to Home page
+                    router.push('/Home');
+                }
+            });
+        })
+        .catch((error) => {
+            const errorCode = error.code
+            const errorMessage = error.message
+            console.log(errorCode)
+            console.log(errorMessage)
+
+            if (errorCode === 'auth/invalid-login-credentials') {
+                toast.error('Wrong email or password!')
+                return
+            }
+        })
     }
-
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-        // Check if the user's email is verified
-        const user = userCredential.user
-
-        if (!user.emailVerified) {
-            toast.error('Please verify your email before logging in')
-            return
-        }
-
-        // Signed in 
-        console.log(user)
-        
-        // Clear fields
-        setEmail('')
-        setPassword('')
-
-        // Redirect to Login page
-        // router.push('/Home')
-        // ...
-    })
-    .catch((error) => {
-        const errorCode = error.code
-        const errorMessage = error.message
-        console.log(errorCode)
-        console.log(errorMessage)
-
-        if (errorCode === 'auth/invalid-login-credentials') {
-            toast.error('Wrong email or password!')
-            return
-        }
-    })
-}
             
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>

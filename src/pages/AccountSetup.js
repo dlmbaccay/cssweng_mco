@@ -2,9 +2,11 @@ import { auth, firestore, googleAuthProvider } from '../lib/firebase';
 import { UserContext } from '../lib/context';
 import Image from 'next/image';
 import Router from 'next/router';
+import toast from 'react-hot-toast';
 
 import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';
+import UserProfileUploader from '../components/UserProfileUploader';
 
 export default function AccountSetup() {
 
@@ -39,8 +41,6 @@ export default function AccountSetup() {
         checkUsername(usernameFormValue);
     }, [usernameFormValue]);
 
-    console.log(usernameFormValue);
-
     // Hit the database for username match after each debounced change
     // useCallback is required for debounce to work
     const checkUsername = useCallback(
@@ -69,17 +69,16 @@ export default function AccountSetup() {
             username: usernameFormValue,
             displayName: document.querySelector("#display-name").value,
             description: document.querySelector("#description").value,
-            // profilePicture: profilePictureURL,
         })
         batch.set(usernameDoc, { uid: user.uid });
 
         await batch.commit();
 
-        toast.success(user.username + " is now registered!")
+        toast.success(user.uid + " is now registered!")
 
         // push to Profile
         router.push(`/${usernameFormValue}`);
-    }
+    };
 
     return (
         <>
@@ -103,8 +102,10 @@ export default function AccountSetup() {
 
                 {/* <div>
                     <p> <label htmlFor="profile-picture">Show us your best self!</label> </p>
-                    <input type="file" id='profile-picture' required/>
+                    <input type="file" id='profile-picture' onChange={handleProfilePictureChange} required/>
                 </div> */}
+
+                <UserProfileUploader user={user?.uid} />
 
                 <div>
                     <p> <label htmlFor="description">Tell us more about you!</label></p>

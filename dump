@@ -1,0 +1,27 @@
+// export function AuthProvider({ children }) {
+//     const [currentUser, setCurrentUser] = useState(null);
+//     const [loading, setLoading] = useState(true);
+//     const router = Router;
+
+//     useEffect(() => {
+//         const unsubscribe = auth.onAuthStateChanged((user) => {
+//             setCurrentUser(user);
+//             setLoading(false);
+//             if (!user || !user.emailVerified) {
+//                 router.push("/Login");
+//             } else if (user && !user.username) {
+//                 router.push(`/AccountSetup`);
+//             } else if (user && user.username) {
+//                 router.push("/Home");
+//             }
+//         });
+
+//         return unsubscribe;
+//     }, [ router ]);
+
+//     return (
+//         <AuthContext.Provider value={currentUser}>
+//             {!loading && children}
+//         </AuthContext.Provider>
+//     );
+// }
