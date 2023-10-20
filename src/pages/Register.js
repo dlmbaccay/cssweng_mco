@@ -14,20 +14,12 @@ export default function Register() {
                         Register
                     </h1>
                 </div>
-                <span className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'>
-                    Username
-                </span>
-                <span className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'>
-                    Password
-                </span>  
-                <span className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'>
-                    Confirm Password
-                </span>
-                <span className='bg-xanthous rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center'>
-                    Register
-                </span>
-                <p>Or log in with</p>                
-
+                <input type="text" className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Username'/>
+                <input type="password" className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Password'/>
+                <input type="password" className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Confirm Password'/>
+                <button className='bg-xanthous rounded-[30px] mt-8 mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center'>
+                    Submit
+                </button>
                 {/* ill just provide this router for u guys to navigate through Login and Register easier, up to you guys on how to style this na */}
 
                 <div>Already have an account? <Link href={'/Login'} className='font-bold'>Log In</Link></div>

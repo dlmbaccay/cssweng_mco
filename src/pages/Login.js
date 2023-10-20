@@ -14,18 +14,14 @@ export default function Login() {
                         Log in
                     </h1>
                 </div>
-                <span className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'>
-                    Username
-                </span>
-                <span className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'>
-                    Password
-                </span>
-                <span className='bg-xanthous rounded-[30px] mt-8 mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center'>
-                    Log in
-                </span>
-                <p className='text-lg'>Or log in with</p>  
+                <input type="text" className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Username'/>
+                <input type="password" className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Password'/>
+                <button className='bg-xanthous rounded-[30px] mt-8 mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center'>
+                    Submit
+                </button>
+                
                 <span>
-                    
+                    {/* TODO: third party sign in auth */}
                 </span>
 
                 <div className='text-lg'>Don`t have an account? <Link href={'/Register'} className='font-bold'>Register</Link></div>
