@@ -9,6 +9,8 @@ import { set } from 'react-hook-form';
 export function useUserData() {
   const [user] = useAuthState(auth);
   const [username, setUsername] = useState(null);
+  const [description, setDescription] = useState(null); // TODO: Add description to user profile
+  const [displayName, setDisplayName] = useState(null); // TODO: Add display name to user profile
   const [profilePicUrl, setProfilePicUrl] = useState(null);
 
   useEffect(() => {
@@ -20,6 +22,8 @@ export function useUserData() {
     unsubscribe = userRef.onSnapshot((doc) => {
       setUsername(doc.data()?.username);
       setProfilePicUrl(doc.data()?.photoURL);
+      setDescription(doc.data()?.description);
+      setDisplayName(doc.data()?.displayName);
     });
 
     // // Create a reference to the storage location of the profile picture
@@ -38,28 +42,14 @@ export function useUserData() {
   } else {
     setUsername(null);
     setProfilePicUrl(null);
+    setDescription(null);
+    setDisplayName(null);
   }
 
   return unsubscribe;
 }, [user]);
 
-  // useEffect(() => {
-  //   // turn off realtime subscription
-  //   let unsubscribe;
-
-  //   if (user) {
-  //     const ref = firestore.collection('users').doc(user.uid);
-  //     unsubscribe = ref.onSnapshot((doc) => {
-  //       setUsername(doc.data()?.username);
-  //     });
-  //   } else {
-  //     setUsername(null);
-  //   }
-
-  //   return unsubscribe;
-  // }, [user]);
-
-  return { user, username, profilePicUrl };
+  return { user, username, description, displayName, profilePicUrl };
 }
 
 export function getUserProfilePicture() {
