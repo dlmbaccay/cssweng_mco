@@ -23,7 +23,6 @@ export default function AccountSetup() {
     const [progress, setProgress] = useState(0);
     const [downloadURL, setDownloadURL] = useState(null);
 
-
     const onChange = (e) => {
         // Force form value typed in form to match correct format
         const val = e.target.value.toLowerCase();
@@ -79,19 +78,19 @@ export default function AccountSetup() {
 
         // Listen to updates to upload task
         task.on(STATE_CHANGED, (snapshot) => {
-        const pct = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0); // pct is percentage of upload completed
-        setProgress(pct);
+            const pct = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0); // pct is percentage of upload completed
+            setProgress(pct);
 
-        // Get downloadURL AFTER task resolves (Note: this is not a native Promise)
-        task
-            .then((d) => ref.getDownloadURL())
-            .then((url) => {
-            setDownloadURL(url);
-            setUploading(false);
+            // Get downloadURL AFTER task resolves (Note: this is not a native Promise)
+            task
+                .then((d) => ref.getDownloadURL())
+                .then((url) => {
+                setDownloadURL(url);
+                setUploading(false);
 
-            // Update user's Firestore document with profile picture URL
-            const userRef = firestore.doc(`users/${user.uid}`);
-            userRef.update({ photoURL: url });
+                // Update user's Firestore document with profile picture URL
+                // const userRef = firestore.doc(`users/${user.uid}`);
+                // userRef.update({ photoURL: url });
             });
         });
     };
