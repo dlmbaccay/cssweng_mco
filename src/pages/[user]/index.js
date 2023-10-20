@@ -1,34 +1,17 @@
 import { React, useContext } from 'react'
-import { auth } from '../../lib/firebase'
 import { UserContext } from '../../lib/context'
-import Link from 'next/link'
+import UserProfile from '../../components/UserProfile'
+import { useUserData } from '@/src/lib/hooks'
+import Image from 'next/image'
 
 export default function UserProfilePage() {
 
   const { user, username } = useContext(UserContext)
+  const { profilePicUrl } = useUserData()
 
   return (
     <div>
-      UserProfilePage
-
-      {/* user info */}
-      <div>
-        <p>Username: {username}</p>
-        <p>Email: {user?.email}</p>
-        <p>UID: {user?.uid}</p>
-        <p>
-
-          {/* profile picture */}
-
-        </p>
-      </div>
-
-      {/* back to home page*/}
-      <div>
-        <Link href="/Home">
-          <p>Back to Home</p>
-        </Link>
-      </div>
+      <UserProfile user={user} username={username} profilePictureUrl={profilePicUrl}/>
     </div>
   )
 
