@@ -11,7 +11,7 @@ export default function UserProfilePage() {
 
   return (
     <div>
-      <UserProfile user={user} username={username} profilePictureUrl={profilePicUrl}/>
+      <UserProfile user={user} username={username} profilePictureUrl={user?.photoURL}/>
     </div>
   )
 

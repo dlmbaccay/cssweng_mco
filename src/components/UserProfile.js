@@ -14,8 +14,7 @@ export default function UserProfile( { user, username, profilePicUrl } ) {
         <p>Username: {username}</p>
         <p>Email: {user?.email}</p>
         <p>UID: {user?.uid}</p>
-        {toast.success("profile pic url: " + profilePicUrl)}
-        {/* <p>Profile Picture: {profilePictureUrl}</p> */}
+        <p>Profile Picture: <img src={profilePicUrl} /></p>
 
       {/* back to home page*/}
       <div>

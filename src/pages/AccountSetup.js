@@ -1,7 +1,8 @@
-import { auth, firestore, googleAuthProvider } from '../lib/firebase';
+import { auth, storage, STATE_CHANGED, firestore } from '../lib/firebase';
 import { UserContext } from '../lib/context';
 import Image from 'next/image';
 import Router from 'next/router';
+import Loader from '../components/Loader';
 import toast from 'react-hot-toast';
 
 import { useEffect, useState, useCallback, useContext } from 'react';
@@ -17,6 +18,11 @@ export default function AccountSetup() {
     const [isValid, setIsValid] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = Router;
+
+    const [uploading, setUploading] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [downloadURL, setDownloadURL] = useState(null);
+
 
     const onChange = (e) => {
         // Force form value typed in form to match correct format
@@ -56,6 +62,40 @@ export default function AccountSetup() {
         []
     );
 
+    // Creates a Firebase Upload Task
+    const uploadFile = async (e) => {
+        // Get the file
+        const file = Array.from(e.target.files)[0];
+        const extension = file.type.split('/')[1];
+
+        // Makes reference to the storage bucket location
+        const ref = storage.ref(`profilePictures/${user.uid}/${Date.now()}.${extension}`);
+        setUploading(true);
+
+        // TODO: fix error where profilePictures/undefined is being created in storage
+
+        // Starts the upload
+        const task = ref.put(file);
+
+        // Listen to updates to upload task
+        task.on(STATE_CHANGED, (snapshot) => {
+        const pct = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0); // pct is percentage of upload completed
+        setProgress(pct);
+
+        // Get downloadURL AFTER task resolves (Note: this is not a native Promise)
+        task
+            .then((d) => ref.getDownloadURL())
+            .then((url) => {
+            setDownloadURL(url);
+            setUploading(false);
+
+            // Update user's Firestore document with profile picture URL
+            const userRef = firestore.doc(`users/${user.uid}`);
+            userRef.update({ photoURL: url });
+            });
+        });
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
 
@@ -67,6 +107,7 @@ export default function AccountSetup() {
 
         batch.set(userDoc, {
             username: usernameFormValue,
+            photoURL: downloadURL,
             displayName: document.querySelector("#display-name").value,
             description: document.querySelector("#description").value,
         })
@@ -100,12 +141,23 @@ export default function AccountSetup() {
                     <input type="text" id='display-name' placeholder='Select Display Name' maxLength="20"  />
                 </div>
 
-                {/* <div>
-                    <p> <label htmlFor="profile-picture">Show us your best self!</label> </p>
-                    <input type="file" id='profile-picture' onChange={handleProfilePictureChange} required/>
-                </div> */}
+                {/* <UserProfileUploader /> */}
 
-                <UserProfileUploader user={user?.uid} />
+                <div>
+                    <Loader show={uploading} />
+                    {uploading && <h3>{progress}%</h3>}
+
+                    {!uploading && (
+                        <>
+                        <label className="btn">
+                            📸 Upload Profile Picture
+                            <input type="file" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg" />
+                        </label>
+                        </>
+                    )}
+
+                    {downloadURL && <img src={downloadURL} alt="Profile Picture" />}
+                </div>
 
                 <div>
                     <p> <label htmlFor="description">Tell us more about you!</label></p>
@@ -115,7 +167,6 @@ export default function AccountSetup() {
                 <div>
                     <button type='submit'>Submit</button>
                 </div>
-                awdawdwa
             </form>
         </>
     )

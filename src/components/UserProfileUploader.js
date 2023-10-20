@@ -40,7 +40,7 @@ export default function UserPictureUploader() {
 
           // Update user's Firestore document with profile picture URL
           const userRef = firestore.doc(`users/${user.uid}`);
-          userRef.update({ profilePictureURL: url });
+          userRef.update({ photoURL: url });
         });
     });
   };
