@@ -8,10 +8,27 @@ export default function Login() {
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>
 
             {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
-            <div id="login" className='bg-jasmine w-[680px] h-[586px] rounded-[30px] '>
-                <h1>Log In</h1>
+            <div id="login" className='bg-jasmine w-[680px] h-[586px] rounded-[30px] flex flex-col items-center place-items-start'>
+                <div className='mt-[45px] mb-[30px] '>
+                    <h1 className='text-3xl font-bold'>
+                        Log in
+                    </h1>
+                </div>
+                <span className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'>
+                    Username
+                </span>
+                <span className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'>
+                    Password
+                </span>
+                <span className='bg-xanthous rounded-[30px] mt-8 mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center'>
+                    Log in
+                </span>
+                <p className='text-lg'>Or log in with</p>  
+                <span>
+                    
+                </span>
 
-                <div>Don`t have an account? <Link href={'/Register'}>Register</Link></div>
+                <div className='text-lg'>Don`t have an account? <Link href={'/Register'} className='font-bold'>Register</Link></div>
             </div>            
 
             {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
