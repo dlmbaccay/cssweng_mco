@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Post from '../components/Post'
 import Router from 'next/router'
 import { auth, firestore } from '../lib/firebase'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, sendPasswordResetEmail, fetchSignInMethodsForEmail} from 'firebase/auth'
 import toast from 'react-hot-toast'
 
 export default function Login() {
@@ -71,6 +71,30 @@ export default function Login() {
             }
         })
     }
+
+    const handleForgotPassword = () => {
+        if(email === '') {
+            toast.error("Please enter an email address");
+            return;
+        }
+    
+        sendPasswordResetEmail(auth, email)
+        .then(() => {
+            // Password reset email sent!
+            toast.success("A password reset email has been sent!");
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+
+            // Handle the different types of errors
+            if (errorCode === 'auth/invalid-email') {
+                toast.error('Invalid email address.');
+            } else {
+                toast.error(errorMessage);
+            }
+        });
+}
             
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>
@@ -97,6 +121,12 @@ export default function Login() {
                     placeholder=' Password'
                     className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'/>
                 
+                <p 
+                    onClick={handleForgotPassword}
+                    className='text-xl font-semibold cursor-pointer text-gray-600'>
+                    Forgot Password?
+                </p>
+
                 <button 
                     onClick={handleLogin}
                     className='bg-xanthous rounded-[30px] mt-8 mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center'>
