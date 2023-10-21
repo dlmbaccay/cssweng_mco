@@ -52,6 +52,35 @@ export function useUserData() {
   return { user, username, description, displayName, profilePicUrl };
 }
 
+export function usePetData(userId) {
+  const [pets, setPets] = useState([]);
+
+  useEffect(() => {
+    let unsubscribe;
+
+    if (userId) {
+      const petRef = firestore.collection('users').doc(userId).collection('pets');
+      unsubscribe = petRef.onSnapshot((snapshot) => {
+        const petData = [];
+        snapshot.docs.forEach((doc) => {
+          petData.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        setPets(petData);
+      });
+    } else {
+      setPets([]);
+    }
+
+    return unsubscribe;
+  }, [userId]);
+
+  return pets;
+}
+
+
 export function getUserProfilePicture() {
 
 }
