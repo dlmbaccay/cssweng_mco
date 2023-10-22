@@ -3,13 +3,37 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { firestore, storage, auth } from '@/src/lib/firebase';
+import { firestore, storage } from '@/src/lib/firebase';
 import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
+import Modal from 'react-modal';
+import toast from 'react-hot-toast'
+
+Modal.setAppElement('#root'); // Set the root element for accessibility
+
+const customModalStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+  },
+  content: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    maxWidth: '500px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflow: 'auto',
+    padding: '20px',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+  },
+};
 
 export default function UserProfile() {
     const router = useRouter();
     const currentUser = useUserData();
-    const currentUserId = getUserIDfromUsername(currentUser.username);
+    const currentUserID = getUserIDfromUsername(currentUser.username);
     const { profileUsername} = router.query;
     const profileUserID = getUserIDfromUsername(profileUsername);
     const [username, setUsername] = useState(null);
@@ -41,6 +65,8 @@ export default function UserProfile() {
     }, [profileUserID]);
 
     const [showCreatePetForm, setShowCreatePetForm] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [deletingPetId, setDeletingPetId] = useState(null);
     const [petName, setPetName] = useState(null);
     const [about, setAbout] = useState(null);
     const [sex, setSex] = useState(null);
@@ -50,31 +76,31 @@ export default function UserProfile() {
 
     const handleCreatePetProfile = async () => {
         try {
-            if (profileUserID !== currentUserId) {
+            if (profileUserID !== currentUserID) {
                 toast.error("You can only create a pet profile for your own user profile.");
                 return;
-              }
+            }
+        
             const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
-
-            // Create a new document with an auto-generated ID
+        
             const newPetRef = petRef.doc();
-            
-            // Upload the photo file to Firebase Storage
             const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
-            await storageRef.put(petPhotoURL);
-            // Get the download URL of the uploaded photo
-            const photoURL = await storageRef.getDownloadURL();
-            const petData = {
-                petname: petName,
-                about: about,
-                sex: sex,
-                birthdate: birthdate,
-                birthplace: birthplace,
-                photoURL: photoURL,
-            };
-            // Set the data for the new pet profile
-            await newPetRef.set(petData);
-            
+        
+            await Promise.all([
+                storageRef.put(petPhotoURL),
+                newPetRef.set({
+                    petname: petName,
+                    about: about,
+                    sex: sex,
+                    birthdate: birthdate,
+                    birthplace: birthplace,
+                    photoURL: await storageRef.getDownloadURL(),
+                    followers: [],
+                    following: []
+                })
+            ]);
+
+            toast.success("Pet profile created successfully!");
             setShowCreatePetForm(false);
             setPetName('');
             setAbout('');
@@ -83,9 +109,39 @@ export default function UserProfile() {
             setBirthplace('');
             setPetPhotoURL('');
         } catch (error) {
-             console.error('Error creating pet profile:', error);
+            toast.error('Error creating pet profile.');
         }
     };
+    
+    const handleDeletePetProfile = async (petId) => {
+        setDeletingPetId(petId);
+        setShowConfirmation(true);
+    };
+    
+    const confirmDeletePetProfile = async () => {
+        try {
+            if (profileUserID !== currentUserID) {
+            toast.error("You can only delete a pet profile from your own user profile.");
+            return;
+            }
+
+            const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(deletingPetId);
+
+            // Delete the pet's profile picture from storage
+            const storageRef = storage.ref(`petProfilePictures/${deletingPetId}/profilePic`);
+            await storageRef.delete();
+
+            // Delete the pet's document from Firestore
+            await petRef.delete();
+
+            // Close the confirmation popup
+            setShowConfirmation(false);
+            toast.success("The pet profile was deleted successfully");
+        } catch (error) {
+            console.error('Error deleting pet profile:', error);
+        }
+    };
+      
     
     return (
         <div>
@@ -97,34 +153,53 @@ export default function UserProfile() {
         <p>Description: {description}</p>
 
         <img src={profilePicUrl} alt='profile picture'/>
+        {currentUser && currentUserID === profileUserID ? (
+            <Modal
+            isOpen={showConfirmation}
+            onRequestClose={() => setShowConfirmation(false)}
+            contentLabel="Delete Confirmation"
+            style={customModalStyles}
+            >
+                <p>Are you sure you want to delete this pet profile?</p>
+                <button onClick={confirmDeletePetProfile}>Yes</button>
+                <button onClick={() => setShowConfirmation(false)}>No</button>
+            </Modal>
+        ): null}
         
-        {showCreatePetForm ? (
-        <div>
-            <h2>Create Pet Profile</h2>
-            <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
-            <input type="text" value={about} onChange={(e) => setAbout(e.target.value)} placeholder="About" />
-            <input type="text" value={sex} onChange={(e) => setSex(e.target.value)} placeholder="Sex" />
-            <input type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)} placeholder="Birthdate" />
-            <input type="text" value={birthplace} onChange={(e) => setBirthplace(e.target.value)} placeholder="Birthplace" />
-            <label htmlFor="photo">Upload Photo:</label>
-            <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
-            <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
-            </div>
-        ) : (
-            profileUserID === currentUserId ? (
-                <button onClick={() => setShowCreatePetForm(true)}>Add Pet</button>
-              ) : null
-        )}
         <h2>Pets</h2>
         {pets.map((pet) => (
             <div key={pet.id}>
-            <h3>Pet Name: {pet.petname}</h3>
-            <p>About: {pet.about}</p>
             <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
-                <p>View Pet Profile</p>
+                <img src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>
             </Link>
+            {currentUser && currentUserID === profileUserID ? (
+                <button onClick={() => handleDeletePetProfile(pet.id)}>Delete Pet Profile</button>
+            ): null}
             </div>
         ))}
+
+        {showCreatePetForm ? (
+            <Modal
+                isOpen={showCreatePetForm}
+                onRequestClose={() => setShowCreatePetForm(false)}
+                contentLabel="Create Pet Profile Label"
+                style={customModalStyles}
+            >
+                <h2>Create Pet Profile Label</h2>
+                <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
+                <input type="text" value={about} onChange={(e) => setAbout(e.target.value)} placeholder="About" />
+                <input type="text" value={sex} onChange={(e) => setSex(e.target.value)} placeholder="Sex" />
+                <input type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)} placeholder="Birthdate" />
+                <input type="text" value={birthplace} onChange={(e) => setBirthplace(e.target.value)} placeholder="Birthplace" />
+                <label htmlFor="photo">Upload Photo:</label>
+                <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
+                <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
+            </Modal>
+        ) : (
+            profileUserID === currentUserID ? (
+                <button onClick={() => setShowCreatePetForm(true)}>Add Pet Profile</button>
+              ) : null
+        )}
 
         <div>
             <Link href="/Home">

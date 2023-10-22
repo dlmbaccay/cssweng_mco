@@ -3,7 +3,7 @@ import UserProfile from '../../../components/UserProfile'
 
 export default function UserProfilePage() {
   return (
-    <div>
+    <div id="root">
       <UserProfile />
     </div>
   )
