@@ -80,7 +80,22 @@ export function usePetData(userId) {
   return pets;
 }
 
+export function getUserIDfromUsername(username) {
+  
+  const [currentUserId, setCurrentUserId] = useState(null);
 
-export function getUserProfilePicture() {
+  useEffect(() => {
+    let unsubscribe;
 
+    if (username){
+      const nameRef = firestore.collection('usernames').doc(username);
+      unsubscribe = nameRef.onSnapshot((doc) => {
+        setCurrentUserId(doc.data().uid)
+        });
+    } else{
+      setCurrentUserId(null);
+    }
+    return unsubscribe;
+  }, [username]);
+  return currentUserId;
 }
