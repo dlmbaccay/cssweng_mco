@@ -19,7 +19,8 @@ module.exports = {
         'jasmine': '#FADA91',
         'xanthous': '#F5B744',
         'citron': '#C3C461',
-        'pistachio': '#90D17D'
+        'pistachio': '#90D17D',
+        'pale_yellow': '#FFEBBE'
       }
     },
   },
