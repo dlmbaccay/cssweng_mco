@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { firestore, storage, STATE_CHANGED } from '@/src/lib/firebase';
+import { firestore, storage, STATE_CHANGED} from '@/src/lib/firebase';
 import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
@@ -14,15 +14,40 @@ import Loader from '../components/Loader';
 
 export default function UserProfile() {
     const router = useRouter();
-    const currentUser = useUserData();
-    const currentUserID = getUserIDfromUsername(currentUser.username);
+    const getCurrentUser = useUserData();
+    const currentUserID = getUserIDfromUsername(getCurrentUser.username);
     const { profileUsername } = router.query;
     const profileUserID = getUserIDfromUsername(profileUsername);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [profileUser, setProfileUser] = useState(null);
+    
+    useEffect(() => {
+        const fetchUserData = async () => {
+          try {
+            const currentUserDoc = await firestore.collection('users').doc(currentUserID).get();
+            const profileUserDoc = await firestore.collection('users').doc(profileUserID).get();
+    
+            setCurrentUser(currentUserDoc.data());
+            setProfileUser(profileUserDoc.data());
+            console.log(currentUser)
+    console.log(profileUser)
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+          }
+        };
+    
+        fetchUserData();
+      }, [currentUserID, profileUserID]);
+
+    
+
 
     const [username, setUsername] = useState(null);
     const [description, setDescription] = useState(null); 
     const [displayName, setDisplayName] = useState(null); 
     const [email, setEmail] = useState(null);
+    const [followers, setFollowers] = useState(null);
+    const [following, setFollowing] = useState(null);
     const [userPhotoURL, setUserPhotoURL] = useState(null);
     const [coverPhotoURL, setCoverPhotoURL] = useState(null);
 
@@ -37,7 +62,7 @@ export default function UserProfile() {
     useEffect(() => { // for
     // turn off realtime subscription
     let unsubscribe;
-
+    
     if (profileUserID) {
         const userRef = firestore.collection('users').doc(profileUserID);
         unsubscribe = userRef.onSnapshot((doc) => {
@@ -49,6 +74,8 @@ export default function UserProfile() {
         setEditedDisplayName(doc.data()?.displayName);
         setCoverPhotoURL(doc.data()?.coverPhotoURL);
         setEmail(doc.data()?.email);
+        setFollowers(doc.data()?.followers);
+        setFollowing(doc.data()?.following);
         });
     } else {
         setUsername(null);
@@ -59,6 +86,8 @@ export default function UserProfile() {
         setEditedDisplayName(null);
         setCoverPhotoURL(null);
         setEmail(null);
+        setFollowers('');
+        setFollowing('');
     }
 
     return unsubscribe;
@@ -157,7 +186,7 @@ export default function UserProfile() {
     };
     
     const handleEdit = () => {
-        if (currentUser && currentUserID === profileUserID) { // check if this is the owner of the profile
+        if (getCurrentUser && currentUserID === profileUserID) { // check if this is the owner of the profile
             setModalIsOpen(true); // open the modal when editing starts
         }
     }
@@ -234,9 +263,88 @@ export default function UserProfile() {
         });
     }
 
+    const handleFollow = async () => {
+        const isFollowing = currentUser.following && currentUser.following.includes(profileUserID);
+      
+        const updatedFollowing = isFollowing
+          ? currentUser.following.filter(id => id !== profileUserID) // Remove profileUserID if already following
+          : [...currentUser.following, profileUserID]; // Add profileUserID if not already following
+      
+        const updatedFollowers = isFollowing
+          ? profileUser.followers.filter(id => id !== currentUserID) // Remove currentUserID if already a follower
+          : [...profileUser.followers, currentUserID]; // Add currentUserID if not already a follower
+      
+        try {
+            // Update following for currentUser
+            await firestore.collection('users').doc(currentUserID).update({
+                following: updatedFollowing
+            });
+            setCurrentUser(prevUser => ({
+                ...prevUser,
+                following: updatedFollowing
+            }));
+            toast.success('Followed user successfully!');
+        
+            // Update followers for profileUser
+            await firestore.collection('users').doc(profileUserID).update({
+                followers: updatedFollowers
+            });
+            setProfileUser(prevUser => ({
+                ...prevUser,
+                followers: updatedFollowers
+            }));
+        
+            // Follow all pets of profileUser
+            if (!isFollowing) {
+                const petsSnapshot = await firestore.collection('users').doc(profileUserID).collection('pets').get();
+                const petIds = petsSnapshot.docs.map(doc => doc.id);
+                const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
+            
+                petIds.forEach(petId => {
+                    const petDocRef = petRef.doc(petId);
+                
+                    petDocRef.get().then(doc => {
+                        const petData = doc.data();
+                        const isFollowingPet = petData.followers && petData.followers.includes(currentUserID);
+                
+                        if (!isFollowingPet) {
+                        petData.followers = [...petData.followers, currentUserID];
+                
+                        petDocRef.set(petData)
+                            .then(() => {
+                            toast.success('Followed successfully!');
+                            })
+                            .catch(error => {
+                            console.error('Error updating followers:', error);
+                            });
+                        }
+                    });
+                });
+            
+                console.log('Followed all pets successfully!');
+            }
+  
+        } catch (error) {
+          console.error('Error:', error);
+        }
+    };
+      
+      
+      
+
     return (
         <div>
         <h1>User Profile Page</h1>
+        {/* following users */}
+        {getCurrentUser && currentUserID !== profileUserID && profileUser ? (
+        // Follow button
+        <button onClick={handleFollow}>
+            {profileUser.followers && profileUser.followers.includes(currentUserID)
+            ? 'Following'
+            : 'Follow'}
+        </button>
+        ) : null}
+
 
         {coverPhotoURL && <Image src={coverPhotoURL} alt='cover picture' height={200} width={200}/>}
 
@@ -244,10 +352,12 @@ export default function UserProfile() {
         <p>Username: {username}</p>
         <p>Email: {email}</p>
         <p>Description: {description}</p>
+        <p>Followers: {followers && followers.length}</p>
+        <p>Following: {following && following.length}</p>
 
         {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
         
-        {currentUser && currentUserID === profileUserID ? (
+        {getCurrentUser && currentUserID === profileUserID ? (
             <Modal
             isOpen={showConfirmation}
             onRequestClose={() => setShowConfirmation(false)}
@@ -267,7 +377,7 @@ export default function UserProfile() {
                 {/* <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/> */}
                 {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>}
             </Link>
-            {currentUser && currentUserID === profileUserID ? (
+            {getCurrentUser && currentUserID === profileUserID ? (
                 <button onClick={() => handleDeletePetProfile(pet.id)}>Delete Pet Profile</button>
             ): null}
             </div>
@@ -316,15 +426,16 @@ export default function UserProfile() {
 
         {/* editing user profile */}
 
-        { currentUser && currentUserID == profileUserID ? (
+        { getCurrentUser && currentUserID == profileUserID ? (
             <div>
                 <button onClick={handleEdit}>Edit Profile</button>
             </div>
         ) : null }
+        
 
         {/* edit user profile modal */}
 
-        {currentUser && currentUserID === profileUserID ? (// Pop-up for Editing
+        {getCurrentUser && currentUserID === profileUserID ? (// Pop-up for Editing
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={() => setModalIsOpen(false)}
