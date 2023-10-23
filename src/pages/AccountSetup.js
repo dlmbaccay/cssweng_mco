@@ -137,19 +137,19 @@ export default function AccountSetup() {
             Welcome to Account Setup!
 
             <form onSubmit={onSubmit}>
-                <div id='username'>
+                <div>
                 {/* username */}
                     <p> <label htmlFor="username"> Be creative! </label> </p>
                     <input id="username" placeholder="Select Username" value={usernameFormValue} onChange={onChange} required/>
                     <UsernameMessage username={usernameFormValue} isValid={isValid} loading={loading} />
                 </div>
 
-                <div id='display-name'>
+                <div>
                     <p> <label htmlFor="display-name">What would you like us to call you?</label></p>
                     <input type="text" id='display-name' placeholder='Select Display Name' maxLength="20" required/>
                 </div>
 
-                <div id='user-photo-upload'>
+                <div>
                     <Loader show={uploading} />
                     {uploading && <h3>{progress}%</h3>}
 
@@ -165,12 +165,12 @@ export default function AccountSetup() {
                     {downloadURL && <Image src={downloadURL} alt="Profile Picture" width={200} height={200}/>}
                 </div>
 
-                <div id='description'>
+                <div>
                     <p> <label htmlFor="description">Tell us more about you!</label></p>
                     <textarea id='description' placeholder='Description' required/>
                 </div>
                     
-                <div id="gender">
+                <div>
                     <p> <label for="gender">Gender</label> </p>
                     <select id="genderSelect" name="gender">
                         <option value="Man">Man</option>
@@ -179,17 +179,17 @@ export default function AccountSetup() {
                     </select>
                 </div>
 
-                <div id='birthdate'>
+                <div>
                     <p> <label htmlFor="birthdate">Birthdate</label></p>
                     <input type="date" id="birthdate" name="birthdate" />
                 </div>
 
-                <div id='birthplace'>
+                <div>
                     <p> <label htmlFor="birthplace">Birthplace</label></p>
                     <input type="text" id="birthplace" name="birthplace" placeholder="City, State, Country" />
                 </div>
 
-                <div id='occupation'>
+                <div>
                     <p> <label htmlFor="occupation">Occupation</label></p>
                     <input type="text" id="occupation" name="occupation" placeholder="Occupation" />
                 </div>
