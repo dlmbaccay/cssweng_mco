@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { basicModalStyle } from '../lib/modalstyle';
 import Loader from '../components/Loader';
 
-Modal.setAppElement('#root'); // Set the root element for accessibility
+// Modal.setAppElement('#root'); // Set the root element for accessibility
 
 export default function UserProfile() {
     const router = useRouter();

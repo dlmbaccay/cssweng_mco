@@ -1,6 +1,7 @@
 import React from 'react'
 import { auth } from '../lib/firebase'
 import { useUserData } from '../lib/hooks';
+import Router from 'next/router';
 
 // handle signout
 function handleSignOut() {
@@ -17,6 +18,11 @@ function handleSignOut() {
 export default function Home() {
 
   const { user, username } = useUserData();
+  const router = Router;
+
+  function handleViewProfile() {
+    router.push(`/user/${username}`);
+  }
 
 
   return (
@@ -24,7 +30,9 @@ export default function Home() {
 
     {/* user info */}
     <h1>{user?.email}</h1>
-    <h1>{username}</h1>
+    <button onClick={ handleViewProfile}>
+      {username}
+    </button>
 
     {/* sign out button */}
     <button onClick={handleSignOut}>
