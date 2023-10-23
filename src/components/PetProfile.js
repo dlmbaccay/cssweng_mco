@@ -5,28 +5,9 @@ import { useUserData, getUserIDfromUsername } from '@/src/lib/hooks'; // Import 
 import { formatDateWithWords } from '../lib/formats';
 import Modal from 'react-modal'; // Import the Modal component  
 import toast from 'react-hot-toast'
+import { basicModalStyle } from '../lib/modalstyle';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
-
-const customModalStyles = {
-  overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1000,
-  },
-  content: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    maxWidth: '500px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflow: 'auto',
-    padding: '20px',
-    borderRadius: '8px',
-    backgroundColor: '#fff',
-  },
-};
 
 export default function PetProfile() {
     const router = useRouter();
@@ -162,7 +143,7 @@ export default function PetProfile() {
                 <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={() => setModalIsOpen(false)}
-                style={customModalStyles}
+                style={basicModalStyle}
                 >
                 <div>
                     <label htmlFor="petName">Pet Name:</label>

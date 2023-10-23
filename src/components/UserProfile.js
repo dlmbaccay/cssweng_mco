@@ -6,29 +6,10 @@ import { useRouter } from 'next/router';
 import { firestore, storage } from '@/src/lib/firebase';
 import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
 import Modal from 'react-modal';
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
+import { basicModalStyle } from '../lib/modalstyle';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
-
-const customModalStyles = {
-  overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1000,
-  },
-  content: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    maxWidth: '500px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflow: 'auto',
-    padding: '20px',
-    borderRadius: '8px',
-    backgroundColor: '#fff',
-  },
-};
 
 export default function UserProfile() {
     const router = useRouter();
@@ -158,7 +139,7 @@ export default function UserProfile() {
             isOpen={showConfirmation}
             onRequestClose={() => setShowConfirmation(false)}
             contentLabel="Delete Confirmation"
-            style={customModalStyles}
+            style={basicModalStyle}
             >
                 <p>Are you sure you want to delete this pet profile?</p>
                 <button onClick={confirmDeletePetProfile}>Yes</button>
@@ -183,7 +164,7 @@ export default function UserProfile() {
                 isOpen={showCreatePetForm}
                 onRequestClose={() => setShowCreatePetForm(false)}
                 contentLabel="Create Pet Profile Label"
-                style={customModalStyles}
+                style={basicModalStyle}
             >
                 <h2>Create Pet Profile Label</h2>
                 <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
