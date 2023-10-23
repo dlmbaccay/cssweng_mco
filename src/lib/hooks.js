@@ -12,7 +12,7 @@ export function useUserData() {
   const [description, setDescription] = useState(null);
   const [displayName, setDisplayName] = useState(null);
   const [email, setEmail] = useState(null); 
-  const [profilePicUrl, setProfilePicUrl] = useState(null);
+  const [userPhotoURL, setUserPhotoURL] = useState(null);
 
   useEffect(() => {
   // turn off realtime subscription
@@ -22,7 +22,7 @@ export function useUserData() {
     const userRef = firestore.collection('users').doc(user.uid);
     unsubscribe = userRef.onSnapshot((doc) => {
       setUsername(doc.data()?.username);
-      setProfilePicUrl(doc.data()?.photoURL);
+      setUserPhotoURL(doc.data()?.photoURL);
       setDescription(doc.data()?.description);
       setDisplayName(doc.data()?.displayName);
       setEmail(doc.data()?.email);
@@ -30,7 +30,7 @@ export function useUserData() {
 
   } else {
     setUsername(null);
-    setProfilePicUrl(null);
+    setUserPhotoURL(null);
     setDescription(null);
     setDisplayName(null);
     setEmail(null);
@@ -39,7 +39,7 @@ export function useUserData() {
   return unsubscribe;
 }, [user]);
 
-  return { user, username, description, email, displayName, profilePicUrl };
+  return { user, username, description, email, displayName, userPhotoURL };
 }
 
 export function usePetData(userId) {

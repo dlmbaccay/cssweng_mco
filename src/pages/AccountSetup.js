@@ -13,7 +13,6 @@ export default function AccountSetup() {
 
     const { user, username } = useContext(UserContext)
 
-    // const displayName = '', description = '', profilePictureURL = '';
     const [usernameFormValue, setUsernameFormValue] = useState('');
     const [isValid, setIsValid] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -106,7 +105,20 @@ export default function AccountSetup() {
             photoURL: downloadURL,
             displayName: document.querySelector("#display-name").value,
             description: document.querySelector("#description").value,
+            email: user.email,
+            followers: [],
+            following: [],
+
+            // pets: [],
+
+            coverPhotoURL: '',
+            gender: document.querySelector("#genderSelect").value,
+            birthdate: document.querySelector("#birthdate").value,
+            birthplace: document.querySelector("#birthplace").value,
+            occupation: document.querySelector("#occupation").value,
+
         })
+
         batch.set(usernameDoc, { uid: user.uid });
 
         await batch.commit();
@@ -125,21 +137,19 @@ export default function AccountSetup() {
             Welcome to Account Setup!
 
             <form onSubmit={onSubmit}>
-                <div>
+                <div id='username'>
                 {/* username */}
                     <p> <label htmlFor="username"> Be creative! </label> </p>
-                    <input id="username" placeholder="Select Username" value={usernameFormValue} onChange={onChange} />
+                    <input id="username" placeholder="Select Username" value={usernameFormValue} onChange={onChange} required/>
                     <UsernameMessage username={usernameFormValue} isValid={isValid} loading={loading} />
                 </div>
 
-                <div>
+                <div id='display-name'>
                     <p> <label htmlFor="display-name">What would you like us to call you?</label></p>
-                    <input type="text" id='display-name' placeholder='Select Display Name' maxLength="20"  />
+                    <input type="text" id='display-name' placeholder='Select Display Name' maxLength="20" required/>
                 </div>
 
-                {/* <UserProfileUploader /> */}
-
-                <div>
+                <div id='user-photo-upload'>
                     <Loader show={uploading} />
                     {uploading && <h3>{progress}%</h3>}
 
@@ -152,12 +162,36 @@ export default function AccountSetup() {
                         </>
                     )}
 
-                    {downloadURL && <img src={downloadURL} alt="Profile Picture" />}
+                    {downloadURL && <Image src={downloadURL} alt="Profile Picture" width={200} height={200}/>}
                 </div>
 
-                <div>
+                <div id='description'>
                     <p> <label htmlFor="description">Tell us more about you!</label></p>
-                    <textarea id='description' placeholder='Description'/>
+                    <textarea id='description' placeholder='Description' required/>
+                </div>
+                    
+                <div id="gender">
+                    <p> <label for="gender">Gender</label> </p>
+                    <select id="genderSelect" name="gender">
+                        <option value="Man">Man</option>
+                        <option value="Woman">Woman</option>
+                        <option value="Other">Other</option>                        
+                    </select>
+                </div>
+
+                <div id='birthdate'>
+                    <p> <label htmlFor="birthdate">Birthdate</label></p>
+                    <input type="date" id="birthdate" name="birthdate" />
+                </div>
+
+                <div id='birthplace'>
+                    <p> <label htmlFor="birthplace">Birthplace</label></p>
+                    <input type="text" id="birthplace" name="birthplace" placeholder="City, State, Country" />
+                </div>
+
+                <div id='occupation'>
+                    <p> <label htmlFor="occupation">Occupation</label></p>
+                    <input type="text" id="occupation" name="occupation" placeholder="Occupation" />
                 </div>
 
                 <div>

@@ -166,7 +166,7 @@ export default function UserProfile() {
         <p>Username: {username}</p>
         <p>Email: {email}</p>
         <p>Description: {description}</p>
-        <img src={userPhotoURL} alt='profile picture'/>
+        <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>
         
         {currentUser && currentUserID === profileUserID ? (
             <Modal
@@ -185,7 +185,7 @@ export default function UserProfile() {
         {pets.map((pet) => (
             <div key={pet.id}>
             <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
-                <img src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>
+                <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>
             </Link>
             {currentUser && currentUserID === profileUserID ? (
                 <button onClick={() => handleDeletePetProfile(pet.id)}>Delete Pet Profile</button>

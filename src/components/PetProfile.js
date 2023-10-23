@@ -3,6 +3,7 @@ import { firestore, storage} from '@/src/lib/firebase';
 import { useRouter } from 'next/router';
 import { useUserData, getUserIDfromUsername } from '@/src/lib/hooks'; // Import the useUser hook
 import { formatDateWithWords } from '../lib/formats';
+import Image from 'next/image';
 import Modal from 'react-modal'; // Import the Modal component  
 import toast from 'react-hot-toast'
 import { basicModalStyle } from '../lib/modalstyle';
@@ -127,7 +128,7 @@ export default function PetProfile() {
             <p>Sex: {pet.sex}</p>
             <p>Birthday: {formatDateWithWords(pet.birthdate)}</p>
             <p>Place of Birth: {pet.birthplace}</p>
-            <img src={pet.photoURL} alt='pet profile picture' height={200} width={200}/>
+            <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200}/>
             
             {currentUser && currentUserID === profileUserID ? ( // Edit pet profile button
                 <button onClick={handleEdit}>Edit</button>
@@ -181,7 +182,7 @@ export default function PetProfile() {
                     <input type="text" id="birthplace" value={birthplace} onChange={e => setBirthplace(e.target.value)} />
                 </div>
                 <div>
-                    <img src={pet.photoURL} alt='pet profile picture' height={200} width={200}/>
+                    <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200}/>
                     <label htmlFor="photo">Upload Photo:</label>
                     <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
                 </div>
