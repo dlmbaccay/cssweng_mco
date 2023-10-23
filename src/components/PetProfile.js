@@ -65,30 +65,37 @@ export default function PetProfile() {
 
     const handleSave = async () => {
         const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(petId);
-        
-            try {
-                const updateData = {
-                    petname: petName,
-                    about: about,
-                    sex: sex,
-                    birthdate: birthdate,
-                    birthplace: birthplace,
-                    photoURL: petPhotoURL ? await uploadPhotoAndGetURL() : pet.photoURL
-                };
-            
-                await petRef.update(updateData);
-                setModalIsOpen(false);
-                toast.success('Pet profile updated successfully!');
-            } catch (error) {
-            console.error('Error saving pet:', error);
-            }
-        };
-        
-    const uploadPhotoAndGetURL = async () => {
+        const batch = firestore.batch();
+      
+        try {
+          const updateData = {
+            petname: petName,
+            about: about,
+            sex: sex,
+            birthdate: birthdate,
+            birthplace: birthplace,
+            photoURL: petPhotoURL ? await uploadPhotoAndGetURL() : pet.photoURL
+          };
+      
+          batch.update(petRef, updateData);
+      
+          // Add more batch operations if needed
+          // batch.update(anotherDocRef, anotherUpdateData);
+      
+          await batch.commit();
+          setModalIsOpen(false);
+          toast.success('Pet profile updated successfully!');
+        } catch (error) {
+          console.error('Error saving pet:', error);
+        }
+      };
+      
+      const uploadPhotoAndGetURL = async () => {
         const storageRef = storage.ref(`petProfilePictures/${petId}/profilePic`);
         await storageRef.put(petPhotoURL);
         return await storageRef.getDownloadURL();
-    };
+      };
+      
       
 
     const handleFollow = () => {

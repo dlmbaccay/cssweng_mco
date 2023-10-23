@@ -61,42 +61,56 @@ export default function UserProfile() {
 
     const handleCreatePetProfile = async () => {
         try {
-            if (profileUserID !== currentUserID) {
-                toast.error("You can only create a pet profile for your own user profile.");
-                return;
-            }
+          if (profileUserID !== currentUserID) {
+            toast.error("You can only create a pet profile for your own user profile.");
+            return;
+          }
         
-            const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
+          const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
+          const newPetRef = petRef.doc();
+          const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
         
-            const newPetRef = petRef.doc();
-            const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
+          const batch = firestore.batch();
         
-            await Promise.all([
-                storageRef.put(petPhotoURL),
-                newPetRef.set({
-                    petname: petName,
-                    about: about,
-                    sex: sex,
-                    birthdate: birthdate,
-                    birthplace: birthplace,
-                    photoURL: await storageRef.getDownloadURL(),
-                    followers: [],
-                    following: []
-                })
-            ]);
-
-            toast.success("Pet profile created successfully!");
-            setShowCreatePetForm(false);
-            setPetName('');
-            setAbout('');
-            setSex('');
-            setBirthdate('');
-            setBirthplace('');
-            setPetPhotoURL('');
+          batch.set(newPetRef, {
+            petname: petName,
+            about: about,
+            sex: sex,
+            birthdate: birthdate,
+            birthplace: birthplace,
+            followers: [],
+            following: []
+          });
+        
+          const uploadTask = storageRef.put(petPhotoURL);
+        
+          await uploadTask;
+        
+          const photoURL = await storageRef.getDownloadURL();
+        
+          if (!photoURL) {
+            throw new Error('File not found in Firebase Storage.');
+          }
+        
+          batch.update(newPetRef, { photoURL });
+        
+          batch.commit();
+        
+          toast.success("Pet profile created successfully!");
+          setShowCreatePetForm(false);
+          setPetName('');
+          setAbout('');
+          setSex('');
+          setBirthdate('');
+          setBirthplace('');
+          setPetPhotoURL('');
         } catch (error) {
-            toast.error('Error creating pet profile.');
+          toast.error('Error creating pet profile: ' + error.message);
         }
-    };
+      };
+      
+      
+    
     
     const handleDeletePetProfile = async (petId) => {
         setDeletingPetId(petId);
@@ -157,7 +171,7 @@ export default function UserProfile() {
         await storageRef.put(userPhotoURL);
         return await storageRef.getDownloadURL();
     };
-    
+
     return (
         <div>
         <h1>User Profile Page</h1>
@@ -167,7 +181,7 @@ export default function UserProfile() {
         <p>Email: {email}</p>
         <p>Description: {description}</p>
         {/* <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/> */}
-        {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
+        {userPhotoURL && <img src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
         
         {currentUser && currentUserID === profileUserID ? (
             <Modal
@@ -187,7 +201,7 @@ export default function UserProfile() {
             <div key={pet.id}>
             <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
                 {/* <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/> */}
-                {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>}
+                {pet.photoURL && <img src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>}
             </Link>
             {currentUser && currentUserID === profileUserID ? (
                 <button onClick={() => handleDeletePetProfile(pet.id)}>Delete Pet Profile</button>
@@ -205,7 +219,23 @@ export default function UserProfile() {
                 <h2>Create Pet Profile Label</h2>
                 <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
                 <input type="text" value={about} onChange={(e) => setAbout(e.target.value)} placeholder="About" />
-                <input type="text" value={sex} onChange={(e) => setSex(e.target.value)} placeholder="Sex" />
+                <label htmlFor="sex">Sex:</label>
+                <div>
+                    <button
+                    id="male"
+                    className={`sex-button ${sex === 'Male' ? 'active' : ''}`}
+                    onClick={() => setSex('Male')}
+                    >
+                    Male
+                    </button>
+                    <button
+                    id="female"
+                    className={`sex-button ${sex === 'Female' ? 'active' : ''}`}
+                    onClick={() => setSex('Female')}
+                    >
+                    Female
+                    </button>
+                </div>
                 <input type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)} placeholder="Birthdate" />
                 <input type="text" value={birthplace} onChange={(e) => setBirthplace(e.target.value)} placeholder="Birthplace" />
                 <label htmlFor="photo">Upload Photo:</label>
