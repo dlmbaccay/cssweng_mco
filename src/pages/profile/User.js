@@ -31,7 +31,7 @@ export default function User(){
                         Edit
                     </button>
                     
-                    {/* Username */}
+                    {/* Username */} 
                     <div class="absolute top-16 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center mt-10">
                         <span class="text-2xl font-bold text-raisin_black">Username</span>
                     </div>
