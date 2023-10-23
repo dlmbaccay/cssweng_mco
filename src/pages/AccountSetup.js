@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 
 import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';
-import UserProfileUploader from '../components/UserProfileUploader';
 
 export default function AccountSetup() {
 
