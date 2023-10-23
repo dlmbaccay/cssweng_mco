@@ -95,9 +95,7 @@ export default function PetProfile() {
         await storageRef.put(petPhotoURL);
         return await storageRef.getDownloadURL();
       };
-      
-      
-
+  
     const handleFollow = () => {
         const isFollowing = pet.followers && pet.followers.includes(currentUserID);
       

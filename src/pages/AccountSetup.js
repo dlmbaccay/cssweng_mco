@@ -28,15 +28,15 @@ export default function AccountSetup() {
 
         // Only set form value if length is < 3 OR it passes regex
         if (val.length < 3) {
-        setUsernameFormValue(val);
-        setLoading(false);
-        setIsValid(false);
+            setUsernameFormValue(val);
+            setLoading(false);
+            setIsValid(false);
         }
 
         if (re.test(val)) {
-        setUsernameFormValue(val);
-        setLoading(true);
-        setIsValid(false);
+            setUsernameFormValue(val);
+            setLoading(true);
+            setIsValid(false);
         }
     };
     
@@ -113,9 +113,6 @@ export default function AccountSetup() {
             coverPhotoURL: '',
             gender: document.querySelector("#genderSelect").value,
             birthdate: document.querySelector("#birthdate").value,
-            birthplace: document.querySelector("#birthplace").value,
-            occupation: document.querySelector("#occupation").value,
-
         })
 
         batch.set(usernameDoc, { uid: user.uid });
@@ -170,7 +167,7 @@ export default function AccountSetup() {
                 </div>
                     
                 <div>
-                    <p> <label for="gender">Gender</label> </p>
+                    <p> <label htmlFor="gender">Gender</label> </p>
                     <select id="genderSelect" name="gender">
                         <option value="Man">Man</option>
                         <option value="Woman">Woman</option>
