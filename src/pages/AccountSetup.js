@@ -65,13 +65,10 @@ export default function AccountSetup() {
     const uploadFile = async (e) => {
         // Get the file
         const file = Array.from(e.target.files)[0];
-        const extension = file.type.split('/')[1];
 
         // Makes reference to the storage bucket location
-        const ref = storage.ref(`profilePictures/${user.uid}/${Date.now()}.${extension}`);
+        const ref = storage.ref(`profilePictures/${user.uid}/profilePic`);
         setUploading(true);
-
-        // TODO: fix error where profilePictures/undefined is being created in storage
 
         // Starts the upload
         const task = ref.put(file);
@@ -117,7 +114,7 @@ export default function AccountSetup() {
         toast.success(user.uid + " is now registered!")
 
         // push to Profile
-        router.push(`/${usernameFormValue}`);
+        router.push(`/user/${usernameFormValue}`);
     };
 
     return (

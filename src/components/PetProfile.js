@@ -83,10 +83,10 @@ export default function PetProfile() {
             }
         };
         
-        const uploadPhotoAndGetURL = async () => {
-            const storageRef = storage.ref(`petProfilePictures/${petId}/profilePic`);
-            await storageRef.put(petPhotoURL);
-            return await storageRef.getDownloadURL();
+    const uploadPhotoAndGetURL = async () => {
+        const storageRef = storage.ref(`petProfilePictures/${petId}/profilePic`);
+        await storageRef.put(petPhotoURL);
+        return await storageRef.getDownloadURL();
     };
       
 

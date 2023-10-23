@@ -18,9 +18,10 @@ export default function UserProfile() {
     const { profileUsername} = router.query;
     const profileUserID = getUserIDfromUsername(profileUsername);
     const [username, setUsername] = useState(null);
-    const [description, setDescription] = useState(null); // TODO: Add description to user profile
-    const [displayName, setDisplayName] = useState(null); // TODO: Add display name to user profile
-    const [profilePicUrl, setProfilePicUrl] = useState(null);
+    const [description, setDescription] = useState(null); 
+    const [displayName, setDisplayName] = useState(null); 
+    const [email, setEmail] = useState(null);
+    const [userPhotoURL, setUserPhotoURL] = useState(null);
     const pets = usePetData(profileUserID);
 
     useEffect(() => {
@@ -31,15 +32,17 @@ export default function UserProfile() {
         const userRef = firestore.collection('users').doc(profileUserID);
         unsubscribe = userRef.onSnapshot((doc) => {
         setUsername(doc.data()?.username);
-        setProfilePicUrl(doc.data()?.photoURL);
+        setUserPhotoURL(doc.data()?.photoURL);
         setDescription(doc.data()?.description);
         setDisplayName(doc.data()?.displayName);
+        setEmail(doc.data()?.email);
         });
     } else {
         setUsername(null);
-        setProfilePicUrl(null);
+        setUserPhotoURL(null);
         setDescription(null);
         setDisplayName(null);
+        setEmail(null);
     }
 
     return unsubscribe;
@@ -54,6 +57,7 @@ export default function UserProfile() {
     const [birthdate, setBirthdate] = useState(null);
     const [birthplace, setBirthplace] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
+    const [modalIsOpen, setModalIsOpen] = useState(false); // State for controlling the modal
 
     const handleCreatePetProfile = async () => {
         try {
@@ -123,6 +127,36 @@ export default function UserProfile() {
         }
     };
       
+    const handleEdit = () => {
+        if (currentUser && currentUserID === profileUserID) { // check if this is the owner of the profile
+            setModalIsOpen(true); // open the modal when editing starts
+        }
+    }
+
+    const handleSave = async () => {
+        const userRef = firestore.collection('users').doc(profileUserID);
+        
+        try {
+            const updateData = {
+                displayName: displayName,
+                description: description,
+                photoURL: userPhotoURL ? await uploadPhotoAndGetURL() : user.photoURL
+            };
+        
+            await userRef.update(updateData);
+            setModalIsOpen(false);
+            toast.success('User Profile updated successfully!');
+        } catch (error) {
+            toast.error('Error saving profile:', error);
+            console.error('Error saving profile:', error);
+        }
+    }
+
+    const uploadPhotoAndGetURL = async () => {
+        const storageRef = storage.ref(`profilePictures/${profileUserID}/profilePic`);
+        await storageRef.put(userPhotoURL);
+        return await storageRef.getDownloadURL();
+    };
     
     return (
         <div>
@@ -130,10 +164,10 @@ export default function UserProfile() {
 
         <p>Display Name: {displayName}</p>
         <p>Username: {username}</p>
-        <p>Email: test</p>
+        <p>Email: {email}</p>
         <p>Description: {description}</p>
-
-        <img src={profilePicUrl} alt='profile picture'/>
+        <img src={userPhotoURL} alt='profile picture'/>
+        
         {currentUser && currentUserID === profileUserID ? (
             <Modal
             isOpen={showConfirmation}
@@ -178,9 +212,55 @@ export default function UserProfile() {
             </Modal>
         ) : (
             profileUserID === currentUserID ? (
-                <button onClick={() => setShowCreatePetForm(true)}>Add Pet Profile</button>
+                <div>
+                    <button onClick={() => setShowCreatePetForm(true)}>Add Pet Profile</button>
+                </div>
               ) : null
         )}
+
+        {/* editing user profile */}
+
+            { currentUser && currentUserID == profileUserID ? (
+                <div>
+                    <button onClick={handleEdit}>Edit Profile</button>
+                </div>
+            ) : null }
+
+            {/* edit user profile modal */}
+
+            {currentUser && currentUserID === profileUserID ? (// Pop-up for Editing
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={() => setModalIsOpen(false)}
+                    style={basicModalStyle}
+                >
+                
+                {/* display name */}
+                <div>
+                    <label htmlFor="display-name">Display Name:</label>
+                    <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={displayName} onChange={e => setDisplayName(e.target.value)} />
+                </div>
+
+                {/* description */}
+                <div>
+                    <label htmlFor="description">Description:</label>
+                    <input type="text" id='description' placeholder='New Description' value={description} onChange={e => setDescription(e.target.value)} />
+                </div>
+
+                {/* profile picture */}
+                <div>
+                    <img src={userPhotoURL} alt='profile picture' height={200} width={200}/>
+                    <label htmlFor="photo">Upload Photo:</label>
+                    <input type="file" id="photo" onChange={e => setUserPhotoURL(e.target.files[0])} />
+                </div>
+                
+                <button onClick={handleSave}>Save</button>
+
+                </Modal>
+                
+            ) : (
+                null
+            )}
 
         <div>
             <Link href="/Home">

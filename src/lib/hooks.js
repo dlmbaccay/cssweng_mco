@@ -9,8 +9,9 @@ import { set } from 'react-hook-form';
 export function useUserData() {
   const [user] = useAuthState(auth);
   const [username, setUsername] = useState(null);
-  const [description, setDescription] = useState(null); // TODO: Add description to user profile
-  const [displayName, setDisplayName] = useState(null); // TODO: Add display name to user profile
+  const [description, setDescription] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
+  const [email, setEmail] = useState(null); 
   const [profilePicUrl, setProfilePicUrl] = useState(null);
 
   useEffect(() => {
@@ -24,32 +25,21 @@ export function useUserData() {
       setProfilePicUrl(doc.data()?.photoURL);
       setDescription(doc.data()?.description);
       setDisplayName(doc.data()?.displayName);
+      setEmail(doc.data()?.email);
     });
 
-    // // Create a reference to the storage location of the profile picture
-    // const storage = getStorage();
-    // const profilePicRef = ref(storage, `profilePictures/${user.uid}`);
-
-    // // Get the download URL and set the state variable
-    // getDownloadURL(profilePicRef)
-    //   .then((url) => {
-    //     setProfilePicUrl(url);
-    //   })
-    //   .catch((error) => {
-    //     toast.error("Error getting profile picture URL: " + error);
-    //     console.error("Error getting profile picture URL: ", error);
-    //   });
   } else {
     setUsername(null);
     setProfilePicUrl(null);
     setDescription(null);
     setDisplayName(null);
+    setEmail(null);
   }
 
   return unsubscribe;
 }, [user]);
 
-  return { user, username, description, displayName, profilePicUrl };
+  return { user, username, description, email, displayName, profilePicUrl };
 }
 
 export function usePetData(userId) {
