@@ -12,13 +12,13 @@ export default function Header( props ) {
         height={65}
         className='rounded-[40px]'
       />
-      <div className='ml-5 mt-3'> {/* text content */}
+      <div className='ml-5 mt-3 text-sm md:text-base'> {/* text content */}
         <p id="username"
-           className='font-bold text-lg'> 
+           className='font-bold text-lg md:text-xl'> 
           {username} 
         </p>
         <p id="publish_date"
-           className='text-sm'> 
+           className='text-xs md:text-sm'> 
           {publish_date} 
         </p>
       </div>

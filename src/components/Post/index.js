@@ -14,10 +14,10 @@ export default function Post( props ) {
     const { username, publish_date, desc, user_img_src, post_img_src } = props;
 
     return (
-      <div className='bg-snow w-[859px] h-[544px] rounded-[20px] flex-none snap-start p-[25px] relative'>
-          <Header username={username} publish_date={publish_date} user_img_src={user_img_src}/>
-          <Body desc={desc} post_img_src={post_img_src}/>
-          <Footer/>
+      <div className='bg-snow w-full max-w-[859px] h-fit max-h-[544px] rounded-[20px] flex-none snap-start p-6'>
+        <Header username={username} publish_date={publish_date} user_img_src={user_img_src} />
+        <Body desc={desc} post_img_src={post_img_src} />
+        <Footer />
       </div>
-    )
+    );
 }
