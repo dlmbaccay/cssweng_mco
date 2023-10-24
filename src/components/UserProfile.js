@@ -212,7 +212,8 @@ export default function UserProfile() {
                 displayName: editedDisplayName,
                 description: editedDescription,
                 coverPhotoURL: coverPhotoURL,
-                photoURL: userPhotoURL
+                photoURL: userPhotoURL,
+                location: editedLocation
             };
 
             batch.update(userRef, updateData);
@@ -445,48 +446,64 @@ export default function UserProfile() {
                 onRequestClose={() => setModalIsOpen(false)}
                 style={basicModalStyle}
             >
-
-            {/* cover photo */}
-            <div>
-                <>
-                    
-                    <label htmlFor="photo">
-                        {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200}  className="cursor-pointer hover:opacity-50"/>}
+                {/* cover photo */}
+                <div>
+                    <h1>Cover Photo</h1>
+                    <label htmlFor="coverPhoto">
+                        {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
                     </label>
-                    <input type="file" id="photo" onChange={uploadCoverPhotoFile} className="hidden"/>
+                    <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+                </div>
+                
+                
+                {/* display name */}
+                <div>
+                    <br/>
+                    <label htmlFor="display-name">Display Name: </label>
+                    <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
+                </div>
 
-                    {/* {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200}  className="cursor-pointer hover:opacity-50"/>}
-                    <label htmlFor="photo"><i class="fa-solid fa-camera"></i></label>
-                    <input type="file" id="photo" onChange={uploadCoverPhotoFile} className="hidden"/> */}
-                </>
-            </div>
+
+                {/* description */}
+                <div>
+                    <br/>
+                    <label htmlFor="description">Description: </label>
+                    <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
+                </div>
             
-            {/* display name */}
-            <div>
-                <label htmlFor="display-name">Display Name:</label>
-                <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
-            </div>
 
-            {/* description */}
-            <div>
-                <label htmlFor="description">Description:</label>
-                <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
-            </div>
+                {/* profile picture */}
+                <div>
+                    <br/>
+                    <h1>Profile Picture</h1>
+                    <label htmlFor="userPhoto">
+                        {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                    </label>
+                    <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
+                </div>
+                
+                {/* gender not editable */}
+                <div>
+                    <br />
+                    <p>Gender: {gender}</p>
+                </div>
 
-            {/* profile picture */}
-            <div>
-                <>
-                    <label htmlFor="photo">Upload Photo:</label>
-                    <input type="file" id="photo" onChange={uploadUserProfilePicFile} />
-                </>
+                {/* birthdate not editable */}
+                <div>
+                    <br />
+                    <p>Birthdate: {birthdate}</p>
+                </div>
 
-                {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
-            </div>
-            
-            <button onClick={handleSave}>Save</button>
+                {/* location */}
+                <div>
+                    <br/>
+                    <label htmlFor="location">Location: </label>
+                    <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
+                </div>
+
+                <button onClick={handleSave}>Save</button>
 
             </Modal>
-            
         ) : (
             null
         )}
