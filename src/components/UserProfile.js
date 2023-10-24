@@ -23,41 +23,41 @@ export default function UserProfile() {
     
     useEffect(() => {
         const fetchUserData = async () => {
-          try {
+        try {
             const currentUserDoc = await firestore.collection('users').doc(currentUserID).get();
             const profileUserDoc = await firestore.collection('users').doc(profileUserID).get();
-    
+
             setCurrentUser(currentUserDoc.data());
             setProfileUser(profileUserDoc.data());
             console.log(currentUser)
-    console.log(profileUser)
-          } catch (error) {
+            console.log(profileUser)
+        } catch (error) {
             console.error('Error fetching user data:', error);
-          }
-        };
-    
-        fetchUserData();
-      }, [currentUserID, profileUserID]);
+        }
+    };
 
-    
-
+    fetchUserData();
+    }, [currentUserID, profileUserID]);
 
     const [username, setUsername] = useState(null);
     const [description, setDescription] = useState(null); 
     const [displayName, setDisplayName] = useState(null); 
     const [email, setEmail] = useState(null);
-    const [followers, setFollowers] = useState(null);
-    const [following, setFollowing] = useState(null);
     const [userPhotoURL, setUserPhotoURL] = useState(null);
     const [coverPhotoURL, setCoverPhotoURL] = useState(null);
 
+    const [gender, setGender] = useState(null);
+    const [birthdate, setBirthdate] = useState(null);
+    const [location, setLocation] = useState(null);
+    
+    const [followers, setFollowers] = useState(null);
+    const [following, setFollowing] = useState(null);
+
     const pets = usePetData(profileUserID);
 
-    const [uploading, setUploading] = useState(false);
-    const [progress, setProgress] = useState(0);
-    
     const [editedDisplayName, setEditedDisplayName] = useState(displayName);
     const [editedDescription, setEditedDescription] = useState(description);
+    const [editedLocation, setEditedLocation] = useState(location);
 
     useEffect(() => { // for
     // turn off realtime subscription
@@ -67,27 +67,39 @@ export default function UserProfile() {
         const userRef = firestore.collection('users').doc(profileUserID);
         unsubscribe = userRef.onSnapshot((doc) => {
         setUsername(doc.data()?.username);
-        setUserPhotoURL(doc.data()?.photoURL);
         setDescription(doc.data()?.description);
-        setEditedDescription(doc.data()?.description);
         setDisplayName(doc.data()?.displayName);
-        setEditedDisplayName(doc.data()?.displayName);
-        setCoverPhotoURL(doc.data()?.coverPhotoURL);
         setEmail(doc.data()?.email);
+        setUserPhotoURL(doc.data()?.photoURL);
+        setCoverPhotoURL(doc.data()?.coverPhotoURL);
+        setGender(doc.data()?.gender);
+        setBirthdate(doc.data()?.birthdate);
+        setLocation(doc.data()?.location);
+
         setFollowers(doc.data()?.followers);
         setFollowing(doc.data()?.following);
-        });
+        
+        setEditedDisplayName(doc.data()?.displayName);
+        setEditedDescription(doc.data()?.description);
+        setEditedLocation(doc.data()?.location);
+    });
     } else {
         setUsername(null);
-        setUserPhotoURL(null);
         setDescription(null);
-        setEditedDescription(null);
         setDisplayName(null);
-        setEditedDisplayName(null);
-        setCoverPhotoURL(null);
         setEmail(null);
-        setFollowers('');
-        setFollowing('');
+        setUserPhotoURL(null);
+        setCoverPhotoURL(null);
+        setGender(null);
+        setBirthdate(null);
+        setLocation(null);
+        
+        setFollowers(null);
+        setFollowing(null);
+
+        setEditedDisplayName(null);
+        setEditedDescription(null);
+        setEditedLocation(null);
     }
 
     return unsubscribe;
@@ -219,20 +231,14 @@ export default function UserProfile() {
 
     const uploadUserProfilePicFile = async (e) => {
         const file = Array.from(e.target.files)[0];
-
         const ref = storage.ref(`profilePictures/${profileUserID}/profilePic`);
-
         const task = ref.put(file);
 
         task.on(STATE_CHANGED, (snapshot) => {
-            const pct = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0);
-            setProgress(pct);
-
             task
             .then((d) => ref.getDownloadURL())
             .then((url) => {
                 setUserPhotoURL(url);
-                setUploading(false);
 
                 const userRef = firestore.doc(`users/${currentUserID}`);
                 userRef.update({ photoURL: url });
@@ -243,20 +249,15 @@ export default function UserProfile() {
     const uploadCoverPhotoFile = async (e) => {
         const file = Array.from(e.target.files)[0];
 
-        const ref = storage.ref(`coverPhotos/${profileUserID}/coverPhoto`);
+        const ref = storage.ref(`coverPictures/${profileUserID}/coverPic`);
 
         const task = ref.put(file);
 
         task.on(STATE_CHANGED, (snapshot) => {
-            const pct = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0);
-            setProgress(pct);
-
             task
             .then((d) => ref.getDownloadURL())
             .then((url) => {
                 setCoverPhotoURL(url);
-                setUploading(false);
-
                 const userRef = firestore.doc(`users/${currentUserID}`);
                 userRef.update({ coverPhotoURL: url });
             });
@@ -328,9 +329,6 @@ export default function UserProfile() {
           console.error('Error:', error);
         }
     };
-      
-      
-      
 
     return (
         <div>
@@ -352,11 +350,17 @@ export default function UserProfile() {
         <p>Username: {username}</p>
         <p>Email: {email}</p>
         <p>Description: {description}</p>
+    
         <p>Followers: {followers && followers.length}</p>
         <p>Following: {following && following.length}</p>
+    
+        <p>Gender: {gender}</p>
+        <p>Birthdate: {birthdate}</p>
+        <p>Location: {location}</p>
 
         {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
         
+        {/* delete pet profile confirmation modal */}
         {getCurrentUser && currentUserID === profileUserID ? (
             <Modal
             isOpen={showConfirmation}
@@ -370,6 +374,7 @@ export default function UserProfile() {
             </Modal>
         ): null}
         
+        {/* show all pets (should be in a container later on) */}
         <h2>Pets</h2>
         {pets.map((pet) => (
             <div key={pet.id}>
@@ -383,6 +388,7 @@ export default function UserProfile() {
             </div>
         ))}
 
+        {/* create pet profile modal */}
         {showCreatePetForm ? (
             <Modal
                 isOpen={showCreatePetForm}
@@ -425,7 +431,6 @@ export default function UserProfile() {
         )}
 
         {/* editing user profile */}
-
         { getCurrentUser && currentUserID == profileUserID ? (
             <div>
                 <button onClick={handleEdit}>Edit Profile</button>
@@ -434,7 +439,6 @@ export default function UserProfile() {
         
 
         {/* edit user profile modal */}
-
         {getCurrentUser && currentUserID === profileUserID ? (// Pop-up for Editing
             <Modal
                 isOpen={modalIsOpen}
@@ -444,17 +448,17 @@ export default function UserProfile() {
 
             {/* cover photo */}
             <div>
-                <Loader show={uploading} />
-                {uploading && <h3>{progress}%</h3>}
+                <>
+                    
+                    <label htmlFor="photo">
+                        {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200}  className="cursor-pointer hover:opacity-50"/>}
+                    </label>
+                    <input type="file" id="photo" onChange={uploadCoverPhotoFile} className="hidden"/>
 
-                {!uploading && (
-                    <>
-                        <label htmlFor="photo">Upload Photo:</label>
-                        <input type="file" id="photo" onChange={uploadCoverPhotoFile} />
-                    </>
-                )}
-
-                {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200}/>}
+                    {/* {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200}  className="cursor-pointer hover:opacity-50"/>}
+                    <label htmlFor="photo"><i class="fa-solid fa-camera"></i></label>
+                    <input type="file" id="photo" onChange={uploadCoverPhotoFile} className="hidden"/> */}
+                </>
             </div>
             
             {/* display name */}
@@ -471,15 +475,10 @@ export default function UserProfile() {
 
             {/* profile picture */}
             <div>
-                <Loader show={uploading} />
-                {uploading && <h3>{progress}%</h3>}
-
-                {!uploading && (
-                    <>
-                        <label htmlFor="photo">Upload Photo:</label>
-                        <input type="file" id="photo" onChange={uploadUserProfilePicFile} />
-                    </>
-                )}
+                <>
+                    <label htmlFor="photo">Upload Photo:</label>
+                    <input type="file" id="photo" onChange={uploadUserProfilePicFile} />
+                </>
 
                 {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
             </div>
@@ -491,8 +490,6 @@ export default function UserProfile() {
         ) : (
             null
         )}
-
-        
 
         <div>
             <Link href="/Home">

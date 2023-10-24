@@ -17,9 +17,8 @@ export default function AccountSetup() {
     const [loading, setLoading] = useState(false);
     const router = Router;
 
-    const [uploading, setUploading] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [downloadURL, setDownloadURL] = useState(null);
+    const [userPhotoURL, setUserPhotoURL] = useState(null);
+    const [coverPhotoURL, setCoverPhotoURL] = useState(null);
 
     const onChange = (e) => {
         // Force form value typed in form to match correct format
@@ -61,31 +60,24 @@ export default function AccountSetup() {
 
     // Creates a Firebase Upload Task
     const uploadFile = async (e) => {
-        // Get the file
-        const file = Array.from(e.target.files)[0];
+        const userPhotoFile = Array.from(e.target.files)[0];
+        const userPhotoURL = storage.ref(`profilePictures/${user.uid}/profilePic`);
+        const userTask = userPhotoURL.put(userPhotoFile);
 
-        // Makes reference to the storage bucket location
-        const ref = storage.ref(`profilePictures/${user.uid}/profilePic`);
-        setUploading(true);
-
-        // Starts the upload
-        const task = ref.put(file);
+        const coverPhotoFile = await fetch('/images/coverPhotoHolder.png').then(res => res.blob());
+        const coverPhotoURL = storage.ref(`coverPictures/${user.uid}/coverPic`);
+        const coverTask = coverPhotoURL.put(coverPhotoFile);
 
         // Listen to updates to upload task
-        task.on(STATE_CHANGED, (snapshot) => {
-            const pct = ((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(0); // pct is percentage of upload completed
-            setProgress(pct);
-
-            // Get downloadURL AFTER task resolves (Note: this is not a native Promise)
-            task
-                .then((d) => ref.getDownloadURL())
-                .then((url) => {
-                setDownloadURL(url);
-                setUploading(false);
-
-                // Update user's Firestore document with profile picture URL
-                // const userRef = firestore.doc(`users/${user.uid}`);
-                // userRef.update({ photoURL: url });
+        userTask.on(STATE_CHANGED, (snapshot) => {
+            userTask
+            .then((d) => userPhotoURL.getDownloadURL())
+            .then((url) => { setUserPhotoURL(url); });
+            
+            coverTask
+            .then((d) => coverPhotoURL.getDownloadURL())
+            .then((url) => {
+                setCoverPhotoURL(url);
             });
         });
     };
@@ -101,18 +93,19 @@ export default function AccountSetup() {
 
         batch.set(userDoc, {
             username: usernameFormValue,
-            photoURL: downloadURL,
+            photoURL: userPhotoURL,
             displayName: document.querySelector("#display-name").value,
             description: document.querySelector("#description").value,
             email: user.email,
             followers: [],
             following: [],
-
+            
             // pets: [],
-
-            coverPhotoURL: '',
+            
+            coverPhotoURL: coverPhotoURL,
             gender: document.querySelector("#genderSelect").value,
             birthdate: document.querySelector("#birthdate").value,
+            location: document.querySelector("#location").value,
         })
 
         batch.set(usernameDoc, { uid: user.uid });
@@ -146,19 +139,14 @@ export default function AccountSetup() {
                 </div>
 
                 <div>
-                    <Loader show={uploading} />
-                    {uploading && <h3>{progress}%</h3>}
+                    <>
+                    <label className="btn">
+                        📸 Upload Profile Picture
+                        <input type="file" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg" required/>
+                    </label>
+                    </>
 
-                    {!uploading && (
-                        <>
-                        <label className="btn">
-                            📸 Upload Profile Picture
-                            <input type="file" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg" />
-                        </label>
-                        </>
-                    )}
-
-                    {downloadURL && <Image src={downloadURL} alt="Profile Picture" width={200} height={200}/>}
+                    {userPhotoURL && <Image src={userPhotoURL} alt="Profile Picture" width={200} height={200}/>}
                 </div>
 
                 <div>
@@ -186,8 +174,8 @@ export default function AccountSetup() {
                 </div>
 
                 <div>
-                    <p> <label htmlFor="occupation">Occupation</label></p>
-                    <input type="text" id="occupation" name="occupation" placeholder="Occupation" />
+                    <p> <label htmlFor="location">Location</label></p>
+                    <input type="text" id="location" name="location" placeholder="Location" />
                 </div>
 
                 <div>

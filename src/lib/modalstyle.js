@@ -8,12 +8,14 @@ export const basicModalStyle = {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      maxWidth: '500px',
-      width: '90%',
-      maxHeight: '80vh',
+      // maxWidth: '1000px',
+      // width: '100%',
+      // maxHeight: '100vh',
+      width: '1534px', // Set the width to 1534px
+      height: '765px', // Set the height to 765px
       overflow: 'auto',
       padding: '20px',
       borderRadius: '8px',
-      backgroundColor: '#fff',
+      backgroundColor: '#FAFAFA',
     },
 };

@@ -8,11 +8,18 @@ import { set } from 'react-hook-form';
 // Custom hook to read auth record and user profile doc
 export function useUserData() {
   const [user] = useAuthState(auth);
+
   const [username, setUsername] = useState(null);
   const [description, setDescription] = useState(null);
   const [displayName, setDisplayName] = useState(null);
   const [email, setEmail] = useState(null); 
+
   const [userPhotoURL, setUserPhotoURL] = useState(null);
+  const [coverPhotoURL, setCoverPhotoURL] = useState(null);
+
+  const [gender, setGender] = useState(null);
+  const [birthdate, setBirthdate] = useState(null);
+  const [location, setLocation] = useState(null);
 
   useEffect(() => {
   // turn off realtime subscription

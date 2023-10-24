@@ -29,15 +29,22 @@ export default function Home() {
     <div>
 
     {/* user info */}
-    <h1>{user?.email}</h1>
-    <button onClick={ handleViewProfile}>
-      {username}
-    </button>
+    <div>
+      <h1 className='text-lg'>{user?.email}</h1>
+    </div>
+    
+    <div>
+      <button onClick={ handleViewProfile} className='bg-black text-white p-2 rounded-md'>
+        {username}
+      </button>
+    </div>
 
     {/* sign out button */}
-    <button onClick={handleSignOut}>
-      Sign Out
-    </button>
+    <div>
+      <button onClick={handleSignOut} className='bg-black text-white p-2 rounded-md'>
+        Sign Out
+      </button>
+    </div>
 
     {/* posts */}
 
