@@ -37,7 +37,7 @@ export default function UserProfile() {
     };
 
     fetchUserData();
-    }, [currentUserID, profileUserID]);
+    }, [currentUserID, profileUserID, currentUser, profileUser]);
 
     const [username, setUsername] = useState(null);
     const [description, setDescription] = useState(null); 
