@@ -115,6 +115,7 @@ export default function UserProfile() {
     const [petSex, setPetSex] = useState(null);
     const [petBirthdate, setPetBirthdate] = useState(null);
     const [petBirthplace, setPetBirthplace] = useState(null);
+    const [petBreed, setPetBreed] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false); // State for controlling the modal
 
@@ -135,6 +136,7 @@ export default function UserProfile() {
             petname: petName,
             about: petAbout,
             sex: petSex,
+            breed: petBreed,
             birthdate: petBirthdate,
             birthplace: petBirthplace,
             followers: [],
@@ -160,6 +162,7 @@ export default function UserProfile() {
           setPetName('');
           setPetAbout('');
           setPetSex('');
+            setPetBreed('');
           setPetBirthdate('');
           setPetBirthplace('');
           setPetPhotoURL('');
@@ -222,8 +225,6 @@ export default function UserProfile() {
             setModalIsOpen(false);
             toast.success('User profile updated successfully!');
 
-            // await userRef.update(updateData);
-            // setModalIsOpen(false);
         } catch (error) {
             toast.error('Error saving profile:', error);
             console.error('Error saving profile:', error);
@@ -419,6 +420,7 @@ export default function UserProfile() {
                 </div>
                 <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
                 <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
+                <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
                 <label htmlFor="photo">Upload Photo:</label>
                 <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
                 <button onClick={handleCreatePetProfile}>Create Pet Profile</button>

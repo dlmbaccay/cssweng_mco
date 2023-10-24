@@ -22,6 +22,7 @@ export default function PetProfile() {
     const [followers, setFollowers] = useState(null);
     const [following, setFollowing] = useState(null);
     const [sex, setSex] = useState(null);
+    const [breed, setBreed] = useState(null);
     const [birthdate, setBirthdate] = useState(null);
     const [birthplace, setBirthplace] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
@@ -44,6 +45,8 @@ export default function PetProfile() {
             setFollowers(doc.data().followers);
             setFollowing(doc.data().following);
             setSex(doc.data().sex);
+            setBreed(doc.data().breed);
+
             setBirthdate(doc.data().birthdate);
             setBirthplace(doc.data().birthplace);
             } else {
@@ -71,16 +74,13 @@ export default function PetProfile() {
           const updateData = {
             petname: petName,
             about: about,
-            sex: sex,
-            birthdate: birthdate,
-            birthplace: birthplace,
+            // sex: sex,
+            // birthdate: birthdate,
+            // birthplace: birthplace,
             photoURL: petPhotoURL ? await uploadPhotoAndGetURL() : pet.photoURL
           };
       
           batch.update(petRef, updateData);
-      
-          // Add more batch operations if needed
-          // batch.update(anotherDocRef, anotherUpdateData);
       
           await batch.commit();
           setModalIsOpen(false);
@@ -131,6 +131,7 @@ export default function PetProfile() {
             <p>Followers: {pet.followers ? pet.followers.length : 0}</p>
             <p>Following: {pet.following ? pet.following.length : 0}</p>
             <p>Sex: {pet.sex}</p>
+            <p>Breed: {pet.breed}</p>
             <p>Birthday: {formatDateWithWords(pet.birthdate)}</p>
             <p>Place of Birth: {pet.birthplace}</p>
             <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200}/>
@@ -151,47 +152,42 @@ export default function PetProfile() {
                 onRequestClose={() => setModalIsOpen(false)}
                 style={basicModalStyle}
                 >
-                <div>
-                    <label htmlFor="petName">Pet Name:</label>
-                    <input type="text" id="petName" value={petName} onChange={e => setPetName(e.target.value)} />
-                </div>
-                <div>
-                    <label htmlFor="about">About:</label>
-                    <input type="text" id="about" value={about} onChange={e => setAbout(e.target.value)} />
-                </div>
-                <div>
-                    <label htmlFor="sex">Sex:</label>
-                    <div>
-                        <button
-                        id="male"
-                        className={`sex-button ${sex === 'Male' ? 'active' : ''}`}
-                        onClick={() => setSex('Male')}
-                        >
-                        Male
-                        </button>
-                        <button
-                        id="female"
-                        className={`sex-button ${sex === 'Female' ? 'active' : ''}`}
-                        onClick={() => setSex('Female')}
-                        >
-                        Female
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <label htmlFor="birthdate">Birthday:</label>
-                    <input type="date" id="birthdate" value={birthdate} onChange={e => setBirthdate(e.target.value)} />
-                </div>
-                <div>
-                    <label htmlFor="birthplace">Place of Birth:</label>
-                    <input type="text" id="birthplace" value={birthplace} onChange={e => setBirthplace(e.target.value)} />
-                </div>
-                <div>
-                    <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200}/>
-                    <label htmlFor="photo">Upload Photo:</label>
-                    <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
-                </div>
-                <button onClick={handleSave}>Save</button>
+
+                  {/* debatable, since this is their only identifier within database... (alongside their petIDs) */}
+                  <div> 
+                      <label htmlFor="petName">Pet Name:</label>
+                      <input type="text" id="petName" value={petName} onChange={e => setPetName(e.target.value)} />
+                  </div>
+
+                  {/* about */}
+                  <div>
+                      <label htmlFor="about">About:</label>
+                      <input type="text" id="about" value={about} onChange={e => setAbout(e.target.value)} />
+                  </div>
+                  
+                  {/* edit pet profile */}
+                  <div>
+
+                      <label htmlFor="petPhoto">
+                        {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='cursor-pointer hover:opacity-50'/> }
+                      </label>
+                      <input type="file" id="petPhoto" onChange={e => setPetPhotoURL(e.target.files[0])} className='hidden'/> 
+
+                      {/* <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200}/>
+                      <label htmlFor="photo">Upload Photo:</label>
+                      <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />   */}
+                  </div>
+
+                  {/* non editables */}
+                  
+                  {/* sex, birthday, place of birth, breed */}
+                  <p>Sex: {sex}</p>
+                  <p>Breed: {breed}</p>
+                  <p>Birthday: {formatDateWithWords(birthdate)}</p>
+                  <p>Place of Birth: {birthplace}</p>
+
+                  {/* save button */}
+                  <button onClick={handleSave}>Save</button>
                 </Modal>
                 
             ) : (
