@@ -20,13 +20,13 @@ export default function Home() {
     router.push(`/user/${username}`);
   }
 
-  useEffect(() => {
-    if (!username) {
-      router.push('/AccountSetup');
-    } else {
-      router.push('/Home');
-    }
-  }, [username]);
+  // useEffect(() => {
+  //   if (!username) {
+  //     router.push('/AccountSetup');
+  //   } else {
+  //     router.push('/Home');
+  //   }
+  // }, [username, router]);
 
   return (
     <div>
