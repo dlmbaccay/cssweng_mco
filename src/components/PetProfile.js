@@ -36,25 +36,25 @@ export default function PetProfile() {
         const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(petId);
         unsubscribe = petRef.onSnapshot((doc) => {
             if (doc.exists) {
-            setPet({
-                id: doc.id,
-                ...doc.data()
-            });
-            setPetName(doc.data().petname);
-            setAbout(doc.data().about);
-            setFollowers(doc.data().followers);
-            setFollowing(doc.data().following);
-            setSex(doc.data().sex);
-            setBreed(doc.data().breed);
+              setPet({
+                  id: doc.id,
+                  ...doc.data()
+              });
+              setPetName(doc.data().petname);
+              setAbout(doc.data().about);
+              setFollowers(doc.data().followers);
+              setFollowing(doc.data().following);
+              setSex(doc.data().sex);
+              setBreed(doc.data().breed);
 
-            setBirthdate(doc.data().birthdate);
-            setBirthplace(doc.data().birthplace);
+              setBirthdate(doc.data().birthdate);
+              setBirthplace(doc.data().birthplace);
             } else {
-            setPet(null);
+              setPet(null);
             }
         });
         } else {
-        setPet(null);
+          setPet(null);
         }
 
         return unsubscribe;
@@ -62,7 +62,7 @@ export default function PetProfile() {
 
     const handleEdit = () => {
         if (currentUser && currentUserID === profileUserID) { // Check if the logged-in user is the owner of the pet
-        setModalIsOpen(true); // Open the modal when editing starts
+          setModalIsOpen(true); // Open the modal when editing starts
         }
     };
 
@@ -74,9 +74,6 @@ export default function PetProfile() {
           const updateData = {
             petname: petName,
             about: about,
-            // sex: sex,
-            // birthdate: birthdate,
-            // birthplace: birthplace,
             photoURL: petPhotoURL ? await uploadPhotoAndGetURL() : pet.photoURL
           };
       

@@ -10,7 +10,7 @@ import debounce from 'lodash.debounce';
 
 export default function AccountSetup() {
 
-    const { user, username } = useContext(UserContext)
+    const { user } = useContext(UserContext)
 
     const [usernameFormValue, setUsernameFormValue] = useState('');
     const [isValid, setIsValid] = useState(false);

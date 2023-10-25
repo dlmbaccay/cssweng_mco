@@ -6,7 +6,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Loader from "../components/Loader";
 
 export default function Landing() {
-    const { user } = useUserData();
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 

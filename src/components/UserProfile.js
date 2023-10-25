@@ -121,18 +121,18 @@ export default function UserProfile() {
 
     const handleCreatePetProfile = async () => {
         try {
-          if (profileUserID !== currentUserID) {
-            toast.error("You can only create a pet profile for your own user profile.");
-            return;
-          }
-        
-          const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
-          const newPetRef = petRef.doc();
-          const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
-        
-          const batch = firestore.batch();
-        
-          batch.set(newPetRef, {
+            if (profileUserID !== currentUserID) {
+                toast.error("You can only create a pet profile for your own user profile.");
+                return;
+            }
+
+            const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
+            const newPetRef = petRef.doc();
+            const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
+
+            const batch = firestore.batch();
+
+            batch.set(newPetRef, {
             petname: petName,
             about: petAbout,
             sex: petSex,
@@ -141,35 +141,35 @@ export default function UserProfile() {
             birthplace: petBirthplace,
             followers: [],
             following: []
-          });
-        
-          const uploadTask = storageRef.put(petPhotoURL);
-        
-          await uploadTask;
-        
-          const photoURL = await storageRef.getDownloadURL();
-        
-          if (!photoURL) {
-            throw new Error('File not found in Firebase Storage.');
-          }
-        
-          batch.update(newPetRef, { photoURL });
-        
-          batch.commit();
-        
-          toast.success("Pet profile created successfully!");
-          setShowCreatePetForm(false);
-          setPetName('');
-          setPetAbout('');
-          setPetSex('');
-            setPetBreed('');
-          setPetBirthdate('');
-          setPetBirthplace('');
-          setPetPhotoURL('');
-        } catch (error) {
-          toast.error('Error creating pet profile: ' + error.message);
+        });
+
+        const uploadTask = storageRef.put(petPhotoURL);
+
+        await uploadTask;
+
+        const photoURL = await storageRef.getDownloadURL();
+
+        if (!photoURL) {
+        throw new Error('File not found in Firebase Storage.');
         }
-      };
+
+        batch.update(newPetRef, { photoURL });
+
+        batch.commit();
+
+        toast.success("Pet profile created successfully!");
+        setShowCreatePetForm(false);
+        setPetName('');
+        setPetAbout('');
+        setPetSex('');
+        setPetBreed('');
+        setPetBirthdate('');
+        setPetBirthplace('');
+        setPetPhotoURL('');
+    } catch (error) {
+        toast.error('Error creating pet profile: ' + error.message);
+    }
+    };
     
     const handleDeletePetProfile = async (petId) => {
         setDeletingPetId(petId);
