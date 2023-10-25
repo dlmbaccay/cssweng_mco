@@ -5,7 +5,7 @@ import Post from '../components/Post'
 export default function Homepage(){
     return(
         
-        <div className = 'bg-gray flex flex-row min-h-screen h-full w-full'>
+        <div className = 'bg-gray flex flex-row min-h-screen h-screen w-full'>
             {/* Navbar */}
             <div className='min-h-screen sticky'>
                 <Navbar/>
@@ -15,7 +15,7 @@ export default function Homepage(){
                 {/* Top Rectangle */}
                 <div className="sticky flex flex-row items-center justify-between w-full h-20 pl-5  bg-snow drop-shadow-xl">
                         {/* Search Bar */}
-                        <div className="mr-10 w-80 h-10 bg-dark_gray rounded-[30px]"> 
+                        <div className="mr-10 w-80 h-10 bg-dark_gray rounded-[30px]">
                             <input type="text" className="bg-transparent w-full h-full pl-10 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Search"/>
                         </div>
                         <div className='flex flex-row mr-3'>
@@ -25,13 +25,13 @@ export default function Homepage(){
                         <div className="w-12 h-12 bg-dark_gray rounded-[30px]"></div>
                         </div>
                 </div>
-                <div className='flex flex-col justify-center items-center overflow-y-scroll scrollbar-hide'>
+                <div className='flex flex-col justify-center items-center overflow-y-scroll scrollbar-hide overflow-hidden'>
                     <div className='bg-snow w-full max-w-5xl h-60 mr-40 ml-40 mt-20 justify-between flex flex-col drop-shadow-xl rounded-[30px]'>
                         <div className='flex flex-row'>
                             {/* Profile Picture */}
-                            <div className="ml-10 mt-11 w-[145px] h-[115px] bg-dark_gray rounded-full"></div>
+                            <div className="ml-10 mt-8 w-[145px] h-[115px] bg-dark_gray rounded-full"></div>
                             {/* Write Post */}
-                            <div className="top-4  w-full ml-10 h-[120px] max-w-1xl mt-10 mr-[40px] bg-dark_gray rounded-[30px]"> 
+                            <div className=" w-full ml-10 h-[120px] max-w-1xl mt-8 mb-8 mr-[40px] bg-dark_gray rounded-[30px]"> 
                                 <input type="text" className="bg-transparent w-full h-full pl-10 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Write a post..."/>
                             </div>
                         </div>
@@ -84,7 +84,17 @@ export default function Homepage(){
                     </div>
                 </div>
             </div>
-            
+            {/* Right Navbar */}
+            <div className="flex flex-col w-full max-w-sm h-screen bg-snow drop-shadow-xl">
+                <span className="pl-10 mt-10 pr-20 font-bold focus:outline-none text-[35px] text-mustard border-r-2 border-dark_gray">Menu</span>
+                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Lost Pets</span>
+                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Found Pets</span>
+                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Messages</span>
+                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Saved Posts</span>
+                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Shop</span>
+                <div className="border-b-2 border-dark_gray mt-10"></div>
+                <span className="pl-10 mt-10 pr-20 font-bold focus:outline-none text-[35px] text-mustard border-r-2 border-dark_gray">Events</span>
+            </div>
         </div>
 
     )

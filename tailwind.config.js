@@ -22,7 +22,9 @@ module.exports = {
         'pistachio': '#90D17D',
         'pale_yellow': '#FFEBBE',
         'gray': '#E8E8E8',
-        'dark_gray': '#D9D9D9'
+        'dark_gray': '#D9D9D9',
+        'mustard': '#D18800',
+        'grass': '#5C8731'
       }
     },
   },
