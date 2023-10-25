@@ -110,14 +110,14 @@ export default function Login() {
                 <input 
                     type="text" 
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value.trim())}
                     placeholder=' Email Address'
                     className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'/>
                 
                 <input 
                     type="password" 
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value.trim())}
                     placeholder=' Password'
                     className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold'/>
                 
