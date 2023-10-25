@@ -116,73 +116,81 @@ export default function AccountSetup() {
 
     return (
         <>
+            <div className="bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center flex flex-col space-y-10 p-80
+                lg:flex-row lg:space-x-20 lg:py-10
+                md:space-x-14 md:py-10
+                sm:space-x-10 sm:py-10">
+                <form  
+                    onSubmit={onSubmit}
+                    className="bg-snow rounded-md p-8 pb-5 w-full">
+                    <h1 className="font-bold">Welcome to Account Setup!</h1>
 
-            Hello Mofo!
+                    {/* username */}
+                    <div className="mb-4">
+                        <label htmlFor="username" className="block text-sm font-medium text-gray-700 pt-5">
+                            <span>Username</span>
+                            <span className="text-red-500"> *</span>
+                        </label>
+                        <input type="text" id="username" className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your username" onChange={onChange} required />
+                        <UsernameMessage username={usernameFormValue} isValid={isValid} loading={loading} />
+                    </div>
 
-            Welcome to Account Setup!
+                    {/* display name */}
+                    <div className="mb-4">
+                        <label htmlFor="display-name" className="block text-sm font-medium text-gray-700 pt-5">
+                            <span>Display Name</span>
+                            <span className="text-red-500"> *</span>
+                        </label>
+                        <input type="text" id='display-name' className="mt-1 p-2 border rounded-md w-full" placeholder="What would you like us to call you?" maxLength="20" required/>
+                    </div>
 
-            <form onSubmit={onSubmit}>
-                <div>
-                {/* username */}
-                    <p> <label htmlFor="username"> Be creative! </label> </p>
-                    <input id="username" placeholder="Select Username" value={usernameFormValue} onChange={onChange} required/>
-                    <UsernameMessage username={usernameFormValue} isValid={isValid} loading={loading} />
-                </div>
+                    {/* profile picture */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
+                        <input type="file" className="mt-1 p-2 border rounded-md w-full" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg" />
+                        <p className="text-sm text-gray-500 mt-1">Upload a profile picture (JPG, PNG, or GIF).</p>
+                    </div>
 
-                <div>
-                    <p> <label htmlFor="display-name">What would you like us to call you?</label></p>
-                    <input type="text" id='display-name' placeholder='Select Display Name' maxLength="20" required/>
-                </div>
+                    {/* bio */}
+                    <div className="mb-4">
+                        <label htmlFor="description" className="block text-sm font-medium text-gray-700">Bio</label>
+                        <textarea id='description' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" placeholder="Tell us about yourself..." />
+                    </div>
 
-                <div>
-                    <>
-                    <label className="btn">
-                        📸 Upload Profile Picture
-                        <input type="file" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg"/>
-                    </label>
-                    </>
+                    {/* gender */}
+                    <div className="mb-4">
+                        <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
+                        <select id="genderSelect" name="gender" className="mt-1 p-2 border rounded-md w-full">
+                            <option value="None">Prefer Not to Say</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
 
-                    {userPhotoURL && <Image src={userPhotoURL} alt="Profile Picture" width={200} height={200}/>}
-                </div>
+                    {/* birthday */}
+                    <div className="mb-4">
+                        <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">Birthday</label>
+                        <input type="date" id="birthdate" name="birthdate" className="mt-1 p-2 border rounded-md w-full" />
+                    </div>
 
-                <div>
-                    <p> <label htmlFor="description">Tell us more about you!</label></p>
-                    <textarea id='description' placeholder='Description'/>
-                </div>
-                    
-                <div>
-                    <p> <label htmlFor="gender">Gender</label> </p>
-                    <select id="genderSelect" name="gender">
-                        <option value="Man">Man</option>
-                        <option value="Woman">Woman</option>
-                        <option value="Other">Other</option>                        
-                    </select>
-                </div>
+                    {/* location */}
+                    <div className="mb-4">
+                        <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
+                        <input type="text" id="location" name="location" className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your Location" />
+                    </div>
 
-                <div>
-                    <p> <label htmlFor="birthdate">Birthdate</label></p>
-                    <input type="date" id="birthdate" name="birthdate" />
-                </div>
+                    {/* buttons */}
+                    <div className="flex justify-end">
+                        <button disabled={!isValid} type='submit' className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100 disabled:bg-gray-400  disabled:hover:scale-100 disabled:active:scale-100">
+                            Submit
+                        </button>
 
-                <div>
-                    <p> <label htmlFor="birthplace">Birthplace</label></p>
-                    <input type="text" id="birthplace" name="birthplace" placeholder="City, State, Country" />
-                </div>
-
-                <div>
-                    <p> <label htmlFor="location">Location</label></p>
-                    <input type="text" id="location" name="location" placeholder="Location" />
-                </div>
-
-                <div>
-                    <button type='submit'>Submit</button>
-                </div>
-            </form>
-
-            <div>
-                <button onClick={handleSignOut}>
-                    Sign Out
-                </button>
+                        <button onClick={handleSignOut} className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100">
+                            Sign Out
+                        </button>
+                    </div>
+                </form>
             </div>
         </>
     )
@@ -190,11 +198,11 @@ export default function AccountSetup() {
 
 function UsernameMessage({ username, isValid, loading }) {
   if (loading) {
-    return <p>Checking...</p>;
+    return <p className='mt-2 ml-2'>Checking...</p>;
   } else if (isValid) {
-    return <p className="text-success">{username} is available!</p>;
+    return <p className="mt-2 ml-2">{username} is available!</p>;
   } else if (username && !isValid) {
-    return <p className="text-danger">That username is taken!</p>;
+    return <p className="mt-2 ml-2">That username is taken!</p>;
   } else {
     return <p></p>;
   }
