@@ -20,7 +20,9 @@ module.exports = {
         'xanthous': '#F5B744',
         'citron': '#C3C461',
         'pistachio': '#90D17D',
-        'pale_yellow': '#FFEBBE'
+        'pale_yellow': '#FFEBBE',
+        'gray': '#E8E8E8',
+        'dark_gray': '#D9D9D9'
       }
     },
   },
