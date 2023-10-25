@@ -3,7 +3,7 @@ import Navbar from "../../components/Navbar";
 import RoundIcon from "../../components/RoundIcon";
 import CoverPhoto from "@/src/components/CoverPhoto";
 import Post from "@/src/components/Post";
-import EditUser from "@/src/components/edit-user";
+// import EditUser from "@/src/components/edit-user";
 
 export default function User() {
   const [isProfileEditVisible, setProfileEditVisible] = useState(false);
@@ -21,6 +21,13 @@ export default function User() {
     // Handle profile editing logic here
   };
 
+  // tab functionality
+  const [activeTab, setActiveTab] = useState('Posts');
+
+  const handleTabClick = (tabName) => {
+    setActiveTab(tabName);
+  };
+
   return (
     <div className="flex">
       <Navbar />
@@ -36,52 +43,144 @@ export default function User() {
           <CoverPhoto src="/images/cover0-image.png" />
         </div>
 
-        <div className="absolute top-64 left-96 h-800 w-859 bg-snow p-2 border ml-36">
-        <div 
-                id="showcase" 
-                className="flex scrollbar-hide justify-center w-full max-w-[859px]  overflow-y-scroll rounded-[20px]"
-                style={{ scrollSnapType: 'y mandatory' }}
-            >
-                <div class="flex flex-col h-fit max-h-[510px]">
-                    <Post 
-                        username='barknplay'
-                        publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src='/images/user1-image.png'
-                        post_img_src='/images/post1-image.png'
-                        style={{ scrollSnapAlign: 'start' }}/>
-                    <Post
-                        username='barknplay'
-                        publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src='/images/user1-image.png'
-                        post_img_src='/images/post1-image.png'
-                        style={{ scrollSnapAlign: 'start' }}/>
-                    <Post
-                        username='barknplay'
-                        publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src='/images/user1-image.png'
-                        post_img_src='/images/post1-image.png'
-                        style={{ scrollSnapAlign: 'start' }}/>
-                </div>
+        {/* Posts */}
+        {activeTab === 'Posts' && (
+          <div className="absolute top-64 left-96 h-800 w-859 bg-snow p-2 border border-neutral-300 ml-36">
+          <div 
+                  id="showcase" 
+                  className="flex scrollbar-hide justify-center w-full max-w-[859px]  overflow-y-scroll rounded-[20px]"
+                  style={{ scrollSnapType: 'y mandatory' }}
+              >
+                  <div class="flex flex-col h-fit max-h-[510px]">
+                      <Post 
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                  </div>
+              </div>
+          </div>
+        )}
+
+        {/* Pets */}
+        {activeTab === 'Pets' && (
+          <div className="absolute top-64 left-64 h-800 w-859 p-2 ml-36">
+            <div className="grid grid-cols-6 gap-7">
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow flex items-center justify-center text-8xl font-extrabold">
+                <span className="inline-block align-middle mb-6 text-white">+</span>
+              </div>
             </div>
-        </div>
+          </div>
+        )}
+
+        {/* Media */}
+        {activeTab === 'Media' && (
+          <div className="absolute top-64 left-64 h-800 w-859 p-2 ml-36">
+            <div className="grid grid-cols-7 gap-2">
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Lost Pets */}
+        {activeTab === 'Lost Pets' && (
+          <div className="absolute top-64 left-96 h-800 w-859 bg-snow p-2 border border-neutral-300 ml-36">
+          <div 
+                  id="showcase" 
+                  className="flex scrollbar-hide justify-center w-full max-w-[859px]  overflow-y-scroll rounded-[20px]"
+                  style={{ scrollSnapType: 'y mandatory' }}
+              >
+                  <div class="flex flex-col h-fit max-h-[510px]">
+                      <Post 
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Contact me if u found my dog! 🐾🐾🐾🐾 
+                              0917 123 4567'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Contact me if u found my cat! 🐾🐾🐾🐾 
+                              0917 123 4567'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Still couldnt find them. :('
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                  </div>
+              </div>
+          </div>
+        )}
 
         {/* Left Panel */}
-        <div className="absolute -ml-8 top-48 left-24 h-5/6 w-80 bg-snow p-2 border">
+        <div className="absolute -ml-8 top-48 left-24 h-5/6 w-80 bg-snow p-2 border border-neutral-300">
           <div className="absolute inset-y-0 left-0 w-16 ..."></div>
 
           {/* Edit button */}
           <button
             onClick={openProfileEdit}
-            className="absolute top-0 right-0 mt-4 mr-4 w-16 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-raisin_black rounded-lg border-none"
+            className="absolute top-0 right-0 mt-4 mr-4 w-16 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none"
           >
             Edit
           </button>
@@ -90,14 +189,6 @@ export default function User() {
           {isProfileEditVisible && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white max-w-[1534px] w-4/5 h-4/5 m-auto rounded-lg p-4 overflow-auto">
-                <div className="flex justify-end mb-3">
-                  <button
-                    className="bg-red-500 text-white rounded-md px-4 py-2"
-                    onClick={closeProfileEdit}
-                  >
-                    Close
-                  </button>
-                </div>
                 <form
                   onSubmit={handleSubmit}
                   className="bg-snow rounded-md p-8 pb-5 w-full"
@@ -119,7 +210,7 @@ export default function User() {
                       className="mt-1 p-2 border rounded-md w-full"
                       placeholder="What would you like us to call you?"
                       maxLength="20"
-                      value="Test"
+                      value=""
                       onChange={(e) => setDisplayName(e.target.value)}
                       required
                     />
@@ -138,9 +229,9 @@ export default function User() {
                       type="text"
                       id="display-name"
                       className="mt-1 p-2 border rounded-md w-full"
-                      placeholder="What would you like us to call you?"
+                      placeholder="Enter your username"
                       maxLength="20"
-                      value="Test"
+                      value=""
                       onChange={(e) => setUsername(e.target.value)}
                       required
                     />
@@ -189,7 +280,7 @@ export default function User() {
                       className="mt-1 p-2 border rounded-md w-full resize-none"
                       rows="4"
                       placeholder="Tell us about yourself..."
-                      value="test"
+                      value=""
                       onChange={(e) => setBio(e.target.value)}
                     />
                   </div>
@@ -248,7 +339,7 @@ export default function User() {
                       name="location"
                       className="mt-1 p-2 border rounded-md w-full"
                       placeholder="Enter your Location"
-                      value="test"
+                      value=""
                       onChange={(e) => setLocation(e.target.value)}
                     />
                   </div>
@@ -309,17 +400,33 @@ export default function User() {
           </div>
         </div>
 
-        <div className="absolute mt-0 top-48 left-24 ml-72 flex flex-row mr-4 w-10/12 bg-snow">
-          <button className="px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none border">
+        <div className="absolute mt-0 top-48 left-24 ml-72 flex flex-row mr-4 w-10/12 bg-snow divide-x divide-neutral-300">
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Posts' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Posts')}>
             Posts
           </button>
-          <button className="px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none border">
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Pets' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Pets')}>
             Pets
           </button>
-          <button className="px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none border">
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Media' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Media')}>
             Media
           </button>
-          <button className="px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none border">
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Lost Pets' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Lost Pets')}>
             Lost Pets
           </button>
         </div>
