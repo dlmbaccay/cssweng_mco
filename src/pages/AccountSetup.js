@@ -8,6 +8,12 @@ import toast from 'react-hot-toast';
 import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';
 
+function handleSignOut() {
+    auth.signOut().then(() => {
+        window.location.href = "/Login";
+    });
+}
+
 export default function AccountSetup() {
 
     const { user } = useContext(UserContext)
@@ -182,6 +188,12 @@ export default function AccountSetup() {
                     <button type='submit'>Submit</button>
                 </div>
             </form>
+
+            <div>
+                <button onClick={handleSignOut}>
+                    Sign Out
+                </button>
+            </div>
         </>
     )
 }

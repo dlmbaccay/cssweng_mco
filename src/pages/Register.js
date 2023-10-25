@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Post from '../components/Post'
 import Router from 'next/router'
-import { auth } from '../lib/firebase'
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
+import { auth, firestore, googleAuthProvider } from '../lib/firebase'
 import toast from 'react-hot-toast'
+import Image from 'next/image'
 
 export default function Register() {
 
@@ -21,7 +21,7 @@ export default function Register() {
             toast.error('Passwords do not match')
             return
         } else {
-            createUserWithEmailAndPassword(auth, email, password)
+            auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // Signed in 
                     const user = userCredential.user
@@ -33,7 +33,7 @@ export default function Register() {
                     setConfirmPassword('')
 
                     // send email verification 
-                    sendEmailVerification(auth.currentUser).then(() => {
+                    auth.currentUser.sendEmailVerification().then(() => {
                         toast.success('Check your email to verify your account')
                     }).catch((error) => {
                         console.log(error)
@@ -41,56 +41,106 @@ export default function Register() {
 
                     // redirect to Login page
                     router.push('/Login')
-                    // ...
                 })
                 .catch((error) => {
-                    const errorCode = error.code
                     const errorMessage = error.message
-                    console.log(errorCode)
-                    console.log(errorMessage)
                     toast.error(errorMessage)
-                    // ..
                 })
         }
+    }
+
+    async function handleGooglePopUp() {
+        await auth.signInWithPopup(googleAuthProvider).then((result) => {
+            // Signed in 
+            const user = result.user;
+
+            // Check if email is verified
+            if (!user.emailVerified) {
+                toast.error('Please verify your email before logging in');
+                return;
+            } 
+            
+            return user;
+        }).then((user) => {
+            // Fetch the username from Firestore
+            const ref = firestore.collection('users').doc(user.uid);
+
+            ref.get().then((doc) => {
+                const username = doc.data()?.username;
+
+                if (!username) {
+                    // If email is verified but no username, redirect to AccountSetup
+                    toast('Let`s set up you account!', {
+                        icon: '👏',
+                    });
+                    router.push('/AccountSetup');
+                } else {
+                    // If old user (email verified and has username), redirect to Home
+
+                    // Clear fields
+                    setEmail('');
+                    setPassword('');
+
+                    toast('Welcome back', {
+                        icon: '👏',
+                    });
+                    // Redirect to Home page
+                    router.push('/Home');
+                }
+            });
+        })
+        .catch((error) => {
+            const errorMessage = error.message
+            toast.error(errorMessage)
+        })
     }
 
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>
 
-            {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
             <div id="login" className='bg-jasmine w-[680px] h-[586px] rounded-[30px] flex flex-col justify-center items-center'>
                 <div>
                     <h1 className='text-3xl font-bold'>
-                        Register
+                        BantayBuddy Register
                     </h1>
                 </div>
 
                 <input 
                     type="text" 
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Email Address'/>
+                    onChange={(e) => setEmail(e.target.value.trim())}
+                    className='bg-light_yellow rounded-[30px] mt-3 mb-4 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none' placeholder='Email Address'/>
                 <input 
                     type="password" 
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Password'/>
+                    onChange={(e) => setPassword(e.target.value.trim())}
+                    className='bg-light_yellow rounded-[30px] mb-4 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none' placeholder='Password'/>
                 <input 
                     type="password" 
                     value={confirm_password}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-[568px] h-[54px] text-xanthous text-2xl font-semibold' placeholder='Confirm Password'/>
+                    onChange={(e) => setConfirmPassword(e.target.value.trim())}
+                    className='bg-light_yellow rounded-[30px] mb-6 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none' placeholder='Confirm Password'/>
                 <button 
                     onClick={handleSignUp}
-                    className='bg-xanthous rounded-[30px] mt-8 mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center'>
+                    className='bg-xanthous rounded-[30px] pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center hover:opacity-80'>
                     Submit
                 </button>
-                {/* ill just provide this router for u guys to navigate through Login and Register easier, up to you guys on how to style this na */}
 
-                <div>Already have an account? <Link href={'/Login'} className='font-bold'>Log In</Link></div>
+                <span>
+                    {/* google */}
+                    <button 
+                        onClick={handleGooglePopUp}
+                        className='bg-[#FAFAFA] rounded-[30px] mt-4 mb-3 p-3 w-[568px] h-[54px] text-2xl font-bold text-center flex items-center justify-center gap-4 hover:opacity-90'>
+                        <p> Continue with </p>
+                        <Image src='/images/google.ico' alt='Google Logo' width={30} height={30} />
+                    </button>
+                </span>
+
+                <div className='text-md'>
+                    Already have an account? <Link href={'/Login'} className='font-bold hover:text-gray-600 text-black'>Log In</Link>
+                </div>
             </div>            
 
-            {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
             <div 
                 id="showcase" 
                 className="flex scrollbar-hide justify-center w-[880px] h-[544px] overflow-y-scroll rounded-[20px]" 
