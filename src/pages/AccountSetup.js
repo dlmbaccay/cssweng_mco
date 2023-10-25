@@ -23,8 +23,8 @@ export default function AccountSetup() {
     const [loading, setLoading] = useState(false);
     const router = Router;
 
-    const [userPhotoURL, setUserPhotoURL] = useState(null);
-    const [coverPhotoURL, setCoverPhotoURL] = useState(null);
+    const [userPhotoURL, setUserPhotoURL] = useState('/images/profilePictureHolder.jpg');
+    const [coverPhotoURL, setCoverPhotoURL] = useState('/images/coverPhotoHolder.png');
 
     const onChange = (e) => {
         // Force form value typed in form to match correct format
@@ -70,21 +70,11 @@ export default function AccountSetup() {
         const userPhotoURL = storage.ref(`profilePictures/${user.uid}/profilePic`);
         const userTask = userPhotoURL.put(userPhotoFile);
 
-        const coverPhotoFile = await fetch('/images/coverPhotoHolder.png').then(res => res.blob());
-        const coverPhotoURL = storage.ref(`coverPictures/${user.uid}/coverPic`);
-        const coverTask = coverPhotoURL.put(coverPhotoFile);
-
         // Listen to updates to upload task
         userTask.on(STATE_CHANGED, (snapshot) => {
             userTask
             .then((d) => userPhotoURL.getDownloadURL())
             .then((url) => { setUserPhotoURL(url); });
-            
-            coverTask
-            .then((d) => coverPhotoURL.getDownloadURL())
-            .then((url) => {
-                setCoverPhotoURL(url);
-            });
         });
     };
 
@@ -148,7 +138,7 @@ export default function AccountSetup() {
                     <>
                     <label className="btn">
                         📸 Upload Profile Picture
-                        <input type="file" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg" required/>
+                        <input type="file" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg"/>
                     </label>
                     </>
 
@@ -157,7 +147,7 @@ export default function AccountSetup() {
 
                 <div>
                     <p> <label htmlFor="description">Tell us more about you!</label></p>
-                    <textarea id='description' placeholder='Description' required/>
+                    <textarea id='description' placeholder='Description'/>
                 </div>
                     
                 <div>
