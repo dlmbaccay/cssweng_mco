@@ -357,16 +357,16 @@ export default function UserProfile() {
 
         <div id='content-container' className='h-4/5 flex flex-row overflow-clip'>
           {/* Left Panel */}
-          <div className="flex flex-col w-80 bg-snow border border-neutral-300 items-center justify-start">
+          <div className="flex flex-col w-80 bg-snow border border-neutral-300 justify-start">
 
-            <div className="flex rounded-full items-center justify-center w-[200px] h-[200px] absolute -translate-y-28"> 
+            <div className="flex rounded-full items-center justify-center w-[200px] h-[200px] absolute -translate-y-28 translate-x-16"> 
               {userPhotoURL && <RoundIcon src={userPhotoURL} alt={username + "profile picture"} />}
             </div>
 
             {/* Edit button */}
             <button
               onClick={handleEdit}
-              className="mt-6 ml-4 w-16 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none"
+              className="mt-4 ml-2 w-12 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none"
             >
               Edit
             </button>
@@ -451,11 +451,11 @@ export default function UserProfile() {
             <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center ">
               <div className="flex flex-col items-center">
                 <span className="text-raisin_black text-lg font-bold">{followers ? 0 : followers}</span>
-                <span className="text-gray-500 text-sm">Followers</span>
+                <span className="text-grass font-bold text-sm">Followers</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-raisin_black text-lg font-bold">{following ? 0 : following}</span>
-                <span className="text-gray-500 text-sm">Following</span>
+                <span className="text-grass font-bold text-sm">Following</span>
               </div>
             </div>
 

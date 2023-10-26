@@ -51,7 +51,7 @@ export default function AccountSetup() {
 
     // Hit the database for username match after each debounced change
     // useCallback is required for debounce to work
-    const checkUsername = useCallback(
+    const checkUsername = useCallback (
         debounce(async (username) => {
         if (username.length >= 3) {
             const ref = firestore.doc(`usernames/${username}`);
@@ -90,7 +90,7 @@ export default function AccountSetup() {
         batch.set(userDoc, {
             username: usernameFormValue,
             photoURL: userPhotoURL,
-            displayName: document.querySelector("#display-name").value,
+            // displayName: document.querySelector("#display-name").value,
             description: document.querySelector("#description").value,
             email: user.email,
             followers: [],
@@ -135,14 +135,14 @@ export default function AccountSetup() {
                         <UsernameMessage username={usernameFormValue} isValid={isValid} loading={loading} />
                     </div>
 
-                    {/* display name */}
+                    {/* display name
                     <div className="mb-4">
                         <label htmlFor="display-name" className="block text-sm font-medium text-gray-700 pt-5">
                             <span>Display Name</span>
                             <span className="text-red-500"> *</span>
                         </label>
                         <input type="text" id='display-name' className="mt-1 p-2 border rounded-md w-full" placeholder="What would you like us to call you?" maxLength="20" required/>
-                    </div>
+                    </div> */}
 
                     {/* profile picture */}
                     <div className="mb-4">
