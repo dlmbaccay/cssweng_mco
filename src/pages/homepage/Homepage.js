@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
-import Navbar from '../components/Navbar';
-import Post from '../components/Post'
+import Navbar from '../../components/Navbar';
+import Post from '../../components/Post';
+import { FaQuestion, FaEnvelope } from 'react-icons/fa';
+import { BsBookmarkFill } from 'react-icons/bs';
+import { LiaShoppingCartSolid } from 'react-icons/lia';
+import { IoMdSearch } from 'react-icons/io';
+import { IconContext } from "react-icons";
 
 export default function Homepage(){
     return(
@@ -15,8 +20,13 @@ export default function Homepage(){
                 {/* Top Rectangle */}
                 <div className="sticky flex flex-row items-center justify-between w-full h-20 pl-5  bg-snow drop-shadow-xl">
                         {/* Search Bar */}
-                        <div className="mr-10 w-80 h-10 bg-dark_gray rounded-[30px]">
-                            <input type="text" className="bg-transparent w-full h-full pl-10 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Search"/>
+                        <div className="mr-10 w-80 h-10 bg-dark_gray rounded-[30px] flex flex-row items-center ">
+                            <div className="items-center justify-left flex flex-row ml-4">
+                                <IconContext.Provider value={{ color: "#898989", size: "20"}}>
+                                    <IoMdSearch />
+                                </IconContext.Provider>
+                            </div>
+                            <input type="text" className="bg-transparent w-full h-full pl-2 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Search"/>
                         </div>
                         <div className='flex flex-row mr-3'>
                         {/* App Name */}
@@ -31,9 +41,11 @@ export default function Homepage(){
                             {/* Profile Picture */}
                             <div className="ml-10 mt-8 w-[145px] h-[115px] bg-dark_gray rounded-full"></div>
                             {/* Write Post */}
+                            <a href={'/homepage/WritePost'}>
                             <div className=" w-full ml-10 h-[120px] max-w-1xl mt-8 mb-8 mr-[40px] bg-dark_gray rounded-[30px]"> 
                                 <input type="text" className="bg-transparent w-full h-full pl-10 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Write a post..."/>
                             </div>
+                            </a>
                         </div>
                         <div className='flex flex-row justify-between mb-3 ml-4 mr-10 border-t-2 border-dark_gray items-center'>
                             {/* Buttons */}
@@ -85,15 +97,71 @@ export default function Homepage(){
                 </div>
             </div>
             {/* Right Navbar */}
-            <div className="flex flex-col w-full max-w-sm h-screen bg-snow drop-shadow-xl">
-                <span className="pl-10 mt-10 pr-20 font-bold focus:outline-none text-[35px] text-mustard border-r-2 border-dark_gray">Menu</span>
-                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Lost Pets</span>
-                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Found Pets</span>
-                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Messages</span>
-                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Saved Posts</span>
-                <span className="mt-5 pl-20 font-regular focus:outline-none text-[20px] text-grass">Shop</span>
-                <div className="border-b-2 border-dark_gray mt-10"></div>
-                <span className="pl-10 mt-10 pr-20 font-bold focus:outline-none text-[35px] text-mustard border-r-2 border-dark_gray">Events</span>
+            <div className="sticky flex flex-col h-screen min-h-screen items-left justify-left w-90 pr-10 bg-snow drop-shadow-xl">
+                <span className="pl-10 mt-10 pr-20 font-bold focus:outline-none text-[35px] text-mustard">Menu</span>
+                <div className="flex flex-row">
+                    <div className='ml-10 mt-3'>
+                        {/* green circle */}
+                        <div className="w-12 h-12 bg-grass rounded-full ">
+                            <div className='pt-[11px] pl-[11px]'>
+                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
+                                    <FaQuestion />
+                                </IconContext.Provider>
+                            </div>
+                        </div>
+                    </div>
+                    <span className="mt-5 pl-2 font-regular focus:outline-none text-[20px] text-grass">Lost Pets</span>
+                </div>
+                <div className="flex flex-row">
+                    <div className='ml-10 mt-3'>
+                        <div className="w-12 h-12 bg-grass rounded-full">
+                            <div className='pt-[11px] pl-[11px]'>
+                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
+                                    <FaQuestion />
+                                </IconContext.Provider>
+                            </div>
+                        </div>
+                    </div>
+                    <span className="mt-5 pl-2 font-regular focus:outline-none text-[20px] text-grass">Found Pets</span>
+                </div>
+                <div className="flex flex-row">
+                    <div className='ml-9 mt-3 pl-1'>
+                        <div className="w-12 h-12 bg-grass rounded-full">
+                        <div className='pt-[11px] pl-[11px]'>
+                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
+                                    <FaEnvelope />
+                                </IconContext.Provider>
+                            </div>
+                        </div>
+                    </div>
+                    <span className="mt-5 pl-3 font-regular focus:outline-none text-[20px] text-grass">Messages</span>
+                </div>
+                <div className="flex flex-row">
+                    <div className='ml-10 mt-3'>
+                        <div className="w-12 h-12 bg-grass rounded-full">
+                            <div className='pt-[11px] pl-[11px]'>
+                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
+                                    <BsBookmarkFill />
+                                </IconContext.Provider>
+                            </div>
+                        </div>
+                    </div>
+                    <span className="mt-5 pl-2 font-regular focus:outline-none text-[20px] text-grass">Saved Posts</span>
+                </div>
+                <div className="flex flex-row">
+                    <div className='ml-10 mt-3'>
+                        <div className="w-12 h-12 bg-grass rounded-full">
+                            <div className='pt-[8px] pl-[6px]'>
+                                <IconContext.Provider value={{ color: "#F5F0F0", size: "35"}}>
+                                    <LiaShoppingCartSolid />
+                                </IconContext.Provider>
+                            </div>
+                        </div>
+                    </div>
+                    <span className="mt-5 pl-2 font-regular focus:outline-none text-[20px] text-grass">Shops</span>
+                </div>
+                <div className="border-b-2 border-dark_gray mt-10 ml-10"></div>
+                <span className="pl-10 mt-10 pr-20 font-bold focus:outline-none text-[35px] text-mustard ">Events</span>
             </div>
         </div>
 
