@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import Post from '../components/Post'
 import Link from 'next/link'
+import { FcGoogle } from 'react-icons/fc';
+import { BsFacebook } from 'react-icons/bs';
+import { FaXTwitter } from 'react-icons/fa6';
+import { IconContext } from 'react-icons/lib';
 
 export default function Register() {
 
@@ -43,7 +47,27 @@ export default function Register() {
                         Register
                     </button>
                 </form>
-                <p>Or sign up with</p>                
+                <p>Or sign up with</p> 
+                <div className='flex flex-row justify-between drop-shadow-md w-full'>
+                    <div className='bg-light_yellow rounded-full w-[70px] h-[70px] flex items-center justify-center cursor-pointer'>
+                        <IconContext.Provider value={{size: 55}}>
+                            <FcGoogle/>
+                        </IconContext.Provider>
+                    </div> 
+
+                    <div className='bg-light_yellow rounded-full w-[70px] h-[70px] flex items-center justify-center cursor-pointer'>
+                        <IconContext.Provider value={{color: '1778F2', size: 55}}>
+                            <BsFacebook/>
+                        </IconContext.Provider>
+
+                    </div>
+
+                    <div className='bg-light_yellow rounded-full w-[70px] h-[70px] flex items-center justify-center cursor-pointer'>
+                        <IconContext.Provider value={{size: 45 }}>
+                            <FaXTwitter/>
+                        </IconContext.Provider>
+                    </div> 
+                </div>            
 
                 {/* ill just provide this router for u guys to navigate through Login and Register easier, up to you guys on how to style this na */}
 
@@ -69,18 +93,16 @@ export default function Register() {
                     <Post
                         username='barknplay'
                         publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                        desc='Triple the tiny, triple the joy! 🐹🐹🐹 
+                        Our trio of hamsters knows how to make even the tiniest adventures unforgettable. 
+                        From their miniature hideouts to their boundless curiosity, theyre a constant source of delight in our lives.'
                         user_img_src='/images/user1-image.png'
                         post_img_src='/images/post1-image.png'
                         style={{ scrollSnapAlign: 'start' }}/>
                     <Post
                         username='barknplay'
                         publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                        desc='The wind in my ears, the world at my paws, and a smile on my snout! 😄🚗🌬️'
                         user_img_src='/images/user1-image.png'
                         post_img_src='/images/post1-image.png'
                         style={{ scrollSnapAlign: 'start' }}/>

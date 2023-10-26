@@ -1,18 +1,22 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Post from '../components/Post'
+import { FcGoogle } from 'react-icons/fc';
+import { BsFacebook } from 'react-icons/bs';
+import { FaXTwitter } from 'react-icons/fa6';
+import { IconContext } from 'react-icons/lib';
 
 export default function Login() {
 
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col space-y-10 p-10
-                        lg:flex-row lg:space-x-20 lg:py-10
+                        lg:flex-row space-x-20 lg:py-10
                         md:space-x-14 md:py-10
                         sm:space-x-10 sm:py-10'>
             {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
             <div id="login" 
-                 className='bg-jasmine w-full h-[586px] rounded-[30px] flex flex-col justify-center items-center space-y-5 p-10
-                              md:w-[680px] md:p-10 transition-all sm:h-fit'>
+                 className='bg-jasmine w-full h-[586px] rounded-[30px] flex flex-col justify-center items-center space-y-5 p-12
+                            md:w-[680px] sm:p-12  sm:h-fit'>
                 <div>
                     <h1 className='text-3xl font-bold text-center'>
                         Log in
@@ -28,7 +32,7 @@ export default function Login() {
 
                     TODO: third party sign in auth 
                 </span> */}
-                <form className='flex flex-col  items-center w-full'>
+                <form className='flex flex-col items-center w-full'>
                     <input className='bg-light_yellow rounded-[30px] mt-3 mb-3 pl-5 p-3 w-full h-[54px] placeholder-xanthous text-2xl font-semibold space-y-5 focus:outline-transparent'
                            id='username'
                            placeholder='Email Address'/>
@@ -38,20 +42,39 @@ export default function Login() {
                            placeholder='Password'/>
 
                     <button
-                        className='bg-xanthous rounded-[30px] mt-3 mb-3 pl-5 p-3 w-full h-[54px] text-2xl font-bold text-center'
+                        className='bg-xanthous rounded-[30px] my-3 pl-5 p-3 w-full h-[54px] text-3xl font-bold text-center'
                         type='button'>
                         Log in
                     </button>
                 </form>
                 <p>Or log in with</p>
+                <div className='flex flex-row justify-between drop-shadow-md w-full'>
+                    <div className='bg-light_yellow rounded-full w-[70px] h-[70px] flex items-center justify-center cursor-pointer'>
+                        <IconContext.Provider value={{size: 55}}>
+                            <FcGoogle/>
+                        </IconContext.Provider>
+                    </div> 
 
+                    <div className='bg-light_yellow rounded-full w-[70px] h-[70px] flex items-center justify-center cursor-pointer'>
+                        <IconContext.Provider value={{color: '1778F2', size: 55}}>
+                            <BsFacebook/>
+                        </IconContext.Provider>
+
+                    </div>
+
+                    <div className='bg-light_yellow rounded-full w-[70px] h-[70px] flex items-center justify-center cursor-pointer'>
+                        <IconContext.Provider value={{size: 45 }}>
+                            <FaXTwitter/>
+                        </IconContext.Provider>
+                    </div> 
+                </div>
                 <div className='text-lg'>Don`t have an account? <Link href={'/Register'} className='font-bold'>Register</Link></div>
             </div>            
 
             {/* note: still needs responsiveness for mobile, try experimenting with different values using sm, md, and lg until you get desired proportions */}
             <div 
                 id="showcase" 
-                className="flex scrollbar-hide justify-center w-full max-w-[859px]  overflow-y-scroll rounded-[20px]"
+                className="flex scrollbar-hide  w-full max-w-[859px] overflow-y-scroll rounded-[20px]"
                 style={{ scrollSnapType: 'y mandatory' }}
             >
                 <div class="flex flex-col h-fit max-h-[510px]">
