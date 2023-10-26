@@ -334,187 +334,200 @@ export default function UserProfile() {
 
     return (
         <div>
-        <h1>User Profile Page</h1>
-        {/* following users */}
-        {getCurrentUser && currentUserID !== profileUserID && profileUser ? (
-        // Follow button
-        <button onClick={handleFollow}>
-            {profileUser.followers && profileUser.followers.includes(currentUserID)
-            ? 'Following'
-            : 'Follow'}
-        </button>
-        ) : null}
 
 
-        {coverPhotoURL && <Image src={coverPhotoURL} alt='cover picture' height={200} width={200}/>}
 
-        <p>Display Name: {displayName}</p>
-        <p>Username: {username}</p>
-        <p>Email: {email}</p>
-        <p>Description: {description}</p>
-    
-        <p>Followers: {followers && followers.length}</p>
-        <p>Following: {following && following.length}</p>
-    
-        <p>Gender: {gender}</p>
-        <p>Birthdate: {birthdate}</p>
-        <p>Location: {location}</p>
 
-        {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
+
+
+
+
+
+
+
+
+            
+            <h1>User Profile Page</h1>
+            {/* following users */}
+            {getCurrentUser && currentUserID !== profileUserID && profileUser ? (
+            // Follow button
+            <button onClick={handleFollow}>
+                {profileUser.followers && profileUser.followers.includes(currentUserID)
+                ? 'Following'
+                : 'Follow'}
+            </button>
+            ) : null}
+
+
+            {coverPhotoURL && <Image src={coverPhotoURL} alt='cover picture' height={200} width={200}/>}
+
+            <p>Display Name: {displayName}</p>
+            <p>Username: {username}</p>
+            <p>Email: {email}</p>
+            <p>Description: {description}</p>
         
-        {/* delete pet profile confirmation modal */}
-        {getCurrentUser && currentUserID === profileUserID ? (
-            <Modal
-            isOpen={showConfirmation}
-            onRequestClose={() => setShowConfirmation(false)}
-            contentLabel="Delete Confirmation"
-            style={basicModalStyle}
-            >
-                <p>Are you sure you want to delete this pet profile?</p>
-                <button onClick={confirmDeletePetProfile}>Yes</button>
-                <button onClick={() => setShowConfirmation(false)}>No</button>
-            </Modal>
-        ): null}
+            <p>Followers: {followers && followers.length}</p>
+            <p>Following: {following && following.length}</p>
         
-        {/* show all pets (should be in a container later on) */}
-        <h2>Pets</h2>
-        {pets.map((pet) => (
-            <div key={pet.id}>
-            <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
-                {/* <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/> */}
-                {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>}
-            </Link>
+            <p>Gender: {gender}</p>
+            <p>Birthdate: {birthdate}</p>
+            <p>Location: {location}</p>
+
+            {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
+            
+            {/* delete pet profile confirmation modal */}
             {getCurrentUser && currentUserID === profileUserID ? (
-                <button onClick={() => handleDeletePetProfile(pet.id)}>Delete Pet Profile</button>
+                <Modal
+                isOpen={showConfirmation}
+                onRequestClose={() => setShowConfirmation(false)}
+                contentLabel="Delete Confirmation"
+                style={basicModalStyle}
+                >
+                    <p>Are you sure you want to delete this pet profile?</p>
+                    <button onClick={confirmDeletePetProfile}>Yes</button>
+                    <button onClick={() => setShowConfirmation(false)}>No</button>
+                </Modal>
             ): null}
-            </div>
-        ))}
-
-        {/* create pet profile modal */}
-        {showCreatePetForm ? (
-            <Modal
-                isOpen={showCreatePetForm}
-                onRequestClose={() => setShowCreatePetForm(false)}
-                contentLabel="Create Pet Profile Label"
-                style={basicModalStyle}
-            >
-                <h2>Create Pet Profile Label</h2>
-                <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
-                <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
-                <label htmlFor="sex">Sex:</label>
-                <div>
-                    <button
-                    id="male"
-                    className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
-                    onClick={() => setPetSex('Male')}
-                    >
-                    Male
-                    </button>
-                    <button
-                    id="female"
-                    className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
-                    onClick={() => setPetSex('Female')}
-                    >
-                    Female
-                    </button>
+            
+            {/* show all pets (should be in a container later on) */}
+            <h2>Pets</h2>
+            {pets.map((pet) => (
+                <div key={pet.id}>
+                <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
+                    {/* <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/> */}
+                    {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>}
+                </Link>
+                {getCurrentUser && currentUserID === profileUserID ? (
+                    <button onClick={() => handleDeletePetProfile(pet.id)}>Delete Pet Profile</button>
+                ): null}
                 </div>
-                <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
-                <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
-                <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
-                <label htmlFor="photo">Upload Photo:</label>
-                <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
-                <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
-            </Modal>
-        ) : (
-            profileUserID === currentUserID ? (
-                <div>
-                    <button onClick={() => setShowCreatePetForm(true)}>Add Pet Profile</button>
-                </div>
-              ) : null
-        )}
+            ))}
 
-        {/* editing user profile */}
-        { getCurrentUser && currentUserID == profileUserID ? (
-            <div>
-                <button onClick={handleEdit}>Edit Profile</button>
-            </div>
-        ) : null }
-        
+            {/* create pet profile modal */}
+            {showCreatePetForm ? (
+                <Modal
+                    isOpen={showCreatePetForm}
+                    onRequestClose={() => setShowCreatePetForm(false)}
+                    contentLabel="Create Pet Profile Label"
+                    style={basicModalStyle}
+                >
+                    <h2>Create Pet Profile Label</h2>
+                    <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
+                    <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
+                    <label htmlFor="sex">Sex:</label>
+                    <div>
+                        <button
+                        id="male"
+                        className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
+                        onClick={() => setPetSex('Male')}
+                        >
+                        Male
+                        </button>
+                        <button
+                        id="female"
+                        className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
+                        onClick={() => setPetSex('Female')}
+                        >
+                        Female
+                        </button>
+                    </div>
+                    <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
+                    <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
+                    <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
+                    <label htmlFor="photo">Upload Photo:</label>
+                    <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
+                    <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
+                </Modal>
+            ) : (
+                profileUserID === currentUserID ? (
+                    <div>
+                        <button onClick={() => setShowCreatePetForm(true)}>Add Pet Profile</button>
+                    </div>
+                ) : null
+            )}
 
-        {/* edit user profile modal */}
-        {getCurrentUser && currentUserID === profileUserID ? (// Pop-up for Editing
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={() => setModalIsOpen(false)}
-                style={basicModalStyle}
-            >
-                {/* cover photo */}
+            {/* editing user profile */}
+            { getCurrentUser && currentUserID == profileUserID ? (
                 <div>
-                    <h1>Cover Photo</h1>
-                    <label htmlFor="coverPhoto">
-                        {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                    </label>
-                    <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+                    <button onClick={handleEdit}>Edit Profile</button>
                 </div>
-                
-                
-                {/* display name */}
-                <div>
-                    <br/>
-                    <label htmlFor="display-name">Display Name: </label>
-                    <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
-                </div>
-
-
-                {/* description */}
-                <div>
-                    <br/>
-                    <label htmlFor="description">Description: </label>
-                    <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
-                </div>
+            ) : null }
             
 
-                {/* profile picture */}
-                <div>
-                    <br/>
-                    <h1>Profile Picture</h1>
-                    <label htmlFor="userPhoto">
-                        {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                    </label>
-                    <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
-                </div>
+            {/* edit user profile modal */}
+            {getCurrentUser && currentUserID === profileUserID ? (// Pop-up for Editing
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={() => setModalIsOpen(false)}
+                    style={basicModalStyle}
+                >
+                    {/* cover photo */}
+                    <div>
+                        <h1>Cover Photo</h1>
+                        <label htmlFor="coverPhoto">
+                            {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                        </label>
+                        <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+                    </div>
+                    
+                    
+                    {/* display name */}
+                    <div>
+                        <br/>
+                        <label htmlFor="display-name">Display Name: </label>
+                        <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
+                    </div>
+
+
+                    {/* description */}
+                    <div>
+                        <br/>
+                        <label htmlFor="description">Description: </label>
+                        <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
+                    </div>
                 
-                {/* gender not editable */}
-                <div>
-                    <br />
-                    <p>Gender: {gender}</p>
-                </div>
 
-                {/* birthdate not editable */}
-                <div>
-                    <br />
-                    <p>Birthdate: {birthdate}</p>
-                </div>
+                    {/* profile picture */}
+                    <div>
+                        <br/>
+                        <h1>Profile Picture</h1>
+                        <label htmlFor="userPhoto">
+                            {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                        </label>
+                        <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
+                    </div>
+                    
+                    {/* gender not editable */}
+                    <div>
+                        <br />
+                        <p>Gender: {gender}</p>
+                    </div>
 
-                {/* location */}
-                <div>
-                    <br/>
-                    <label htmlFor="location">Location: </label>
-                    <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
-                </div>
+                    {/* birthdate not editable */}
+                    <div>
+                        <br />
+                        <p>Birthdate: {birthdate}</p>
+                    </div>
 
-                <button onClick={handleSave}>Save</button>
+                    {/* location */}
+                    <div>
+                        <br/>
+                        <label htmlFor="location">Location: </label>
+                        <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
+                    </div>
 
-            </Modal>
-        ) : (
-            null
-        )}
+                    <button onClick={handleSave}>Save</button>
 
-        <div>
-            <Link href="/Home">
-                <p>Back to Home</p>
-            </Link>
-        </div>
+                </Modal>
+            ) : (
+                null
+            )}
+
+            <div>
+                <Link href="/Home">
+                    <p>Back to Home</p>
+                </Link>
+            </div>
         </div>
     )
 }
