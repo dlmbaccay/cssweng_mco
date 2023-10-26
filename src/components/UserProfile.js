@@ -10,6 +10,9 @@ import toast from 'react-hot-toast';
 import { basicModalStyle } from '../lib/modalstyle';
 import Loader from '../components/Loader';
 import NavBar from '../components/NavBar';
+import RoundIcon from '../components/RoundIcon';
+import CoverPhoto from '../components/CoverPhoto';
+import Post from '../components/Post';
 
 // Modal.setAppElement('#root'); // Set the root element for accessibility
 
@@ -340,202 +343,420 @@ export default function UserProfile() {
         setActiveTab(tabName);
     };
 
+    const [isProfileEditVisible, setProfileEditVisible] = useState(false);
+
+
+    const openProfileEdit = () => {
+        setProfileEditVisible(true);
+    };
+
+    const closeProfileEdit = () => {
+        setProfileEditVisible(false);
+    };
+
     return (
-        <div>
+    <div className="flex">
+      <NavBar />
 
-            <NavBar />
-
-
-
-
-
-
-
-
-
-
-
-            <h1>User Profile Page</h1>
-            {/* following users */}
-            {getCurrentUser && currentUserID !== profileUserID && profileUser ? (
-            // Follow button
-            <button onClick={handleFollow}>
-                {profileUser.followers && profileUser.followers.includes(currentUserID)
-                ? 'Following'
-                : 'Follow'}
-            </button>
-            ) : null}
-
-
-            {coverPhotoURL && <Image src={coverPhotoURL} alt='cover picture' height={200} width={200}/>}
-
-            <p>Display Name: {displayName}</p>
-            <p>Username: {username}</p>
-            <p>Email: {email}</p>
-            <p>Description: {description}</p>
-        
-            <p>Followers: {followers && followers.length}</p>
-            <p>Following: {following && following.length}</p>
-        
-            <p>Gender: {gender}</p>
-            <p>Birthdate: {birthdate}</p>
-            <p>Location: {location}</p>
-
-            {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200}/>}
-            
-            {/* delete pet profile confirmation modal */}
-            {getCurrentUser && currentUserID === profileUserID ? (
-                <Modal
-                isOpen={showConfirmation}
-                onRequestClose={() => setShowConfirmation(false)}
-                contentLabel="Delete Confirmation"
-                style={basicModalStyle}
-                >
-                    <p>Are you sure you want to delete this pet profile?</p>
-                    <button onClick={confirmDeletePetProfile}>Yes</button>
-                    <button onClick={() => setShowConfirmation(false)}>No</button>
-                </Modal>
-            ): null}
-            
-            {/* show all pets (should be in a container later on) */}
-            <h2>Pets</h2>
-            {pets.map((pet) => (
-                <div key={pet.id}>
-                <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
-                    {/* <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/> */}
-                    {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={100} width={100}/>}
-                </Link>
-                {getCurrentUser && currentUserID === profileUserID ? (
-                    <button onClick={() => handleDeletePetProfile(pet.id)}>Delete Pet Profile</button>
-                ): null}
-                </div>
-            ))}
-
-            {/* create pet profile modal */}
-            {showCreatePetForm ? (
-                <Modal
-                    isOpen={showCreatePetForm}
-                    onRequestClose={() => setShowCreatePetForm(false)}
-                    contentLabel="Create Pet Profile Label"
-                    style={basicModalStyle}
-                >
-                    <h2>Create Pet Profile Label</h2>
-                    <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
-                    <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
-                    <label htmlFor="sex">Sex:</label>
-                    <div>
-                        <button
-                        id="male"
-                        className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
-                        onClick={() => setPetSex('Male')}
-                        >
-                        Male
-                        </button>
-                        <button
-                        id="female"
-                        className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
-                        onClick={() => setPetSex('Female')}
-                        >
-                        Female
-                        </button>
-                    </div>
-                    <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
-                    <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
-                    <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
-                    <label htmlFor="photo">Upload Photo:</label>
-                    <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
-                    <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
-                </Modal>
-            ) : (
-                profileUserID === currentUserID ? (
-                    <div>
-                        <button onClick={() => setShowCreatePetForm(true)}>Add Pet Profile</button>
-                    </div>
-                ) : null
-            )}
-
-            {/* editing user profile */}
-            { getCurrentUser && currentUserID == profileUserID ? (
-                <div>
-                    <button onClick={handleEdit}>Edit Profile</button>
-                </div>
-            ) : null }
-            
-
-            {/* edit user profile modal */}
-            {getCurrentUser && currentUserID === profileUserID ? (// Pop-up for Editing
-                <Modal
-                    isOpen={modalIsOpen}
-                    onRequestClose={() => setModalIsOpen(false)}
-                    style={basicModalStyle}
-                >
-                    {/* cover photo */}
-                    <div>
-                        <h1>Cover Photo</h1>
-                        <label htmlFor="coverPhoto">
-                            {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                        </label>
-                        <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
-                    </div>
-                    
-                    
-                    {/* display name */}
-                    <div>
-                        <br/>
-                        <label htmlFor="display-name">Display Name: </label>
-                        <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
-                    </div>
-
-
-                    {/* description */}
-                    <div>
-                        <br/>
-                        <label htmlFor="description">Description: </label>
-                        <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
-                    </div>
-                
-
-                    {/* profile picture */}
-                    <div>
-                        <br/>
-                        <h1>Profile Picture</h1>
-                        <label htmlFor="userPhoto">
-                            {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                        </label>
-                        <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
-                    </div>
-                    
-                    {/* gender not editable */}
-                    <div>
-                        <br />
-                        <p>Gender: {gender}</p>
-                    </div>
-
-                    {/* birthdate not editable */}
-                    <div>
-                        <br />
-                        <p>Birthdate: {birthdate}</p>
-                    </div>
-
-                    {/* location */}
-                    <div>
-                        <br/>
-                        <label htmlFor="location">Location: </label>
-                        <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
-                    </div>
-
-                    <button onClick={handleSave}>Save</button>
-
-                </Modal>
-            ) : (
-                null
-            )}
-
-            <div>
-                <Link href="/Home">
-                    <p>Back to Home</p>
-                </Link>
-            </div>
+      <div className="flex-1">
+        {/* circle */}
+        <div className="absolute left-40 top-32 w-32 h-32 rounded-full bg-citron mb-4 z-10">
+          <RoundIcon src="/images/user0-image.png" />
         </div>
-    )
+
+        {/* Header Picture Rectangle */}
+        <div className="relative left-0 top-0 w-full h-48 bg-gray-300">
+          <CoverPhoto src="/images/cover0-image.png" />
+        </div>
+
+        {/* Posts */}
+        {activeTab === 'Posts' && (
+          <div className="absolute top-64 left-96 h-800 w-859 bg-snow p-2 border border-neutral-300 ml-36">
+          <div 
+                  id="showcase" 
+                  className="flex scrollbar-hide justify-center w-full max-w-[859px]  overflow-y-scroll rounded-[20px]"
+                  style={{ scrollSnapType: 'y mandatory' }}
+              >
+                  <div class="flex flex-col h-fit max-h-[510px]">
+                      <Post 
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                  </div>
+              </div>
+          </div>
+        )}
+
+        {/* Pets */}
+        {activeTab === 'Pets' && (
+          <div className="absolute top-64 left-64 h-800 w-859 p-2 ml-36">
+            <div className="grid grid-cols-6 gap-7">
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow flex items-center justify-center text-8xl font-extrabold">
+                <span className="inline-block align-middle mb-6 text-white">+</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Media */}
+        {activeTab === 'Media' && (
+          <div className="absolute top-64 left-64 h-800 w-859 p-2 ml-36">
+            <div className="grid grid-cols-7 gap-2">
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Lost Pets */}
+        {activeTab === 'Lost Pets' && (
+          <div className="absolute top-64 left-96 h-800 w-859 bg-snow p-2 border border-neutral-300 ml-36">
+          <div 
+                  id="showcase" 
+                  className="flex scrollbar-hide justify-center w-full max-w-[859px]  overflow-y-scroll rounded-[20px]"
+                  style={{ scrollSnapType: 'y mandatory' }}
+              >
+                  <div class="flex flex-col h-fit max-h-[510px]">
+                      <Post 
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Contact me if u found my dog! 🐾🐾🐾🐾 
+                              0917 123 4567'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Contact me if u found my cat! 🐾🐾🐾🐾 
+                              0917 123 4567'
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                      <Post
+                          username='petwhisperer'
+                          publish_date='Sept 6 at 4:30 PM'    
+                          desc='Still couldnt find them. :('
+                          user_img_src='/images/user0-image.png'
+                          post_img_src='/images/post1-image.png'
+                          style={{ scrollSnapAlign: 'start' }}/>
+                  </div>
+              </div>
+          </div>
+        )}
+
+        {/* Left Panel */}
+        <div className="absolute -ml-8 top-48 left-24 h-5/6 w-80 bg-snow p-2 border border-neutral-300">
+          <div className="absolute inset-y-0 left-0 w-16 ..."></div>
+
+          {/* Edit button */}
+          <button
+            onClick={openProfileEdit}
+            className="absolute top-0 right-0 mt-4 mr-4 w-16 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none"
+          >
+            Edit
+          </button>
+
+          {/* Profile Edit Pop-up */}
+          {isProfileEditVisible && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white max-w-[1534px] w-4/5 h-4/5 m-auto rounded-lg p-4 overflow-auto">
+                <form
+                  onSubmit={handleSubmit}
+                  className="bg-snow rounded-md p-8 pb-5 w-full"
+                >
+                  <h1 className="font-bold">Edit Profile</h1>
+
+                  {/* display name */}
+                  <div className="mb-0">
+                    <label
+                      htmlFor="display-name"
+                      className="block text-sm font-medium text-gray-700 pt-5"
+                    >
+                      <span>Display Name</span>
+                      <span className="text-red-500"> *</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="display-name"
+                      className="mt-1 p-2 border rounded-md w-full"
+                      placeholder="What would you like us to call you?"
+                      maxLength="20"
+                      value=""
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  {/* Username */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="username"
+                      className="block text-sm font-medium text-gray-700 pt-5"
+                    >
+                      <span>Username</span>
+                      <span className="text-red-500"> *</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="display-name"
+                      className="mt-1 p-2 border rounded-md w-full"
+                      placeholder="Enter your username"
+                      maxLength="20"
+                      value=""
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  {/* profile picture */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Profile Picture
+                    </label>
+                    <input
+                      type="file"
+                      className="mt-1 p-2 border rounded-md w-full"
+                      accept="image/*"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Upload a profile picture (JPG, PNG, or GIF).
+                    </p>
+                  </div>
+
+                  {/* cover photo */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Cover Photo
+                    </label>
+                    <input
+                      type="file"
+                      className="mt-1 p-2 border rounded-md w-full"
+                      accept="image/*"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Upload a covoer photo (JPG, PNG, or GIF).
+                    </p>
+                  </div>
+
+                  {/* bio */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="bio"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Bio
+                    </label>
+                    <textarea
+                      id="bio"
+                      className="mt-1 p-2 border rounded-md w-full resize-none"
+                      rows="4"
+                      placeholder="Tell us about yourself..."
+                      value=""
+                      onChange={(e) => setBio(e.target.value)}
+                    />
+                  </div>
+
+                  {/* gender */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="gender"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Gender
+                    </label>
+                    <select
+                      id="gender"
+                      name="gender"
+                      className="mt-1 p-2 border rounded-md w-full"
+                      value="test"
+                      onChange={(e) => setGender(e.target.value)}
+                    >
+                      <option value="None">Prefer Not to Say</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  {/* birthdate */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="birthdate"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Birthday
+                    </label>
+                    <input
+                      type="date"
+                      id="birthdate"
+                      name="birthdate"
+                      className="mt-1 p-2 border rounded-md w-full"
+                      value="test"
+                      onChange={(e) => setBirthdate(e.target.value)}
+                    />
+                  </div>
+
+                  {/* location */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      id="location"
+                      name="location"
+                      className="mt-1 p-2 border rounded-md w-full"
+                      placeholder="Enter your Location"
+                      value=""
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                  </div>
+
+                  {/* buttons */}
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={closeProfileEdit}
+                      className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Username */}
+          <div className="absolute top-16 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center mt-10">
+            <span className="text-2xl font-bold text-raisin_black">
+              petwhisperer
+            </span>
+          </div>
+
+          {/* Followers and Following */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 top-32 text-center mt-4 flex">
+            <div className="flex flex-col items-center mr-14">
+              <span className="text-raisin_black text-lg font-bold">123</span>
+              <span className="text-gray-500 text-sm">Followers</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-raisin_black text-lg font-bold">69</span>
+              <span className="text-gray-500 text-sm">Following</span>
+            </div>
+          </div>
+
+          {/* About */}
+          <div className="absolute top-48 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center mt-10">
+            <span className="text-lg font-bold text-raisin_black">About</span>
+          </div>
+
+          <div className="relative top-64 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center mt-10">
+            <span className="text-base text-raisin_black">
+              <p>
+                🐾 Cat Lover Extraordinaire 🐾 Proud human to a purrfect furball
+                🐱 Crazy about all things feline
+              </p>
+            </span>
+          </div>
+        </div>
+
+        <div className="absolute mt-0 top-48 left-24 ml-72 flex flex-row mr-4 w-10/12 bg-snow divide-x divide-neutral-300">
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Posts' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Posts')}>
+            Posts
+          </button>
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Pets' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Pets')}>
+            Pets
+          </button>
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Media' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Media')}>
+            Media
+          </button>
+          <button 
+            className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                        activeTab === 'Lost Pets' ? 'bg-citron text-white' : ''
+                      }`}
+            onClick={() => handleTabClick('Lost Pets')}>
+            Lost Pets
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

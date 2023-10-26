@@ -12,7 +12,7 @@ export default function RoundIcon(props) {
           alt={alt}
           width={300}
           height={300}
-          className="object-center"
+          className="object-center rounded-full align-middle"
         />
       </div>
     </div>
