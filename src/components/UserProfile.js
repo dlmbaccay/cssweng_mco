@@ -9,6 +9,7 @@ import Modal from 'react-modal';
 import toast from 'react-hot-toast';
 import { basicModalStyle } from '../lib/modalstyle';
 import Loader from '../components/Loader';
+import NavBar from '../components/NavBar';
 
 // Modal.setAppElement('#root'); // Set the root element for accessibility
 
@@ -332,9 +333,17 @@ export default function UserProfile() {
         }
     };
 
+    // tab functionality
+    const [activeTab, setActiveTab] = useState('Posts');
+
+    const handleTabClick = (tabName) => {
+        setActiveTab(tabName);
+    };
+
     return (
         <div>
 
+            <NavBar />
 
 
 
@@ -346,7 +355,6 @@ export default function UserProfile() {
 
 
 
-            
             <h1>User Profile Page</h1>
             {/* following users */}
             {getCurrentUser && currentUserID !== profileUserID && profileUser ? (

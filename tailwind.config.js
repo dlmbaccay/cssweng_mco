@@ -16,6 +16,7 @@ module.exports = {
         'raisin_black': '#17171F',
         'snow': '#F5F0F0',
         'light_yellow': '#FFFCDE',
+        'pale_yellow': '#FFEBBE',
         'jasmine': '#FADA91',
         'xanthous': '#F5B744',
         'citron': '#C3C461',

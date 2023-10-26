@@ -1,4 +1,6 @@
 import React from 'react'
+import RoundIcon from './RoundIcon';
+import { useState } from 'react';
 
 export default function NavBar() {
   const [isSidebarExpanded, setSidebarExpanded] = useState(false);
