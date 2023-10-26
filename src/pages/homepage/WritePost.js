@@ -20,7 +20,7 @@ export default function WritePost() {
                         <div className='p-5 mb-10 font-bold focus:outline-none'>
                             <span>Petwhisperer</span>
                             <div className='flex flex-row'>
-                            <div className="w-10 h-10 bg-dark_gray">
+                            <div className="w-20 h-10 bg-dark_gray rounded-[30px] p-5">
 
                             </div>
                         </div>

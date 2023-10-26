@@ -106,6 +106,7 @@ export default function Login() {
                         post_img_src='/images/post1-image.png'
                         style={{ scrollSnapAlign: 'start' }}/>
                 </div>
+                
             </div>
         </div>
     )
