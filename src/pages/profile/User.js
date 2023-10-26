@@ -195,8 +195,28 @@ export default function User() {
                 >
                   <h1 className="font-bold">Edit Profile</h1>
 
+                  {/* Display current profile icon */}
+                  <img src="/images/user0-image.png" alt="Current Profile Icon" className="mx-auto w-32 h-32 rounded-full bg-citron mb-4" />
+
+                  {/* Button to upload new profile icon */}
+                  <input
+                    type="file"
+                    onChange={(e) => setProfileIcon(URL.createObjectURL(e.target.files[0]))}
+                    accept="image/*"
+                  />
+                  
+                  {/* Display current cover photo */}
+                  <img src="/images/cover0-image.png" alt="Current Cover Photo" className="w-full h-48 bg-gray-300 mb-4 mt-8" />
+                  
+                  {/* Button to upload new cover photo */}
+                  <input
+                    type="file"
+                    onChange={(e) => setCoverPhoto(URL.createObjectURL(e.target.files[0]))}
+                    accept="image/*"
+                  />
+
                   {/* display name */}
-                  <div className="mb-0">
+                  {/* <div className="mb-0">
                     <label
                       htmlFor="display-name"
                       className="block text-sm font-medium text-gray-700 pt-5"
@@ -214,7 +234,7 @@ export default function User() {
                       onChange={(e) => setDisplayName(e.target.value)}
                       required
                     />
-                  </div>
+                  </div> */}
 
                   {/* Username */}
                   <div className="mb-4">
@@ -238,7 +258,7 @@ export default function User() {
                   </div>
 
                   {/* profile picture */}
-                  <div className="mb-4">
+                  {/* <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Profile Picture
                     </label>
@@ -250,10 +270,10 @@ export default function User() {
                     <p className="text-sm text-gray-500 mt-1">
                       Upload a profile picture (JPG, PNG, or GIF).
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* cover photo */}
-                  <div className="mb-4">
+                  {/* <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Cover Photo
                     </label>
@@ -265,7 +285,7 @@ export default function User() {
                     <p className="text-sm text-gray-500 mt-1">
                       Upload a covoer photo (JPG, PNG, or GIF).
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* bio */}
                   <div className="mb-4">
