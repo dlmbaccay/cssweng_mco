@@ -33,19 +33,19 @@ export default function Home() {
 
     {/* user info */}
     <div>
-      <h1 className='text-lg'>Email: {user?.email}</h1>
-      <h1 className='text-lg'>Username: {username}</h1>
+      <h1 className='ml-2 text-lg'>Email: {user?.email}</h1>
+      <h1 className='ml-2 text-lg'>Username: {username}</h1>
     </div>
     
     <div>
-      <button onClick={handleViewProfile} className='bg-black text-white p-2 rounded-md'>
+      <button onClick={handleViewProfile} className='bg-black ml-2 mt-2 text-white p-2 rounded-md hover:opacity-80'>
         {username}
       </button>
     </div>
 
     {/* sign out button */}
     <div>
-      <button onClick={handleSignOut} className='bg-black text-white p-2 rounded-md'>
+      <button onClick={handleSignOut} className='bg-black ml-2 mt-2 text-white p-2 rounded-md hover:opacity-80'>
         Sign Out
       </button>
     </div>

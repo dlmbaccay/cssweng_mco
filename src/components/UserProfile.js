@@ -555,18 +555,15 @@ export default function UserProfile() {
                     <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
                         {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={144} width={144} className='rounded-lg hover:opacity-80'/>}
                     </Link>
-                    {/* {getCurrentUser && currentUserID === profileUserID ? (
+                    {getCurrentUser && currentUserID === profileUserID ? (
                         <button 
                           className='bg-black text-white text-sm rounded-lg p-1 mt-2 justify-center items-center w-[144px]'
                           onClick={() => handleDeletePetProfile(pet.id)}>
                           Delete Pet Profile</button>
-                    ): null} */}
+                    ): null}
                     </div>
                 ))}
 
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
                   <div className="w-36 h-36 rounded-xl bg-pale_yellow flex items-center justify-center text-8xl font-extrabold">
                     {/* create pet profile modal */}
                     {showCreatePetForm ? (
