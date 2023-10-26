@@ -11,8 +11,8 @@ export default function CoverPhoto(props) {
           src={src}
           alt={alt}
           width={1980}
-          height={200}
-          objectFit="cover"
+          height={222}
+          objectFit='fill' 
           objectPosition="center"
           className="object-center align-middle"
         />

@@ -1,8 +1,23 @@
 import React from 'react'
 import RoundIcon from './RoundIcon';
 import { useState } from 'react';
+import { auth } from '../lib/firebase';
+import { useUserData } from '../lib/hooks';
+
+function handleLogOut() {
+  auth.signOut().then(() => {
+    window.location.href = "/Login";
+  });
+}
+
+function handleHome() {
+  window.location.href = "/Home";
+}
 
 export default function NavBar() {
+
+  const {username, userPhotoURL } = useUserData();
+
   const [isSidebarExpanded, setSidebarExpanded] = useState(false);
 
   const toggleSidebar = () => {
@@ -11,13 +26,13 @@ export default function NavBar() {
 
   return (
     <nav
-      className={`sticky left-0 top-0 z-10 bg-pale_yellow text-white w-16 h-screen flex flex-col items-center transition-all ${
+      className={`sticky z-10 bg-pale_yellow text-white w-16 h-screen flex flex-col items-center transition-all ${
         isSidebarExpanded ? "w-48" : "w-16"
       }`}
     >
       {/* Circular profile picture (always visible) */}
       <div className="w-10 h-10 rounded-full bg-white mt-8">
-        <RoundIcon src="/images/user0-image.png" />
+        {userPhotoURL && <RoundIcon src={userPhotoURL} />}
       </div>
 
       {/* Sidebar content*/}
@@ -38,6 +53,7 @@ export default function NavBar() {
           )}
         </button>
         <button
+          onClick={handleHome}
           className={`w-7 h-7 rounded-full bg-white mb-4 text-black ${
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}
@@ -78,6 +94,7 @@ export default function NavBar() {
           } border-citron`}
         />
         <button
+          onClick={handleLogOut}
           className={`w-7 h-7 rounded-full bg-white mt-4 text-black ${
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}

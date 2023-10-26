@@ -5,8 +5,8 @@ export default function RoundIcon(props) {
   const { src, alt, width, height } = props;
 
   return (
-    <div className="relative w-full h-full">
-      <div className="max-w-[500px] max-h-[500px] object-center overflow-hidden">
+    <div className='w-full'>
+      <div className="max-w-[300px] max-h-[300px] object-center overflow-hidden">
         <Image
           src={src}
           alt={alt}

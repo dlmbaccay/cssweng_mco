@@ -196,7 +196,7 @@ export default function Login() {
 
             <div 
                 id="showcase" 
-                className="flex scrollbar-hide justify-center w-[880px] h-[544px] overflow-y-scroll rounded-[20px]" 
+                className="flex scrollbar-hide overflow-y-scroll justify-center w-[880px] h-[544px]  rounded-[20px]" 
                 style={{ scrollSnapType: 'y mandatory' }}
             >
                 <div className="flex flex-col">
