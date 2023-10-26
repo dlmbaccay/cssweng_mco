@@ -364,12 +364,14 @@ export default function UserProfile() {
             </div>
 
             {/* Edit button */}
-            <button
+            {currentUser && currentUserID === profileUserID ? (
+              <button
               onClick={handleEdit}
               className="mt-4 ml-2 w-12 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none"
-            >
+              >
               Edit
             </button>
+            ) : (null)}
 
             {/* edit user profile modal */}
             {getCurrentUser && currentUserID === profileUserID ? (// Pop-up for Editing
