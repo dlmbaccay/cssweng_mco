@@ -89,6 +89,7 @@ export default function AccountSetup() {
 
         batch.set(userDoc, {
             username: usernameFormValue,
+            displayName: usernameFormValue,
             photoURL: userPhotoURL,
             // displayName: document.querySelector("#display-name").value,
             description: document.querySelector("#description").value,

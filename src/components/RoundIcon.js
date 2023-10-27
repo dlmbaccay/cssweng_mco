@@ -2,17 +2,16 @@ import React from 'react';
 import Image from 'next/image';
 
 export default function RoundIcon(props) {
-  const { src, alt, width, height } = props;
+  const { src, alt } = props;
 
   return (
-    <div className='w-full'>
-      <div className="max-w-[300px] max-h-[300px] object-center overflow-hidden">
+    <div className="w-full rounded-full overflow-hidden">
+      <div style={{ paddingTop: '100%' }} className="relative">
         <Image
           src={src}
           alt={alt}
-          width={300}
-          height={300}
-          className="object-center rounded-full align-middle"
+          layout="fill"
+          objectFit="cover"
         />
       </div>
     </div>

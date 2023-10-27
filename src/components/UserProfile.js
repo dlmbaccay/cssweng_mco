@@ -24,24 +24,24 @@ export default function UserProfile() {
     const profileUserID = getUserIDfromUsername(profileUsername);
     const [currentUser, setCurrentUser] = useState(null);
     const [profileUser, setProfileUser] = useState(null);
+    const [pets, setPets] = useState([]);
     
     useEffect(() => {
         const fetchUserData = async () => {
         try {
             const currentUserDoc = await firestore.collection('users').doc(currentUserID).get();
-            const profileUserDoc = await firestore.collection('users').doc(profileUserID).get();
+            // const profileUserDoc = await firestore.collection('users').doc(profileUserID).get();
 
             setCurrentUser(currentUserDoc.data());
-            setProfileUser(profileUserDoc.data());
-            console.log(currentUser)
-            console.log(profileUser)
+            // setProfileUser(profileUserDoc.data());
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     };
 
     fetchUserData();
-    }, [currentUserID, profileUserID, currentUser, profileUser]);
+  }, [currentUserID, currentUser]);
+    // }, [currentUserID, profileUserID, currentUser, profileUser]);
 
     const [username, setUsername] = useState(null);
     const [description, setDescription] = useState(null); 
@@ -53,11 +53,8 @@ export default function UserProfile() {
     const [gender, setGender] = useState(null);
     const [birthdate, setBirthdate] = useState(null);
     const [location, setLocation] = useState(null);
-    
-    const [followers, setFollowers] = useState(null);
-    const [following, setFollowing] = useState(null);
 
-    const pets = usePetData(profileUserID);
+    // const pets = usePetData(profileUserID);
 
     const [editedDisplayName, setEditedDisplayName] = useState(displayName);
     const [editedDescription, setEditedDescription] = useState(description);
@@ -70,6 +67,10 @@ export default function UserProfile() {
     if (profileUserID) {
         const userRef = firestore.collection('users').doc(profileUserID);
         unsubscribe = userRef.onSnapshot((doc) => {
+        setProfileUser({
+            id: doc.id,
+            ...doc.data()
+        });
         setUsername(doc.data()?.username);
         setDescription(doc.data()?.description);
         setDisplayName(doc.data()?.displayName);
@@ -79,15 +80,26 @@ export default function UserProfile() {
         setGender(doc.data()?.gender);
         setBirthdate(doc.data()?.birthdate);
         setLocation(doc.data()?.location);
-
-        setFollowers(doc.data()?.followers);
-        setFollowing(doc.data()?.following);
         
         setEditedDisplayName(doc.data()?.displayName);
         setEditedDescription(doc.data()?.description);
         setEditedLocation(doc.data()?.location);
+
+        // Fetch the 'pets' collection
+        const petsCollectionRef = userRef.collection('pets');
+        petsCollectionRef.get().then((querySnapshot) => {
+          const petsData = [];
+          querySnapshot.forEach((doc) => {
+            petsData.push({
+              id: doc.id,
+              ...doc.data()
+            });
+          });
+          setPets(petsData);
+        });
     });
     } else {
+        setProfileUser(null);
         setUsername(null);
         setDescription(null);
         setDisplayName(null);
@@ -97,13 +109,12 @@ export default function UserProfile() {
         setGender(null);
         setBirthdate(null);
         setLocation(null);
-        
-        setFollowers(null);
-        setFollowing(null);
 
         setEditedDisplayName(null);
         setEditedDescription(null);
         setEditedLocation(null);
+
+        setPets([])
     }
 
     return unsubscribe;
@@ -252,7 +263,11 @@ export default function UserProfile() {
         });
     }
 
+    const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
+
     const uploadCoverPhotoFile = async (e) => {
+        setIsUploadingCoverPhoto(true);
+
         const file = Array.from(e.target.files)[0];
 
         const ref = storage.ref(`coverPictures/${profileUserID}/coverPic`);
@@ -266,8 +281,12 @@ export default function UserProfile() {
                 setCoverPhotoURL(url);
                 const userRef = firestore.doc(`users/${currentUserID}`);
                 userRef.update({ coverPhotoURL: url });
-            });
+            })
+            .finally(() => {
+              setIsUploadingCoverPhoto(false); // Set back to false after the upload is done
+          });
         });
+        
     }
 
     const handleFollow = async () => {
@@ -347,119 +366,64 @@ export default function UserProfile() {
     <div className="flex">
       <NavBar />
 
-      <div className="flex-1">
+      { profileUser && currentUser &&
+
+        <div className="flex-1">
 
         {/* Cover Photo Container */}
         <div id='header-container' className='h-1/5 overflow-clip'>
           {/* Header Picture Rectangle */}
-            {coverPhotoURL && <CoverPhoto src={coverPhotoURL} alt={username + "cover photo"} />}
+            <CoverPhoto src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} />
         </div>
 
         <div id='content-container' className='h-4/5 flex flex-row overflow-clip'>
           {/* Left Panel */}
-          <div className="flex flex-col w-80 bg-snow border border-neutral-300 justify-start">
+          <div className="flex flex-col w-80 bg-snow border border-neutral-300 justify-start items-center">
 
-            <div className="flex rounded-full items-center justify-center w-[200px] h-[200px] absolute -translate-y-28 translate-x-16"> 
-              {userPhotoURL && <RoundIcon src={userPhotoURL} alt={username + "profile picture"} />}
+            <div className="flex justify-center w-48 h-48 absolute -translate-y-24"> 
+              <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
             </div>
 
             {/* Edit button */}
-            {currentUser && currentUserID === profileUserID ? (
+            {currentUserID === profileUserID ? (
               <button
               onClick={handleEdit}
-              className="mt-4 ml-2 w-12 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none"
+              className="mt-4 ml-2 w-12 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none translate-x-32"
               >
               Edit
             </button>
             ) : (null)}
-
-            {/* edit user profile modal */}
-            {getCurrentUser && currentUserID === profileUserID ? (// Pop-up for Editing
-                <Modal
-                    isOpen={modalIsOpen}
-                    onRequestClose={() => setModalIsOpen(false)}
-                    style={basicModalStyle}
-                >
-                    {/* cover photo */}
-                    <div>
-                        <h1>Cover Photo</h1>
-                        <label htmlFor="coverPhoto">
-                            {coverPhotoURL && <Image src={coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                        </label>
-                        <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
-                    </div>
-                    
-                    
-                    {/* display name */}
-                    <div>
-                        <br/>
-                        <label htmlFor="display-name">Display Name: </label>
-                        <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
-                    </div>
-
-
-                    {/* description */}
-                    <div>
-                        <br/>
-                        <label htmlFor="description">Description: </label>
-                        <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
-                    </div>
-                
-
-                    {/* profile picture */}
-                    <div>
-                        <br/>
-                        <h1>Profile Picture</h1>
-                        <label htmlFor="userPhoto">
-                            {userPhotoURL && <Image src={userPhotoURL} alt='profile picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                        </label>
-                        <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
-                    </div>
-                    
-                    {/* gender not editable */}
-                    <div>
-                        <br />
-                        <p>Gender: {gender}</p>
-                    </div>
-
-                    {/* birthdate not editable */}
-                    <div>
-                        <br />
-                        <p>Birthdate: {birthdate}</p>
-                    </div>
-
-                    {/* location */}
-                    <div>
-                        <br/>
-                        <label htmlFor="location">Location: </label>
-                        <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
-                    </div>
-
-                    <button onClick={handleSave}>Save</button>
-
-                </Modal>
-            ) : (
-                null
-            )}
+            
+            {/* Follow button */}
+            {currentUserID !== profileUserID ? (
+              <button 
+                onClick={handleFollow}
+                className="mt-4 ml-2 w-16 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none translate-x-28"
+              >{profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}</button>
+            ) : (null)}
+            
 
             {/* Username */}
             <div className="text-center mt-14 w-80">
               <span className="text-2xl font-bold text-raisin_black ">
-                {username}
+                {profileUser.displayName}
               </span>
             </div>
 
             {/* Followers and Following */}
-            <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center ">
-              <div className="flex flex-col items-center">
-                <span className="text-raisin_black text-lg font-bold">{followers ? 0 : followers}</span>
-                <span className="text-grass font-bold text-sm">Followers</span>
+            {profileUser ? (
+              <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center ">
+                <div className="flex flex-col items-center">
+                  <span className="text-raisin_black text-lg font-bold">{profileUser.followers.length}</span>
+                  <span className="text-grass font-bold text-sm">Followers</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-raisin_black text-lg font-bold">{profileUser.following.length}</span>
+                  <span className="text-grass font-bold text-sm">Following</span>
+                </div>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-raisin_black text-lg font-bold">{following ? 0 : following}</span>
-                <span className="text-grass font-bold text-sm">Following</span>
-              </div>
-            </div>
+            ) : (null)}
+            
 
             {/* About */}
             <div className="text-center mt-10 ">
@@ -469,7 +433,7 @@ export default function UserProfile() {
             <div className="text-center mt-10">
               <span className="text-base text-raisin_black">
                 <p>
-                  {description}
+                  {profileUser.description}
                 </p>
               </span>
             </div>
@@ -508,160 +472,232 @@ export default function UserProfile() {
             </button>
           </div>
 
-            {/* Posts */}
-            {activeTab === 'Posts' && (
-              <div 
-                id="showcase" 
-                className="flex justify-center h-[700px] w-full overflow-y-scroll"
-              >
-                  <div className="flex mt-10 flex-col gap-10">
-                      <Post 
-                          username={username}
-                          publish_date='Sept 6 at 4:30 PM'    
-                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                          user_img_src={userPhotoURL ? userPhotoURL: '/images/user1-image.png'}
-                          post_img_src='/images/post1-image.png'
-                        />
-                      <Post 
-                          username={username}
-                          publish_date='Sept 6 at 4:30 PM'    
-                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                          user_img_src={userPhotoURL ? userPhotoURL: '/images/user1-image.png'}
-                          post_img_src='/images/post1-image.png'
-                        />
-                      <Post 
-                          username={username}
-                          publish_date='Sept 6 at 4:30 PM'    
-                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                          user_img_src={userPhotoURL ? userPhotoURL: '/images/user1-image.png'}
-                          post_img_src='/images/post1-image.png'
-                        />
-                  </div>
-              </div>
-            )}
+          {/* Posts */}
+          {activeTab === 'Posts' && (
+            <div 
+              id="showcase" 
+              className="flex justify-center h-[700px] w-full overflow-y-scroll"
+            >
+                <div className="flex mt-10 flex-col gap-10">
+                    <Post 
+                        username={profileUser.username} 
+                        publish_date='Sept 6 at 4:30 PM'    
+                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                        user_img_src={profileUser.userPhotoURL}
+                        post_img_src='/images/post1-image.png'
+                      />
+                    <Post 
+                        username={profileUser.username}
+                        publish_date='Sept 6 at 4:30 PM'    
+                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                        user_img_src={profileUser.userPhotoURL}
+                        post_img_src='/images/post1-image.png'
+                      />
+                    <Post 
+                        username={profileUser.username}
+                        publish_date='Sept 6 at 4:30 PM'    
+                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                        user_img_src={profileUser.userPhotoURL}
+                        post_img_src='/images/post1-image.png'
+                      />
+                </div>
+            </div>
+          )}
 
-            {/* Pets */}
-            {activeTab === 'Pets' && (
-              <div className="h-800 w-859 pl-10 pr-10 pt-8 pb-8">
-                <div className="grid grid-cols-6 gap-7">
-                  {pets.map((pet) => (
-                    <div key={pet.id} className="w-36 h-36 rounded-xl bg-pale_yellow">
-                    <Link href={`/user/${profileUsername}/pets/${pet.id}`}>
-                        {pet.photoURL && <Image src={pet.photoURL} alt='pet profile picture' height={144} width={144} className='rounded-lg hover:opacity-80'/>}
-                    </Link>
-                    {getCurrentUser && currentUserID === profileUserID ? (
-                        <button 
-                          className='bg-black text-white text-sm rounded-lg p-1 mt-2 justify-center items-center w-[144px]'
-                          onClick={() => handleDeletePetProfile(pet.id)}>
-                          Delete Pet Profile</button>
-                    ): null}
+          {/* Pets */}
+          {activeTab === 'Pets' && (
+            <div className="h-800 w-859 pl-10 pr-10 pt-8 pb-8">
+              <div className="grid grid-cols-6 gap-7">
+                {pets.map((pet) => (
+                  <div key={pet.id} className="w-36 h-36 rounded-xl">
+                  <Link href={`/user/${profileUser.username}/pets/${pet.id}`}>
+                      <RoundIcon src={pet.photoURL} alt='pet profile picture' height={144} width={144} className='rounded-lg hover:opacity-80'/>
+                  </Link>
+                  {currentUserID === profileUserID ? (
+                      <button 
+                        className='bg-black text-white text-sm rounded-lg p-1 mt-2 justify-center items-center w-[144px]'
+                        onClick={() => handleDeletePetProfile(pet.id)}>
+                        Delete Pet Profile</button>
+                  ): null}
+                  </div>
+              ))}
+
+                <div className="w-36 h-36 rounded-xl bg-pale_yellow flex items-center justify-center text-8xl font-extrabold">
+                  {/* create pet profile modal */}
+                  {showCreatePetForm ? (
+                      <Modal
+                          isOpen={showCreatePetForm}
+                          onRequestClose={() => setShowCreatePetForm(false)}
+                          contentLabel="Create Pet Profile Label"
+                          style={basicModalStyle}
+                      >
+                          <h2>Create Pet Profile Label</h2>
+                          <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
+                          <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
+                          <label htmlFor="sex">Sex:</label>
+                          <div>
+                              <button
+                              id="male"
+                              className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
+                              onClick={() => setPetSex('Male')}
+                              >
+                              Male
+                              </button>
+                              <button
+                              id="female"
+                              className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
+                              onClick={() => setPetSex('Female')}
+                              >
+                              Female
+                              </button>
+                          </div>
+                          <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
+                          <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
+                          <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
+                          <label htmlFor="photo">Upload Photo:</label>
+                          <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
+                          <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
+                      </Modal>
+                  ) : (
+                      profileUserID === currentUserID ? (
+                          // <div>
+                          <button onClick={() => setShowCreatePetForm(true)}><i className="fa-solid fa-plus inline-block align-middle text-white w-fit h-fit" ></i></button>
+                          // </div>
+                      ) : null
+                  )}
+                  {/* <button onClick={handleCreatePetProfile}>
+                    <i className="fa-solid fa-plus inline-block align-middle  text-white" ></i>
+                  </button> */}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Media */}
+          {activeTab === 'Media' && (
+            <div className="h-800 w-859 pl-10 pr-10 pt-8 pb-8">
+              <div className="grid grid-cols-7 gap-2">
+                <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+              </div>
+            </div>
+          )}
+
+          {/* Lost Pets */}
+          {activeTab === 'Lost Pets' && (
+            <div 
+              id="showcase" 
+              className="flex justify-center h-[700px] w-full overflow-y-scroll"
+            >
+                <div className="flex mt-10 flex-col gap-10">
+                    <Post 
+                            username={profileUser.username}
+                            publish_date='Sept 6 at 4:30 PM'    
+                            desc='Contact me if u found my dog! 🐾🐾🐾🐾 
+                                0917 123 4567'
+                            user_img_src={profileUser.userPhotoURL}
+                            post_img_src='/images/post1-image.png'
+                          />
+                    <Post
+                        username={profileUser.username}
+                        publish_date='Sept 6 at 4:30 PM'    
+                        desc='Contact me if u found my cat! 🐾🐾🐾🐾 
+                            0917 123 4567'
+                        user_img_src={profileUser.userPhotoURL}
+                        post_img_src='/images/post1-image.png'
+                      />
+                    <Post
+                        username={profileUser.username}
+                        publish_date='Sept 6 at 4:30 PM'    
+                        desc='Still couldnt find them. :('
+                        user_img_src={profileUser.userPhotoURL}
+                        post_img_src='/images/post1-image.png'
+                      />
+                </div>
+            </div>
+          )}
+
+          {/* edit user profile modal */}
+          {currentUserID === profileUserID ? (// Pop-up for Editing
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={() => setModalIsOpen(false)}
+                    style={basicModalStyle}
+                >
+                    {/* cover photo */}
+                    <div>
+                        <h1>Cover Photo</h1>
+                        <label htmlFor="coverPhoto">
+                            {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                        </label>
+                        <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
                     </div>
-                ))}
+                    
+                    
+                    {/* display name */}
+                    <div>
+                        <br/>
+                        <label htmlFor="display-name">Display Name: </label>
+                        <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
+                    </div>
 
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow flex items-center justify-center text-8xl font-extrabold">
-                    {/* create pet profile modal */}
-                    {showCreatePetForm ? (
-                        <Modal
-                            isOpen={showCreatePetForm}
-                            onRequestClose={() => setShowCreatePetForm(false)}
-                            contentLabel="Create Pet Profile Label"
-                            style={basicModalStyle}
-                        >
-                            <h2>Create Pet Profile Label</h2>
-                            <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
-                            <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
-                            <label htmlFor="sex">Sex:</label>
-                            <div>
-                                <button
-                                id="male"
-                                className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
-                                onClick={() => setPetSex('Male')}
-                                >
-                                Male
-                                </button>
-                                <button
-                                id="female"
-                                className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
-                                onClick={() => setPetSex('Female')}
-                                >
-                                Female
-                                </button>
-                            </div>
-                            <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
-                            <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
-                            <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
-                            <label htmlFor="photo">Upload Photo:</label>
-                            <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
-                            <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
-                        </Modal>
-                    ) : (
-                        profileUserID === currentUserID ? (
-                            // <div>
-                            <button onClick={() => setShowCreatePetForm(true)}><i className="fa-solid fa-plus inline-block align-middle text-white w-fit h-fit" ></i></button>
-                            // </div>
-                        ) : null
-                    )}
-                    {/* <button onClick={handleCreatePetProfile}>
-                      <i className="fa-solid fa-plus inline-block align-middle  text-white" ></i>
-                    </button> */}
-                  </div>
-                </div>
-              </div>
-            )}
 
-            {/* Media */}
-            {activeTab === 'Media' && (
-              <div className="h-800 w-859 pl-10 pr-10 pt-8 pb-8">
-                <div className="grid grid-cols-7 gap-2">
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                </div>
-              </div>
-            )}
+                    {/* description */}
+                    <div>
+                        <br/>
+                        <label htmlFor="description">Description: </label>
+                        <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
+                    </div>
+                
 
-            {/* Lost Pets */}
-            {activeTab === 'Lost Pets' && (
-              <div 
-                id="showcase" 
-                className="flex justify-center h-[700px] w-full overflow-y-scroll"
-              >
-                  <div className="flex mt-10 flex-col gap-10">
-                      <Post 
-                              username={username}
-                              publish_date='Sept 6 at 4:30 PM'    
-                              desc='Contact me if u found my dog! 🐾🐾🐾🐾 
-                                  0917 123 4567'
-                              user_img_src={userPhotoURL ? userPhotoURL: '/images/user1-image.png'}
-                              post_img_src='/images/post1-image.png'
-                            />
-                      <Post
-                          username={username}
-                          publish_date='Sept 6 at 4:30 PM'    
-                          desc='Contact me if u found my cat! 🐾🐾🐾🐾 
-                              0917 123 4567'
-                          user_img_src={userPhotoURL ? userPhotoURL: '/images/user1-image.png'}
-                          post_img_src='/images/post1-image.png'
-                        />
-                      <Post
-                          username={username}
-                          publish_date='Sept 6 at 4:30 PM'    
-                          desc='Still couldnt find them. :('
-                          user_img_src={userPhotoURL ? userPhotoURL: '/images/user1-image.png'}
-                          post_img_src='/images/post1-image.png'
-                        />
-                  </div>
-              </div>
+                    {/* profile picture */}
+                    <div>
+                        <br/>
+                        <h1>Profile Picture</h1>
+                        <label htmlFor="userPhoto">
+                          <div className="flex justify-center w-48 h-48 cursor-pointer"> 
+                            <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
+                          </div>
+                        </label>
+                        <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
+                    </div>
+                    
+                    {/* gender not editable */}
+                    <div>
+                        <br />
+                        <p>Gender: {gender}</p>
+                    </div>
+
+                    {/* birthdate not editable */}
+                    <div>
+                        <br />
+                        <p>Birthdate: {birthdate}</p>
+                    </div>
+
+                    {/* location */}
+                    <div>
+                        <br/>
+                        <label htmlFor="location">Location: </label>
+                        <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
+                    </div>
+
+                    <button onClick={handleSave} disabled={isUploadingCoverPhoto}>Save</button>
+
+                </Modal>
+            ) : (
+                null
             )}
           </div>
         </div>
       </div>
+      }
     </div>
   );
 }

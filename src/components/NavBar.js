@@ -31,8 +31,8 @@ export default function NavBar() {
       }`}
     >
       {/* Circular profile picture (always visible) */}
-      <div className="w-10 h-10 rounded-full bg-white mt-8">
-        {userPhotoURL && <RoundIcon src={userPhotoURL} />}
+      <div className="w-10 h-10 rounded-full bg-white mt-8 cursor-pointer"  onClick={() => window.location.href = "/user/"+username}>
+        {userPhotoURL && <RoundIcon src={userPhotoURL}  width="100%" height="100%" />}
       </div>
 
       {/* Sidebar content*/}
@@ -47,9 +47,9 @@ export default function NavBar() {
           className="w-7 h-7 rounded-full bg-white text-black mb-4"
         >
           {isSidebarExpanded ? (
-            <RoundIcon src="/images/rightarrow-icon.png" />
+            <RoundIcon src="/images/rightarrow-icon.png"  width="100%" height="100%"/>
           ) : (
-            <RoundIcon src="/images/leftarrow-icon.png" />
+            <RoundIcon src="/images/leftarrow-icon.png"  width="100%" height="100%"/>
           )}
         </button>
         <button
@@ -58,35 +58,35 @@ export default function NavBar() {
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}
         >
-          <RoundIcon src="/images/home-icon.png" />
+          <RoundIcon src="/images/home-icon.png"  width="100%" height="100%"/>
         </button>
         <button
           className={`w-7 h-7 rounded-full bg-white mb-4 text-black ${
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}
         >
-          <RoundIcon src="/images/groups-icon.png" />
+          <RoundIcon src="/images/groups-icon.png"  width="100%" height="100%" />
         </button>
         <button
           className={`w-7 h-7 rounded-full bg-white mb-4 text-black ${
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}
         >
-          <RoundIcon src="/images/foundations-icon.png" />
+          <RoundIcon src="/images/foundations-icon.png" width="100%" height="100%" />
         </button>
         <button
           className={`w-7 h-7 rounded-full bg-white mb-4 text-black ${
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}
         >
-          <RoundIcon src="/images/notifications-icon.png" />
+          <RoundIcon src="/images/notifications-icon.png"  width="100%" height="100%"/>
         </button>
         <button
           className={`w-7 h-7 rounded-full bg-white mb-4 text-black ${
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}
         >
-          <RoundIcon src="/images/settings-icon.png" />
+          <RoundIcon src="/images/settings-icon.png"  width="100%" height="100%"/>
         </button>
         <hr
           className={`border-t my-2 w-${
@@ -99,7 +99,7 @@ export default function NavBar() {
             isSidebarExpanded ? "w-10 h-10" : ""
           }`}
         >
-          <RoundIcon src="/images/logout-icon.png" />
+          <RoundIcon src="/images/logout-icon.png"  width="100%" height="100%"/>
         </button>
       </div>
     </nav>
