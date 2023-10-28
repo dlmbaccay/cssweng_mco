@@ -33,7 +33,7 @@ export default function Landing() {
                 <title>BantayBuddy</title>
             </Head>
 
-            {loading ? <Loader /> : null}
+            {loading ? <Loader show={true}/> : null}
         </>
     );
 }
