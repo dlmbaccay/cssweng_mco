@@ -127,7 +127,7 @@ export default function PetProfile() {
       };
 
     // tab functionality
-    const [activeTab, setActiveTab] = useState('Posts');
+    const [activeTab, setActiveTab] = useState('Tagged Posts');
 
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
@@ -143,11 +143,11 @@ export default function PetProfile() {
         {pet && currentUser && 
 
             <div className="flex-1">
-                {/* Cover Photo Container */}
                 <div id='header-container' className='h-1/5 overflow-clip'>
                 {/* Header Picture Rectangle */}
                     <CoverPhoto src={"/../../images/coverPhotoHolder.png"} alt={pet.petName + " cover photo"} />
                 </div>
+
                 <div id='content-container' className='h-4/5 flex flex-row overflow-clip'>
 
                     {/* Left Panel */}
@@ -212,7 +212,7 @@ export default function PetProfile() {
                                 Change Profile Picture
                                 </label>
                                 <div id="img-preview">
-                                   <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='cursor-pointer hover:opacity-50'/>
+                                    <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='cursor-pointer hover:opacity-50'/>
                                 </div>
                                 
                                 <input
@@ -308,7 +308,15 @@ export default function PetProfile() {
                 </div>
                 {/* Container */}
                 <div id='tab-container' className='w-full'>
+                    
                     <div className="flex flex-row w-full bg-snow divide-x divide-neutral-300">
+                        <button 
+                        className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                                    activeTab === 'Tagged Posts' ? 'bg-citron text-white' : ''
+                                    }`}
+                        onClick={() => handleTabClick('Tagged Posts')}>
+                        Tagged Posts
+                        </button>
                         <button 
                         className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
                                     activeTab === 'Milestones' ? 'bg-citron text-white' : ''
@@ -322,13 +330,6 @@ export default function PetProfile() {
                                     }`}
                         onClick={() => handleTabClick('Media')}>
                         Media
-                        </button>
-                        <button 
-                        className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
-                                    activeTab === 'Tagged Posts' ? 'bg-citron text-white' : ''
-                                    }`}
-                        onClick={() => handleTabClick('Tagged Posts')}>
-                        Tagged Posts
                         </button>
                     </div>
 
@@ -377,12 +378,12 @@ export default function PetProfile() {
                     {activeTab === 'Media' && (
                     <div className="h-800 w-859 pl-10 pr-10 pt-8 pb-8">
                     <div className="grid grid-cols-7 gap-2">
-                      <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                      <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                      <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                      <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                        <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                        <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                        <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                        <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
                     </div>
-                  </div>
+                    </div>
                     )}
 
                     {/* Tagged Posts */}
@@ -427,8 +428,9 @@ export default function PetProfile() {
                     )}
 
                 </div>
+                </div>
             </div>
-        </div>}
+        }
     </div>
                         
     );

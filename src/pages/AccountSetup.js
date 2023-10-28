@@ -136,14 +136,14 @@ export default function AccountSetup() {
                         <UsernameMessage username={usernameFormValue} isValid={isValid} loading={loading} />
                     </div>
 
-                    {/* display name
+                    {/* display name */}
                     <div className="mb-4">
                         <label htmlFor="display-name" className="block text-sm font-medium text-gray-700 pt-5">
                             <span>Display Name</span>
                             <span className="text-red-500"> *</span>
                         </label>
                         <input type="text" id='display-name' className="mt-1 p-2 border rounded-md w-full" placeholder="What would you like us to call you?" maxLength="20" required/>
-                    </div> */}
+                    </div>
 
                     {/* profile picture */}
                     <div className="mb-4">
@@ -155,7 +155,7 @@ export default function AccountSetup() {
                     {/* bio */}
                     <div className="mb-4">
                         <label htmlFor="description" className="block text-sm font-medium text-gray-700">Bio</label>
-                        <textarea id='description' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" placeholder="Tell us about yourself..." />
+                        <textarea id='description' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" maxLength="100" placeholder="Tell us about yourself..." />
                     </div>
 
                     {/* gender */}
