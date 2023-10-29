@@ -17,32 +17,21 @@ import Post from '../components/Post';
 // Modal.setAppElement('#root'); // Set the root element for accessibility
 
 export default function UserProfile() {
+
+    // variables for user profile
     const router = useRouter();
     const getCurrentUser = useUserData();
     const currentUserID = getUserIDfromUsername(getCurrentUser.username);
-    const { profileUsername } = router.query;
+    
+    const { profileUsername } = router.query; // username of the user whose profile is being viewed
+    
     const profileUserID = getUserIDfromUsername(profileUsername);
+    
     const [currentUser, setCurrentUser] = useState(null); // Current user data
     const [profileUser, setProfileUser] = useState(null); // Profile user data
-    const [pets, setPets] = useState([]);
+    const [pets, setPets] = useState([]); // pets of the profile user
     
-    useEffect(() => {
-        const fetchUserData = async () => {
-        try {
-            const currentUserDoc = await firestore.collection('users').doc(currentUserID).get();
-            const profileUserDoc = await firestore.collection('users').doc(profileUserID).get();
-
-            setCurrentUser(currentUserDoc.data());
-            setProfileUser(profileUserDoc.data());
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    };
-
-    fetchUserData();
-  // }, [currentUserID, currentUser]);
-  }, [currentUserID, profileUserID, currentUser, profileUser]);
-
+    // variables for user profile
     const [username, setUsername] = useState(null);
     const [description, setDescription] = useState(null); 
     const [displayName, setDisplayName] = useState(null); 
@@ -55,89 +44,105 @@ export default function UserProfile() {
     const [birthdate, setBirthdate] = useState(null);
     const [location, setLocation] = useState(null);
 
-    // const pets = usePetData(profileUserID);
-
+    // variables for editing user profile
     const [editedDisplayName, setEditedDisplayName] = useState(displayName);
     const [editedDescription, setEditedDescription] = useState(description);
     const [editedLocation, setEditedLocation] = useState(location);
 
-    useEffect(() => {
-    // turn off realtime subscription
-    let unsubscribe;
-    
-    if (profileUserID) { // info of the user whose profile is being viewed
-
-        const userRef = firestore.collection('users').doc(profileUserID);
-        unsubscribe = userRef.onSnapshot((doc) => {
-        setProfileUser({
-            id: doc.id,
-            ...doc.data()
-        });
-        setUsername(doc.data()?.username);
-        setDescription(doc.data()?.description);
-        setDisplayName(doc.data()?.displayName);
-        setEmail(doc.data()?.email);
-        setUserPhotoURL(doc.data()?.photoURL);
-        setCoverPhotoURL(doc.data()?.coverPhotoURL);
-        setGender(doc.data()?.gender);
-        setBirthdate(doc.data()?.birthdate);
-        setLocation(doc.data()?.location);
-
-        setFollowers(doc.data()?.followers);
-        setFollowing(doc.data()?.following);
-        
-        setEditedDisplayName(doc.data()?.displayName);
-        setEditedDescription(doc.data()?.description);
-        setEditedLocation(doc.data()?.location);
-
-        // Fetch the 'pets' collection
-        const petsCollectionRef = userRef.collection('pets');
-        petsCollectionRef.get().then((querySnapshot) => {
-          const petsData = [];
-          querySnapshot.forEach((doc) => {
-            petsData.push({
-              id: doc.id,
-              ...doc.data()
-            });
-          });
-          setPets(petsData);
-        });
-    });
-    } else {
-        setProfileUser(null);
-        setUsername(null);
-        setDescription(null);
-        setDisplayName(null);
-        setEmail(null);
-        setUserPhotoURL(null);
-        setCoverPhotoURL(null);
-        setGender(null);
-        setBirthdate(null);
-        setLocation(null);
-        setEditedDisplayName(null);
-        setEditedDescription(null);
-        setEditedLocation(null);
-        setPets([])
-    }
-
-    return unsubscribe;
-    }, [profileUserID]);
-
+    // variables for creating pet profile
     const [showCreatePetForm, setShowCreatePetForm] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [deletingPetId, setDeletingPetId] = useState(null);
     const [deletingPetName, setDeletingPetName] = useState(null);
     const [deletingPetPicture, setDeletingPetPicture] = useState(null);
     const [petName, setPetName] = useState(null);
-
-    // add prefix pet to all pet states
     const [petAbout, setPetAbout] = useState(null);
     const [petSex, setPetSex] = useState(null);
     const [petBirthdate, setPetBirthdate] = useState(null);
     const [petBirthplace, setPetBirthplace] = useState(null);
     const [petBreed, setPetBreed] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
-    const [modalIsOpen, setModalIsOpen] = useState(false); // State for controlling the modal
+
+    // misc variables
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
+    const [activeTab, setActiveTab] = useState('Posts');
+
+    useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+            const currentUserDoc = await firestore.collection('users').doc(currentUserID).get();
+            const profileUserDoc = await firestore.collection('users').doc(profileUserID).get();
+
+            setCurrentUser(currentUserDoc.data());
+            setProfileUser(profileUserDoc.data());
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+      };
+
+      fetchUserData();
+
+      let unsubscribe;
+      
+      if (profileUserID) { // info of the user whose profile is being viewed
+
+          const userRef = firestore.collection('users').doc(profileUserID);
+          unsubscribe = userRef.onSnapshot((doc) => {
+          setProfileUser({
+              id: doc.id,
+              ...doc.data()
+          });
+          setUsername(doc.data()?.username);
+          setDescription(doc.data()?.description);
+          setDisplayName(doc.data()?.displayName);
+          setEmail(doc.data()?.email);
+          setUserPhotoURL(doc.data()?.photoURL);
+          setCoverPhotoURL(doc.data()?.coverPhotoURL);
+          setGender(doc.data()?.gender);
+          setBirthdate(doc.data()?.birthdate);
+          setLocation(doc.data()?.location);
+
+          setFollowers(doc.data()?.followers);
+          setFollowing(doc.data()?.following);
+          
+          setEditedDisplayName(doc.data()?.displayName);
+          setEditedDescription(doc.data()?.description);
+          setEditedLocation(doc.data()?.location);
+
+          // Fetch the 'pets' collection
+          const petsCollectionRef = userRef.collection('pets');
+          petsCollectionRef.get().then((querySnapshot) => {
+            const petsData = [];
+            querySnapshot.forEach((doc) => {
+              petsData.push({
+                id: doc.id,
+                ...doc.data()
+              });
+            });
+            setPets(petsData);
+          });
+      });
+      } else {
+          setProfileUser(null);
+          setUsername(null);
+          setDescription(null);
+          setDisplayName(null);
+          setEmail(null);
+          setUserPhotoURL(null);
+          setCoverPhotoURL(null);
+          setGender(null);
+          setBirthdate(null);
+          setLocation(null);
+          setEditedDisplayName(null);
+          setEditedDescription(null);
+          setEditedLocation(null);
+          setPets([])
+      }
+
+      return unsubscribe;
+        
+    }, [currentUserID, profileUserID, currentUser, profileUser]);
 
     const handleCreatePetProfile = async () => {
         try {
@@ -236,7 +241,7 @@ export default function UserProfile() {
         }
     };
     
-    const handleEdit = () => {
+    const handleEditProfile = () => {
         if (getCurrentUser && currentUserID === profileUserID) { // check if this is the owner of the profile
             setModalIsOpen(true); // open the modal when editing starts
         }
@@ -283,8 +288,6 @@ export default function UserProfile() {
             });
         });
     }
-
-    const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
 
     const uploadCoverPhotoFile = async (e) => {
         setIsUploadingCoverPhoto(true);
@@ -376,10 +379,7 @@ export default function UserProfile() {
         }
     };
 
-    // tab functionality
-    const [activeTab, setActiveTab] = useState('Posts');
-
-    const handleTabClick = (tabName) => {
+    const handleTabEvent = (tabName) => {
         setActiveTab(tabName);
     };
 
@@ -417,7 +417,7 @@ export default function UserProfile() {
                 {/* Edit button */}
                 {currentUserID === profileUserID ? (
                   <button
-                    onClick={handleEdit}
+                    onClick={handleEditProfile}
                     className="text-center mt-4 w-20 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                   >
                     Edit
@@ -462,28 +462,28 @@ export default function UserProfile() {
                 className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
                             activeTab === 'Posts' ? 'bg-citron text-white' : ''
                           }`}
-                onClick={() => handleTabClick('Posts')}>
+                onClick={() => handleTabEvent('Posts')}>
                 Posts
               </button>
               <button 
                 className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
                             activeTab === 'Pets' ? 'bg-citron text-white' : ''
                           }`}
-                onClick={() => handleTabClick('Pets')}>
+                onClick={() => handleTabEvent('Pets')}>
                 Pets
               </button>
               <button 
                 className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
                             activeTab === 'Media' ? 'bg-citron text-white' : ''
                           }`}
-                onClick={() => handleTabClick('Media')}>
+                onClick={() => handleTabEvent('Media')}>
                 Media
               </button>
               <button 
                 className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
                             activeTab === 'Lost Pets' ? 'bg-citron text-white' : ''
                           }`}
-                onClick={() => handleTabClick('Lost Pets')}>
+                onClick={() => handleTabEvent('Lost Pets')}>
                 Lost Pets
               </button>
               </div>
