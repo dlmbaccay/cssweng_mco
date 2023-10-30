@@ -11,7 +11,8 @@ import { basicModalStyle, confirmationModalStyle } from '../lib/modalstyle';
 import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
-import Post from '../components/Post';
+import PostSnippet from './PostSnippet';
+import { set } from 'react-hook-form';
 
 // Modal.setAppElement('#root'); // Set the root element for accessibility
 
@@ -145,21 +146,29 @@ export default function UserProfile() {
       return unsubscribe;
     }, [profileUserID])
 
-    const handleCreatePetProfile = async () => {
+    const handleCreatePetProfile = async (e) => {
+      e.preventDefault();
+
         try {
-            if (profileUserID !== currentUserID) {
-                toast.error("You can only create a pet profile for your own user profile.");
-                return;
-            }
+          if (profileUserID !== currentUserID) {
+              toast.error("You can only create a pet profile for your own user profile.");
+              return;
+          }
 
-            const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
-            const newPetRef = petRef.doc();
-            const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
+          const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
+          const newPetRef = petRef.doc();
+          const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
 
-            const batch = firestore.batch();
+          const batch = firestore.batch();
 
-            batch.set(newPetRef, {
-            petname: petName,
+          batch.set(newPetRef, {
+            petOwnerID: currentUserID,
+            petOwnerUsername: username,
+            petOwnerDisplayName: displayName,
+            petOwnerPhotoURL: userPhotoURL,
+            petOwnerCoverPhotoURL: coverPhotoURL,
+
+            petName: petName,
             about: petAbout,
             sex: petSex,
             breed: petBreed,
@@ -167,39 +176,41 @@ export default function UserProfile() {
             birthplace: petBirthplace,
             followers: [],
             following: []
-        });
+          });
 
-        const uploadTask = storageRef.put(petPhotoURL);
+          const uploadTask = storageRef.put(petPhotoURL);
+          await uploadTask;
 
-        await uploadTask;
+          const downloadURL = await storageRef.getDownloadURL();
 
-        const photoURL = await storageRef.getDownloadURL();
+          if (!downloadURL) {
+            throw new Error('No download URL!');
+          }
 
-        if (!photoURL) {
-        throw new Error('File not found in Firebase Storage.');
-        }
+          batch.update(newPetRef, {
+            photoURL: downloadURL
+          });
 
-        batch.update(newPetRef, { photoURL });
+          await batch.commit();
 
-        batch.commit();
+          toast.success("Pet profile created successfully!");
+          
+          setShowCreatePetForm(false);
+          setPetName('');
+          setPetAbout('');
+          setPetSex('');
+          setPetBreed('');
+          setPetBirthdate('');
+          setPetBirthplace('');
+          setPetPhotoURL('');
 
-        toast.success("Pet profile created successfully!");
-        setShowCreatePetForm(false);
-        setPetName('');
-        setPetAbout('');
-        setPetSex('');
-        setPetBreed('');
-        setPetBirthdate('');
-        setPetBirthplace('');
-        setPetPhotoURL('');
-
-        // reload window
-        window.location.reload();
+          // reload window
+          window.location.reload();
     } catch (error) {
-        toast.error('Error creating pet profile: ' + error.message);
-    }
+          toast.error('Error creating pet profile: ' + error.message);
+        }
     };
-    
+
     const handleDeletePetProfile = async (petId) => {
         setDeletingPetId(petId);
 
@@ -223,9 +234,14 @@ export default function UserProfile() {
 
             const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(deletingPetId);
 
-            // Delete the pet's profile picture from storage
-            const storageRef = storage.ref(`petProfilePictures/${deletingPetId}/profilePic`);
-            await storageRef.delete();
+            // Delete the pet's profile picture from storage, if it exists
+            if (deletingPetPicture) {
+              const storageRef = storage.refFromURL(deletingPetPicture);
+              await storageRef.delete();
+            }
+
+            // const storageRef = storage.ref(`petProfilePictures/${deletingPetId}/profilePic`);
+            // await storageRef.delete();
 
             // Delete the pet's document from Firestore
             await petRef.delete();
@@ -238,6 +254,7 @@ export default function UserProfile() {
 
             toast.success("The pet profile was deleted successfully");
         } catch (error) {
+            toast.error('Error deleting pet profile:', error.message);
             console.error('Error deleting pet profile:', error);
         }
     };
@@ -493,87 +510,36 @@ export default function UserProfile() {
                           id="showcase" 
                           className="flex justify-center w-full"
                         >
-                          <div className="flex mt-10 flex-col gap-10">
-                            <Post 
+                          <div className="flex mt-10 mb-10 flex-col gap-10">
+                            <PostSnippet
                                 username={username} 
+                                displayName={displayName}
                                 publish_date='Sept 6 at 4:30 PM'    
                                 desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                     Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                     🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
                                 user_img_src={userPhotoURL}
                                 post_img_src='/images/post1-image.png'
-                              />
-                            <Post 
-                                username={username} 
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src={userPhotoURL}
-                                post_img_src='/images/post1-image.png'
-                              />
-                            <Post 
-                              username={username} 
-                              publish_date='Sept 6 at 4:30 PM'    
-                              desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                  Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                  🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                              user_img_src={userPhotoURL}
-                              post_img_src='/images/post1-image.png'
                             />
-                            <Post 
+                            <PostSnippet
                                 username={username} 
+                                displayName={displayName}
                                 publish_date='Sept 6 at 4:30 PM'    
                                 desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                     Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                     🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
                                 user_img_src={userPhotoURL}
                                 post_img_src='/images/post1-image.png'
-                              />
-                            <Post 
-                                username={username} 
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src={userPhotoURL}
-                                post_img_src='/images/post1-image.png'
-                              />
-                            <Post 
-                              username={username} 
-                              publish_date='Sept 6 at 4:30 PM'    
-                              desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                  Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                  🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                              user_img_src={userPhotoURL}
-                              post_img_src='/images/post1-image.png'
                             />
-                            <Post 
+                            <PostSnippet
                                 username={username} 
+                                displayName={displayName}
                                 publish_date='Sept 6 at 4:30 PM'    
                                 desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                     Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                     🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
                                 user_img_src={userPhotoURL}
                                 post_img_src='/images/post1-image.png'
-                              />
-                            <Post 
-                                username={username} 
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src={userPhotoURL}
-                                post_img_src='/images/post1-image.png'
-                              />
-                            <Post 
-                              username={username} 
-                              publish_date='Sept 6 at 4:30 PM'    
-                              desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                  Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                  🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                              user_img_src={userPhotoURL}
-                              post_img_src='/images/post1-image.png'
                             />
                           </div>
                         </div>
@@ -603,7 +569,7 @@ export default function UserProfile() {
 
                                       <div className='mt-2 flex flex-row items-center justify-center'>
                                           <div className='text-center text-lg font-bold'>
-                                            {pet.petname}
+                                            {pet.petName}
                                           </div>
                                           <div>
                                             {currentUserID === profileUserID ? (
@@ -659,32 +625,36 @@ export default function UserProfile() {
                                           contentLabel="Create Pet Profile Label"
                                           style={basicModalStyle}
                                       >
-                                          <h2>Create Pet Profile Label</h2>
-                                          <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
-                                          <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
-                                          <label htmlFor="sex">Sex:</label>
-                                          <div>
-                                              <button
-                                              id="male"
-                                              className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
-                                              onClick={() => setPetSex('Male')}
-                                              >
-                                                Male
-                                              </button>
-                                              <button
-                                              id="female"
-                                              className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
-                                              onClick={() => setPetSex('Female')}
-                                              >
-                                                Female
-                                              </button>
-                                          </div>
-                                          <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
-                                          <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
-                                          <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
-                                          <label htmlFor="photo">Upload Photo:</label>
-                                          <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
-                                          <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
+                                          <form onSubmit={handleCreatePetProfile}>
+                                            <h2>Create Pet Profile Label</h2>
+                                            <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" required/>
+                                            <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
+                                            <label htmlFor="sex">Sex:</label>
+                                            <div>
+                                                <button
+                                                  id="male"
+                                                  className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
+                                                  onClick={() => setPetSex('Male')}
+                                                  type='button'
+                                                >
+                                                  Male
+                                                </button>
+                                                <button
+                                                  id="female"
+                                                  className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
+                                                  onClick={() => setPetSex('Female')}
+                                                  type='button'
+                                                >
+                                                  Female
+                                                </button>
+                                            </div>
+                                            <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
+                                            <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
+                                            <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
+                                            <label htmlFor="photo">Upload Photo:</label>
+                                            <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} required/>
+                                            <button type='submit'>Create Pet Profile</button>
+                                          </form>
                                       </Modal>
                                   ) : (
                                       profileUserID === currentUserID ? (
@@ -731,33 +701,16 @@ export default function UserProfile() {
                           className="flex justify-center w-full"
                         >
                             <div className="flex mt-10 flex-col gap-10">
-                                <Post 
-                                    username={username} 
-                                    publish_date='Sept 6 at 4:30 PM'    
-                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                    user_img_src={userPhotoURL}
-                                    post_img_src='/images/post1-image.png'
-                                  />
-                                <Post 
-                                    username={username} 
-                                    publish_date='Sept 6 at 4:30 PM'    
-                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                    user_img_src={userPhotoURL}
-                                    post_img_src='/images/post1-image.png'
-                                  />
-                                <Post 
-                                  username={username} 
-                                  publish_date='Sept 6 at 4:30 PM'    
-                                  desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                      Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                      🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                  user_img_src={userPhotoURL}
-                                  post_img_src='/images/post1-image.png'
-                                />
+                                <PostSnippet
+                                        username={username} 
+                                        displayName={displayName}
+                                        publish_date='Sept 6 at 4:30 PM'    
+                                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                        user_img_src={userPhotoURL}
+                                        post_img_src='/images/post1-image.png'
+                                    />
                             </div>
                         </div>
                       )}

@@ -47,7 +47,7 @@ export default function AccountSetup() {
     
     useEffect(() => {
         checkUsername(usernameFormValue);
-    }, [usernameFormValue, check]);
+    }, [usernameFormValue, checkUsername]);
 
     // Hit the database for username match after each debounced change
     // useCallback is required for debounce to work
@@ -97,7 +97,8 @@ export default function AccountSetup() {
             followers: [],
             following: [],
             
-            // pets: [],
+            // create a pet collections
+            pets: {},
             
             coverPhotoURL: coverPhotoURL,
             gender: document.querySelector("#genderSelect").value,

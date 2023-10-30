@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
-import Post from '../components/Post'
+import Post from '../components/PostSnippet'
 import Router from 'next/router'
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
 import toast from 'react-hot-toast'

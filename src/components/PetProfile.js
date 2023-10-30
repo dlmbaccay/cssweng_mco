@@ -8,9 +8,10 @@ import Modal from 'react-modal'; // Import the Modal component
 import toast from 'react-hot-toast'
 import { basicModalStyle } from '../lib/modalstyle';
 import NavBar from '@/src/components/NavBar';
-import Post from "@/src/components/Post";
+import PostSnippet from "@/src/components/PostSnippet";
 import CoverPhoto from './CoverPhoto';
 import RoundIcon from './RoundIcon';
+import Link from 'next/link';
 
 export default function PetProfile() {
 
@@ -36,6 +37,14 @@ export default function PetProfile() {
     const [activeTab, setActiveTab] = useState('Tagged Posts');
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
+    // variables for pet's owner profile
+    const [petOwnerID, setPetOwnerID] = useState(null);
+    const [petOwnerUsername, setPetOwnerUsername] = useState(null);
+    const [petOwnerDisplayName, setPetOwnerDisplayName] = useState(null);
+    const [petOwnerPhotoURL, setPetOwnerPhotoURL] = useState(null);
+    const [petOwnerCoverPhotoURL, setPetOwnerCoverPhotoURL] = useState(null);
+
+
     useEffect(() => {
         let unsubscribe;
 
@@ -43,21 +52,26 @@ export default function PetProfile() {
         const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(petId);
         unsubscribe = petRef.onSnapshot((doc) => {
             if (doc.exists) {
-              setPet({
-                  id: doc.id,
-                  ...doc.data()
-              });
-              setPetName(doc.data().petname);
-              setAbout(doc.data().about);
-              setFollowers(doc.data().followers);
-              setFollowing(doc.data().following);
-              setSex(doc.data().sex);
-              setBreed(doc.data().breed);
+                setPet({
+                    id: doc.id,
+                    ...doc.data()
+                });
+              
+                setPetName(doc.data().petName);
+                setAbout(doc.data().about);
+                setFollowers(doc.data().followers);
+                setFollowing(doc.data().following);
+                setSex(doc.data().sex);
+                setBreed(doc.data().breed);
+                setPetPhotoURL(doc.data().photoURL);
+                setBirthdate(doc.data()?.birthdate);
+                setBirthplace(doc.data()?.birthplace);
 
-              setPetPhotoURL(doc.data().photoURL);
-
-              setBirthdate(doc.data()?.birthdate);
-              setBirthplace(doc.data()?.birthplace);
+                setPetOwnerID(doc.data().petOwnerID);
+                setPetOwnerUsername(doc.data().petOwnerUsername);
+                setPetOwnerDisplayName(doc.data().petOwnerDisplayName);
+                setPetOwnerPhotoURL(doc.data().petOwnerPhotoURL);
+                setPetOwnerCoverPhotoURL(doc.data().petOwnerCoverPhotoURL);
             } else {
               setPet(null);
             }
@@ -82,7 +96,7 @@ export default function PetProfile() {
       
         try {
           const updateData = {
-            petname: petName,
+            petName: petName,
             about: about,
             photoURL: petPhotoURL
           };
@@ -151,7 +165,7 @@ export default function PetProfile() {
 
             <div className="flex-1 h-screen">
                 <div id='header-container' className='h-1/5 border-l border-neutral-300'>
-                    <CoverPhoto src={"/../../images/coverPhotoHolder.png"} alt={petName + " cover photo"} />
+                    <CoverPhoto src={petOwnerCoverPhotoURL} alt={petOwnerUsername + " cover photo"} />
                 </div>
 
                 <div id='content-container' className='h-4/5 flex flex-row'>
@@ -164,9 +178,12 @@ export default function PetProfile() {
 
                         {/* petName */} 
                         <div className="text-center mt-32 w-80">
-                            <div className="text-2xl font-bold text-raisin_black ">{petName}
+                            <div className="text-2xl font-bold text-raisin_black ">
+                                {petName}
                             </div>
-                            <div className="text-sm text-raisin_black ">{breed}
+                            
+                            <div className="text-sm text-raisin_black mt-2">
+                                {breed} · <Link href={'/user/' + petOwnerUsername}className='hover:text-grass hover:font-semibold transition-all'>@{petOwnerUsername}</Link>
                             </div>
                         </div>
 
@@ -341,14 +358,15 @@ export default function PetProfile() {
                                 id="showcase" 
                                 className="flex justify-center w-full"
                                 >
-                                <div className="flex mt-10 flex-col gap-10">
-                                    <Post 
-                                        username={petName} 
+                                <div className="flex mt-10 mb-10 flex-col gap-10">
+                                    <PostSnippet 
+                                        username={petOwnerUsername}
+                                        displayName={petOwnerDisplayName}
+                                        user_img_src={petOwnerPhotoURL}
                                         publish_date='Sept 6 at 4:30 PM'    
                                         desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                             Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                             🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                        user_img_src={'/images/post1-image.png'}
                                         post_img_src='/images/post1-image.png'
                                     />
                                 </div>

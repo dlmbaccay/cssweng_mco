@@ -12,7 +12,9 @@ import Loader from '../components/Loader';
 import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
-import Post from '../components/Post';
+import PostSnippet from '../components/PostSnippet';
+
+import CreatePost from '../components/CreatePost';
 
 // Modal.setAppElement('#root'); // Set the root element for accessibility
 
@@ -504,89 +506,23 @@ export default function UserProfile() {
                         {activeTab === 'Posts' && (
                             <div 
                                 id="showcase" 
-                                className="flex justify-center w-full"
+                                className="flex flex-col items-center justify-center w-full"
                             >
+                                
+                                {/* { profileUserID === currentUserID ? ( */}
+                                    <CreatePost />
+                                {/* ) : null } */}
+                                
                                 <div className="flex mt-10 flex-col gap-10">
-                                    <Post 
+                                    <PostSnippet
                                         username={username} 
+                                        displayName={displayName}
                                         publish_date='Sept 6 at 4:30 PM'    
                                         desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                             Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                             🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
                                         user_img_src={userPhotoURL}
                                         post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                        username={username} 
-                                        publish_date='Sept 6 at 4:30 PM'    
-                                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                        user_img_src={userPhotoURL}
-                                        post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                    username={username} 
-                                    publish_date='Sept 6 at 4:30 PM'    
-                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                    user_img_src={userPhotoURL}
-                                    post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                        username={username} 
-                                        publish_date='Sept 6 at 4:30 PM'    
-                                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                        user_img_src={userPhotoURL}
-                                        post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                        username={username} 
-                                        publish_date='Sept 6 at 4:30 PM'    
-                                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                        user_img_src={userPhotoURL}
-                                        post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                    username={username} 
-                                    publish_date='Sept 6 at 4:30 PM'    
-                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                    user_img_src={userPhotoURL}
-                                    post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                        username={username} 
-                                        publish_date='Sept 6 at 4:30 PM'    
-                                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                        user_img_src={userPhotoURL}
-                                        post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                        username={username} 
-                                        publish_date='Sept 6 at 4:30 PM'    
-                                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                        user_img_src={userPhotoURL}
-                                        post_img_src='/images/post1-image.png'
-                                    />
-                                    <Post 
-                                    username={username} 
-                                    publish_date='Sept 6 at 4:30 PM'    
-                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                    user_img_src={userPhotoURL}
-                                    post_img_src='/images/post1-image.png'
                                     />
                                 </div>
                             </div>
