@@ -508,8 +508,26 @@ export default function UserProfile() {
                       {activeTab === 'Posts' && (
                         <div 
                           id="showcase" 
-                          className="flex justify-center w-full"
+                          className="flex flex-col items-center justify-center w-full"
                         >
+                          <div id='create-post' className='mt-10 shadow-sm bg-snow w-[800px] h-[100px] rounded-3xl p-6 flex flex-col'>
+        
+                              <div className='flex flex-row w-full h-full items-center'>
+
+                                  <div className='h-[50px] w-[50px] flex items-center'>
+                                      <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
+                                  </div>
+
+                                  <div className='flex flex-col w-full h-full ml-4'>
+                                      <div
+                                          className='w-full h-full text-raisin_black text-md bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-neutral-50 hover:cursor-pointer'
+                                      >
+                                        What`s on your mind?
+                                      </div>
+                                  </div>
+                              </div>
+
+                          </div>
                           <div className="flex mt-10 mb-10 flex-col gap-10">
                             <PostSnippet
                                 username={username} 
