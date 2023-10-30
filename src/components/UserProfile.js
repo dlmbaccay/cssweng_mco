@@ -8,7 +8,6 @@ import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
 import { basicModalStyle, confirmationModalStyle } from '../lib/modalstyle';
-import Loader from '../components/Loader';
 import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
@@ -82,7 +81,10 @@ export default function UserProfile() {
       };
 
       fetchUserData();
+        
+    }, [currentUserID, profileUserID]);
 
+    useEffect(() => {
       let unsubscribe;
       
       if (profileUserID) { // info of the user whose profile is being viewed
@@ -141,8 +143,7 @@ export default function UserProfile() {
       }
 
       return unsubscribe;
-        
-    }, [currentUserID, profileUserID, currentUser, profileUser]);
+    }, [profileUserID])
 
     const handleCreatePetProfile = async () => {
         try {
@@ -268,7 +269,6 @@ export default function UserProfile() {
 
         } catch (error) {
             toast.error('Error saving profile:', error);
-            console.error('Error saving profile:', error);
         }
     }
 
@@ -384,454 +384,454 @@ export default function UserProfile() {
     };
 
     return (
-    <div className="flex">
+    <div className="flex h-screen">
       <NavBar />
 
       { profileUser  &&
 
-        <div className="flex-1">
-          <div id='header-container' className='h-1/5'>
-            {/* Header Picture Rectangle */}
+        <div className="flex-1 h-screen">
+          <div id='header-container' className='h-1/5 border-l border-neutral-300'>
               <CoverPhoto src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} />
           </div>
 
-          <div id='content-container' className='h-4/5 flex flex-row over'>
+          <div id='content-container' className='h-4/5 flex flex-row'>
               {/* Left Panel */}
-            <div className="flex flex-col w-80 bg-snow border border-neutral-300 justify-start items-center">
+              <div className="fixed flex flex-col w-80 h-screen bg-snow border border-neutral-300 justify-start items-center">
 
-                <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full"> 
-                  <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
-                </div>
-                
-                {/* Display Name & Username */}
-                <div className="text-center mt-32 w-80">
-                  <div className="text-2xl font-bold text-raisin_black ">
-                    {displayName}
+                  <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full"> 
+                    <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
                   </div>
-
-                  <div className='text-lg text-raisin_black'>
-                    @{username}
-                  </div>
-                </div>
-
-                {/* Edit button */}
-                {currentUserID === profileUserID ? (
-                  <button
-                    onClick={handleEditProfile}
-                    className="text-center mt-4 w-20 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
-                  >
-                    Edit
-                </button>
-                ) : 
-                  // Follow Button
-                  <button 
-                    onClick={handleFollow}
-                    className="text-center mt-4 w-32 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
-                  >
-                    {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
-                  </button>
-                }
-
-                {/* Followers and Following */}
-                {profileUser ? (
-                  <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center ">
-                    <div className="flex flex-col items-center">
-                      <span className="text-raisin_black text-xl font-bold">{followers.length}</span>
-                      <span className="text-grass font-bold text-sm">Followers</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-raisin_black text-xl font-bold">{following.length}</span>
-                      <span className="text-grass font-bold text-sm">Following</span>
-                    </div>
-                  </div>
-                ) : (null)}
-
-                {/* About */}
-                <div className="text-center mt-10 flex flex-col gap-2">
-                  <div className="text-lg font-bold text-raisin_black">About</div>
-                    <div className="text-base text-raisin_black pl-6 pr-6">
-                      {description}
-                    </div>
-                </div>
-            </div>
-
-            {/* Container */}
-            <div id='tab-container' className='w-full'>
-              <div className="flex flex-row w-full bg-snow divide-x divide-neutral-300">
-              <button 
-                className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
-                            activeTab === 'Posts' ? 'bg-citron text-white' : ''
-                          }`}
-                onClick={() => handleTabEvent('Posts')}>
-                Posts
-              </button>
-              <button 
-                className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
-                            activeTab === 'Pets' ? 'bg-citron text-white' : ''
-                          }`}
-                onClick={() => handleTabEvent('Pets')}>
-                Pets
-              </button>
-              <button 
-                className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
-                            activeTab === 'Media' ? 'bg-citron text-white' : ''
-                          }`}
-                onClick={() => handleTabEvent('Media')}>
-                Media
-              </button>
-              <button 
-                className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
-                            activeTab === 'Lost Pets' ? 'bg-citron text-white' : ''
-                          }`}
-                onClick={() => handleTabEvent('Lost Pets')}>
-                Lost Pets
-              </button>
-              </div>
-
-            {/* Posts */}
-            {activeTab === 'Posts' && (
-              <div 
-                id="showcase" 
-                className="flex justify-center h-[700px] w-full overflow-y-scroll"
-              >
-                <div className="flex mt-10 flex-col gap-10">
-                  <Post 
-                      username={username} 
-                      publish_date='Sept 6 at 4:30 PM'    
-                      desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                          Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                          🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                      user_img_src={userPhotoURL}
-                      post_img_src='/images/post1-image.png'
-                    />
-                  <Post 
-                      username={username} 
-                      publish_date='Sept 6 at 4:30 PM'    
-                      desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                          Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                          🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                      user_img_src={userPhotoURL}
-                      post_img_src='/images/post1-image.png'
-                    />
-                  <Post 
-                    username={username} 
-                    publish_date='Sept 6 at 4:30 PM'    
-                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                    user_img_src={userPhotoURL}
-                    post_img_src='/images/post1-image.png'
-                  />
-                  <Post 
-                      username={username} 
-                      publish_date='Sept 6 at 4:30 PM'    
-                      desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                          Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                          🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                      user_img_src={userPhotoURL}
-                      post_img_src='/images/post1-image.png'
-                    />
-                  <Post 
-                      username={username} 
-                      publish_date='Sept 6 at 4:30 PM'    
-                      desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                          Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                          🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                      user_img_src={userPhotoURL}
-                      post_img_src='/images/post1-image.png'
-                    />
-                  <Post 
-                    username={username} 
-                    publish_date='Sept 6 at 4:30 PM'    
-                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                    user_img_src={userPhotoURL}
-                    post_img_src='/images/post1-image.png'
-                  />
-                  <Post 
-                      username={username} 
-                      publish_date='Sept 6 at 4:30 PM'    
-                      desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                          Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                          🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                      user_img_src={userPhotoURL}
-                      post_img_src='/images/post1-image.png'
-                    />
-                  <Post 
-                      username={username} 
-                      publish_date='Sept 6 at 4:30 PM'    
-                      desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                          Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                          🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                      user_img_src={userPhotoURL}
-                      post_img_src='/images/post1-image.png'
-                    />
-                  <Post 
-                    username={username} 
-                    publish_date='Sept 6 at 4:30 PM'    
-                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                    user_img_src={userPhotoURL}
-                    post_img_src='/images/post1-image.png'
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Pets */}
-            {activeTab === 'Pets' && (
-              <div className="w-full h-[700px] p-14 pl-16">
-                  {
-                    (profileUserID !== currentUserID && pets.length === 0) ? (
-                      <div className='flex flex-col items-center justify-center h-full p-0'>
-                        <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                        <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
-                      </div>
-                    ) : (                   
-                      <div className="grid grid-cols-6">
-                        {pets.map((pet) => (
-                          <div key={pet.id} className="w-36 h-36 rounded-xl">
-                            <Link href={`/user/${profileUser.username}/pets/${pet.id}`} className='rounded-lg hover:opacity-80 flex flex-col'>
-                                <RoundIcon 
-                                  src={pet.photoURL} 
-                                  alt='pet profile picture' 
-                                  height={144} 
-                                  width={144}
-                                  />
-                            </Link>
-
-                            <div className='mt-2 flex flex-row items-center justify-center'>
-                                <div className='text-center text-lg font-bold'>
-                                  {pet.petname}
-                                </div>
-                                <div>
-                                  {currentUserID === profileUserID ? (
-                                    <button 
-                                      className='text-sm rounded-lg ml-2 justify-center items-center hover:text-red-600'
-                                      onClick={() => handleDeletePetProfile(pet.id)}>
-                                        <i class="fa-solid fa-trash"></i>
-                                      </button>
-                                  ): null}
-                                </div>
-                            </div>
-                          </div> 
-                        ))}
-
-                        {/* delete pet profile confirmation modal */}
-                        {getCurrentUser && currentUserID === profileUserID ? (
-                            <Modal
-                            isOpen={showConfirmation}
-                            onRequestClose={() => setShowConfirmation(false)}
-                            contentLabel="Delete Confirmation"
-                            style={confirmationModalStyle}
-                            >
-                                <div className='flex flex-col gap-6 items-center justify-center'>
-                                  <div className='text-center text-md'>
-                                    Are you sure you want to delete <span className='font-bold'>{deletingPetName}`s</span> profile?
-                                  </div>
-
-                                  <div className='flex flex-row items-center'>
-                                      <Image src={deletingPetPicture} alt="pet profile picture" width={100} height={100} className='rounded-full shadow-lg' />
-                                  </div>
-
-                                  <div className='flex flex-row items-center gap-4'>
-                                    <button 
-                                      onClick={confirmDeletePetProfile}
-                                      className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
-                                    >
-                                        Delete</button>
-                                    <button 
-                                      onClick={() => setShowConfirmation(false)}
-                                      className='rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-black hover:text-white font-bold'
-                                    >
-                                      Cancel</button>
-                                  </div>
-                                </div>  
-                            </Modal>
-                        ): null}
-
-                        {/* create pet profile modal */}
-                        {showCreatePetForm ? (
-                            <Modal
-                                isOpen={showCreatePetForm}
-                                onRequestClose={() => setShowCreatePetForm(false)}
-                                contentLabel="Create Pet Profile Label"
-                                style={basicModalStyle}
-                            >
-                                <h2>Create Pet Profile Label</h2>
-                                <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
-                                <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
-                                <label htmlFor="sex">Sex:</label>
-                                <div>
-                                    <button
-                                    id="male"
-                                    className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
-                                    onClick={() => setPetSex('Male')}
-                                    >
-                                      Male
-                                    </button>
-                                    <button
-                                    id="female"
-                                    className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
-                                    onClick={() => setPetSex('Female')}
-                                    >
-                                      Female
-                                    </button>
-                                </div>
-                                <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
-                                <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
-                                <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
-                                <label htmlFor="photo">Upload Photo:</label>
-                                <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
-                                <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
-                            </Modal>
-                        ) : (
-                            profileUserID === currentUserID ? (
-                                <div className="flex flex-col w-36">
-                                  <button onClick={() => setShowCreatePetForm(true)}>
-                                    <i 
-                                      className="fa-solid fa-paw text-white rounded-full 
-                                        w-36 h-36 bg-pale_yellow flex items-center justify-center text-7xl hover:bg-pistachio hover:text-pale_yellow" ></i></button>
-                                    <p
-                                      className='text-center text-lg font-bold mt-2 flex flex-row items-center justify-center'
-                                    >Add New Pet</p>
-                                </div>
-                            ) : null
-                        )}
-                      </div>
-                    )
-                  }
-                </div>
-            )}
-
-            {/* Media */}
-            {activeTab === 'Media' && (
-              <div className="w-full h-[700px] p-14 pl-16">
-                
-                {/* if no media... */}
-                <div className='flex flex-col items-center justify-center h-full '>
-                  <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                  <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
-                </div>
-
-                {/* if w/ media */}
-                {/* <div className="grid grid-cols-8">
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                </div> */}
-              </div>
-            )}
-
-            {/* Lost Pets */}
-            {activeTab === 'Lost Pets' && (
-              <div 
-                id="showcase" 
-                className="flex justify-center h-[700px] w-full overflow-y-scroll"
-              >
-                  <div className="flex mt-10 flex-col gap-10">
-                      <Post 
-                          username={username} 
-                          publish_date='Sept 6 at 4:30 PM'    
-                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                          user_img_src={userPhotoURL}
-                          post_img_src='/images/post1-image.png'
-                        />
-                      <Post 
-                          username={username} 
-                          publish_date='Sept 6 at 4:30 PM'    
-                          desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                              Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                              🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                          user_img_src={userPhotoURL}
-                          post_img_src='/images/post1-image.png'
-                        />
-                      <Post 
-                        username={username} 
-                        publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src={userPhotoURL}
-                        post_img_src='/images/post1-image.png'
-                      />
-                  </div>
-              </div>
-            )}
-
-            {/* edit user profile modal */}
-            {currentUserID === profileUserID ? (
-                  <Modal
-                      isOpen={modalIsOpen}
-                      onRequestClose={() => setModalIsOpen(false)}
-                      style={basicModalStyle}
-                  >
-                      {/* cover photo */}
-                      <div>
-                          <h1>Cover Photo</h1>
-                          <label htmlFor="coverPhoto">
-                              {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                          </label>
-                          <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
-                      </div>
-                      
-                      
-                      {/* display name */}
-                      <div>
-                          <br/>
-                          <label htmlFor="display-name">Display Name: </label>
-                          <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
-                      </div>
-
-
-                      {/* description */}
-                      <div>
-                          <br/>
-                          <label htmlFor="description">Description: </label>
-                          <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
-                      </div>
                   
+                  {/* Display Name & Username */}
+                  <div className="text-center mt-32 w-80">
+                    <div className="text-2xl font-bold text-raisin_black ">
+                      {displayName}
+                    </div>
 
-                      {/* profile picture */}
-                      <div>
-                          <br/>
-                          <h1>Profile Picture</h1>
-                          <label htmlFor="userPhoto">
-                            <div className="flex justify-center w-48 h-48 cursor-pointer"> 
-                              <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
+                    <div className='text-lg text-raisin_black'>
+                      @{username}
+                    </div>
+                  </div>
+
+                  {/* Edit button */}
+                  {currentUserID === profileUserID ? (
+                    <button
+                      onClick={handleEditProfile}
+                      className="text-center mt-4 w-20 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                    >
+                      Edit
+                  </button>
+                  ) : 
+                    // Follow Button
+                    <button 
+                      onClick={handleFollow}
+                      className="text-center mt-4 w-32 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                    >
+                      {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
+                    </button>
+                  }
+
+                  {/* Followers and Following */}
+                  {profileUser ? (
+                    <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center">
+                      <div className="flex flex-col items-center">
+                        <span className="text-raisin_black text-xl font-bold">{followers.length}</span>
+                        <span className="text-grass font-bold text-sm">Followers</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-raisin_black text-xl font-bold">{following.length}</span>
+                        <span className="text-grass font-bold text-sm">Following</span>
+                      </div>
+                    </div>
+                  ) : (null)}
+
+                  {/* About */}
+                  <div className="text-center mt-10 flex flex-col gap-2">
+                    <div className="text-lg font-bold text-raisin_black">About</div>
+                      <div className="text-base text-raisin_black pl-6 pr-6">
+                        {description}
+                      </div>
+                  </div>
+              </div>
+
+              <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
+                  <div id="tab-actions" className="flex flex-row bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300">
+                        <button 
+                        className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                                    activeTab === 'Posts' ? 'bg-citron text-white' : ''
+                                    }`}
+                        onClick={() => handleTabEvent('Posts')}>
+                        Posts
+                        </button>
+                        <button 
+                        className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                                    activeTab === 'Pets' ? 'bg-citron text-white' : ''
+                                    }`}
+                        onClick={() => handleTabEvent('Pets')}>
+                        Pets
+                        </button>
+                        <button 
+                        className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                                    activeTab === 'Media' ? 'bg-citron text-white' : ''
+                                    }`}
+                        onClick={() => handleTabEvent('Media')}>
+                        Media
+                        </button>
+                        <button 
+                        className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${
+                                    activeTab === 'Lost Pets' ? 'bg-citron text-white' : ''
+                                    }`}
+                        onClick={() => handleTabEvent('Lost Pets')}>
+                        Lost Pets
+                        </button>
+                  </div>
+
+                  <div id="tab-container" className='overflow-y-scroll'>
+                      {/* Posts */}
+                      {activeTab === 'Posts' && (
+                        <div 
+                          id="showcase" 
+                          className="flex justify-center w-full"
+                        >
+                          <div className="flex mt-10 flex-col gap-10">
+                            <Post 
+                                username={username} 
+                                publish_date='Sept 6 at 4:30 PM'    
+                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                user_img_src={userPhotoURL}
+                                post_img_src='/images/post1-image.png'
+                              />
+                            <Post 
+                                username={username} 
+                                publish_date='Sept 6 at 4:30 PM'    
+                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                user_img_src={userPhotoURL}
+                                post_img_src='/images/post1-image.png'
+                              />
+                            <Post 
+                              username={username} 
+                              publish_date='Sept 6 at 4:30 PM'    
+                              desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                  Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                  🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                              user_img_src={userPhotoURL}
+                              post_img_src='/images/post1-image.png'
+                            />
+                            <Post 
+                                username={username} 
+                                publish_date='Sept 6 at 4:30 PM'    
+                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                user_img_src={userPhotoURL}
+                                post_img_src='/images/post1-image.png'
+                              />
+                            <Post 
+                                username={username} 
+                                publish_date='Sept 6 at 4:30 PM'    
+                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                user_img_src={userPhotoURL}
+                                post_img_src='/images/post1-image.png'
+                              />
+                            <Post 
+                              username={username} 
+                              publish_date='Sept 6 at 4:30 PM'    
+                              desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                  Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                  🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                              user_img_src={userPhotoURL}
+                              post_img_src='/images/post1-image.png'
+                            />
+                            <Post 
+                                username={username} 
+                                publish_date='Sept 6 at 4:30 PM'    
+                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                user_img_src={userPhotoURL}
+                                post_img_src='/images/post1-image.png'
+                              />
+                            <Post 
+                                username={username} 
+                                publish_date='Sept 6 at 4:30 PM'    
+                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                user_img_src={userPhotoURL}
+                                post_img_src='/images/post1-image.png'
+                              />
+                            <Post 
+                              username={username} 
+                              publish_date='Sept 6 at 4:30 PM'    
+                              desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                  Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                  🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                              user_img_src={userPhotoURL}
+                              post_img_src='/images/post1-image.png'
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Pets */}
+                      {activeTab === 'Pets' && (
+                        <div className="w-full h-full p-14 pl-16">
+                            {
+                              (profileUserID !== currentUserID && pets.length === 0) ? (
+                                <div className='flex flex-col items-center justify-center h-full p-0'>
+                                  <i className="fa-solid fa-hippo text-8xl text-grass"></i>
+                                  <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                </div>
+                              ) : (                   
+                                <div className="grid grid-cols-6 gap-12">
+                                  {pets.map((pet) => (
+                                    <div key={pet.id} className="w-36 h-36 rounded-xl">
+                                      <Link href={`/user/${profileUser.username}/pets/${pet.id}`} className='rounded-lg hover:opacity-80 flex flex-col'>
+                                          <RoundIcon 
+                                            src={pet.photoURL} 
+                                            alt='pet profile picture' 
+                                            height={144} 
+                                            width={144}
+                                            />
+                                      </Link>
+
+                                      <div className='mt-2 flex flex-row items-center justify-center'>
+                                          <div className='text-center text-lg font-bold'>
+                                            {pet.petname}
+                                          </div>
+                                          <div>
+                                            {currentUserID === profileUserID ? (
+                                              <button 
+                                                className='text-sm rounded-lg ml-2 justify-center items-center hover:text-red-600'
+                                                onClick={() => handleDeletePetProfile(pet.id)}>
+                                                  <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            ): null}
+                                          </div>
+                                      </div>
+                                    </div> 
+                                  ))}
+
+                                  {/* delete pet profile confirmation modal */}
+                                  {getCurrentUser && currentUserID === profileUserID ? (
+                                      <Modal
+                                      isOpen={showConfirmation}
+                                      onRequestClose={() => setShowConfirmation(false)}
+                                      contentLabel="Delete Confirmation"
+                                      style={confirmationModalStyle}
+                                      >
+                                          <div className='flex flex-col gap-6 items-center justify-center h-full w-full'>
+                                            <div className='text-center text-md'>
+                                              Are you sure you want to delete <span className='font-bold'>{deletingPetName}`s</span> profile?
+                                            </div>
+
+                                            <div className='flex flex-row items-center'>
+                                                <Image src={deletingPetPicture} alt="pet profile picture" width={100} height={100} className='rounded-full shadow-lg h-[125px] w-[125px]' />
+                                            </div>
+
+                                            <div className='flex flex-row items-center gap-4'>
+                                              <button 
+                                                onClick={confirmDeletePetProfile}
+                                                className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
+                                              >
+                                                  Delete</button>
+                                              <button 
+                                                onClick={() => setShowConfirmation(false)}
+                                                className='rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-black hover:text-white font-bold'
+                                              >
+                                                Cancel</button>
+                                            </div>
+                                          </div>  
+                                      </Modal>
+                                  ): null}
+
+                                  {/* create pet profile modal */}
+                                  {showCreatePetForm ? (
+                                      <Modal
+                                          isOpen={showCreatePetForm}
+                                          onRequestClose={() => setShowCreatePetForm(false)}
+                                          contentLabel="Create Pet Profile Label"
+                                          style={basicModalStyle}
+                                      >
+                                          <h2>Create Pet Profile Label</h2>
+                                          <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" />
+                                          <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" />
+                                          <label htmlFor="sex">Sex:</label>
+                                          <div>
+                                              <button
+                                              id="male"
+                                              className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
+                                              onClick={() => setPetSex('Male')}
+                                              >
+                                                Male
+                                              </button>
+                                              <button
+                                              id="female"
+                                              className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
+                                              onClick={() => setPetSex('Female')}
+                                              >
+                                                Female
+                                              </button>
+                                          </div>
+                                          <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" />
+                                          <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" />
+                                          <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" />
+                                          <label htmlFor="photo">Upload Photo:</label>
+                                          <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} />
+                                          <button onClick={handleCreatePetProfile}>Create Pet Profile</button>
+                                      </Modal>
+                                  ) : (
+                                      profileUserID === currentUserID ? (
+                                          <div className="flex flex-col w-36">
+                                            <button onClick={() => setShowCreatePetForm(true)}>
+                                              <i 
+                                                className="fa-solid fa-paw text-white rounded-full 
+                                                  w-36 h-36 bg-pale_yellow flex items-center justify-center text-7xl hover:bg-pistachio hover:text-pale_yellow" ></i></button>
+                                              <p
+                                                className='text-center text-lg font-bold mt-2 flex flex-row items-center justify-center'
+                                              >Add New Pet</p>
+                                          </div>
+                                      ) : null
+                                  )}
+                                </div>
+                              )
+                            }
+                          </div>
+                      )}
+
+                      {/* Media */}
+                      {activeTab === 'Media' && (
+                        <div className="w-full p-14 pl-16">
+                          
+                          {/* if no media... */}
+                          <div className='flex flex-col items-center justify-center h-full w-full'>
+                            <i className="fa-solid fa-hippo text-8xl text-grass"></i>
+                            <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                          </div>
+
+                          {/* if w/ media */}
+                          {/* <div className="grid grid-cols-8">
+                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                          </div> */}
+                        </div>
+                      )}
+
+                      {/* Lost Pets */}
+                      {activeTab === 'Lost Pets' && (
+                        <div 
+                          id="showcase" 
+                          className="flex justify-center w-full"
+                        >
+                            <div className="flex mt-10 flex-col gap-10">
+                                <Post 
+                                    username={username} 
+                                    publish_date='Sept 6 at 4:30 PM'    
+                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                    user_img_src={userPhotoURL}
+                                    post_img_src='/images/post1-image.png'
+                                  />
+                                <Post 
+                                    username={username} 
+                                    publish_date='Sept 6 at 4:30 PM'    
+                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                    user_img_src={userPhotoURL}
+                                    post_img_src='/images/post1-image.png'
+                                  />
+                                <Post 
+                                  username={username} 
+                                  publish_date='Sept 6 at 4:30 PM'    
+                                  desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                      Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                      🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                  user_img_src={userPhotoURL}
+                                  post_img_src='/images/post1-image.png'
+                                />
                             </div>
-                          </label>
-                          <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
-                      </div>
-                      
-                      {/* gender not editable */}
-                      <div>
-                          <br />
-                          <p>Gender: {gender}</p>
-                      </div>
+                        </div>
+                      )}
 
-                      {/* birthdate not editable */}
-                      <div>
-                          <br />
-                          <p>Birthdate: {birthdate}</p>
-                      </div>
+                      {/* edit user profile modal */}
+                      {currentUserID === profileUserID ? (
+                        <Modal
+                            isOpen={modalIsOpen}
+                            onRequestClose={() => setModalIsOpen(false)}
+                            style={basicModalStyle}
+                        >
+                            {/* cover photo */}
+                            <div>
+                                <h1>Cover Photo</h1>
+                                <label htmlFor="coverPhoto">
+                                    {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                                </label>
+                                <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+                            </div>
+                            
+                            
+                            {/* display name */}
+                            <div>
+                                <br/>
+                                <label htmlFor="display-name">Display Name: </label>
+                                <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
+                            </div>
 
-                      {/* location */}
-                      <div>
-                          <br/>
-                          <label htmlFor="location">Location: </label>
-                          <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
-                      </div>
 
-                      <button onClick={handleSave} disabled={isUploadingCoverPhoto}>Save</button>
+                            {/* description */}
+                            <div>
+                                <br/>
+                                <label htmlFor="description">Description: </label>
+                                <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
+                            </div>
+                        
 
-                  </Modal>
-            ) : ( null )}
-            </div>
+                            {/* profile picture */}
+                            <div>
+                                <br/>
+                                <h1>Profile Picture</h1>
+                                <label htmlFor="userPhoto">
+                                  <div className="flex justify-center w-48 h-48 cursor-pointer"> 
+                                    <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
+                                  </div>
+                                </label>
+                                <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
+                            </div>
+                            
+                            {/* gender not editable */}
+                            <div>
+                                <br />
+                                <p>Gender: {gender}</p>
+                            </div>
+
+                            {/* birthdate not editable */}
+                            <div>
+                                <br />
+                                <p>Birthdate: {birthdate}</p>
+                            </div>
+
+                            {/* location */}
+                            <div>
+                                <br/>
+                                <label htmlFor="location">Location: </label>
+                                <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
+                            </div>
+
+                            <button onClick={handleSave} disabled={isUploadingCoverPhoto}>Save</button>
+
+                        </Modal>
+                      ) : ( null )}
+                  </div>
+              </div>
           </div>
         </div>
       }
