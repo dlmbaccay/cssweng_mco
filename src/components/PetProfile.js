@@ -180,7 +180,7 @@ export default function PetProfile() {
                             // Follow button
                             <button 
                                 onClick={handleFollow}
-                                className="mt-4 ml-2 w-16 h-8 flex-shrink-0 bg-citron hover:bg-xanthous text-snow font-bold rounded-lg border-none translate-x-28"
+                                className="text-center mt-4 w-32 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                             >
                             {followers.includes(currentUserID) ? 'Following' : 'Follow'}
                             </button>
