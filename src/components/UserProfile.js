@@ -538,7 +538,7 @@ export default function UserProfile() {
                                   onRequestClose={() => setShowCreatePostForm(false)}
                                   style={createPostModalStyle}
                                 >
-                                  <CreatePost userID={currentUserID} pets={pets} userPhotoURL={currentUser.photoURL} username={currentUser.username} />
+                                  {/* <CreatePost userID={currentUserID} pets={pets} userPhotoURL={currentUser.photoURL} username={currentUser.username} /> */}
                                 </Modal>
                             </div>
                           ) : null}
