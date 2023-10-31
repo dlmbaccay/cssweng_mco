@@ -196,40 +196,40 @@ export default function Login() {
 
             <div 
                 id="showcase" 
-                className="flex scrollbar-hide overflow-y-scroll justify-center w-[880px] h-[544px]  rounded-[20px]" 
+                className="flex scrollbar-hide overflow-y-scroll justify-center w-[800px] h-[500px]  rounded-[20px]" 
                 style={{ scrollSnapType: 'y mandatory' }}
             >
                 <div className="flex flex-col">
                     <PostSnippet
-                        username={username} 
-                        displayName={displayName}
+                        username='Barker'
+                        displayName='barknplay'
                         publish_date='Sept 6 at 4:30 PM'    
                         desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                             Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                             🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src={userPhotoURL}
+                        user_img_src='/images/user1-image.png'
                         post_img_src='/images/post1-image.png'
-                    />
+                        style={{ scrollSnapAlign: 'start' }}/>
                     <PostSnippet
-                        username={username} 
-                        displayName={displayName}
+                        username='Barker'
+                        displayName='barknplay'
                         publish_date='Sept 6 at 4:30 PM'    
                         desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                             Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                             🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src={userPhotoURL}
+                        user_img_src='/images/user1-image.png'
                         post_img_src='/images/post1-image.png'
-                    />
+                        style={{ scrollSnapAlign: 'start' }}/>
                     <PostSnippet
-                        username={username} 
-                        displayName={displayName}
+                        username='Barker'
+                        displayName='barknplay'
                         publish_date='Sept 6 at 4:30 PM'    
                         desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                             Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                             🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src={userPhotoURL}
+                        user_img_src='/images/user1-image.png'
                         post_img_src='/images/post1-image.png'
-                    />
+                        style={{ scrollSnapAlign: 'start' }}/>
                 </div>
             </div>
         </div>

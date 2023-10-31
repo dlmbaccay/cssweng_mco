@@ -7,12 +7,13 @@ import { firestore, storage, STATE_CHANGED} from '@/src/lib/firebase';
 import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
-import { basicModalStyle, confirmationModalStyle } from '../lib/modalstyle';
+import { basicModalStyle, confirmationModalStyle, createPostModalStyle } from '../lib/modalstyle';
 import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
 import PostSnippet from './PostSnippet';
 import { set } from 'react-hook-form';
+import CreatePost from './CreatePost';
 
 // Modal.setAppElement('#root'); // Set the root element for accessibility
 
@@ -64,9 +65,12 @@ export default function UserProfile() {
     const [petPhotoURL, setPetPhotoURL] = useState(null);
 
     // misc variables
-    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [showEditProfile, setShowEditProfile] = useState(false);
     const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
     const [activeTab, setActiveTab] = useState('Posts');
+
+    // create post variables
+    const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
     useEffect(() => {
       const fetchUserData = async () => {
@@ -219,7 +223,7 @@ export default function UserProfile() {
         const petDoc = await petRef.get();
         const petData = petDoc.data();
         
-        setDeletingPetName(petData.petname);
+        setDeletingPetName(petData.petName);
         setDeletingPetPicture(petData.photoURL);
 
         setShowConfirmation(true);
@@ -261,7 +265,7 @@ export default function UserProfile() {
     
     const handleEditProfile = () => {
         if (getCurrentUser && currentUserID === profileUserID) { // check if this is the owner of the profile
-            setModalIsOpen(true); // open the modal when editing starts
+            setShowEditProfile(true); // open the modal when editing starts
         }
     }
 
@@ -281,7 +285,7 @@ export default function UserProfile() {
             batch.update(userRef, updateData);
 
             await batch.commit();
-            setModalIsOpen(false);
+            setShowEditProfile(false);
             toast.success('User profile updated successfully!');
 
         } catch (error) {
@@ -510,24 +514,35 @@ export default function UserProfile() {
                           id="showcase" 
                           className="flex flex-col items-center justify-center w-full"
                         >
-                          <div id='create-post' className='mt-10 shadow-sm bg-snow w-[800px] h-[100px] rounded-3xl p-6 flex flex-col'>
+                          
+                          {currentUserID === profileUserID ? (
+                            <div id='create-post' className='mt-10 shadow-sm bg-snow w-[800px] h-[100px] rounded-3xl p-6 flex flex-col'>
         
-                              <div className='flex flex-row w-full h-full items-center'>
+                                <div className='flex flex-row w-full h-full items-center'>
+                                    <div className='h-[50px] w-[50px] flex items-center'>
+                                        <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
+                                    </div>
 
-                                  <div className='h-[50px] w-[50px] flex items-center'>
-                                      <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
-                                  </div>
+                                    <button className='flex flex-col w-full h-full ml-4'>
+                                        <div
+                                            className='w-full h-full text-raisin_black text-md bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-neutral-50 hover:cursor-pointer'
+                                            onClick={() => setShowCreatePostForm(true)}
+                                        >
+                                          What`s on your mind?
+                                        </div>
+                                    </button>
+                                </div>
 
-                                  <div className='flex flex-col w-full h-full ml-4'>
-                                      <div
-                                          className='w-full h-full text-raisin_black text-md bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-neutral-50 hover:cursor-pointer'
-                                      >
-                                        What`s on your mind?
-                                      </div>
-                                  </div>
-                              </div>
+                                <Modal
+                                  isOpen={showCreatePostForm}
+                                  onRequestClose={() => setShowCreatePostForm(false)}
+                                  style={createPostModalStyle}
+                                >
+                                  <CreatePost userID={currentUserID} pets={pets} userPhotoURL={currentUser.photoURL} username={currentUser.username} />
+                                </Modal>
+                            </div>
+                          ) : null}
 
-                          </div>
                           <div className="flex mt-10 mb-10 flex-col gap-10">
                             <PostSnippet
                                 username={username} 
@@ -736,8 +751,8 @@ export default function UserProfile() {
                       {/* edit user profile modal */}
                       {currentUserID === profileUserID ? (
                         <Modal
-                            isOpen={modalIsOpen}
-                            onRequestClose={() => setModalIsOpen(false)}
+                            isOpen={showEditProfile}
+                            onRequestClose={() => setShowEditProfile(false)}
                             style={basicModalStyle}
                         >
                             {/* cover photo */}

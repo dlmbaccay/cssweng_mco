@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
-import Post from '../components/PostSnippet'
+import PostSnippet from '../components/PostSnippet'
 import Router from 'next/router'
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
 import toast from 'react-hot-toast'
@@ -143,12 +143,13 @@ export default function Register() {
 
             <div 
                 id="showcase" 
-                className="flex scrollbar-hide justify-center w-[880px] h-[544px] overflow-y-scroll rounded-[20px]" 
+                className="flex scrollbar-hide overflow-y-scroll justify-center w-[800px] h-[500px]  rounded-[20px]" 
                 style={{ scrollSnapType: 'y mandatory' }}
             >
-                <div class="flex flex-col">
-                    <Post 
-                        username='barknplay'
+                <div className="flex flex-col">
+                    <PostSnippet
+                        username='Barker'
+                        displayName='barknplay'
                         publish_date='Sept 6 at 4:30 PM'    
                         desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                             Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
@@ -156,9 +157,25 @@ export default function Register() {
                         user_img_src='/images/user1-image.png'
                         post_img_src='/images/post1-image.png'
                         style={{ scrollSnapAlign: 'start' }}/>
-                    <Post
+                    <PostSnippet
+                        username='Barker'
+                        displayName='barknplay'
+                        publish_date='Sept 6 at 4:30 PM'    
+                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                        user_img_src='/images/user1-image.png'
+                        post_img_src='/images/post1-image.png'
                         style={{ scrollSnapAlign: 'start' }}/>
-                    <Post
+                    <PostSnippet
+                        username='Barker'
+                        displayName='barknplay'
+                        publish_date='Sept 6 at 4:30 PM'    
+                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                        user_img_src='/images/user1-image.png'
+                        post_img_src='/images/post1-image.png'
                         style={{ scrollSnapAlign: 'start' }}/>
                 </div>
             </div>
