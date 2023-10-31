@@ -31,14 +31,15 @@ export default function NavBar() {
       }`}
     >
       {/* Circular profile picture (always visible) */}
-      <div className="w-10 h-10 rounded-full bg-white mt-8 cursor-pointer"  onClick={() => window.location.href = "/user/"+username}>
+      <div 
+      className="w-10 h-10 rounded-full bg-white mt-8 cursor-pointer"  onClick={() => window.location.href = "/user/"+username}>
         {userPhotoURL && <RoundIcon src={userPhotoURL}  width="100%" height="100%" />}
       </div>
 
       {/* Sidebar content*/}
       <div
         className={`flex flex-col items-center mt-auto mb-10 ${
-          isSidebarExpanded ? "w-48" : "w-16"
+          isSidebarExpanded ? "w-48 pr-24" : "w-16 flex flex-col items-center"
         }`}
       >
         {/* Toggle button */}
@@ -59,7 +60,13 @@ export default function NavBar() {
           }`}
         >
           <RoundIcon src="/images/home-icon.png"  width="100%" height="100%"/>
+          {isSidebarExpanded && <span className={`ml-10  ${
+            isSidebarExpanded ? "flex items-center" : ""
+          }`}>
+            Home
+            </span>}
         </button>
+        
         <button
           className={`w-7 h-7 rounded-full bg-white mb-4 text-black ${
             isSidebarExpanded ? "w-10 h-10" : ""

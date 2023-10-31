@@ -217,27 +217,8 @@ export default function PetProfile() {
                                 >
                                 <h1 className="font-bold">Edit Profile</h1>
 
-                                {/* Username */}
-                                <div className="mb-4">
-                                    <label
-                                    htmlFor="username"
-                                    className="block text-sm font-medium text-gray-700 pt-5"
-                                    >
-                                    <span>Pet Name</span>
-                                    </label>
-                                    <input
-                                    type="text"
-                                    id="display-name"
-                                    className="mt-1 p-2 border rounded-md w-full"
-                                    placeholder={pet.petname}
-                                    maxLength="20"
-                                    value={petName}
-                                    onChange={(e) => setPetName(e.target.value)}
-                                    />
-                                </div>
-
                                 {/* profile picture */}
-                                <div className="mb-4">
+                                <div className="mb-2">
                                     <label className="block text-sm font-medium text-gray-700">
                                     Change Profile Picture
                                     </label>
@@ -256,6 +237,29 @@ export default function PetProfile() {
                                     Upload a profile picture (JPG, PNG, or GIF).
                                     </p>
                                 </div>
+
+                                {/* Username */}
+                                <div className="mb-4">
+                                    <label
+                                    htmlFor="username"
+                                    className="block text-sm font-medium text-gray-700 pt-5"
+                                    >
+                                    <span>Pet Name</span>
+                                    <span className="text-red-500"> *</span>
+                                    </label>
+                                    <input
+                                    type="text"
+                                    id="display-name"
+                                    className="mt-1 p-2 border rounded-md w-full"
+                                    placeholder={pet.petname}
+                                    maxLength="20"
+                                    value={petName}
+                                    onChange={(e) => setPetName(e.target.value)}
+                                    required
+                                    />
+                                </div>
+
+                                
 
                                 {/* bio */}
                                 <div className="mb-4">
@@ -312,13 +316,42 @@ export default function PetProfile() {
                         </div>
 
                         {/* About */}
-                        <div className="text-center mt-10 ">
+                        <div className="text-center mt-5 ">
                             <span className="text-lg font-bold text-raisin_black">About</span>
                             <span className="text-base text-raisin_black">
                                 <p className="mt-5">
                                     {about}
                                 </p>
                             </span>
+                        </div>
+
+                        {/* Details */}
+                        <div className="mt-5 flex flex-col mr-48">
+                            {/* Breed */}
+                            <div className="flex items-center mb-4">
+                            {/* <i class="fa-sharp fa-solid fa-location-dot" style="color: #5c8731;"></i> */}
+                            <i class="fa-solid fa-dog"></i>
+                            <p className='ml-2'>
+                                {breed}
+                            </p>
+                            </div>
+                            
+                            <div className="flex items-center mb-4">
+                            {/* change icon based on gender */}
+                            <i class="fa-solid fa-venus-mars"></i>
+                            <p className='ml-2'>
+                                Female
+                            </p>
+                            </div>
+
+                            {/* Place of Birth */}
+                            <div className="flex items-center mb-4">
+                            {/* <i class="fa-sharp fa-solid fa-location-dot" style="color: #5c8731;"></i> */}
+                            <i class="fa-solid fa-location-dot"></i>
+                            <p className='ml-2'>
+                                {birthplace}
+                            </p>
+                            </div>
                         </div>
                     </div>
 
