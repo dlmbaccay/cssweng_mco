@@ -17,13 +17,6 @@ export default function Landing() {
 
             setTimeout(() => {
                 if (user) {
-
-                    if (username) {
-                        router.push("/Home");
-                    } else if (!username) {
-                        router.push("/AccountSetup");
-                    }
-
                     router.push("/Home");
                 } else {
                     router.push("/Login");

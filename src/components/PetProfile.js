@@ -48,16 +48,6 @@ export default function PetProfile() {
     // editing variables
     const [editedPetName, setEditedPetName] = useState(petName);
     const [editedAbout, setEditedAbout] = useState(about);
-    const [editedPetPhotoURL, setEditedPetPhotoURL] = useState(petPhotoURL);
-
-    const { user } = useUserData();
-
-    useEffect(() => {
-      if (!user) {
-        toast.error('You must be logged in to view this page.');
-        router.push('/Login');
-      }
-    }, [user]);
 
     useEffect(() => {
         let unsubscribe;

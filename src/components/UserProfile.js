@@ -72,15 +72,6 @@ export default function UserProfile() {
     // create post variables
     const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
-    const { user } = useUserData();
-
-    useEffect(() => {
-      if (!user) {
-        toast.error('You must be logged in to view this page.');
-        router.push('/Login');
-      }
-    }, [user]);
-
     useEffect(() => {
       const fetchUserData = async () => {
         try {
