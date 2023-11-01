@@ -96,11 +96,11 @@ export default function Register() {
     }
 
     return (
-        <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20'>
+        <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen justify-evenly items-center flex flex-col lg:flex-row'>
 
-            <div id="login" className='bg-jasmine w-[680px] h-[586px] rounded-[30px] flex flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine w-[600px] h-[500px] rounded-3xl flex flex-col justify-center items-center'>
                 <div>
-                    <h1 className='text-3xl font-bold'>
+                    <h1 className='text-3xl font-bold mb-3'>
                         BantayBuddy Register
                     </h1>
                 </div>
@@ -109,34 +109,35 @@ export default function Register() {
                     type="text" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value.trim())}
-                    className='bg-light_yellow rounded-[30px] mt-3 mb-4 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none' placeholder='Email Address'/>
+                    className='bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Email Address'/>
                 <input 
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value.trim())}
-                    className='bg-light_yellow rounded-[30px] mb-4 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none' placeholder='Password'/>
+                    className='bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Password'/>
                 <input 
                     type="password" 
                     value={confirm_password}
                     onChange={(e) => setConfirmPassword(e.target.value.trim())}
-                    className='bg-light_yellow rounded-[30px] mb-6 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none' placeholder='Confirm Password'/>
+                    className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Confirm Password'/>
+
                 <button 
                     onClick={handleSignUp}
-                    className='bg-xanthous rounded-[30px] pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center hover:opacity-80'>
+                    className='bg-xanthous rounded-xl mt-4 mb-3 w-[90%] h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
                     Submit
                 </button>
 
-                <span>
+                <span className='w-[90%]'>
                     {/* google */}
                     <button 
                         onClick={handleGooglePopUp}
-                        className='bg-[#FAFAFA] rounded-[30px] mt-4 mb-3 p-3 w-[568px] h-[54px] text-2xl font-bold text-center flex items-center justify-center gap-4 hover:opacity-90'>
+                        className='bg-snow rounded-xl mb-3 w-full h-12 text-lg font-bold text-center flex items-center justify-center gap-2 hover:bg-light_yellow transition-all'>
                         <p> Continue with </p>
-                        <Image src='/images/google.ico' alt='Google Logo' width={30} height={30} />
+                        <Image src='/images/google.ico' alt='Google Logo' width={20} height={20} />
                     </button>
                 </span>
 
-                <div className='text-md'>
+                <div className='text-sm'>
                     Already have an account? <Link href={'/Login'} className='font-bold hover:text-gray-600 text-black'>Log In</Link>
                 </div>
             </div>            
@@ -148,28 +149,8 @@ export default function Register() {
             >
                 <div className="flex flex-col">
                     <PostSnippet
-                        username='Barker'
-                        displayName='barknplay'
-                        publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src='/images/user1-image.png'
-                        post_img_src='/images/post1-image.png'
-                        style={{ scrollSnapAlign: 'start' }}/>
-                    <PostSnippet
-                        username='Barker'
-                        displayName='barknplay'
-                        publish_date='Sept 6 at 4:30 PM'    
-                        desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                        user_img_src='/images/user1-image.png'
-                        post_img_src='/images/post1-image.png'
-                        style={{ scrollSnapAlign: 'start' }}/>
-                    <PostSnippet
-                        username='Barker'
-                        displayName='barknplay'
+                        username='barknplay'
+                        displayName='Barker'
                         publish_date='Sept 6 at 4:30 PM'    
                         desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                             Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 

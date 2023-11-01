@@ -143,52 +143,49 @@ export default function Login() {
     }
             
     return (
-        <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center h-full flex flex-col lg:flex-row space-x-20 '>
+        <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen justify-evenly items-center flex flex-col lg:flex-row'>
 
-            <div id="login" className='bg-jasmine w-[680px] h-[586px] rounded-[30px] flex flex-col justify-center items-center place-items-start'>
-                <div>
-                    <h1 className='text-3xl font-bold mb-3'>
-                        BantayBuddy Login
-                    </h1>
-                </div>
+            <div id="login" className='bg-jasmine w-[600px] h-[500px] rounded-3xl flex flex-col justify-center items-center'>
+
+                <h1 className='text-3xl font-bold mb-3'>BantayBuddy Login</h1>
                 
                 <input 
                     type="text" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value.trim())}
                     placeholder='Email Address'
-                    className='bg-light_yellow rounded-[30px] mt-3 mb-4 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none'/>
+                    className='bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' />
                 
                 <input 
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value.trim())}
                     placeholder='Password'
-                    className='bg-light_yellow rounded-[30px] mb-3 pl-5 p-3 w-[568px] h-[54px] text-2xl font-semibold outline-none'/>
+                    className='bg-light_yellow rounded-xl mt-3 mb-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' />
                 
                 <p 
                     onClick={handleForgotPassword}
-                    className='text-md font-semibold cursor-pointer text-gray-600 hover:text-black'>
+                    className='text-sm font-semibold cursor-pointer text-gray-600 hover:text-black mb-3'>
                     Forgot Password?
                 </p>
 
                 <button 
                     onClick={handleLogin}
-                    className='bg-xanthous rounded-[30px] mt-6 pl-5 p-3 w-[568px] h-[54px] text-2xl font-bold text-center hover:opacity-80'>
+                    className='bg-xanthous rounded-xl mt-3 mb-3 w-[90%] h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
                     Submit
                 </button>
                 
-                <span>
+                <span className='w-[90%]'>
                     {/* google */}
                     <button 
                         onClick={handleGooglePopUp}
-                        className='bg-[#FAFAFA] rounded-[30px] mt-4 mb-3 p-3 w-[568px] h-[54px] text-2xl font-bold text-center flex items-center justify-center gap-4 hover:opacity-90'>
-                        <p> Continue with </p>
-                        <Image src='/images/google.ico' alt='Google Logo' width={30} height={30} />
+                        className='bg-snow rounded-xl mb-3 w-full h-12 text-lg font-bold text-center flex items-center justify-center gap-2 hover:bg-light_yellow transition-all'>
+                        <p>Continue with </p>
+                        <Image src='/images/google.ico' alt='Google Logo' width={20} height={20} />
                     </button>
                 </span>
 
-                <div className='text-md'>
+                <div className='text-sm'>
                     Don`t have an account?
                     <Link href={'/Register'} className='font-bold hover:text-gray-600 text-black'> Register</Link>
                 </div>
@@ -196,7 +193,7 @@ export default function Login() {
 
             <div 
                 id="showcase" 
-                className="flex scrollbar-hide overflow-y-scroll justify-center w-[800px] h-[500px]  rounded-[20px]" 
+                className="flex scrollbar-hide overflow-y-scroll justify-center w-fit h-fit rounded-lg" 
                 style={{ scrollSnapType: 'y mandatory' }}
             >
                 <div className="flex flex-col">
