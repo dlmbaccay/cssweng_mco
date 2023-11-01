@@ -6,12 +6,13 @@ import { formatDateWithWords } from '../lib/formats';
 import Image from 'next/image';
 import Modal from 'react-modal'; // Import the Modal component  
 import toast from 'react-hot-toast'
-import { basicModalStyle } from '../lib/modalstyle';
+import { basicModalStyle, editPetProfileStyle } from '../lib/modalstyle';
 import NavBar from '@/src/components/NavBar';
 import PostSnippet from "@/src/components/PostSnippet";
 import CoverPhoto from './CoverPhoto';
 import RoundIcon from './RoundIcon';
 import Link from 'next/link';
+import Loader from './Loader';
 
 export default function PetProfile() {
 
@@ -44,6 +45,8 @@ export default function PetProfile() {
     const [petOwnerPhotoURL, setPetOwnerPhotoURL] = useState(null);
     const [petOwnerCoverPhotoURL, setPetOwnerCoverPhotoURL] = useState(null);
 
+    // editing variables
+    const [editedPetName, setEditedPetName] = useState()
 
     useEffect(() => {
         let unsubscribe;
@@ -155,7 +158,9 @@ export default function PetProfile() {
     };
 
     if (!pet) {
-        return <div>Loading...</div>;
+        return (
+            <Loader />
+        );
     }
 
     return (
@@ -208,97 +213,102 @@ export default function PetProfile() {
                             <Modal
                             isOpen={modalIsOpen}
                             onRequestClose={() => setModalIsOpen(false)}
-                            style={basicModalStyle}
+                            style={editPetProfileStyle}
                             >
-                            <div>
-                                <form
+                            
+                            <form
                                 onSubmit={handleSave}
-                                className="bg-snow rounded-md p-8 pb-5 w-full"
-                                >
-                                <h1 className="font-bold">Edit Profile</h1>
+                                className="flex flex-col h-full w-full"
+                            >
 
-                                {/* profile picture */}
-                                <div className="mb-2">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                    Change Profile Picture
-                                    </label>
-                                    <div id="img-preview">
-                                        <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='cursor-pointer hover:opacity-50'/>
+                                <h1 className='font-bold text-xl'>Edit {petName}`s Profile</h1>
+
+                                <div className='flex flex-row w-full h-full'>
+                                    <div className='flex flex-col justify-center items-center h-full w-1/2'>
+                                        <div>
+                                            <div className="h-full w-full flex flex-col justify-center items-center">
+                                                <h1 className='font-medium mb-2'>Change Profile Picture</h1>
+                                                <label className="block text-sm font-medium text-gray-700">
+                                                <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='rounded-full shadow-lg cursor-pointer hover:opacity-50'/>
+                                                </label>
+                                                
+                                                <input
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={uploadPetProfilePictureFile}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    
-                                    <input
-                                    type="file"
-                                    className="mt-1 p-2 border rounded-md w-full"
-                                    accept="image/*"
-                                    onChange={uploadPetProfilePictureFile}
-                                    />
-                                    
-                                    <p className="text-sm text-gray-500 mt-1">
-                                    Upload a profile picture (JPG, PNG, or GIF).
-                                    </p>
+
+                                    <div className='flex flex-col justify-center items-center h-full w-1/2'>
+                                        <div className='w-72'>
+                                            <div className="mb-4 w-full">
+                                                <label
+                                                    htmlFor="username"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                >
+                                                    <span>Pet Name</span>
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    id="pet-name"
+                                                    className="mt-1 p-2 border rounded-md w-full"
+                                                    placeholder={pet.petName}
+                                                    maxLength="20"
+                                                    value={petName}
+                                                    onChange={(e) => setPetName(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+
+                                            {/* About */}
+                                            <div className="w-full">
+                                                <label
+                                                htmlFor="about"
+                                                className="mt-2 block text-sm font-medium text-gray-700"
+                                                >
+                                                About
+                                                </label>
+                                                <textarea
+                                                id="bio"
+                                                className="mt-1 p-2 border rounded-md w-full resize-none"
+                                                rows="4"
+                                                placeholder={pet.about}
+                                                value={about}
+                                                onChange={(e) => setAbout(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {/* Username */}
-                                <div className="mb-4">
-                                    <label
-                                    htmlFor="username"
-                                    className="block text-sm font-medium text-gray-700 pt-5"
-                                    >
-                                    <span>Pet Name</span>
-                                    <span className="text-red-500"> *</span>
-                                    </label>
-                                    <input
-                                    type="text"
-                                    id="display-name"
-                                    className="mt-1 p-2 border rounded-md w-full"
-                                    placeholder={pet.petname}
-                                    maxLength="20"
-                                    value={petName}
-                                    onChange={(e) => setPetName(e.target.value)}
-                                    required
-                                    />
+                                <div className='w-full flex flex-row justify-evenly items-center p-4  mb-4 rounded-lg font-semibold bg-snow'>
+                                    <p>Gender: {sex}</p>
+                                    <p>Breed: {breed}</p>
+                                    <p>Birthdate: {formatDateWithWords(birthdate)}</p>
+                                    <p>Birthplace: {birthplace}</p>
                                 </div>
 
-                                
+                                <div className='flex justify-end'>
+                                        <button
+                                        type="submit"
+                                        className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                        >
+                                            Save
+                                        </button>
 
-                                {/* bio */}
-                                <div className="mb-4">
-                                    <label
-                                    htmlFor="bio"
-                                    className="block text-sm font-medium text-gray-700"
-                                    >
-                                    Bio
-                                    </label>
-                                    <textarea
-                                    id="bio"
-                                    className="mt-1 p-2 border rounded-md w-full resize-none"
-                                    rows="4"
-                                    placeholder={pet.about}
-                                    value={about}
-                                    onChange={(e) => setAbout(e.target.value)}
-                                    />
+                                        <button
+                                        type="button"
+                                        onClick={() => setModalIsOpen(false)}
+                                        className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                        >
+                                            Cancel
+                                        </button>
                                 </div>
-
-                                {/* buttons */}
-                                <div className="flex justify-end">
-                                    <button
-                                    type="submit"
-                                    className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                    >
-                                    Save
-                                    </button>
-
-                                    <button
-                                    type="button"
-                                    onClick={() => setModalIsOpen(false)}
-                                    className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                    >
-                                    Cancel
-                                    </button>
-                                </div>
-                                </form>
-                            </div>
-                            {/* </div> */}
+                            </form>
 
                             </Modal>
                         )}

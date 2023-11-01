@@ -7,7 +7,7 @@ import { firestore, storage, STATE_CHANGED} from '@/src/lib/firebase';
 import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
-import { basicModalStyle, confirmationModalStyle, createPostModalStyle } from '../lib/modalstyle';
+import { basicModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../lib/modalstyle';
 import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
@@ -202,7 +202,7 @@ export default function UserProfile() {
           setShowCreatePetForm(false);
           setPetName('');
           setPetAbout('');
-          setPetSex('');
+          setPetSex('');  
           setPetBreed('');
           setPetBirthdate('');
           setPetBirthplace('');
@@ -678,173 +678,140 @@ export default function UserProfile() {
                                           contentLabel="Create Pet Profile Label"
                                           style={basicModalStyle}
                                       >
-                                          <form onSubmit={handleCreatePetProfile}>
-                                            <h2 className="font-bold mb-4">Add a New Pet!</h2>
+                                          <form onSubmit={handleCreatePetProfile} className='flex flex-col h-full justify-between'>
+                                            <h2 className="font-bold text-xl mb-4 gap-2 flex flex-row items-center">
+                                              <i className='fa-solid fa-paw'></i>
+                                              Add a New Pet
+                                            </h2>                                            
 
-                                            {/* Photo */}
-                                            <label htmlFor="photo">Upload Photo: </label>
-                                            <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} required/>
-
-                                            {/* Display Name */}
-                                            <div className="mb-4">
-                                              <label
-                                              htmlFor="displayname"
-                                              className="block text-sm font-medium text-gray-700 pt-5"
-                                              >
-                                              <span>Display Name</span>
-                                              <span className="text-red-500"> *</span>
-                                              </label>
-                                              <input
-                                              type="text"
-                                              id="display-name"
-                                              className="mt-1 p-2 border rounded-md w-full"
-                                              placeholder="Enter your pet's name"
-                                              maxLength="20"
-                                              value={petName}
-                                              onChange={(e) => setPetName(e.target.value)}
-                                              required
-                                              />
-                                            </div>
-
-                                            {/* Username */}
-                                            <div className="mb-4">
-                                              <label
-                                              htmlFor="username"
-                                              className="block text-sm font-medium text-gray-700 "
-                                              >
-                                              <span>Username</span>
-                                              <span className="text-red-500"> *</span>
-                                              </label>
-                                              <input
-                                                type="text"
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                                maxLength="20"
-                                                value="test"
-                                                onChange={(e) => setPetName(e.target.value)}
-                                                placeholder="Give your pet a unique name!"
-                                                required
-                                              />
-                                            </div>
-
-                                            {/* About */}
-                                            <div className="mb-3">
+                                            <div className='h-full flex flex-col justify-start'>
+                                              {/* Display Name */}
+                                              <div className="mb-4">
                                                 <label
-                                                htmlFor="bio"
-                                                className="block text-sm font-medium text-gray-700"
+                                                htmlFor="displayname"
+                                                className="block text-sm font-medium text-gray-700 pt-5"
                                                 >
-                                                About
-                                                </label>
-                                                <textarea
-                                                id="bio"
-                                                className="mt-1 p-2 border rounded-md w-full resize-none"
-                                                rows="4"
-                                                placeholder="Tell us about your pet..."
-                                                value={petAbout}
-                                                onChange={(e) => setPetAbout(e.target.value)}
-                                                />
-                                            </div>
-
-                                            {/* Sex */}
-                                            {/* TODO: add functionality from previous code (commented below) */}
-                                            <div className="mb-4">
-                                                <label
-                                                htmlFor="sex"
-                                                className="block text-sm font-medium text-gray-700"
-                                                >
-                                                Sex
-                                                </label>
-                                                <select
-                                                id="sex"
-                                                name="sex"
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                                value="test"
-                                                onChange={(e) => setPetSex(e.target.value)}
-                                                >
-                                                <option value="None">Prefer Not to Say</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                </select>
-                                            </div>
-
-                                            {/* <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="Pet Name" required/> */}
-                                            {/* <input type="text" value={petAbout} onChange={(e) => setPetAbout(e.target.value)} placeholder="About" /> */}
-                                            {/* <label htmlFor="sex">Sex:</label>
-                                            <div>
-                                                <button
-                                                  id="male"
-                                                  className={`sex-button ${petSex === 'Male' ? 'active' : ''}`}
-                                                  onClick={() => setPetSex('Male')}
-                                                  type='button'
-                                                >
-                                                  Male
-                                                </button>
-                                                <button
-                                                  id="female"
-                                                  className={`sex-button ${petSex === 'Female' ? 'active' : ''}`}
-                                                  onClick={() => setPetSex('Female')}
-                                                  type='button'
-                                                >
-                                                  Female
-                                                </button>
-                                            </div> */}
-
-                                            {/* Birthdate */}
-                                            <div className="mb-4">
-                                                <label
-                                                htmlFor="birthdate"
-                                                className="block text-sm font-medium text-gray-700"
-                                                >
-                                                Birthday
+                                                <span>Display Name</span>
+                                                <span className="text-red-500"> *</span>
                                                 </label>
                                                 <input
-                                                type="date"
-                                                id="birthdate"
-                                                name="birthdate"
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                                value={petBirthdate}
-                                                onChange={(e) => setPetBirthdate(e.target.value)}
+                                                  type="text"
+                                                  id="display-name"
+                                                  className="mt-1 p-2 border rounded-md w-full"
+                                                  placeholder="Enter your pet's name"
+                                                  maxLength="20"
+                                                  value={petName}
+                                                  onChange={(e) => setPetName(e.target.value)}
+                                                  required
                                                 />
-                                            </div>
+                                              </div>
 
-                                            {/* place of birth */}
-                                            <div className="mb-4">
-                                                <label
-                                                htmlFor="location"
-                                                className="block text-sm font-medium text-gray-700"
-                                                >
-                                                Place of Birth
+                                              {/* Breed */}
+                                              <div className="mb-4">
+                                                  <label
+                                                  htmlFor="breed"
+                                                  className="block text-sm font-medium text-gray-700"
+                                                  >
+                                                  Breed
+                                                  </label>
+                                                  <input
+                                                  type="text"
+                                                  className="mt-1 p-2 border rounded-md w-full"
+                                                  placeholder="Enter your pet's breed"
+                                                  value={petBreed}
+                                                  onChange={(e) => setPetBreed(e.target.value)}
+                                                  />
+                                              </div>
+
+                                              {/* Photo */}
+                                              <div className='mb-4'>
+                                                <label htmlFor="photo" className='block text-sm font-medium text-gray-700 mb-1'>
+                                                  Upload Photo 
+                                                  <span className="text-red-500"> *</span>
                                                 </label>
-                                                <input
-                                                type="text"
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                                placeholder="Enter your pet's Place of Birth"
-                                                value={petBirthplace}
-                                                onChange={(e) => setPetBirthplace(e.target.value)}
-                                                />
+                                                <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} required/>
+                                              </div>
+
+                                              {/* About */}
+                                              <div className="mb-3">
+                                                  <label
+                                                  htmlFor="bio"
+                                                  className="block text-sm font-medium text-gray-700"
+                                                  >
+                                                  About
+                                                  </label>
+                                                  <textarea
+                                                    id="bio"
+                                                    className="mt-1 p-2 border rounded-md w-full resize-none"
+                                                    rows="4"
+                                                    placeholder="Tell us about your pet..."
+                                                    value={petAbout}
+                                                    maxLength={100}
+                                                    onChange={(e) => setPetAbout(e.target.value)}
+                                                  />
+                                              </div>
+
+                                              {/* sex, birthdate, birthplace */}
+                                              <div className='flex flex-row gap-4 w-full'>
+                                                {/* Sex */}
+                                                <div className="mb-4 w-full">
+                                                    <label
+                                                    htmlFor="sex"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                    >
+                                                    Sex
+                                                    </label>
+                                                    <select
+                                                      id="sex"
+                                                      name="sex"
+                                                      className="mt-1 p-2 border rounded-md w-full"
+                                                      value="test"
+                                                      onChange={(e) => setPetSex(e.target.value)}
+                                                    >
+                                                      <option value="None" selected>None</option>
+                                                      <option value="Male">Male</option>
+                                                      <option value="Female">Female</option>
+                                                    </select>
+                                                </div>
+
+                                                {/* Birthdate */}
+                                                <div className="mb-4 w-full">
+                                                    <label
+                                                    htmlFor="birthdate"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                    >
+                                                    Birthday
+                                                    </label>
+                                                    <input
+                                                    type="date"
+                                                    id="birthdate"
+                                                    name="birthdate"
+                                                    className="mt-1 p-2 border rounded-md w-full"
+                                                    value={petBirthdate}
+                                                    onChange={(e) => setPetBirthdate(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                {/* place of birth */}
+                                                <div className="mb-4 w-full">
+                                                    <label
+                                                    htmlFor="location"
+                                                    className="block text-sm font-medium text-gray-700"
+                                                    >
+                                                    Place of Birth
+                                                    </label>
+                                                    <input
+                                                    type="text"
+                                                    className="mt-1 p-2 border rounded-md w-full"
+                                                    placeholder="Enter your pet's place of birth"
+                                                    value={petBirthplace}
+                                                    onChange={(e) => setPetBirthplace(e.target.value)}
+                                                    />
+                                                </div>
+                                              </div>
                                             </div>
 
-                                            {/* Breed */}
-                                            <div className="mb-4">
-                                                <label
-                                                htmlFor="breed"
-                                                className="block text-sm font-medium text-gray-700"
-                                                >
-                                                Breed
-                                                </label>
-                                                <input
-                                                type="text"
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                                placeholder="Enter your Pet's Breed"
-                                                value={petBreed}
-                                                onChange={(e) => setPetBreed(e.target.value)}
-                                                />
-                                            </div>
-
-                                            {/* <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" /> */}
-                                            {/* <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" /> */}
-                                            {/* <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" /> */}
-
-                                            {/* TODO: Add functionality for Cancel button */}
+                                            {/* form button controls */}
                                             <div className="flex justify-end">
                                                 <button
                                                 type="submit"
@@ -855,14 +822,12 @@ export default function UserProfile() {
 
                                                 <button
                                                 type="button"
-                                                
                                                 className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                                onClick={() => setShowCreatePetForm(false)}
                                                 >
                                                 Cancel
                                                 </button>
                                             </div>
-                                            
-                                            {/* <button type='submit'>Create Pet Profile</button> */}
                                           </form>
                                       </Modal>
                                   ) : (
@@ -929,62 +894,77 @@ export default function UserProfile() {
                         <Modal
                             isOpen={showEditProfile}
                             onRequestClose={() => setShowEditProfile(false)}
-                            style={basicModalStyle}
+                            style={editUserProfileStyle}
                         >
-                            <h1 className="font-bold">Edit Profile</h1>
+                          <div className='w-full h-full flex flex-col justify-between'>
+                            <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
 
-                            {/* profile picture */}
-                            <div className="items-center justify-center">
-                                <br/>
-                                <h1 className='font-medium mb-2'>Profile Picture</h1>
-                                <label htmlFor="userPhoto">
-                                  <div className="flex justify-center w-48 h-48 cursor-pointer mb-4"> 
-                                    <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
-                                  </div>
+                            <div className='flex flex-row items-start justify-evenly p-4 rounded-lg h-fit'>
+                              {/* profile picture */}
+                              <div className="items-center justify-center">
+                                  <h1 className='font-medium mb-2'>Change Profile Picture</h1>
+                                  <label htmlFor="userPhoto">
+                                    <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full shadow-lg hover:opacity-50"> 
+                                      <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
+                                    </div>
+                                  </label>
+                                  <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
+                              </div>
+
+                              {/* cover photo */}
+                              <div>
+                                  <h1 className='font-medium mb-2 text-end'>Change Cover Photo</h1>
+                                  <label htmlFor="coverPhoto">
+                                      {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={350} className="cursor-pointer hover:opacity-50 h-48 shadow-lg rounded-lg"/>}
+                                  </label>
+                                  <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+                              </div>
+                            </div>
+
+                            <div className='flex flex-row items-center w-full gap-16 bg-snow p-4'>
+                              {/* Display Name */}
+                              <div className="w-full">
+                                <label
+                                  htmlFor="display-name"
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  <span>Display Name</span>
+                                  <span className="text-red-500"> *</span>
                                 </label>
-                                <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
-                            </div>
+                                <input
+                                  type="text"
+                                  id='display-name'
+                                  className="p-2 border rounded-md w-full"
+                                  placeholder="Enter your username"
+                                  maxLength="20"
+                                  value={editedDisplayName}
+                                  onChange={e => setEditedDisplayName(e.target.value)}
+                                  required
+                                />
+                              </div>
 
-                            {/* cover photo */}
-                            <div>
-                                <h1 className='font-medium mb-2'>Cover Photo</h1>
-                                <label htmlFor="coverPhoto">
-                                    {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                              {/* location */}
+                              <div className="w-full">
+                                <label
+                                  htmlFor="location"
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  Location
                                 </label>
-                                <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+                                <input
+                                  type="text"
+                                  id='location'
+                                  name="location"
+                                  className="p-2 border rounded-md w-full"
+                                  placeholder="Enter your Location"
+                                  value={editedLocation}
+                                  onChange={(e) => setEditedLocation(e.target.value)}
+                                />
+                              </div>
                             </div>
-
-                            {/* Username */}
-                            <div className="mb-4">
-                              <label
-                                htmlFor="display-name"
-                                className="block text-sm font-medium text-gray-700 pt-5"
-                              >
-                                <span>Username</span>
-                                <span className="text-red-500"> *</span>
-                              </label>
-                              <input
-                                type="text"
-                                id='display-name'
-                                className="mt-1 p-2 border rounded-md w-full"
-                                placeholder="Enter your username"
-                                maxLength="20"
-                                value={editedDisplayName}
-                                onChange={e => setEditedDisplayName(e.target.value)}
-                                required
-                              />
-                            </div>
-                            
-                            
-                            {/* display name */}
-                            {/* <div>
-                                <br/>
-                                <label htmlFor="display-name">Display Name: </label>
-                                <input type="text" id='display-name' placeholder='New Display Name' maxLength="20" value={editedDisplayName} onChange={e => setEditedDisplayName(e.target.value)} />
-                            </div> */}
 
                             {/* Description */}
-                            <div className="mb-0">
+                            <div className="bg-snow p-4">
                               <label
                                 htmlFor="description"
                                 className="block text-sm font-medium text-gray-700"
@@ -993,80 +973,46 @@ export default function UserProfile() {
                               </label>
                               <textarea
                                 id='description'
-                                className="mt-1 p-2 border rounded-md w-full resize-none"
-                                rows="4"
+                                className="mt-1 p-2 border rounded-lg w-full resize-none"
+                                rows="3"
                                 placeholder="Tell us about yourself..."
                                 value={editedDescription}
                                 onChange={e => setEditedDescription(e.target.value)}
                               />
                             </div>
 
-                            {/* description */}
-                            {/* <div>
-                                <br/>
-                                <label htmlFor="description">Description: </label>
-                                <input type="text" id='description' placeholder='New Description' value={editedDescription} onChange={e => setEditedDescription(e.target.value)} />
-                            </div> */}
-                            
-                            {/* gender not editable */}
-                            <div className='font-medium'>
-                                <br />
-                                <p>Gender: {gender}</p>
+                            <div className='flex flex-row w-full justify-evenly'>
+                              {/* gender not editable */}
+                              <div className='font-medium'>
+                                  <p>Gender: {gender}</p>
+                              </div>
+
+                              {/* birthdate not editable */}
+                              <div className="font-medium">
+                                  <p>Birthdate: {birthdate}</p>
+                              </div>
                             </div>
 
-                            {/* birthdate not editable */}
-                            <div className="mb-4 font-medium">
-                                <br />
-                                <p>Birthdate: {birthdate}</p>
-                            </div>
-
-                            {/* location */}
-                            <div className="mb-4">
-                              <label
-                                htmlFor="location"
-                                className="block text-sm font-medium text-gray-700"
-                              >
-                                Location
-                              </label>
-                              <input
-                                type="text"
-                                id='location'
-                                name="location"
-                                className="mt-1 p-2 border rounded-md w-full"
-                                placeholder="Enter your Location"
-                                value={editedLocation}
-                                onChange={(e) => setEditedLocation(e.target.value)}
-                              />
-                            </div>
-
-                            {/* location */}
-                            {/* <div>
-                                <br/>
-                                <label htmlFor="location">Location: </label>
-                                <input type="text" id='location' placeholder='New Location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} />
-                            </div> */}
-
-                            {/* <button onClick={handleSave} disabled={isUploadingCoverPhoto}>Save</button> */}
 
                             {/* TODO: Add functionality for Cancel button */}
                             <div className="flex justify-end">
-                                                <button
-                                                onClick={handleSave} disabled={isUploadingCoverPhoto}
-                                                type="submit"
-                                                className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                                >
-                                                Save
-                                                </button>
+                                <button
+                                onClick={handleSave} disabled={isUploadingCoverPhoto}
+                                type="submit"
+                                className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                >
+                                Save
+                                </button>
 
-                                                <button
-                                                type="button"
-                                                
-                                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                                >
-                                                Cancel
-                                                </button>
-                                            </div>
-
+                                <button
+                                type="button"
+                                onClick={() => setShowEditProfile(false)}
+                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                >
+                                Cancel
+                                </button>
+                            </div>
+                          </div>
                         </Modal>
                       ) : ( null )}
                   </div>

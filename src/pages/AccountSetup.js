@@ -184,8 +184,9 @@ export default function AccountSetup() {
 
                     {/* buttons */}
                     <div className="flex justify-end">
-                        <button disabled={!isValid} type='submit' className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100 disabled:bg-gray-400  disabled:hover:scale-100 disabled:active:scale-100">
-                            Submit
+
+                        <button type='submit' className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${isValid ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`} disabled={!isValid}>
+                        Submit
                         </button>
 
                         <button onClick={handleSignOut} className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100">
