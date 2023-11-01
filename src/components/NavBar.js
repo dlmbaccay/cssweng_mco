@@ -3,15 +3,13 @@ import RoundIcon from './RoundIcon';
 import { useState } from 'react';
 import { auth } from '../lib/firebase';
 import { useUserData } from '../lib/hooks';
+import Link from 'next/link';
+import Image from 'next/image';
 
-function handleLogOut() {
+function handleSignOut() {
   auth.signOut().then(() => {
     window.location.href = "/Login";
   });
-}
-
-function handleHome() {
-  window.location.href = "/Home";
 }
 
 export default function NavBar() {
@@ -26,151 +24,114 @@ export default function NavBar() {
 
   return (
     <nav
-    onMouseEnter={toggleSidebar}
-    onMouseLeave={toggleSidebar}
-      className={`sticky z-10 bg-pale_yellow text-white w-16 h-screen flex flex-col items-center transition-all ${
-        isSidebarExpanded ? "w-48" : "w-16"
-      }`}
+      onMouseEnter={toggleSidebar}
+      onMouseLeave={toggleSidebar}
+      className={`sticky z-10 bg-pale_yellow text-white w-16 h-screen flex flex-col justify-between items-center transition-all 
+      ${isSidebarExpanded ? "w-44" : "w-18"}`}
     >
-      {/* Circular profile picture (always visible) */}
+
       <div 
-        // className="w-10 h-10 rounded-full bg-white mt-8 cursor-pointer"  
-        className={`w-10 h-10 rounded-full bg-white mt-8 cursor-pointer transition-all ${
-          isSidebarExpanded ? "w-10 h-10 mr-32" : ""
-        }`}
-        onClick={() => window.location.href = "/user/"+username}>
-          {userPhotoURL && <RoundIcon src={userPhotoURL}  width="100%" height="100%" />}
-          
-          {isSidebarExpanded && (
-                <span className="ml-12 -mt-8 flex items-center font-medium text-raisin_black hover:text-grass">
-                  Profile
-                </span>
-              )}
-      </div>
-      
-      
-
-      {/* Sidebar content*/}
-      <div
-        className={`flex flex-col items-center mt-auto mb-10 transition-all ${
-          isSidebarExpanded ? "w-48 pr-32" : "w-16 flex flex-col items-center"
-        }`}
+        className={`flex flex-row items-center justify-center h-10 mt-8 cursor-pointer transition-all gap-2
+        ${isSidebarExpanded ? "" : "flex justify-center items-center"}`}
+        onClick={() => window.location.href = "/user/"+username}
       >
-        {/* Toggle button */}
-        {/* <button
-          onClick={toggleSidebar}
-          className="w-7 h-7 rounded-full bg-white text-black mb-4"
+        {userPhotoURL && <Image src={userPhotoURL} alt='user pic' height={35} width={35} className={`rounded-full shadow-lg ${isSidebarExpanded ? "": ""}`}/> }
+        
+        {isSidebarExpanded && (
+          <span className="w-full flex items-center font-medium text-raisin_black hover:text-grass text-lg">
+            Profile
+          </span>
+        )}
+      </div>    
+      
+      <div
+        className={`flex flex-col items-center w-full mb-8 transition-all
+        ${isSidebarExpanded ? "w-48 flex flex-col items-center" : "w-16 flex flex-col items-center"}`}
+      >
+
+        <Link
+          href='/Home'
+          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
+          ${isSidebarExpanded ? "" : ""}`}
         >
-          {isSidebarExpanded ? (
-            <RoundIcon src="/images/rightarrow-icon.png"  width="100%" height="100%"/>
-          ) : (
-            <RoundIcon src="/images/leftarrow-icon.png"  width="100%" height="100%"/>
+          <Image src="/images/home-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          {isSidebarExpanded && (
+            <span className="flex items-center font-medium ml-2 transition-all">
+              Home
+            </span>
           )}
-        </button> */}
-
-        {/* Home Button */}
-        <a href="#" onClick={handleHome} className="flex items-center space-x-2">
-          <button
-            onClick={handleHome}
-            className={`w-7 h-7 rounded-full bg-white mb-4 text-black hover:text-grass ${
-              isSidebarExpanded ? "w-10 h-10" : ""
-            }`}
-          >
-            <RoundIcon src="/images/home-icon.png" width="100%" height="100%" />
-            {isSidebarExpanded && (
-              <span className="ml-10 -mt-6 flex items-center font-medium">
-                Home
-              </span>
-            )}
-          </button>
-        </a>
+        </Link>
         
-        {/* Groups */}
-        <a href="#" className="flex items-center space-x-2">
-          <button
-            className={`w-7 h-7 rounded-full bg-white mb-4 text-black hover:text-grass ${
-              isSidebarExpanded ? "w-10 h-10" : ""
-            }`}
-          >
-            <RoundIcon src="/images/groups-icon.png" width="100%" height="100%" />
-            {isSidebarExpanded && (
-              <span className="ml-10 -mt-6 flex items-center font-medium">
-                Groups
-              </span>
-            )}
-          </button>
-        </a>
-
-        {/* Foundations */}
-        <a href="#" className="flex items-center space-x-2">
-          <button
-            className={`w-7 h-7 rounded-full bg-white mb-4 text-black hover:text-grass ${
-              isSidebarExpanded ? "w-10 h-10" : ""
-            }`}
-          >
-            <RoundIcon src="/images/foundations-icon.png" width="100%" height="100%" />
-            {isSidebarExpanded && (
-              <span className="ml-10 -mt-6 flex items-center font-medium">
-                Foundations
-              </span>
-            )}
-          </button>
-        </a>
-
-        {/* Notifications */}
-        <a href="#" className="flex items-center space-x-2">
-          <button
-            className={`w-7 h-7 rounded-full bg-white mb-4 text-black hover:text-grass ${
-              isSidebarExpanded ? "w-10 h-10" : ""
-            }`}
-          >
-            <RoundIcon src="/images/notifications-icon.png" width="100%" height="100%" />
-            {isSidebarExpanded && (
-              <span className="ml-10 -mt-6 flex items-center font-medium">
-                Notifications
-              </span>
-            )}
-          </button>
-        </a>
-
-        {/* Settings */}
-        <a href="#" className="flex items-center space-x-2">
-          <button
-            className={`w-7 h-7 rounded-full bg-white mb-4 text-black hover:text-grass ${
-              isSidebarExpanded ? "w-10 h-10" : ""
-            }`}
-          >
-            <RoundIcon src="/images/settings-icon.png" width="100%" height="100%" />
-            {isSidebarExpanded && (
-              <span className="ml-10 -mt-6 flex items-center font-medium">
-                Settings
-              </span>
-            )}
-          </button>
-        </a>
+        <Link
+          href='/'
+          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
+          ${isSidebarExpanded ? "" : ""}`}
+        >
+          <Image src="/images/groups-icon.png" alt="home icon" width={30} height={30} className={`transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          {isSidebarExpanded && (
+            <span className="flex items-center font-medium ml-2 transition-all">
+              Groups
+            </span>
+          )}
+        </Link>
         
+        <Link
+          href='/'
+          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
+          ${isSidebarExpanded ? "" : ""}`}
+        >
+          <Image src="/images/foundations-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          {isSidebarExpanded && (
+            <span className="flex items-center font-medium ml-2 transition-all">
+              Foundations
+            </span>
+          )}
+        </Link>
+        
+        <Link
+          href='/'
+          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
+          ${isSidebarExpanded ? "" : ""}`}
+        >
+          <Image src="/images/notifications-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          {isSidebarExpanded && (
+            <span className="flex items-center font-medium ml-2 transition-all">
+              Notifications
+            </span>
+          )}
+        </Link>
+
+        <Link
+          href='/'
+          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
+          ${isSidebarExpanded ? "" : ""}`}
+        >
+          <Image src="/images/settings-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          {isSidebarExpanded && (
+            <span className="flex items-center font-medium ml-2 transition-all">
+              Settings
+            </span>
+          )}
+        </Link>
+
         <hr
-          className={`border-t my-2 mx-auto transition-all w-${
-            isSidebarExpanded ? 48 : 16
+          className={`transition-all border w-${
+            isSidebarExpanded ? 44 : 16
           } border-citron`}
         />
 
-        {/* Log Out */}
-        <a href="#" className="flex items-center space-x-2">
-          <button
-            onClick={handleLogOut}
-            className={`w-7 h-7 rounded-full bg-white mt-4 text-black hover:text-grass ${
-              isSidebarExpanded ? "w-10 h-10" : ""
-            }`}
-          >
-            <RoundIcon src="/images/logout-icon.png" width="100%" height="100%" />
+        <button
+          onClick={handleSignOut}
+          className={`mt-4 w-full h-7 text-black hover:text-grass flex flex-row items-center
+          ${isSidebarExpanded ? "" : ""}`}
+        >
+          <Image src="/images/logout-icon.png" alt="home icon" width={30} height={30} className={`transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
             {isSidebarExpanded && (
-              <span className="ml-10 -mt-6 flex items-center font-medium">
-                Logout
-              </span>
-            )}
-          </button>
-        </a>
+            <span className="flex items-center font-medium ml-2  transition-all">
+              Logout
+            </span>
+          )}
+        </button>
       </div>
     </nav>
   );
