@@ -811,7 +811,34 @@ export default function UserProfile() {
                                               </div>
                                             </div>
 
+<<<<<<< HEAD
                                             {/* form button controls */}
+=======
+                                            {/* Breed */}
+                                            <div className="mb-4">
+                                                <label
+                                                htmlFor="breed"
+                                                className="block text-sm font-medium text-gray-700"
+                                                >
+                                                Breed
+                                                </label>
+                                                <input
+                                                type="text"
+                                                className="mt-1 p-2 border rounded-md w-full"
+                                                placeholder="Enter your Pet's Breed"
+                                                value={petBreed}
+                                                onChange={(e) => setPetBreed(e.target.value)}
+                                                />
+                                            </div>
+
+                                            {/* TODO: Add Likes, Dislikes, Allergies, etc (should not be required) */}
+
+                                            {/* <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" /> */}
+                                            {/* <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" /> */}
+                                            {/* <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" /> */}
+
+                                            {/* TODO: Add functionality for Cancel button */}
+>>>>>>> 97d6e9873061f262ad7edc31fced1dd1580e2da0
                                             <div className="flex justify-end">
                                                 <button
                                                 type="submit"
@@ -899,6 +926,7 @@ export default function UserProfile() {
                           <div className='w-full h-full flex flex-col justify-between'>
                             <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
 
+<<<<<<< HEAD
                             <div className='flex flex-row items-start justify-evenly p-4 rounded-lg h-fit'>
                               {/* profile picture */}
                               <div className="items-center justify-center">
@@ -961,6 +989,37 @@ export default function UserProfile() {
                                   onChange={(e) => setEditedLocation(e.target.value)}
                                 />
                               </div>
+=======
+                            {/* profile picture */}
+                            <div className="flex items-center justify-center">
+                                <br/>
+                                
+                                <div>
+                                  <h1 className='font-medium mb-2 flex justify-center'>Profile Picture</h1>
+                                  <label htmlFor="userPhoto">
+                                    <div className="flex justify-center w-48 h-48 cursor-pointer mb-4 hover:opacity-50"> 
+                                      <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
+                                    </div>
+                                  </label>
+                                </div>
+                                
+                                <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
+                            </div>
+
+                            {/* cover photo */}
+                            <div className="flex items-center justify-center">
+                              <div>
+                                <h1 className='font-medium mb-2 flex justify-center'>Cover Photo</h1>
+                                <label htmlFor="coverPhoto">
+                                  <div className="flex justify-center w-48 h-48 cursor-pointer mb-4">
+                                    {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                                  </div>
+                                    
+                                </label>
+                              </div>
+                                
+                                <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+>>>>>>> 97d6e9873061f262ad7edc31fced1dd1580e2da0
                             </div>
 
                             {/* Description */}
