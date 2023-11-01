@@ -219,10 +219,10 @@ export default function PetProfile() {
 
                                 {/* profile picture */}
                                 <div className="mb-2">
-                                    <label className="block text-sm font-medium text-gray-700">
+                                    <label className="text-sm font-medium text-gray-700 flex justify-center mb-4">
                                     Change Profile Picture
                                     </label>
-                                    <div id="img-preview">
+                                    <div id="img-preview" className='flex justify-center mb-4'>
                                         <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='cursor-pointer hover:opacity-50'/>
                                     </div>
                                     
@@ -259,8 +259,6 @@ export default function PetProfile() {
                                     />
                                 </div>
 
-                                
-
                                 {/* bio */}
                                 <div className="mb-4">
                                     <label
@@ -276,6 +274,42 @@ export default function PetProfile() {
                                     placeholder={pet.about}
                                     value={about}
                                     onChange={(e) => setAbout(e.target.value)}
+                                    />
+                                </div>
+
+                                {/* place of birth */}
+                                <div className="mb-0">
+                                    <label
+                                    htmlFor="location"
+                                    className="block text-sm font-medium text-gray-700"
+                                    >
+                                    Place of Birth
+                                    </label>
+                                    <input
+                                    type="text"
+                                    className="mt-1 p-2 border rounded-md w-full"
+                                    placeholder={pet.birthplace}
+                                    value={birthplace}
+                                    onChange={(e) => setPetBirthplace(e.target.value)}
+                                    />
+                                </div>
+
+                                {/* Breed */}
+                                <div className="mb-4">
+                                    <label
+                                    htmlFor="breed"
+                                    className="block text-sm font-medium text-gray-700 pt-5"
+                                    >
+                                    <span>Breed</span>
+                                    </label>
+                                    <input
+                                    type="text"
+                                    id="breed"
+                                    className="mt-1 p-2 border rounded-md w-full"
+                                    placeholder={pet.breed}
+                                    maxLength="20"
+                                    value={breed}
+                                    onChange={(e) => setBreed(e.target.value)}
                                     />
                                 </div>
 
@@ -296,6 +330,9 @@ export default function PetProfile() {
                                     Cancel
                                     </button>
                                 </div>
+
+                                {/* TODO: Add Likes, Dislikes, Allergies, etc (should not be required) */}
+                                
                                 </form>
                             </div>
                             {/* </div> */}

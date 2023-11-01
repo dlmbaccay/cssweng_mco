@@ -840,6 +840,8 @@ export default function UserProfile() {
                                                 />
                                             </div>
 
+                                            {/* TODO: Add Likes, Dislikes, Allergies, etc (should not be required) */}
+
                                             {/* <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" /> */}
                                             {/* <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" /> */}
                                             {/* <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" /> */}
@@ -934,23 +936,33 @@ export default function UserProfile() {
                             <h1 className="font-bold">Edit Profile</h1>
 
                             {/* profile picture */}
-                            <div className="items-center justify-center">
+                            <div className="flex items-center justify-center">
                                 <br/>
-                                <h1 className='font-medium mb-2'>Profile Picture</h1>
-                                <label htmlFor="userPhoto">
-                                  <div className="flex justify-center w-48 h-48 cursor-pointer mb-4"> 
-                                    <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
-                                  </div>
-                                </label>
+                                
+                                <div>
+                                  <h1 className='font-medium mb-2 flex justify-center'>Profile Picture</h1>
+                                  <label htmlFor="userPhoto">
+                                    <div className="flex justify-center w-48 h-48 cursor-pointer mb-4 hover:opacity-50"> 
+                                      <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
+                                    </div>
+                                  </label>
+                                </div>
+                                
                                 <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
                             </div>
 
                             {/* cover photo */}
-                            <div>
-                                <h1 className='font-medium mb-2'>Cover Photo</h1>
+                            <div className="flex items-center justify-center">
+                              <div>
+                                <h1 className='font-medium mb-2 flex justify-center'>Cover Photo</h1>
                                 <label htmlFor="coverPhoto">
+                                  <div className="flex justify-center w-48 h-48 cursor-pointer mb-4">
                                     {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
+                                  </div>
+                                    
                                 </label>
+                              </div>
+                                
                                 <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
                             </div>
 
