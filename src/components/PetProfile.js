@@ -46,7 +46,9 @@ export default function PetProfile() {
     const [petOwnerCoverPhotoURL, setPetOwnerCoverPhotoURL] = useState(null);
 
     // editing variables
-    const [editedPetName, setEditedPetName] = useState()
+    const [editedPetName, setEditedPetName] = useState(petName);
+    const [editedAbout, setEditedAbout] = useState(about);
+    const [editedPetPhotoURL, setEditedPetPhotoURL] = useState(petPhotoURL);
 
     useEffect(() => {
         let unsubscribe;
@@ -75,6 +77,9 @@ export default function PetProfile() {
                 setPetOwnerDisplayName(doc.data().petOwnerDisplayName);
                 setPetOwnerPhotoURL(doc.data().petOwnerPhotoURL);
                 setPetOwnerCoverPhotoURL(doc.data().petOwnerCoverPhotoURL);
+
+                setEditedPetName(doc.data().petName);
+                setEditedAbout(doc.data().about);
             } else {
               setPet(null);
             }
@@ -99,8 +104,8 @@ export default function PetProfile() {
       
         try {
           const updateData = {
-            petName: petName,
-            about: about,
+            petName: editedPetName,
+            about: editedAbout,
             photoURL: petPhotoURL
           };
       
@@ -228,14 +233,17 @@ export default function PetProfile() {
                                         <div>
                                             <div className="h-full w-full flex flex-col justify-center items-center">
                                                 <h1 className='font-medium mb-2'>Change Profile Picture</h1>
-                                                <label className="block text-sm font-medium text-gray-700">
-                                                <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='rounded-full shadow-lg cursor-pointer hover:opacity-50'/>
-                                                </label>
+                                                
+                                                <div>
+                                                    <label htmlFor='pet-profile-pic' className="block text-sm font-medium text-gray-700">
+                                                        <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='rounded-full shadow-lg cursor-pointer hover:opacity-50'/>
+                                                    </label>
+                                                </div>
                                                 
                                                 <input
                                                     type="file"
+                                                    id='pet-profile-pic'
                                                     className="hidden"
-                                                    accept="image/*"
                                                     onChange={uploadPetProfilePictureFile}
                                                 />
                                             </div>
@@ -256,10 +264,10 @@ export default function PetProfile() {
                                                     type="text"
                                                     id="pet-name"
                                                     className="mt-1 p-2 border rounded-md w-full"
-                                                    placeholder={pet.petName}
                                                     maxLength="20"
-                                                    value={petName}
-                                                    onChange={(e) => setPetName(e.target.value)}
+                                                    value={editedPetName}
+                                                    placeholder='What`s your pet`s name?'
+                                                    onChange={(e) => setEditedPetName(e.target.value)}
                                                     required
                                                 />
                                             </div>
@@ -276,9 +284,9 @@ export default function PetProfile() {
                                                 id="bio"
                                                 className="mt-1 p-2 border rounded-md w-full resize-none"
                                                 rows="4"
-                                                placeholder={pet.about}
-                                                value={about}
-                                                onChange={(e) => setAbout(e.target.value)}
+                                                value={editedAbout}
+                                                placeholder='Tell us about your pet!'
+                                                onChange={(e) => setEditedAbout(e.target.value)}
                                                 />
                                             </div>
                                         </div>
@@ -293,20 +301,20 @@ export default function PetProfile() {
                                 </div>
 
                                 <div className='flex justify-end'>
-                                        <button
-                                        type="submit"
-                                        className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                        >
-                                            Save
-                                        </button>
+                                    <button
+                                    type="submit"
+                                    className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                    >
+                                        Save
+                                    </button>
 
-                                        <button
-                                        type="button"
-                                        onClick={() => setModalIsOpen(false)}
-                                        className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                        >
-                                            Cancel
-                                        </button>
+                                    <button
+                                    type="button"
+                                    onClick={() => setModalIsOpen(false)}
+                                    className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                    >
+                                        Cancel
+                                    </button>
                                 </div>
                             </form>
 
@@ -336,31 +344,15 @@ export default function PetProfile() {
                         </div>
 
                         {/* Details */}
-                        <div className="mt-5 flex flex-col mr-48">
-                            {/* Breed */}
-                            <div className="flex items-center mb-4">
-                            {/* <i class="fa-sharp fa-solid fa-location-dot" style="color: #5c8731;"></i> */}
-                            <i class="fa-solid fa-dog"></i>
-                            <p className='ml-2'>
-                                {breed}
-                            </p>
-                            </div>
-                            
-                            <div className="flex items-center mb-4">
-                            {/* change icon based on gender */}
-                            <i class="fa-solid fa-venus-mars"></i>
-                            <p className='ml-2'>
-                                Female
-                            </p>
+                        <div className="mt-6 flex flex-col items-center w-full gap-4">
+                            <div id="icons" className='flex flex-row gap-2 items-center'>
+                                <i class="fa-solid fa-dog"></i>
+                                <p>{breed}</p>
                             </div>
 
-                            {/* Place of Birth */}
-                            <div className="flex items-center mb-4">
-                            {/* <i class="fa-sharp fa-solid fa-location-dot" style="color: #5c8731;"></i> */}
-                            <i class="fa-solid fa-location-dot"></i>
-                            <p className='ml-2'>
-                                {birthplace}
-                            </p>
+                            <div id="icons" className='flex flex-row gap-2 items-center'>
+                                <i class="fa-solid fa-venus-mars"></i>
+                                <p>{sex}</p>
                             </div>
                         </div>
                     </div>

@@ -70,7 +70,7 @@ export default function Register() {
 
                 if (!username) {
                     // If email is verified but no username, redirect to AccountSetup
-                    toast('Let`s set up you account!', {
+                    toast('Let`s set up your account!', {
                         icon: '👏',
                     });
                     router.push('/AccountSetup');

@@ -8,6 +8,7 @@ import Loader from "../components/Loader";
 export default function Landing() {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const { user, username } = useUserData();
 
     useEffect(() => {
         const auth = getAuth();
@@ -16,6 +17,12 @@ export default function Landing() {
 
             setTimeout(() => {
                 if (user) {
+
+                    if(username == null){
+                        router.push("/AccountSetup");
+                        return;
+                    }
+
                     router.push("/Home");
                 } else {
                     router.push("/Login");
@@ -25,7 +32,7 @@ export default function Landing() {
         });
 
         return () => unsubscribe();
-    }, [router]);
+    }, []);
 
     return (
         <>

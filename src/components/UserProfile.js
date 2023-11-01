@@ -7,7 +7,7 @@ import { firestore, storage, STATE_CHANGED} from '@/src/lib/firebase';
 import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
-import { basicModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../lib/modalstyle';
+import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../lib/modalstyle';
 import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
@@ -452,6 +452,133 @@ export default function UserProfile() {
                     </button>
                   }
 
+                  {/* edit user profile modal */}
+                  {currentUserID === profileUserID ? (
+                    <Modal
+                        isOpen={showEditProfile}
+                        onRequestClose={() => setShowEditProfile(false)}
+                        style={editUserProfileStyle}
+                    >
+                      <div className='w-full h-full flex flex-col justify-between'>
+                        <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
+
+                        <div className='flex flex-row items-start justify-evenly p-4 rounded-lg h-fit'>
+                          {/* profile picture */}
+                          <div className="items-center justify-center">
+                              <h1 className='font-medium mb-2 text-center'>Change Profile Picture</h1>
+                              <label htmlFor="userPhoto">
+                                <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full shadow-lg hover:opacity-50"> 
+                                  <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
+                                </div>
+                              </label>
+                              <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
+                          </div>
+
+                          {/* cover photo */}
+                          <div>
+                              <h1 className='font-medium mb-2 text-center'>Change Cover Photo</h1>
+                              <label htmlFor="coverPhoto">
+                                  {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={350} className="cursor-pointer hover:opacity-50 h-48 shadow-lg rounded-lg"/>}
+                              </label>
+                              <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
+                          </div>
+                        </div>
+
+                        <div className='flex flex-row items-center w-full gap-16 bg-snow p-4'>
+                          {/* Display Name */}
+                          <div className="w-full">
+                            <label
+                              htmlFor="display-name"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              <span>Display Name</span>
+                              <span className="text-red-500"> *</span>
+                            </label>
+                            <input
+                              type="text"
+                              id='display-name'
+                              className="p-2 border rounded-md w-full"
+                              placeholder="Enter your username"
+                              maxLength="20"
+                              value={editedDisplayName}
+                              onChange={e => setEditedDisplayName(e.target.value)}
+                              required
+                            />
+                          </div>
+
+                          {/* location */}
+                          <div className="w-full">
+                            <label
+                              htmlFor="location"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Location
+                            </label>
+                            <input
+                              type="text"
+                              id='location'
+                              name="location"
+                              className="p-2 border rounded-md w-full"
+                              placeholder="Enter your Location"
+                              value={editedLocation}
+                              onChange={(e) => setEditedLocation(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        <div className="bg-snow p-4">
+                          <label
+                            htmlFor="description"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Description
+                          </label>
+                          <textarea
+                            id='description'
+                            className="mt-1 p-2 border rounded-lg w-full resize-none"
+                            rows="3"
+                            placeholder="Tell us about yourself..."
+                            value={editedDescription}
+                            onChange={e => setEditedDescription(e.target.value)}
+                          />
+                        </div>
+
+                        <div className='flex flex-row w-full justify-evenly'>
+                          {/* gender not editable */}
+                          <div className='font-medium'>
+                              <p>Gender: {gender}</p>
+                          </div>
+
+                          {/* birthdate not editable */}
+                          <div className="font-medium">
+                              <p>Birthdate: {birthdate}</p>
+                          </div>
+                        </div>
+
+
+                        {/* TODO: Add functionality for Cancel button */}
+                        <div className="flex justify-end">
+                            <button
+                            onClick={handleSave} disabled={isUploadingCoverPhoto}
+                            type="submit"
+                            className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                            >
+                            Save
+                            </button>
+
+                            <button
+                            type="button"
+                            onClick={() => setShowEditProfile(false)}
+                            className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                            >
+                            Cancel
+                            </button>
+                        </div>
+                      </div>
+                    </Modal>
+                  ) : ( null )}
+
                   {/* Followers and Following */}
                   {profileUser ? (
                     <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center">
@@ -475,24 +602,18 @@ export default function UserProfile() {
                   </div>
 
                   {/* Details */}
-                  <div className="mt-5 flex flex-col mr-48">
-                    <div className="flex items-center mb-4">
-                      {/* <i class="fa-sharp fa-solid fa-location-dot" style="color: #5c8731;"></i> */}
-                      <i class="fa-solid fa-location-dot"></i>
-                      <p className='ml-2'>
-                        {editedLocation}
-                      </p>
-                    </div>
+                  <div className="mt-6 flex flex-col items-center w-full gap-4">
                     
-                    <div className="flex items-center mb-4">
-                      {/* change icon based on gender */}
+                    <div id="icons" className='flex flex-row gap-2 items-center'>
+                      <i class="fa-solid fa-location-dot"></i>
+                      <p>{location}</p>
+                    </div>
+
+                    <div id="icons" className='flex flex-row gap-2 items-center'>
                       <i class="fa-solid fa-venus-mars"></i>
-                      <p className='ml-2'>
-                        {gender}
-                      </p>
+                      <p>{gender}</p>
                     </div>
                   </div>
-                  
               </div>
 
               <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
@@ -676,10 +797,10 @@ export default function UserProfile() {
                                           isOpen={showCreatePetForm}
                                           onRequestClose={() => setShowCreatePetForm(false)}
                                           contentLabel="Create Pet Profile Label"
-                                          style={basicModalStyle}
+                                          style={createPetModalStyle}
                                       >
                                           <form onSubmit={handleCreatePetProfile} className='flex flex-col h-full justify-between'>
-                                            <h2 className="font-bold text-xl mb-4 gap-2 flex flex-row items-center">
+                                            <h2 className="font-bold text-xl gap-2 flex flex-row items-center">
                                               <i className='fa-solid fa-paw'></i>
                                               Add a New Pet
                                             </h2>                                            
@@ -811,34 +932,7 @@ export default function UserProfile() {
                                               </div>
                                             </div>
 
-<<<<<<< HEAD
                                             {/* form button controls */}
-=======
-                                            {/* Breed */}
-                                            <div className="mb-4">
-                                                <label
-                                                htmlFor="breed"
-                                                className="block text-sm font-medium text-gray-700"
-                                                >
-                                                Breed
-                                                </label>
-                                                <input
-                                                type="text"
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                                placeholder="Enter your Pet's Breed"
-                                                value={petBreed}
-                                                onChange={(e) => setPetBreed(e.target.value)}
-                                                />
-                                            </div>
-
-                                            {/* TODO: Add Likes, Dislikes, Allergies, etc (should not be required) */}
-
-                                            {/* <input type="date" value={petBirthdate} onChange={(e) => setPetBirthdate(e.target.value)} placeholder="Birthdate" /> */}
-                                            {/* <input type="text" value={petBirthplace} onChange={(e) => setPetBirthplace(e.target.value)} placeholder="Birthplace" /> */}
-                                            {/* <input type="text" value={petBreed} onChange={(e) => setPetBreed(e.target.value)} placeholder="Breed" /> */}
-
-                                            {/* TODO: Add functionality for Cancel button */}
->>>>>>> 97d6e9873061f262ad7edc31fced1dd1580e2da0
                                             <div className="flex justify-end">
                                                 <button
                                                 type="submit"
@@ -915,165 +1009,6 @@ export default function UserProfile() {
                             </div>
                         </div>
                       )}
-
-                      {/* edit user profile modal */}
-                      {currentUserID === profileUserID ? (
-                        <Modal
-                            isOpen={showEditProfile}
-                            onRequestClose={() => setShowEditProfile(false)}
-                            style={editUserProfileStyle}
-                        >
-                          <div className='w-full h-full flex flex-col justify-between'>
-                            <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
-
-<<<<<<< HEAD
-                            <div className='flex flex-row items-start justify-evenly p-4 rounded-lg h-fit'>
-                              {/* profile picture */}
-                              <div className="items-center justify-center">
-                                  <h1 className='font-medium mb-2'>Change Profile Picture</h1>
-                                  <label htmlFor="userPhoto">
-                                    <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full shadow-lg hover:opacity-50"> 
-                                      <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
-                                    </div>
-                                  </label>
-                                  <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
-                              </div>
-
-                              {/* cover photo */}
-                              <div>
-                                  <h1 className='font-medium mb-2 text-end'>Change Cover Photo</h1>
-                                  <label htmlFor="coverPhoto">
-                                      {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={350} className="cursor-pointer hover:opacity-50 h-48 shadow-lg rounded-lg"/>}
-                                  </label>
-                                  <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
-                              </div>
-                            </div>
-
-                            <div className='flex flex-row items-center w-full gap-16 bg-snow p-4'>
-                              {/* Display Name */}
-                              <div className="w-full">
-                                <label
-                                  htmlFor="display-name"
-                                  className="block text-sm font-medium text-gray-700"
-                                >
-                                  <span>Display Name</span>
-                                  <span className="text-red-500"> *</span>
-                                </label>
-                                <input
-                                  type="text"
-                                  id='display-name'
-                                  className="p-2 border rounded-md w-full"
-                                  placeholder="Enter your username"
-                                  maxLength="20"
-                                  value={editedDisplayName}
-                                  onChange={e => setEditedDisplayName(e.target.value)}
-                                  required
-                                />
-                              </div>
-
-                              {/* location */}
-                              <div className="w-full">
-                                <label
-                                  htmlFor="location"
-                                  className="block text-sm font-medium text-gray-700"
-                                >
-                                  Location
-                                </label>
-                                <input
-                                  type="text"
-                                  id='location'
-                                  name="location"
-                                  className="p-2 border rounded-md w-full"
-                                  placeholder="Enter your Location"
-                                  value={editedLocation}
-                                  onChange={(e) => setEditedLocation(e.target.value)}
-                                />
-                              </div>
-=======
-                            {/* profile picture */}
-                            <div className="flex items-center justify-center">
-                                <br/>
-                                
-                                <div>
-                                  <h1 className='font-medium mb-2 flex justify-center'>Profile Picture</h1>
-                                  <label htmlFor="userPhoto">
-                                    <div className="flex justify-center w-48 h-48 cursor-pointer mb-4 hover:opacity-50"> 
-                                      <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"}/>
-                                    </div>
-                                  </label>
-                                </div>
-                                
-                                <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden'/>
-                            </div>
-
-                            {/* cover photo */}
-                            <div className="flex items-center justify-center">
-                              <div>
-                                <h1 className='font-medium mb-2 flex justify-center'>Cover Photo</h1>
-                                <label htmlFor="coverPhoto">
-                                  <div className="flex justify-center w-48 h-48 cursor-pointer mb-4">
-                                    {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={200} className="cursor-pointer hover:opacity-50"/>}
-                                  </div>
-                                    
-                                </label>
-                              </div>
-                                
-                                <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden"/>
->>>>>>> 97d6e9873061f262ad7edc31fced1dd1580e2da0
-                            </div>
-
-                            {/* Description */}
-                            <div className="bg-snow p-4">
-                              <label
-                                htmlFor="description"
-                                className="block text-sm font-medium text-gray-700"
-                              >
-                                Description
-                              </label>
-                              <textarea
-                                id='description'
-                                className="mt-1 p-2 border rounded-lg w-full resize-none"
-                                rows="3"
-                                placeholder="Tell us about yourself..."
-                                value={editedDescription}
-                                onChange={e => setEditedDescription(e.target.value)}
-                              />
-                            </div>
-
-                            <div className='flex flex-row w-full justify-evenly'>
-                              {/* gender not editable */}
-                              <div className='font-medium'>
-                                  <p>Gender: {gender}</p>
-                              </div>
-
-                              {/* birthdate not editable */}
-                              <div className="font-medium">
-                                  <p>Birthdate: {birthdate}</p>
-                              </div>
-                            </div>
-
-
-                            {/* TODO: Add functionality for Cancel button */}
-                            <div className="flex justify-end">
-                                <button
-                                onClick={handleSave} disabled={isUploadingCoverPhoto}
-                                type="submit"
-                                className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                >
-                                Save
-                                </button>
-
-                                <button
-                                type="button"
-                                onClick={() => setShowEditProfile(false)}
-                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                >
-                                Cancel
-                                </button>
-                            </div>
-                          </div>
-                        </Modal>
-                      ) : ( null )}
                   </div>
               </div>
           </div>
