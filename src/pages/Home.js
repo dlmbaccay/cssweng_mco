@@ -62,11 +62,15 @@ export default function Home() {
           <div className='bg-snow w-80 rounded-lg p-4 mt-4'>
             <h1 className='text-xl font-bold mb-2'>All Users</h1>
             <div className='flex flex-col'>
-              {users.map((user) => (
+              {users && users.map((user) => (
                 <Link href={`/user/${user.username}`} key={user.username}>
                   <p className='text-sm hover:underline'>{user.username}</p>
                 </Link>
               ))}
+
+              {!users && (
+                <p className='text-sm'>No users found</p>
+              )}
             </div>
           </div>
 
