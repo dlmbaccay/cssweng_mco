@@ -1,0 +1,32 @@
+{
+  "name": "cssweng_mco",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "firebase": "^10.5.0",
+    "lodash.debounce": "^4.0.8",
+    "modal": "^1.2.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-firebase-hooks": "^5.1.1",
+    "react-hook-form": "^7.47.0",
+    "react-hot-toast": "^2.4.1",
+    "react-markdown": "^9.0.0",
+    "react-modal": "^3.16.1",
+    "tailwind-scrollbar-hide": "^1.1.7"
+  },
+  "devDependencies": {
+    "autoprefixer": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "postcss": "latest",
+    "tailwindcss": "latest"
+  }
+}
