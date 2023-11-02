@@ -18,8 +18,7 @@ export default function PetProfile() {
 
     // variables for getting pet's information through current/profileIDs
     const router = useRouter();
-    const { profileUsername, petId } = router.query;
-    const profileUserID = getUserIDfromUsername(profileUsername);
+    const { petID } = router.query;
     const currentUser = useUserData(); // Get the logged-in user
     const currentUserID = getUserIDfromUsername(currentUser.username);
 
@@ -28,7 +27,7 @@ export default function PetProfile() {
     const [petName, setPetName] = useState(null);
     const [about, setAbout] = useState(null);
     const [followers, setFollowers] = useState(null);
-    const [following, setFollowing] = useState(null);
+    // const [following, setFollowing] = useState(null);
     const [sex, setSex] = useState(null);
     const [breed, setBreed] = useState(null);
     const [birthdate, setBirthdate] = useState(null);
@@ -52,8 +51,8 @@ export default function PetProfile() {
     useEffect(() => {
         let unsubscribe;
 
-        if (petId && profileUserID) {
-        const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(petId);
+        if (petID) {
+        const petRef = firestore.collection('pets').doc(petID);
         unsubscribe = petRef.onSnapshot((doc) => {
             if (doc.exists) {
                 setPet({
@@ -64,7 +63,7 @@ export default function PetProfile() {
                 setPetName(doc.data().petName);
                 setAbout(doc.data().about);
                 setFollowers(doc.data().followers);
-                setFollowing(doc.data().following);
+                // setFollowing(doc.data().following);
                 setSex(doc.data().sex);
                 setBreed(doc.data().breed);
                 setPetPhotoURL(doc.data().photoURL);
@@ -88,17 +87,17 @@ export default function PetProfile() {
         }
 
         return unsubscribe;
-    }, [petId, profileUserID]);
+    }, [petID]);
     
     const openEdit = () => {
-        if (currentUser && currentUserID === profileUserID) { // Check if the logged-in user is the owner of the pet
+        if (currentUser && currentUserID === petOwnerID) { // Check if the logged-in user is the owner of the pet
           setModalIsOpen(true); // Open the modal when editing starts
         }
     };
 
     const handleSave = async (e) => {
       e.preventDefault();
-        const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(petId);
+        const petRef = firestore.collection('pets').doc(petID);
         const batch = firestore.batch();
       
         try {
@@ -120,7 +119,7 @@ export default function PetProfile() {
 
     const uploadPetProfilePictureFile = async (e) => {
         const file = Array.from(e.target.files)[0];
-        const ref = storage.ref(`petProfilePictures/${petId}/profilePic`);
+        const ref = storage.ref(`petProfilePictures/${petID}/profilePic`);
         const task = ref.put(file);
 
         task.on(STATE_CHANGED, (snapshot) => {
@@ -129,7 +128,7 @@ export default function PetProfile() {
             .then((url) => {
                 setPetPhotoURL(url);
 
-                const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(petId);
+                const petRef = firestore.collection('pets').doc(petID);
                 petRef.update({photoURL: url}); 
             })
         })
@@ -142,7 +141,7 @@ export default function PetProfile() {
           ? pet.followers.filter(id => id !== currentUserID) // Remove currentUserID if already following
           : [...pet.followers, currentUserID]; // Add currentUserID if not already following
       
-        firestore.collection('users').doc(profileUserID).collection('pets').doc(petId).update({
+        firestore.collection('pets').doc(petID).update({
           followers: updatedFollowers
         })
         .then(() => {
@@ -196,7 +195,7 @@ export default function PetProfile() {
                             </div>
                         </div>
 
-                        { currentUserID === profileUserID ? ( 
+                        { currentUserID === petOwnerID ? ( 
                             // Edit pet profile button
                             <button 
                             onClick={openEdit}
@@ -345,10 +344,10 @@ export default function PetProfile() {
                         {/* Details */}
                         <div className="mt-6 flex flex-col items-center w-full gap-4">
                             <div id="icons" className='flex flex-row gap-2 items-center'>
-                                <i class="fa-solid fa-dog"></i>
+                                <i class    ="fa-solid fa-dog"></i>
                                 <p>{breed}</p>
                             </div>
-
+                            
                             <div id="icons" className='flex flex-row gap-2 items-center'>
                                 <i class="fa-solid fa-venus-mars"></i>
                                 <p>{sex}</p>

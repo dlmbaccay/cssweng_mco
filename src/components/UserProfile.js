@@ -15,8 +15,6 @@ import PostSnippet from './PostSnippet';
 import { set } from 'react-hook-form';
 import CreatePost from './CreatePost';
 
-// Modal.setAppElement('#root'); // Set the root element for accessibility
-
 export default function UserProfile() {
 
     // variables for user profile
@@ -118,7 +116,7 @@ export default function UserProfile() {
           setEditedLocation(doc.data()?.location);
 
           // Fetch the 'pets' collection
-          const petsCollectionRef = userRef.collection('pets');
+          const petsCollectionRef = firestore.collection('pets').where("petOwnerID","==",profileUserID);
           petsCollectionRef.get().then((querySnapshot) => {
             const petsData = [];
             querySnapshot.forEach((doc) => {
@@ -159,7 +157,7 @@ export default function UserProfile() {
               return;
           }
 
-          const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
+          const petRef = firestore.collection('pets');
           const newPetRef = petRef.doc();
           const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
 
@@ -209,7 +207,7 @@ export default function UserProfile() {
           setPetPhotoURL('');
 
           // reload window
-          window.location.reload();
+          window.location.href = "/pet/"+newPetRef.id;
     } catch (error) {
           toast.error('Error creating pet profile: ' + error.message);
         }
@@ -219,7 +217,7 @@ export default function UserProfile() {
         setDeletingPetId(petId);
 
         // Fetch the pet's document from Firestore
-        const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(petId);
+        const petRef = firestore.collection('pets').doc(petId);
         const petDoc = await petRef.get();
         const petData = petDoc.data();
         
@@ -236,7 +234,7 @@ export default function UserProfile() {
             return;
             }
 
-            const petRef = firestore.collection('users').doc(profileUserID).collection('pets').doc(deletingPetId);
+            const petRef = firestore.collection('pets').doc(deletingPetId);
 
             // Delete the pet's profile picture from storage, if it exists
             if (deletingPetPicture) {
@@ -367,9 +365,9 @@ export default function UserProfile() {
         
             // Follow all pets of profileUser
             if (!isFollowing) {
-                const petsSnapshot = await firestore.collection('users').doc(profileUserID).collection('pets').get();
+                const petsSnapshot = await firestore.collection('pets').where('petOwnerID', '==', profileUserID).get();
                 const petIds = petsSnapshot.docs.map(doc => doc.id);
-                const petRef = firestore.collection('users').doc(profileUserID).collection('pets');
+                const petRef = firestore.collection('pets');
             
                 petIds.forEach(petId => {
                     const petDocRef = petRef.doc(petId);
@@ -383,16 +381,14 @@ export default function UserProfile() {
                 
                         petDocRef.set(petData)
                             .then(() => {
-                            toast.success('Followed successfully!');
+                              toast.success('Followed all pets successfully!');
                             })
                             .catch(error => {
-                            console.error('Error updating followers:', error);
+                            toast.error('Error updating followers:', error);
                             });
                         }
                     });
-                });
-            
-                console.log('Followed all pets successfully!');
+                });   
             }
   
         } catch (error) {
@@ -732,7 +728,7 @@ export default function UserProfile() {
                                 <div className="grid grid-cols-6 gap-12">
                                   {pets.map((pet) => (
                                     <div key={pet.id} className="w-36 h-36 rounded-xl">
-                                      <Link href={`/user/${profileUser.username}/pets/${pet.id}`} className='rounded-lg hover:opacity-80 flex flex-col'>
+                                      <Link href={`/pet/${pet.id}`} className='rounded-lg hover:opacity-80 flex flex-col'>
                                           <RoundIcon 
                                             src={pet.photoURL} 
                                             alt='pet profile picture' 

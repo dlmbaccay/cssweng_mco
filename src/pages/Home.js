@@ -30,6 +30,13 @@ export default function Home() {
   }
 
   async function getAllPets() {
+    // const petsRef = firestore.collection('pets');
+    // const snapshot = await petsRef.get();
+    // const pets = snapshot.docs.map((doc) => ({
+    //   petName: doc.data().petName,
+    //   petOwnerDisplayName: doc.data().petOwnerDisplayName,
+    // }));
+    // setPets(pets);
   }
 
   useEffect(() => {
@@ -71,6 +78,7 @@ export default function Home() {
               {!users && (
                 <p className='text-sm'>No users found</p>
               )}
+              
             </div>
           </div>
 
@@ -78,7 +86,6 @@ export default function Home() {
           <div className='bg-snow w-80 rounded-lg p-4 mt-4'>
             <h1 className='text-xl font-bold mb-2'>All Pets</h1>
             <div className='flex flex-col'>
-              
             </div>
           </div>
 
