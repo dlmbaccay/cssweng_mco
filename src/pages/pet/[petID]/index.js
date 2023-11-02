@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { STATE_CHANGED, firestore, storage} from '@/src/lib/firebase';
 import { useRouter } from 'next/router';
-import { useUserData, getUserIDfromUsername } from '@/src/lib/hooks'; // Import the useUser hook
+import { useUserData, useUserIDfromUsername } from '@/src/lib/hooks'; // Import the useUser hook
 import { formatDateWithWords } from '../../../lib/formats';
 import { editPetProfileStyle } from '../../../lib/modalstyle';
 import Image from 'next/image';
@@ -25,7 +25,7 @@ export default function PetProfilePage() {
   const router = useRouter();
   const { petID } = router.query;
   const currentUser = useUserData(); // Get the logged-in user
-  const currentUserID = getUserIDfromUsername(currentUser.username);
+  const currentUserID = useUserIDfromUsername(currentUser.username);
 
   // variables for pet profile
   const [pet, setPet] = useState(null);
