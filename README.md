@@ -1,5 +1,3 @@
-dev branch
+main branch
 
-done: Register/Login Structure -> currently being styled by devs
-
-in progress: User Profile & Pet Profile
+# Sprint 1 Deployment
