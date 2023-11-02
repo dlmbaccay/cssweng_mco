@@ -96,3 +96,40 @@ export function getUserIDfromUsername(username) {
   }, [username]);
   return currentUserId;
 }
+
+export function fetchAllUsersAndPets() {
+  const [allUsers, setAllUsers] = useState([]);
+  const [allPets, setAllPets] = useState([]);
+
+  useEffect(() => {
+    let unsubscribe;
+
+    const userRef = firestore.collection('users');
+    unsubscribe = userRef.onSnapshot((snapshot) => {
+      const userData = [];
+      snapshot.docs.forEach((doc) => {
+        userData.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      setAllUsers(userData);
+    });
+
+    const petRef = firestore.collectionGroup('pets');
+    unsubscribe = petRef.onSnapshot((snapshot) => {
+      const petData = [];
+      snapshot.docs.forEach((doc) => {
+        petData.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      setAllPets(petData);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  return { allUsers, allPets };
+}

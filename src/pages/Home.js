@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useUserData } from '../lib/hooks';
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
+import { fetchAllUsersAndPets } from '../lib/hooks';
 import Router from 'next/router';
 import toast from 'react-hot-toast';
 import NavBar from '../components/NavBar';
@@ -9,42 +10,15 @@ import Link from 'next/link';
 
 export default function Home() {
 
+
   const { user, username } = useUserData();
-  const [ users, setUsers ] = useState([]);
-  const [ pets, setPets ] = useState([]);
   const router = Router;
+
+  const { allUsers, allPets } = fetchAllUsersAndPets();
 
   function handleViewProfile() {
     router.push(`/user/${username}`);
   }
-
-  async function getAllUsers() {
-    const usersRef = firestore.collection('users');
-    const snapshot = await usersRef.get();
-    const users = snapshot.docs.map((doc) => ({
-      username: doc.data().username,
-      displayName: doc.data().displayName,
-      email: doc.data().email,
-    }));
-    setUsers(users);
-  }
-
-  async function getAllPets() {
-    // const petsRef = firestore.collection('pets');
-    // const snapshot = await petsRef.get();
-    // const pets = snapshot.docs.map((doc) => ({
-    //   petName: doc.data().petName,
-    //   petOwnerDisplayName: doc.data().petOwnerDisplayName,
-    // }));
-    // setPets(pets);
-  }
-
-  useEffect(() => {
-    if (user) {
-      getAllUsers();
-      getAllPets();
-    }
-  }, [user]);
 
   return (
     <div>
@@ -53,7 +27,6 @@ export default function Home() {
 
         <div className='h-full w-full p-4'>
           {/* Current User Info */}
-          
           <div className='bg-snow w-80 rounded-lg p-4'>
             <h1 className='text-xl font-bold mb-2'>Welcome, {user?.displayName}!</h1>
             <h1 className='text-sm'>Display Name: {user?.displayName}</h1>
@@ -65,20 +38,14 @@ export default function Home() {
           </div>
 
           {/* all users by their usernames */}
-
           <div className='bg-snow w-80 rounded-lg p-4 mt-4'>
             <h1 className='text-xl font-bold mb-2'>All Users</h1>
             <div className='flex flex-col'>
-              {users && users.map((user) => (
+              {allUsers && allUsers.map((user) => (
                 <Link href={`/user/${user.username}`} key={user.username}>
                   <p className='text-sm hover:underline'>{user.username}</p>
                 </Link>
               ))}
-
-              {!users && (
-                <p className='text-sm'>No users found</p>
-              )}
-              
             </div>
           </div>
 
@@ -86,9 +53,13 @@ export default function Home() {
           <div className='bg-snow w-80 rounded-lg p-4 mt-4'>
             <h1 className='text-xl font-bold mb-2'>All Pets</h1>
             <div className='flex flex-col'>
+              {allPets && allPets.map((pet) => (
+                <Link href={`/pet/${pet.id}`} key={pet.petName}>
+                  <p className='text-sm hover:underline'>{pet.petName}</p>
+                </Link>
+              ))}
             </div>
           </div>
-
         </div>
       </div>
     </div>
