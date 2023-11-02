@@ -795,7 +795,7 @@ export default function UserProfile() {
                                           contentLabel="Create Pet Profile Label"
                                           style={createPetModalStyle}
                                       >
-                                          <form onSubmit={handleCreatePetProfile} className='flex flex-col h-full justify-between'>
+                                          <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
                                             <h2 className="font-bold text-xl gap-2 flex flex-row items-center">
                                               <i className='fa-solid fa-paw'></i>
                                               Add a New Pet
