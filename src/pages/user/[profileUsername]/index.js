@@ -488,7 +488,7 @@ export default function UserProfilePage() {
                           <div className="w-full">
                             <label
                               htmlFor="display-name"
-                              className="block text-sm font-medium text-gray-700"
+                              className="block text-sm font-medium text-gray-700 mb-1"
                             >
                               <span>Display Name</span>
                               <span className="text-red-500"> *</span>
@@ -509,7 +509,7 @@ export default function UserProfilePage() {
                           <div className="w-full">
                             <label
                               htmlFor="location"
-                              className="block text-sm font-medium text-gray-700"
+                              className="block text-sm font-medium text-gray-700 mb-1"
                             >
                               Location
                             </label>
@@ -531,7 +531,7 @@ export default function UserProfilePage() {
                             htmlFor="description"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Description
+                            About
                           </label>
                           <textarea
                             id='description'

@@ -340,7 +340,7 @@ export default function PetProfilePage() {
                       <div className="text-center mt-5 ">
                           <span className="text-lg font-bold text-raisin_black">About</span>
                           <span className="text-base text-raisin_black">
-                              <p className="mt-5">
+                              <p className="mt-5 pl-4 pr-4">
                                   {about}
                               </p>
                           </span>
