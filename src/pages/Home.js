@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useUserData } from '../lib/hooks';
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
-import { fetchAllUsersAndPets } from '../lib/hooks';
+import { useAllUsersAndPets } from '../lib/hooks';
 import Router from 'next/router';
 import toast from 'react-hot-toast';
 import NavBar from '../components/NavBar';
@@ -14,7 +14,7 @@ export default function Home() {
   const { user, username } = useUserData();
   const router = Router;
 
-  const { allUsers, allPets } = fetchAllUsersAndPets();
+  const { allUsers, allPets } = useAllUsersAndPets();
 
   function handleViewProfile() {
     router.push(`/user/${username}`);

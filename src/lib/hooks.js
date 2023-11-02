@@ -77,7 +77,7 @@ export function usePetData(userId) {
   return pets;
 }
 
-export function getUserIDfromUsername(username) {
+export function useUserIDfromUsername(username) {
   
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -97,7 +97,7 @@ export function getUserIDfromUsername(username) {
   return currentUserId;
 }
 
-export function fetchAllUsersAndPets() {
+export function useAllUsersAndPets() {
   const [allUsers, setAllUsers] = useState([]);
   const [allPets, setAllPets] = useState([]);
 

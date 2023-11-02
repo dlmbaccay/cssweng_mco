@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import { useRouter } from 'next/router';
 
 import { firestore, storage, STATE_CHANGED} from '@/src/lib/firebase';
-import { useUserData, usePetData, getUserIDfromUsername } from '@/src/lib/hooks'
+import { useUserData, usePetData, useUserIDfromUsername } from '@/src/lib/hooks'
 import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
 
 import NavBar from '../../../components/NavBar';
@@ -23,11 +23,11 @@ export default function UserProfilePage() {
   // variables for user profile
   const router = useRouter();
   const getCurrentUser = useUserData();
-  const currentUserID = getUserIDfromUsername(getCurrentUser.username);
+  const currentUserID = useUserIDfromUsername(getCurrentUser.username);
   
   const { profileUsername } = router.query; // username of the user whose profile is being viewed
   
-  const profileUserID = getUserIDfromUsername(profileUsername);
+  const profileUserID = useUserIDfromUsername(profileUsername);
   
   const [currentUser, setCurrentUser] = useState(null); // Current user data
   const [profileUser, setProfileUser] = useState(null); // Profile user data
