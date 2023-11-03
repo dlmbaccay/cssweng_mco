@@ -111,33 +111,31 @@ export default function Register() {
                 <input 
                     type="text" 
                     value={email}
-                    pattern="^\S+$"
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value.trim())}
                     className='bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Email Address'/>
                 <div className='relative w-[100%] justify-evenly items-center flex flex-col lg:flex-row'>
                     <input 
                         type="password" 
                         value={password}
-                        pattern="^\S+$"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value.trim())}
                         className={`hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none ${password === '' ? '': !checkPassword(password) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
-                    <div class="tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform -translate-x-3 translate-y-1">
-                        <p>Password must:</p>
-                        <ul className="list-disc pl-4">
-                            <li>be 8-16 characters long.</li>
-                            <li>contain at least one uppercase letter.</li>
-                            <li>contain at least one lowercase letter.</li>
-                            <li>contain at least one digit.</li>
-                            <li>contain at least one special character.</li>
+                    
+                    <div className="tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform -translate-x-3 translate-y-1 tracking-wide">
+                        <p className='text-base text-slate-700'>Password must:</p>
+                        <ul className="list-none pl-2">
+                            <li className='text-sm text-slate-600'><span className={`bullet ${/[0-9]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
+                            <li className='text-sm text-slate-600'><span className={`bullet ${/[A-Z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one uppercase letter.</li>
+                            <li className='text-sm text-slate-600'><span className={`bullet ${/[a-z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one lowercase letter.</li>
+                            <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>
+                            <li className='text-sm text-slate-600'><span className={`bullet ${/\W/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one special character.</li>
                         </ul>
                     </div>
                 </div>
                 
                 <input 
                     type="password" 
-                    pattern="^\S+$"
                     value={confirm_password}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => setConfirmPassword(e.target.value.trim())}
                     className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Confirm Password'/>
 
                 <button 
