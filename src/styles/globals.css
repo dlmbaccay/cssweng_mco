@@ -15,3 +15,17 @@
   ::-webkit-scrollbar-track {
     background-color: #CBD5E0;
   }
+
+  .hover-tooltip:hover + .tooltip {
+    display: block;
+  }
+  
+
+  .tooltip {
+    background-color: #333;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }

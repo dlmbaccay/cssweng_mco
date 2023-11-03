@@ -11,3 +11,8 @@ export function formatDateWithWords(dateString) {
   
     return `${month} ${day}, ${year}`;
   }
+
+export function checkPassword(password) {
+  const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+  return regex.test(password);
+}
