@@ -102,7 +102,7 @@ export default function NavBar() {
         </Link>
 
         <Link
-          href='/'
+          href='/Settings'
           className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
           ${isSidebarExpanded ? "" : ""}`}
         >
