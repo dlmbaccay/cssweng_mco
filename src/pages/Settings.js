@@ -60,7 +60,7 @@ export default function Settings() {
                         <br></br>
                         {/* Change password */}
                         <div className="mb-4">
-                            <button className="bg-blue-500 text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100">
+                            <button className="bg-black w-full mt-2 text-white text-sm p-2 rounded-md hover:opacity-80 transition-all">
                                 Change Password
                             </button>
                         </div>
