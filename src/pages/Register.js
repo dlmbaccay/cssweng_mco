@@ -42,8 +42,15 @@ export default function Register() {
                         console.log(error)
                     });
 
+                    // sign out the user
+                    auth.signOut()
+                    .then(() => {
                     // redirect to Login page
-                    router.push('/Login')
+                    router.push('/Login');
+                    })
+                    .catch((error) => {
+                    console.log(error);
+                    });
                 })
                 .catch((error) => {
                     const errorMessage = error.message
@@ -123,7 +130,7 @@ export default function Register() {
                     <div className="tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform -translate-x-3 translate-y-1 tracking-wide">
                         <p className='text-base text-slate-700'>Password must:</p>
                         <ul className="list-none pl-2">
-                            <li className='text-sm text-slate-600'><span className={`bullet ${/[0-9]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
+                            <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
                             <li className='text-sm text-slate-600'><span className={`bullet ${/[A-Z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one uppercase letter.</li>
                             <li className='text-sm text-slate-600'><span className={`bullet ${/[a-z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one lowercase letter.</li>
                             <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>

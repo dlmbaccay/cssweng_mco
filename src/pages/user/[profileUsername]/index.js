@@ -13,8 +13,9 @@ import NavBar from '../../../components/NavBar';
 import RoundIcon from '../../../components/RoundIcon';
 import CoverPhoto from '../../../components/CoverPhoto';
 import PostSnippet from '../../../components/PostSnippet';
+import withAuth from '@/src/components/withAuth';
 
-export default function UserProfilePage() {
+function UserProfilePage() {
   
   useEffect(() => {
     Modal.setAppElement('#root')
@@ -1016,3 +1017,5 @@ export default function UserProfilePage() {
     </div>
   )
 }
+
+export default withAuth(UserProfilePage);
