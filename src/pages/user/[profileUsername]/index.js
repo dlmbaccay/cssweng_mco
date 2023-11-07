@@ -45,6 +45,7 @@ export default function UserProfilePage() {
   const [gender, setGender] = useState(null);
   const [birthdate, setBirthdate] = useState(null);
   const [location, setLocation] = useState(null);
+  const [hidden, setHidden] = useState(null);
 
   // variables for editing user profile
   const [editedDisplayName, setEditedDisplayName] = useState(displayName);
@@ -110,6 +111,7 @@ export default function UserProfilePage() {
         setGender(doc.data()?.gender);
         setBirthdate(doc.data()?.birthdate);
         setLocation(doc.data()?.location);
+        setHidden(doc.data()?.hidden);
 
         setFollowers(doc.data()?.followers);
         setFollowing(doc.data()?.following);
@@ -142,6 +144,7 @@ export default function UserProfilePage() {
         setGender(null);
         setBirthdate(null);
         setLocation(null);
+        setHidden(null);
         setEditedDisplayName(null);
         setEditedDescription(null);
         setEditedLocation(null);
@@ -602,16 +605,18 @@ export default function UserProfilePage() {
 
                   {/* Details */}
                   <div className="mt-6 flex flex-col items-center w-full gap-4">
+                    { hidden && !hidden.includes('location') ? (
+                      <div id="icons" className='flex flex-row gap-2 items-center'>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <p>{location}</p>
+                      </div>
+                    ):''}
                     
-                    <div id="icons" className='flex flex-row gap-2 items-center'>
-                      <i class="fa-solid fa-location-dot"></i>
-                      <p>{location}</p>
-                    </div>
-
-                    <div id="icons" className='flex flex-row gap-2 items-center'>
-                      <i class="fa-solid fa-venus-mars"></i>
-                      <p>{gender}</p>
-                    </div>
+                    { hidden && !hidden.includes('gender') ? (
+                      <div id="icons" className='flex flex-row gap-2 items-center'>
+                        <i class="fa-solid fa-venus-mars"></i>
+                        <p>{gender}</p>
+                      </div>): ''}
                   </div>
               </div>
 

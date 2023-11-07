@@ -38,6 +38,7 @@ export default function PetProfilePage() {
   const [birthdate, setBirthdate] = useState(null);
   const [birthplace, setBirthplace] = useState(null);
   const [petPhotoURL, setPetPhotoURL] = useState(null);
+  const [hidden, setHidden] = useState(null);
   
   const [activeTab, setActiveTab] = useState('Tagged Posts');
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -74,6 +75,7 @@ export default function PetProfilePage() {
               setPetPhotoURL(doc.data().photoURL);
               setBirthdate(doc.data()?.birthdate);
               setBirthplace(doc.data()?.birthplace);
+              setHidden(doc.data()?.hidden);
 
               setPetOwnerID(doc.data().petOwnerID);
               setPetOwnerUsername(doc.data().petOwnerUsername);
@@ -348,15 +350,20 @@ export default function PetProfilePage() {
 
                       {/* Details */}
                       <div className="mt-6 flex flex-col items-center w-full gap-4">
-                          <div id="icons" className='flex flex-row gap-2 items-center'>
-                              <i class    ="fa-solid fa-dog"></i>
-                              <p>{breed}</p>
-                          </div>
+                          {hidden && !hidden.includes('breed') ? (
+                            <div id="icons" className='flex flex-row gap-2 items-center'>
+                                <i class    ="fa-solid fa-dog"></i>
+                                <p>{breed}</p>
+                            </div>
+                          ):''}
                           
-                          <div id="icons" className='flex flex-row gap-2 items-center'>
+                          {hidden && !hidden.includes('sex') ? (
+                            <div id="icons" className='flex flex-row gap-2 items-center'>
                               <i class="fa-solid fa-venus-mars"></i>
                               <p>{sex}</p>
-                          </div>
+                            </div>
+                          ):''}
+                          
                       </div>
                   </div>
 
