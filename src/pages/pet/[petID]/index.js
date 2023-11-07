@@ -14,8 +14,9 @@ import Loader from '@/src/components/Loader';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import RoundIcon from '@/src/components/RoundIcon';
 import PostSnippet from '@/src/components/PostSnippet';
+import withAuth from '@/src/components/withAuth';
 
-export default function PetProfilePage() {
+function PetProfilePage() {
   
   // useEffect(() => {
   //   Modal.setAppElement('#root')
@@ -464,3 +465,5 @@ export default function PetProfilePage() {
     </div>
   )
 }
+
+export default withAuth(PetProfilePage);
