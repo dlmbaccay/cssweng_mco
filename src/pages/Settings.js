@@ -1,24 +1,64 @@
 import React, { useEffect, useState } from 'react'
 import { useUserData } from '../lib/hooks';
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
+import { getAuth, updatePassword } from "firebase/auth";
 import { useAllUsersAndPets } from '../lib/hooks';
 import Router from 'next/router';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { Switch } from '@headlessui/react';
 import Modal from 'react-modal';
+import { changePasswordStyle } from '../lib/modalstyle';
+import { checkPassword } from '../lib/formats';
+import withAuth from '../components/withAuth';
 import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
 import PostSnippet from '../components/PostSnippet';
 // import Switch from '../components/Switch';
-
-export default function Settings() {
+function Settings() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
-    const changePassword = () => {
+    const openChangePassword = () => {
           setModalIsOpen(true); // Open the modal when editing starts
+    };
 
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+    const handleChangePassword = (e) => {
+        e.preventDefault();
+
+        if (newPassword !== confirmPassword) {
+        setPasswordError('Passwords do not match');
+        return;
+        }
+
+        if (!checkPassword(newPassword)) {
+        setPasswordError('Check password format');
+        return;
+        }
+        
+        setPasswordError('');
+
+        // insert change password functionality
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        updatePassword(user, newPassword)
+        .then(() => {
+            // Password updated successfully
+            // You can perform any additional actions here
+            setNewPassword('');
+            setConfirmPassword('');
+            setModalIsOpen(false);
+            toast.success("Password updated successfully!");
+        })
+        .catch((error) => {
+            // Handle password update error
+            toast.error("Try logging in again before changing.")
+        });  
     };
 
     const [switches, setSwitches] = useState([
@@ -113,10 +153,47 @@ export default function Settings() {
                         <br></br>
                         {/* Change password */}
                         <div className="mb-4">
-                            <button className="bg-black w-full mt-2 text-white text-sm p-2 rounded-md hover:opacity-80 transition-all">
+                            <button onClick={openChangePassword} className="bg-black w-full mt-2 text-white text-sm p-2 rounded-md hover:opacity-80 transition-all">
                                 Change Password
                             </button>
-
+                            {modalIsOpen && (
+                                <Modal
+                                isOpen={modalIsOpen}
+                                onRequestClose={() => setModalIsOpen(false)}
+                                style={changePasswordStyle}
+                                >
+                                    
+                                    <div className='w-72'>
+                                        <div className='relative w-[100%] justify-evenly items-left flex flex-col mb-3'>
+                                            <label className="block text-sm font-medium text-gray-700">New Password</label>
+                                            <input 
+                                                type="password" 
+                                                value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value.trim())}
+                                                className={`hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none ${newPassword === '' ? '': !checkPassword(newPassword) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
+                                            
+                                            <div className="tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform -translate-x-3 translate-y-1 tracking-wide">
+                                                <p className='text-base text-slate-700'>Password must:</p>
+                                                <ul className="list-none pl-2">
+                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
+                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/[A-Z]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one uppercase letter.</li>
+                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/[a-z]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one lowercase letter.</li>
+                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/[0-9]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>
+                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/\W/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one special character.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                                        <input 
+                                            type="password" 
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value.trim())}
+                                            className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Confirm Password'/>
+                                        {passwordError && <p className="text-red-500">{passwordError}</p>}
+                                        <button onClick={handleChangePassword}>Change Password</button>
+                                    </div>
+                                </Modal>
+                            )}
                         </div>
                         <br></br>
 
@@ -182,3 +259,6 @@ export default function Settings() {
         </div>
     )
 }
+
+
+export default withAuth(Settings);
