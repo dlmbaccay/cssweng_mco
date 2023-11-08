@@ -23,6 +23,7 @@ function AccountSetup() {
     const [displayName, setDisplayName] = useState('');
     const [usernameValid, setUsernameValid] = useState(false);
     const [displayNameValid, setDisplayNameValid] = useState(false);
+    const [availableUsername, setAvailableUsername] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = Router;
 
@@ -48,9 +49,11 @@ function AccountSetup() {
 
     const handleUsernameVal = (val) => {
         const username = val.toLowerCase().trim();
-        const regex = /^[a-zA-Z0-9_.]{3,15}$/;
+        const regex = /^[a-zA-Z0-9]+(?:[_.][a-zA-Z0-9]+)*$/;
 
-        if ((username.length >= 3 || username.length <= 15) && regex.test(username)) {
+
+        console.log(regex.test(username));
+        if ((username.length >= 3 && username.length <= 15) && regex.test(username)) {
             setUsernameFormValue(username);
             setUsernameValid(true);
         } else if (username.length < 3 || username.length > 15) {
@@ -63,22 +66,23 @@ function AccountSetup() {
     };
 
     const handleDisplayNameVal = (val) => {
-        const displayname = val.toLowerCase();
-        const regex = /^[a-zA-Z0-9_.]*[a-zA-Z0-9](?:[a-zA-Z0-9_.]*[ ]?[a-zA-Z0-9_.])*[a-zA-Z0-9_.]$/;
+        const displayname = val;
+        // const regex = /^[a-zA-Z0-9_.]*[a-zA-Z0-9](?:[a-zA-Z0-9_.]*[ ]?[a-zA-Z0-9_.])*[a-zA-Z0-9_.]$/;
 
-        if (displayname.startsWith(' ') || displayname.endsWith(' ')) {
+        if (displayname.startsWith(' ') || displayname.endsWith(' ') || displayname.includes('  ')) {
             setDisplayName(displayname);
             setDisplayNameValid(false);
-        } else if ((displayname.length >= 3 || displayname.length <= 20) && regex.test(displayname)) {
+        } else if ((displayname.length >= 3 && displayname.length <= 30)) {
             setDisplayName(displayname);
             setDisplayNameValid(true);
-        } else if (displayname.length < 3 || displayname.length > 20) {
-            setDisplayName(displayname);
-            setDisplayNameValid(false);
-        } else if (!regex.test(displayname)) {
+        } else if (displayname.length < 3 || displayname.length > 30) {
             setDisplayName(displayname);
             setDisplayNameValid(false);
         }
+        // } else if (!regex.test(displayname)) {
+        //     setDisplayName(displayname);
+        //     setDisplayNameValid(false);
+        // }
     };
     
     useEffect(() => {
@@ -95,7 +99,7 @@ function AccountSetup() {
             const ref = firestore.doc(`usernames/${username}`);
             const { exists } = await ref.get();
             console.log('Firestore read executed!');
-            setUsernameValid(!exists);
+            setAvailableUsername(!exists);
             setLoading(false);
         }
         }, 500),
@@ -181,11 +185,11 @@ function AccountSetup() {
                                 <span>Username</span>
                                 <span className="text-red-500"> *</span>
                             </label>
-                            <input type="text" id="username" value={usernameFormValue} className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your username" required 
+                            <input type="text" id="username" value={usernameFormValue} className={`mt-1 p-2 border rounded-md w-full ${usernameValid ? 'border-green-300':''}`} placeholder="Enter your username" required 
                                 maxLength={15}
                                 minLength={3}
                                 onChange={(e) => {handleUsernameVal(e.target.value)}}/>
-                            <UsernameMessage username={usernameFormValue} usernameValid={usernameValid} loading={loading} />
+                            <UsernameMessage username={usernameFormValue} usernameValid={usernameValid} availableUsername={availableUsername} loading={loading} />
                         </div>
 
                         {/* display name */}
@@ -194,8 +198,8 @@ function AccountSetup() {
                                 <span>Display Name</span>
                                 <span className="text-red-500"> *</span>
                             </label>
-                            <input type="text" id='display-name' value={displayName} className="mt-1 p-2 border rounded-md w-full" placeholder="What would you like us to call you?" required
-                                maxLength={20}
+                            <input type="text" id='display-name' value={displayName} className={`mt-1 p-2 border rounded-md w-full ${displayNameValid ? 'border-green-300':''}`} placeholder="What would you like us to call you?" required
+                                maxLength={30}
                                 minLength={3}
                                 onChange={(e) => {handleDisplayNameVal(e.target.value)}}/>
                         </div>
@@ -257,19 +261,24 @@ function AccountSetup() {
     }
 }
 
-function UsernameMessage({ username, usernameValid, loading }) {
+function UsernameMessage({ username, usernameValid, availableUsername, loading }) {
   if (loading) {
     return <p className='mt-2 ml-2'>Checking...</p>;
   } else if (username === '') {
     return null;
   } else if (username.length < 3 || username.length > 15 && !usernameValid) {
     return <p className="mt-2 ml-2">Username should have 3-15 characters!</p>;
-  } else if (usernameValid) {
+  } else if (availableUsername && usernameValid) {
     return <p className="mt-2 ml-2">{username} is available!</p>;
-  } else if (username && !usernameValid) {
+  } else if (!availableUsername && username) {
     return <p className="mt-2 ml-2">That username is taken!</p>;
-  } else {
-    return <p></p>;
+  } else if (String(username).startsWith('_') || String(username).startsWith('.') || String(username).startsWith(' ') 
+                || String(username).endsWith('_') || String(username).endsWith('.') || String(username).endsWith(' ')) {
+    return <p className="mt-2 ml-2">No spaces, periods, or underscores allowed at either end.</p>;
+  } else if (String(username).includes('__') || String(username).includes('..') || String(username).includes('._') || String(username).includes('_.')) {
+    return <p className="mt-2 ml-2">Only one period or underscore allowed next to each other.</p>;
+} else if (!usernameValid){
+    return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
   }
 }
 
@@ -278,15 +287,16 @@ function DisplayNameMessage({ displayName, displayNameValid, loading }) {
       return <p className='mt-2 ml-2'>Checking...</p>;
     } else if (displayName === '') {
       return null;
-    } else if (displayName.length < 3 || displayName.length > 20 && !displayNameValid) {
-      return <p className="mt-2 ml-2">Display name should have 3-20 characters!</p>;
-    } else if (String(displayName).startsWith(' ') || String(displayName).endsWith(' ')) {
-        return <p className="mt-2 ml-2">No spaces allowed at the start and end of the name.</p>;
+    } else if (displayName.length < 3 || displayName.length > 30 && !displayNameValid) {
+      return <p className="mt-2 ml-2">Display name should have 3-30 characters!</p>;
     } else if (String(displayName).includes('  ')) {
-        return <p className="mt-2 ml-2">Please have only one space in between each word.</p>;
-    } else if (!displayNameValid) {
-        return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
+        return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
+    } else if ((String(displayName).startsWith(' ') || String(displayName).endsWith(' ')) && !displayNameValid) {
+        return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
     } 
+    // else if (!displayNameValid) {
+    //     return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
+    // } 
   }
 
 export default withAuth(AccountSetup);
