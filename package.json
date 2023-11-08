@@ -22,7 +22,9 @@
     "react-icons": "^4.11.0",
     "react-markdown": "^9.0.0",
     "react-modal": "^3.16.1",
-    "tailwind-scrollbar-hide": "^1.1.7"
+    "react-uploader": "^3.43.0",
+    "tailwind-scrollbar-hide": "^1.1.7",
+    "uploader": "^3.48.3"
   },
   "devDependencies": {
     "autoprefixer": "latest",
