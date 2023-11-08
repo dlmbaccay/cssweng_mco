@@ -251,7 +251,7 @@ function Home() {
                 <div className="border-b-2 border-dark_gray mt-10 ml-10"></div>
                 <span className="pl-10 mt-10 pr-20 font-bold focus:outline-none text-[35px] text-mustard ">Events</span>
             </div>
-        </div>
+      </div>
     )
   } else {
     return null;
