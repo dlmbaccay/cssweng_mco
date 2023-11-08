@@ -112,6 +112,7 @@ function UserProfilePage() {
         setGender(doc.data()?.gender);
         setBirthdate(doc.data()?.birthdate);
         setLocation(doc.data()?.location);
+        setPetBirthplace(doc.data()?.location);
         setHidden(doc.data()?.hidden);
 
         setFollowers(doc.data()?.followers);
@@ -839,13 +840,16 @@ function UserProfilePage() {
                                                   className="block text-sm font-medium text-gray-700"
                                                   >
                                                   Breed
+                                                  <span className="text-red-500"> *</span>
                                                   </label>
                                                   <input
                                                   type="text"
                                                   className="mt-1 p-2 border rounded-md w-full"
                                                   placeholder="Enter your pet's breed"
                                                   value={petBreed}
+                                                  maxLength={50}
                                                   onChange={(e) => setPetBreed(e.target.value)}
+                                                  required
                                                   />
                                               </div>
 
@@ -865,6 +869,7 @@ function UserProfilePage() {
                                                   className="block text-sm font-medium text-gray-700"
                                                   >
                                                   About
+                                                  <span className="text-red-500"> *</span>
                                                   </label>
                                                   <textarea
                                                     id="bio"
@@ -874,6 +879,7 @@ function UserProfilePage() {
                                                     value={petAbout}
                                                     maxLength={100}
                                                     onChange={(e) => setPetAbout(e.target.value)}
+                                                    required
                                                   />
                                               </div>
 
@@ -886,15 +892,17 @@ function UserProfilePage() {
                                                     className="block text-sm font-medium text-gray-700"
                                                     >
                                                     Sex
+                                                    <span className="text-red-500"> *</span>
                                                     </label>
                                                     <select
                                                       id="sex"
                                                       name="sex"
-                                                      className="mt-1 p-2 border rounded-md w-full"
-                                                      value="test"
+                                                      className="mt-1 p-2 h-10 border rounded-md w-full"
+                                                      value={petSex}
                                                       onChange={(e) => setPetSex(e.target.value)}
+                                                      required
                                                     >
-                                                      <option value="None" selected>None</option>
+                                                      <option value="None" disabled>None</option>
                                                       <option value="Male">Male</option>
                                                       <option value="Female">Female</option>
                                                     </select>
@@ -906,15 +914,20 @@ function UserProfilePage() {
                                                     htmlFor="birthdate"
                                                     className="block text-sm font-medium text-gray-700"
                                                     >
-                                                    Birthday
+                                                    Year of Birth
+                                                    <span className="text-red-500"> *</span>
                                                     </label>
                                                     <input
-                                                    type="date"
-                                                    id="birthdate"
-                                                    name="birthdate"
-                                                    className="mt-1 p-2 border rounded-md w-full"
+                                                    type="text"
+                                                    id="birthyear"
+                                                    name="birthyear"
+                                                    placeholder='2023'
+                                                    minLength={4}
+                                                    maxLength={4}
+                                                    className="mt-1 p-2 h-10 border rounded-md w-full"
                                                     value={petBirthdate}
                                                     onChange={(e) => setPetBirthdate(e.target.value)}
+                                                    required
                                                     />
                                                 </div>
 
@@ -925,13 +938,15 @@ function UserProfilePage() {
                                                     className="block text-sm font-medium text-gray-700"
                                                     >
                                                     Place of Birth
+                                                    <span className="text-red-500"> *</span>
                                                     </label>
                                                     <input
                                                     type="text"
-                                                    className="mt-1 p-2 border rounded-md w-full"
-                                                    placeholder="Enter your pet's place of birth"
+                                                    className="mt-1 p-2 h-10 border rounded-md w-full"
+                                                    placeholder={petBirthplace}
                                                     value={petBirthplace}
                                                     onChange={(e) => setPetBirthplace(e.target.value)}
+                                                    required
                                                     />
                                                 </div>
                                               </div>
