@@ -124,7 +124,7 @@ export default function Login() {
             return;
         }
     
-        auth.sendPasswordResetEmail(auth, email)
+        auth.sendPasswordResetEmail(email)
         .then(() => {
             // Password reset email sent!
             toast.success("A password reset email has been sent!");
