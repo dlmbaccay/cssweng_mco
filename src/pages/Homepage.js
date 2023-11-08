@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import Navbar from '../../components/Navbar';
-import Post from '../../components/Post';
+import Navbar from '../components/NavBar';
+import Post from '../components/PostSnippet';
 import { FaQuestion, FaEnvelope } from 'react-icons/fa';
 import { BsBookmarkFill } from 'react-icons/bs';
 import { LiaShoppingCartSolid } from 'react-icons/lia';
