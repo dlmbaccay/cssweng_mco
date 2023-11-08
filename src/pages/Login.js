@@ -65,11 +65,12 @@ export default function Login() {
             console.log(errorCode)
             console.log(errorMessage)
 
-            if (errorCode === 'auth/invalid-login-credentials') {
-                toast.error('Wrong email or password!')
-                return
-            }
-        })
+            // if (errorCode === 'auth/invalid-login-credentials') {
+            //     toast.error('Wrong email or password!')
+            //     return
+            // }
+            toast.error('Wrong email or password!')
+        })  
     }
 
     async function handleGooglePopUp() {
