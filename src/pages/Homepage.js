@@ -1,19 +1,18 @@
 import React, { useState } from 'react'
-import Navbar from '../../components/Navbar';
-import Post from '../../components/Post';
+import NavBar from '../components/NavBar';
+import PostSnippet from '../components/PostSnippet';
 import { FaQuestion, FaEnvelope } from 'react-icons/fa';
 import { BsBookmarkFill } from 'react-icons/bs';
 import { LiaShoppingCartSolid } from 'react-icons/lia';
 import { IoMdSearch } from 'react-icons/io';
 import { IconContext } from "react-icons";
 
-export default function Homepage(){
+export default function HomePage(){
     return(
-        
         <div className = 'bg-gray flex flex-row min-h-screen h-screen w-full'>
-            {/* Navbar */}
+            {/* NavBar */}
             <div className='min-h-screen sticky'>
-                <Navbar/>
+                <NavBar/>
             </div>
             
             <div className='min-h-screen w-full flex flex-col items-center'>
@@ -61,36 +60,38 @@ export default function Homepage(){
                         className="flex justify-center w-full max-w-[859px] rounded-[20px] m-8"
                     >
                         <div class="flex flex-col h-fit max-h-[510px]">
-                            <Post 
+                            <PostSnippet
                                 username='barknplay'
+                                displayName='Barker'
                                 publish_date='Sept 6 at 4:30 PM'    
                                 desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                     Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                     🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
                                 user_img_src='/images/user1-image.png'
                                 post_img_src='/images/post1-image.png'
+                                style={{ scrollSnapAlign: 'start' }}
                             />
-                            {/* space lang po to sorry po */}
-                            <div class="m-4"></div>
-                            <Post
+                            <PostSnippet
                                 username='barknplay'
+                                displayName='Barker'
                                 publish_date='Sept 6 at 4:30 PM'    
                                 desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                     Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                     🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
                                 user_img_src='/images/user1-image.png'
                                 post_img_src='/images/post1-image.png'
+                                style={{ scrollSnapAlign: 'start' }}
                             />
-                            <div class="m-4"></div>
-                            <Post
+                            <PostSnippet
                                 username='barknplay'
+                                displayName='Barker'
                                 publish_date='Sept 6 at 4:30 PM'    
                                 desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
                                     Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
                                     🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
                                 user_img_src='/images/user1-image.png'
                                 post_img_src='/images/post1-image.png'
-                                className='m-4'
+                                style={{ scrollSnapAlign: 'start' }}
                             />
                         </div>
                     </div>
