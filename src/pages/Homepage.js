@@ -29,7 +29,7 @@ export default function HomePage(){
                         </div>
                         <div className='flex flex-row mr-3'>
                         {/* App Name */}
-                        <span className=" mr-4 pl-10 top-3 font-semibold focus:outline-none text-[30px]">App Name</span>
+                        <span className=" mr-4 pl-10 top-3 font-semibold focus:outline-none text-[30px]">BantayBuddy</span>
                         {/* Icon */}
                         <div className="w-12 h-12 bg-dark_gray rounded-[30px]"></div>
                         </div>
@@ -40,11 +40,9 @@ export default function HomePage(){
                             {/* Profile Picture */}
                             <div className="ml-10 mt-8 w-[145px] h-[115px] bg-dark_gray rounded-full"></div>
                             {/* Write Post */}
-                            <a href={'/homepage/WritePost'}>
-                            <div className=" w-full ml-10 h-[120px] max-w-1xl mt-8 mb-8 mr-[40px] bg-dark_gray rounded-[30px]"> 
+                            <div className=" w-full ml-10 h-[115px] max-w-1xl mt-8 mb-8 mr-[40px] bg-dark_gray rounded-[30px]"> 
                                 <input type="text" className="bg-transparent w-full h-full pl-10 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Write a post..."/>
                             </div>
-                            </a>
                         </div>
                         <div className='flex flex-row justify-between mb-3 ml-4 mr-10 border-t-2 border-dark_gray items-center'>
                             {/* Buttons */}
@@ -111,19 +109,7 @@ export default function HomePage(){
                             </div>
                         </div>
                     </div>
-                    <span className="mt-5 pl-2 font-regular focus:outline-none text-[20px] text-grass">Lost Pets</span>
-                </div>
-                <div className="flex flex-row">
-                    <div className='ml-10 mt-3'>
-                        <div className="w-12 h-12 bg-grass rounded-full">
-                            <div className='pt-[11px] pl-[11px]'>
-                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
-                                    <FaQuestion />
-                                </IconContext.Provider>
-                            </div>
-                        </div>
-                    </div>
-                    <span className="mt-5 pl-2 font-regular focus:outline-none text-[20px] text-grass">Found Pets</span>
+                    <span className="mt-5 pl-2 font-regular focus:outline-none text-[20px] text-grass">Pet Tracker</span>
                 </div>
                 <div className="flex flex-row">
                     <div className='ml-9 mt-3 pl-1'>

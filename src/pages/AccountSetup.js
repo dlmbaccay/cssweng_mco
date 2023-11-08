@@ -191,13 +191,13 @@ function AccountSetup() {
                         {/* bio */}
                         <div className="mb-4">
                             <label htmlFor="description" className="block text-sm font-medium text-gray-700">Bio</label>
-                            <textarea id='description' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" maxLength="100" placeholder="Tell us about yourself..." />
+                            <textarea id='description' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" maxLength="100" placeholder="Tell us about yourself..." required />
                         </div>
 
                         {/* gender */}
                         <div className="mb-4">
                             <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
-                            <select id="genderSelect" name="gender" className="mt-1 p-2 border rounded-md w-full">
+                            <select id="genderSelect" name="gender" className="mt-1 p-2 border rounded-md w-full" required>
                                 <option value="None">Prefer Not to Say</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
@@ -208,13 +208,13 @@ function AccountSetup() {
                         {/* birthday */}
                         <div className="mb-4">
                             <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">Birthday</label>
-                            <input type="date" id="birthdate" name="birthdate" className="mt-1 p-2 border rounded-md w-full" max="9999-12-31"/>
+                            <input type="date" id="birthdate" name="birthdate" className="mt-1 p-2 border rounded-md w-full" max="9999-12-31" required/>
                         </div>
 
                         {/* location */}
                         <div className="mb-4">
                             <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
-                            <input type="text" id="location" name="location" className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your Location" />
+                            <input type="text" id="location" name="location" className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your Location" required />
                         </div>
 
                         {/* buttons */}

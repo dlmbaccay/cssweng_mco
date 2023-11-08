@@ -68,8 +68,12 @@ export default function Login() {
             if (errorCode === 'auth/invalid-login-credentials') {
                 toast.error('Wrong email or password!')
                 return
+            } else if (errorCode === 'auth/too-many-requests') {
+                toast.error('Too many attempts. Try again later or reset your password.')
+                return
             }
-        })
+            toast.error('Wrong email or password!')
+        })  
     }
 
     async function handleGooglePopUp() {
