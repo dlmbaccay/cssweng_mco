@@ -102,7 +102,7 @@ function AccountSetup() {
             setAvailableUsername(!exists);
             setLoading(false);
         }
-        }, 1000),
+        }, 500),
         []
     );
 
@@ -161,7 +161,7 @@ function AccountSetup() {
 
         await batch.commit();
 
-        toast.success(user.uid + " is now registered!")
+        toast.success(usernameFormValue + " is now registered!")
 
         // push to Profile
         router.push(`/user/${usernameFormValue}`);

@@ -71,6 +71,8 @@ function UserProfilePage() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
   const [activeTab, setActiveTab] = useState('Posts');
+  const [loading, setLoading] = useState(false);
+  const [editedDisplayNameValid, setEditedDisplayNameValid] = useState(false);
 
   // create post variables
   const [showCreatePostForm, setShowCreatePostForm] = useState(false);
@@ -407,6 +409,26 @@ function UserProfilePage() {
   const handleTabEvent = (tabName) => {
       setActiveTab(tabName);
   };
+  
+  const handleDisplayNameVal = (val) => {
+        const checkDisplayNameVal = val;
+        // const regex = /^[a-zA-Z0-9_.]*[a-zA-Z0-9](?:[a-zA-Z0-9_.]*[ ]?[a-zA-Z0-9_.])*[a-zA-Z0-9_.]$/;
+
+        if (checkDisplayNameVal.startsWith(' ') || checkDisplayNameVal.endsWith(' ') || checkDisplayNameVal.includes('  ')) {
+            setEditedDisplayName(checkDisplayNameVal);
+            setEditedDisplayNameValid(false);
+        } else if ((checkDisplayNameVal.length >= 1 && checkDisplayNameVal.length <= 30)) {
+            setEditedDisplayName(checkDisplayNameVal);
+            setEditedDisplayNameValid(true);
+        } else if (checkDisplayNameVal.length < 1 || checkDisplayNameVal.length > 30) {
+            setEditedDisplayName(checkDisplayNameVal);
+            setEditedDisplayNameValid(false);
+        }
+        // } else if (!regex.test(displayname)) {
+        //     setDisplayName(displayname);
+        //     setDisplayNameValid(false);
+        // }
+    };
 
   return (
     <div id="root" className='flex h-screen'>
@@ -488,7 +510,7 @@ function UserProfilePage() {
                           </div>
                         </div>
 
-                        <div className='flex flex-row items-center w-full gap-16 bg-snow p-4'>
+                        <div className='flex flex-row w-full gap-16 bg-snow p-4'>
                           {/* Display Name */}
                           <div className="w-full">
                             <label
@@ -503,11 +525,14 @@ function UserProfilePage() {
                               id='display-name'
                               className="p-2 border rounded-md w-full"
                               placeholder="Enter your username"
-                              maxLength="20"
+                              maxLength={30}
+                              minLength={1}
                               value={editedDisplayName}
-                              onChange={e => setEditedDisplayName(e.target.value)}
+                              onChange={(e) => {handleDisplayNameVal(e.target.value)}}
                               required
                             />
+
+                            <DisplayNameMessage editedDisplayName={editedDisplayName} editedDisplayNameValid={editedDisplayNameValid} />
                           </div>
 
                           {/* location */}
@@ -564,9 +589,9 @@ function UserProfilePage() {
                         {/* TODO: Add functionality for Cancel button */}
                         <div className="flex justify-end">
                             <button
-                            onClick={handleSave} disabled={isUploadingCoverPhoto}
+                            onClick={handleSave} disabled={isUploadingCoverPhoto || !editedDisplayNameValid}
                             type="submit"
-                            className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                            className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${(!isUploadingCoverPhoto &&editedDisplayNameValid) ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`} 
                             >
                             Save
                             </button>
@@ -1037,5 +1062,23 @@ function UserProfilePage() {
     </div>
   )
 }
+
+function DisplayNameMessage({ editedDisplayName, editedDisplayNameValid, loading }) {
+  if (loading) {
+    return <p className='mt-2 ml-2'>Checking...</p>;
+  } else if (editedDisplayName === '') {
+    return null;
+  } else if (editedDisplayName.length < 1 || editedDisplayName.length > 30 && !editedDisplayNameValid) {
+    return <p className="mt-2 ml-2">Display name should have 1-30 characters!</p>;
+  } else if (String(editedDisplayName).includes('  ')) {
+      return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
+  } else if ((String(editedDisplayName).startsWith(' ') || String(editedDisplayName).endsWith(' ')) && !editedDisplayNameValid) {
+      return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
+  } 
+  // else if (!displayNameValid) {
+  //     return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
+  // } 
+}
+
 
 export default withAuth(UserProfilePage);
