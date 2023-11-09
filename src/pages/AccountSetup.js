@@ -35,11 +35,11 @@ function AccountSetup() {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-            // User is signed in.
-            setPageLoading(false);
+                // User is signed in.
+                setPageLoading(false);
             } else {
-            // No user is signed in.
-            setPageLoading(true);
+                // No user is signed in.
+                setPageLoading(true);
             }
         });
     
@@ -72,10 +72,10 @@ function AccountSetup() {
         if (displayname.startsWith(' ') || displayname.endsWith(' ') || displayname.includes('  ')) {
             setDisplayName(displayname);
             setDisplayNameValid(false);
-        } else if ((displayname.length >= 3 && displayname.length <= 30)) {
+        } else if ((displayname.length >= 1 && displayname.length <= 30)) {
             setDisplayName(displayname);
             setDisplayNameValid(true);
-        } else if (displayname.length < 3 || displayname.length > 30) {
+        } else if (displayname.length < 1 || displayname.length > 30) {
             setDisplayName(displayname);
             setDisplayNameValid(false);
         }
@@ -102,7 +102,7 @@ function AccountSetup() {
             setAvailableUsername(!exists);
             setLoading(false);
         }
-        }, 500),
+        }, 1000),
         []
     );
 
@@ -143,7 +143,7 @@ function AccountSetup() {
             displayName: displayName,
             photoURL: userPhotoURL,
             // displayName: document.querySelector("#display-name").value,
-            description: document.querySelector("#description").value,
+            about: document.querySelector("#about").value,
             email: user.email,
             followers: [],
             following: [],
@@ -200,7 +200,7 @@ function AccountSetup() {
                             </label>
                             <input type="text" id='display-name' value={displayName} className={`mt-1 p-2 border rounded-md w-full ${displayNameValid ? 'border-green-300':''}`} placeholder="What would you like us to call you?" required
                                 maxLength={30}
-                                minLength={3}
+                                minLength={1}
                                 onChange={(e) => {handleDisplayNameVal(e.target.value)}}/>
                         </div>
                             <DisplayNameMessage displayName={displayName} displayNameValid={displayNameValid} loading={loading} />
@@ -212,15 +212,18 @@ function AccountSetup() {
                             <p className="text-sm text-gray-500 mt-1">Upload a profile picture (JPG, PNG, or GIF).</p>
                         </div>
 
-                        {/* bio */}
+                        {/* about */}
                         <div className="mb-4">
-                            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Bio</label>
-                            <textarea id='description' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" maxLength="100" placeholder="Tell us about yourself..." required />
+                            <label htmlFor="about" className="block text-sm font-medium text-gray-700">About</label>
+                            <textarea id='about' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" maxLength="100" placeholder="Tell us about yourself..." />
                         </div>
 
                         {/* gender */}
                         <div className="mb-4">
-                            <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
+                            <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+                                <span>Gender</span>
+                                <span className="text-red-500"> *</span>
+                            </label>
                             <select id="genderSelect" name="gender" className="mt-1 p-2 border rounded-md w-full" required>
                                 <option value="None">Prefer Not to Say</option>
                                 <option value="Male">Male</option>
@@ -231,13 +234,19 @@ function AccountSetup() {
 
                         {/* birthday */}
                         <div className="mb-4">
-                            <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">Birthday</label>
+                            <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">
+                                <span>Birthdate</span>
+                                <span className="text-red-500"> *</span>
+                            </label>
                             <input type="date" id="birthdate" name="birthdate" className="mt-1 p-2 border rounded-md w-full" max="9999-12-31" required/>
                         </div>
 
                         {/* location */}
                         <div className="mb-4">
-                            <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
+                            <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                                <span>Location</span>
+                                <span className="text-red-500"> *</span>
+                            </label>
                             <input type="text" id="location" name="location" className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your Location" required />
                         </div>
 
@@ -287,8 +296,8 @@ function DisplayNameMessage({ displayName, displayNameValid, loading }) {
       return <p className='mt-2 ml-2'>Checking...</p>;
     } else if (displayName === '') {
       return null;
-    } else if (displayName.length < 3 || displayName.length > 30 && !displayNameValid) {
-      return <p className="mt-2 ml-2">Display name should have 3-30 characters!</p>;
+    } else if (displayName.length < 1 || displayName.length > 30 && !displayNameValid) {
+      return <p className="mt-2 ml-2">Display name should have 1-30 characters!</p>;
     } else if (String(displayName).includes('  ')) {
         return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
     } else if ((String(displayName).startsWith(' ') || String(displayName).endsWith(' ')) && !displayNameValid) {
@@ -297,6 +306,6 @@ function DisplayNameMessage({ displayName, displayNameValid, loading }) {
     // else if (!displayNameValid) {
     //     return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
     // } 
-  }
+}
 
 export default withAuth(AccountSetup);

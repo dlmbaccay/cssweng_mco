@@ -36,7 +36,7 @@ function UserProfilePage() {
   
   // variables for user profile
   const [username, setUsername] = useState(null);
-  const [description, setDescription] = useState(null); 
+  const [about, setAbout] = useState(null); 
   const [displayName, setDisplayName] = useState(null); 
   const [email, setEmail] = useState(null);
   const [userPhotoURL, setUserPhotoURL] = useState(null);
@@ -49,9 +49,9 @@ function UserProfilePage() {
   const [hidden, setHidden] = useState(null);
 
   // variables for editing user profile
-  const [editedDisplayName, setEditedDisplayName] = useState(displayName);
-  const [editedDescription, setEditedDescription] = useState(description);
-  const [editedLocation, setEditedLocation] = useState(location);
+  const [editedDisplayName, setEditedDisplayName] = useState(null);
+  const [editedAbout, setEditedAbout] = useState(null);
+  const [editedLocation, setEditedLocation] = useState(null);
 
   // variables for creating pet profile
   const [showCreatePetForm, setShowCreatePetForm] = useState(false);
@@ -104,7 +104,7 @@ function UserProfilePage() {
             ...doc.data()
         });
         setUsername(doc.data()?.username);
-        setDescription(doc.data()?.description);
+        setAbout(doc.data()?.about);
         setDisplayName(doc.data()?.displayName);
         setEmail(doc.data()?.email);
         setUserPhotoURL(doc.data()?.photoURL);
@@ -119,7 +119,7 @@ function UserProfilePage() {
         setFollowing(doc.data()?.following);
         
         setEditedDisplayName(doc.data()?.displayName);
-        setEditedDescription(doc.data()?.description);
+        setEditedAbout(doc.data()?.about);
         setEditedLocation(doc.data()?.location);
 
         // Fetch the 'pets' collection
@@ -138,7 +138,7 @@ function UserProfilePage() {
     } else {
         setProfileUser(null);
         setUsername(null);
-        setDescription(null);
+        setAbout(null);
         setDisplayName(null);
         setEmail(null);
         setUserPhotoURL(null);
@@ -148,7 +148,7 @@ function UserProfilePage() {
         setLocation(null);
         setHidden(null);
         setEditedDisplayName(null);
-        setEditedDescription(null);
+        setEditedAbout(null);
         setEditedLocation(null);
         setPets([])
     }
@@ -282,7 +282,7 @@ function UserProfilePage() {
       try {
           const updateData = {
               displayName: editedDisplayName,
-              description: editedDescription,
+              about: editedAbout,
               coverPhotoURL: coverPhotoURL,
               photoURL: userPhotoURL,
               location: editedLocation
@@ -530,21 +530,21 @@ function UserProfilePage() {
                           </div>
                         </div>
 
-                        {/* Description */}
+                        {/* about */}
                         <div className="bg-snow p-4">
                           <label
-                            htmlFor="description"
+                            htmlFor="about"
                             className="block text-sm font-medium text-gray-700"
                           >
                             About
                           </label>
                           <textarea
-                            id='description'
+                            id='about'
                             className="mt-1 p-2 border rounded-lg w-full resize-none"
                             rows="3"
                             placeholder="Tell us about yourself..."
-                            value={editedDescription}
-                            onChange={e => setEditedDescription(e.target.value)}
+                            value={editedAbout}
+                            onChange={e => setEditedAbout(e.target.value)}
                           />
                         </div>
 
@@ -601,7 +601,7 @@ function UserProfilePage() {
                   <div className="text-center mt-10 flex flex-col gap-2">
                     <div className="text-lg font-bold text-raisin_black">About</div>
                       <div className="text-base text-raisin_black pl-6 pr-6">
-                        {description}
+                        {about}
                       </div>
                   </div>
 
