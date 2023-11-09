@@ -1,17 +1,41 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 
-import likeReaction from '/public/images/post-reactions/like.svg'
-import heartReaction from '/public/images/post-reactions/heart.svg'
-import wowReaction from '/public/images/post-reactions/wow.svg'
-import sadReaction from '/public/images/post-reactions/sad.svg'
-import angryReaction from '/public/images/post-reactions/angry.svg'
+
+
+import likeReaction from '/public/images/post-reactions/like.png'
+import heartReaction from '/public/images/post-reactions/heart.png'
+import laughReaction from '/public/images/post-reactions/laugh.png'
+import wowReaction from '/public/images/post-reactions/wow.png'
+import sadReaction from '/public/images/post-reactions/sad.png'
+import angryReaction from '/public/images/post-reactions/angry.png'
+
 
 
 export default function Post( props ) {
 
     const { username, displayName, publish_date, desc, user_img_src, post_img_src } = props;
+    const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
+
+    const handleHeartHover = () => {
+      setIsOverlayVisible(true);
+    };
+
+    const handleHeartLeave = () => {
+      setIsOverlayVisible(false);
+    };
+
+    const handleOverlayHover = () => {
+      setIsOverlayVisible(true);
+      
+    };
+  
+    const handleOverlayLeave = () => {
+      setIsOverlayVisible(false);
+    };
 
     return (
       <div className='shadow-sm hover:shadow-lg bg-snow w-[800px] h-[500px] rounded-3xl p-6 flex flex-col'>
@@ -59,10 +83,38 @@ export default function Post( props ) {
         </div>
 
         {/* Footer */}
-        <div id='post-footer' className='mt-4 flex flex-row w-full justify-between'>
+        <div id='post-footer' className='mt-4 flex flex-row w-full justify-between relative'>
+          {isOverlayVisible && (
+              <div id='overlay' className='absolute bottom-5 left-0' 
+              onMouseEnter={handleOverlayHover}
+              onMouseLeave={handleOverlayLeave}>
+                <div className='flex flex-row gap-2 w-[250px] h-[50px] bg-snow rounded-3xl drop-shadow-xl'>
+                  <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
+                    <Image src={likeReaction} alt="like reaction" />
+                  </div>
+                  <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
+                    <Image src={heartReaction} alt="like reaction" />
+                  </div>
+                  <div className='w-100 h-100 mt-1 hover:scale-125 hover:transform'>
+                    <Image src={laughReaction} alt="like reaction" />
+                  </div>
+                  <div className='w-100 h-100 mt-1 hover:scale-125 hover:transform'>
+                    <Image src={wowReaction} alt="like reaction" />
+                  </div>
+                  <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
+                    <Image src={sadReaction} alt="like reaction" />
+                  </div>
+                  <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
+                    <Image src={angryReaction} alt="like reaction" />
+                  </div>
+                </div>
+              </div>
+            )}
           <div id="left" className='flex flex-row gap-4'>
             <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-              <i className="fa-solid fa-heart hover:text-grass hover:scale- hover:cursor-pointer"></i>
+              <i className="fa-solid fa-heart hover:text-grass hover:scale- hover:cursor-pointer" 
+              onMouseEnter={handleHeartHover}
+              onMouseLeave={handleHeartLeave}></i>
               <p>0</p>
             </div>
             
@@ -83,5 +135,6 @@ export default function Post( props ) {
           </div>
         </div>
       </div>
-    );
+
+    )
 }

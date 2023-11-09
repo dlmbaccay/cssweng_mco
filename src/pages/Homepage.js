@@ -21,9 +21,7 @@ export default function HomePage(){
                         {/* Search Bar */}
                         <div className="mr-10 w-80 h-10 bg-dark_gray rounded-[30px] flex flex-row items-center ">
                             <div className="items-center justify-left flex flex-row ml-4">
-                                <IconContext.Provider value={{ color: "#898989", size: "20"}}>
-                                    <IoMdSearch />
-                                </IconContext.Provider>
+                                    <IoMdSearch style={{ color: "#898989", fontSize: "20px"}} />
                             </div>
                             <input type="text" className="bg-transparent w-full h-full pl-2 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Search"/>
                         </div>
@@ -57,40 +55,43 @@ export default function HomePage(){
                         id="showcase" 
                         className="flex justify-center w-full max-w-[859px] rounded-[20px] m-8"
                     >
-                        <div class="flex flex-col h-fit max-h-[510px]">
-                            <PostSnippet
-                                username='barknplay'
-                                displayName='Barker'
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src='/images/user1-image.png'
-                                post_img_src='/images/post1-image.png'
-                                style={{ scrollSnapAlign: 'start' }}
-                            />
-                            <PostSnippet
-                                username='barknplay'
-                                displayName='Barker'
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src='/images/user1-image.png'
-                                post_img_src='/images/post1-image.png'
-                                style={{ scrollSnapAlign: 'start' }}
-                            />
-                            <PostSnippet
-                                username='barknplay'
-                                displayName='Barker'
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src='/images/user1-image.png'
-                                post_img_src='/images/post1-image.png'
-                                style={{ scrollSnapAlign: 'start' }}
-                            />
+                        <div className="flex flex-col h-fit max-h-[510px]">
+                            <div className="mb-8">
+                                <PostSnippet
+                                    username='barknplay'
+                                    displayName='Barker'
+                                    publish_date='Sept 6 at 4:30 PM'    
+                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                    user_img_src='/images/user1-image.png'
+                                    post_img_src='/images/post1-image.png'
+                                />
+                            </div>
+                            <div className="mb-8">
+                                <PostSnippet
+                                    username='barknplay'
+                                    displayName='Barker'
+                                    publish_date='Sept 6 at 4:30 PM'    
+                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                    user_img_src='/images/user1-image.png'
+                                    post_img_src='/images/post1-image.png'
+                                />
+                            </div>
+                            <div className="mb-8">
+                                <PostSnippet
+                                    username='barknplay'
+                                    displayName='Barker'
+                                    publish_date='Sept 6 at 4:30 PM'    
+                                    desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
+                                        Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
+                                        🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
+                                    user_img_src='/images/user1-image.png'
+                                    post_img_src='/images/post1-image.png'
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,9 +104,7 @@ export default function HomePage(){
                         {/* green circle */}
                         <div className="w-12 h-12 bg-grass rounded-full ">
                             <div className='pt-[11px] pl-[11px]'>
-                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
-                                    <FaQuestion />
-                                </IconContext.Provider>
+                                    <FaQuestion style={{ fontSize: "25px", color: "#F5F0F0" }}/>
                             </div>
                         </div>
                     </div>
@@ -115,9 +114,7 @@ export default function HomePage(){
                     <div className='ml-9 mt-3 pl-1'>
                         <div className="w-12 h-12 bg-grass rounded-full">
                         <div className='pt-[11px] pl-[11px]'>
-                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
-                                    <FaEnvelope />
-                                </IconContext.Provider>
+                                    <FaEnvelope style={{ fontSize: "25px", color: "#F5F0F0" }}/>
                             </div>
                         </div>
                     </div>
@@ -127,9 +124,7 @@ export default function HomePage(){
                     <div className='ml-10 mt-3'>
                         <div className="w-12 h-12 bg-grass rounded-full">
                             <div className='pt-[11px] pl-[11px]'>
-                                <IconContext.Provider value={{ color: "#F5F0F0", size: "25"}}>
-                                    <BsBookmarkFill />
-                                </IconContext.Provider>
+                                    <BsBookmarkFill style={{ fontSize: "25px", color: "#F5F0F0" }}/>
                             </div>
                         </div>
                     </div>
@@ -139,9 +134,7 @@ export default function HomePage(){
                     <div className='ml-10 mt-3'>
                         <div className="w-12 h-12 bg-grass rounded-full">
                             <div className='pt-[8px] pl-[6px]'>
-                                <IconContext.Provider value={{ color: "#F5F0F0", size: "35"}}>
-                                    <LiaShoppingCartSolid />
-                                </IconContext.Provider>
+                                    <LiaShoppingCartSolid style={{ fontSize: "35px", color: "#F5F0F0" }} />
                             </div>
                         </div>
                     </div>
