@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { IoClose } from 'react-icons/io5';
 import { IconContext } from "react-icons";
 
+/* this is just here para madali siya maaccess but i added this na rin sa components */
+
 export default function WritePost() {
     return(
         <div className='flex flex-col justify-center items-center w-screen h-screen bg-black'>
@@ -22,18 +24,30 @@ export default function WritePost() {
                             <h1 className='font-bold text-[18px]'>petwhisperer</h1>
                             <div className='flex flex-row text-[16px] space-x-3'>
                                 <div className="flex justify-center items-center w-[111px] h-[23px] bg-dark_gray rounded-[5px] ">
-                                    <h1>Categories</h1>
+                                    <select name="category" id="category" placeholder='Categories' className='bg-dark_gray'>
+                                        <option value="" disable selected>Categories</option>
+                                        <option value="qa">Q&A</option>
+                                        <option value="tips">Tips</option>
+                                        <option value="petNeeds">Pet Needs</option>
+                                        <option value="lostPets">Lost Pets</option>
+                                        <option value="foundPets">Found Pets</option>
+                                    </select>
+                                   {/*  <h1>Categories</h1> */}
                                 </div>
                                 <div className="flex justify-center items-center w-[111px] h-[23px] bg-dark_gray rounded-[5px] ">
-                                    <h1>Pets</h1>
+                                    <select name="category" id="category" className='bg-dark_gray '>
+                                        <option value="" disable selected>Pets</option>
+                                        <option value="samplepet">Sample Pet</option>
+                                    </select>
+                                    {/* <h1>Pets</h1> */}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className='text-neutral-400 mt-5 ml-9'>
-                    <h1>What's on your mind?</h1>
+                <div className='flex text-neutral-400 mt-5 ml-9'>
+                    <input type='text' placeholder='What`s on your mind?' className='outline-none bg-snow text-raisin_black w-full pr-9'></input>
                 </div>
 
                 <div className='flex flex-row justify-between items-center w-[496px] h-[39px] rounded-[10px] ml-5 mt-28 text-[20px]'>
