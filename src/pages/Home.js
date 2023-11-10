@@ -88,6 +88,19 @@ function Home() {
               </div>
             </div>
           </div>
+{/* I linked these lang para easy access sa Homepage and write post */}
+          <a href='/Homepage'>
+            <div className='flex m-2 h-12 w-40 bg-blue-900 rounded-full items-center justify-center mb-5'>
+              <h1 className='text-snow font-bold'>Homepage</h1>
+            </div>
+          </a>
+          
+          <a href='/WritePost'>
+            <div className='flex m-2 h-12 w-40 bg-blue-900 rounded-full items-center justify-center'>
+              <h1 className='text-snow font-bold'>Write Post</h1>
+            </div>
+          </a>
+          
         </div>
       </div>
     //   <div className = 'bg-gray flex flex-row min-h-screen h-screen w-full'>

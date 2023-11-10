@@ -42,12 +42,20 @@ export default function HomePage(){
                                 <input type="text" className="bg-transparent w-full h-full pl-10 text-raisin_black text-xl font-semibold focus:outline-none" placeholder="Write a post..."/>
                             </div>
                         </div>
-                        <div className='flex flex-row justify-between mb-3 ml-4 mr-10 border-t-2 border-dark_gray items-center'>
+                        <div className='flex flex-row gap-2 justify-center mb-10 border-dark_gray items-center'>
                             {/* Buttons */}
-                            <span className="pl-10 top-3 pr-20 font-regular focus:outline-none text-[23px] text-raisin_black border-r-2 border-dark_gray">Media</span>
-                            <span className="pl-10 top-3 pr-20 font-regular focus:outline-none text-[23px] text-raisin_black border-r-2 border-dark_gray">Tag</span>
-                            <span className="pl-10 top-3 pr-20 font-regular focus:outline-none text-[23px] text-raisin_black border-r-2 border-dark_gray">Check-In</span>
-                            <span className="pl-10 top-3 pr-20 font-regular focus:outline-none text-[23px] text-raisin_black">Post</span>
+                            <div className='outline outline-2 outline-dark_gray py-2 px-24 rounded-l-[10px]'>
+                                <h1>Media</h1>
+                            </div>
+                            <div className='outline outline-2 outline-dark_gray py-2 px-24'>
+                                <h1>Tag</h1>
+                            </div>
+                            <div className='outline outline-2 outline-dark_gray py-2 px-20'>
+                                <h1>Check-in</h1>
+                            </div>
+                            <div className='outline outline-2 outline-dark_gray py-2 px-24 rounded-r-[10px]'>
+                                <h1>Post</h1>
+                            </div>
                         </div>
                     </div>
                     {/* Posts */}
