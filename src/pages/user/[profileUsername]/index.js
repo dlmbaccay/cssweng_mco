@@ -53,26 +53,19 @@ function UserProfilePage() {
   const [editedAbout, setEditedAbout] = useState(null);
   const [editedLocation, setEditedLocation] = useState(null);
 
-  // variables for creating pet profile
+  // variables for pet profile and pet deletion
   const [showCreatePetForm, setShowCreatePetForm] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showPetDeleteConfirmation, setShowPetDeleteConfirmation] = useState(false);
   const [deletingPetId, setDeletingPetId] = useState(null);
   const [deletingPetName, setDeletingPetName] = useState(null);
   const [deletingPetPicture, setDeletingPetPicture] = useState(null);
-  const [petName, setPetName] = useState(null);
-  const [petAbout, setPetAbout] = useState(null);
-  const [petSex, setPetSex] = useState(null);
-  const [petBirthdate, setPetBirthdate] = useState(null);
-  const [petBirthplace, setPetBirthplace] = useState(null);
-  const [petBreed, setPetBreed] = useState(null);
-  const [petPhotoURL, setPetPhotoURL] = useState(null);
-
+  
   // misc variables
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
   const [activeTab, setActiveTab] = useState('Posts');
   const [loading, setLoading] = useState(false);
-  const [editedDisplayNameValid, setEditedDisplayNameValid] = useState(false);
+  const [editedDisplayNameValid, setEditedDisplayNameValid] = useState(true);
 
   // create post variables
   const [showCreatePostForm, setShowCreatePostForm] = useState(false);
@@ -114,7 +107,7 @@ function UserProfilePage() {
         setGender(doc.data()?.gender);
         setBirthdate(doc.data()?.birthdate);
         setLocation(doc.data()?.location);
-        setPetBirthplace(doc.data()?.location);
+        // setPetBirthplace(doc.data()?.location); // remove, just pass location through PetAccountSetup
         setHidden(doc.data()?.hidden);
 
         setFollowers(doc.data()?.followers);
@@ -158,71 +151,6 @@ function UserProfilePage() {
     return unsubscribe;
   }, [profileUserID])
 
-  const handleCreatePetProfile = async (e) => {
-    e.preventDefault();
-
-      try {
-        if (profileUserID !== currentUserID) {
-            toast.error("You can only create a pet profile for your own user profile.");
-            return;
-        }
-
-        const petRef = firestore.collection('pets');
-        const newPetRef = petRef.doc();
-        const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
-
-        const batch = firestore.batch();
-
-        batch.set(newPetRef, {
-          petOwnerID: currentUserID,
-          petOwnerUsername: username,
-          petOwnerDisplayName: displayName,
-          petOwnerPhotoURL: userPhotoURL,
-          petOwnerCoverPhotoURL: coverPhotoURL,
-
-          petName: petName,
-          about: petAbout,
-          sex: petSex,
-          breed: petBreed,
-          birthdate: petBirthdate,
-          birthplace: petBirthplace,
-          followers: [],
-          following: []
-        });
-
-        const uploadTask = storageRef.put(petPhotoURL);
-        await uploadTask;
-
-        const downloadURL = await storageRef.getDownloadURL();
-
-        if (!downloadURL) {
-          throw new Error('No download URL!');
-        }
-
-        batch.update(newPetRef, {
-          photoURL: downloadURL
-        });
-
-        await batch.commit();
-
-        toast.success("Pet profile created successfully!");
-        
-        setShowCreatePetForm(false);
-        setPetName('');
-        setPetAbout('');
-        setPetSex('');  
-        setPetBreed('');
-        setPetBirthdate('');
-        setPetBirthplace('');
-        setPetPhotoURL('');
-
-        // reload window
-        window.location.href = "/pet/"+newPetRef.id;
-  } catch (error) {
-        toast.error('Error creating pet profile: ' + error.message);
-      }
-  };
-
   const handleDeletePetProfile = async (petId) => {
       setDeletingPetId(petId);
 
@@ -234,7 +162,7 @@ function UserProfilePage() {
       setDeletingPetName(petData.petName);
       setDeletingPetPicture(petData.photoURL);
 
-      setShowConfirmation(true);
+      setShowPetDeleteConfirmation(true);
   };
   
   const confirmDeletePetProfile = async () => {
@@ -259,7 +187,7 @@ function UserProfilePage() {
           await petRef.delete();
 
           // Close the confirmation popup
-          setShowConfirmation(false);
+          setShowPetDeleteConfirmation(false);
 
           // reload window
           window.location.reload();
@@ -277,7 +205,7 @@ function UserProfilePage() {
       }
   }
 
-  const handleSave = async () => {
+  const handleEditProfileSave = async () => {
       const userRef = firestore.collection('users').doc(profileUserID);
       const batch = firestore.batch();
       
@@ -411,24 +339,24 @@ function UserProfilePage() {
   };
   
   const handleDisplayNameVal = (val) => {
-        const checkDisplayNameVal = val;
-        // const regex = /^[a-zA-Z0-9_.]*[a-zA-Z0-9](?:[a-zA-Z0-9_.]*[ ]?[a-zA-Z0-9_.])*[a-zA-Z0-9_.]$/;
+    const checkDisplayNameVal = val;
+    // const regex = /^[a-zA-Z0-9_.]*[a-zA-Z0-9](?:[a-zA-Z0-9_.]*[ ]?[a-zA-Z0-9_.])*[a-zA-Z0-9_.]$/;
 
-        if (checkDisplayNameVal.startsWith(' ') || checkDisplayNameVal.endsWith(' ') || checkDisplayNameVal.includes('  ')) {
-            setEditedDisplayName(checkDisplayNameVal);
-            setEditedDisplayNameValid(false);
-        } else if ((checkDisplayNameVal.length >= 1 && checkDisplayNameVal.length <= 30)) {
-            setEditedDisplayName(checkDisplayNameVal);
-            setEditedDisplayNameValid(true);
-        } else if (checkDisplayNameVal.length < 1 || checkDisplayNameVal.length > 30) {
-            setEditedDisplayName(checkDisplayNameVal);
-            setEditedDisplayNameValid(false);
-        }
-        // } else if (!regex.test(displayname)) {
-        //     setDisplayName(displayname);
-        //     setDisplayNameValid(false);
-        // }
-    };
+    if (checkDisplayNameVal.startsWith(' ') || checkDisplayNameVal.endsWith(' ') || checkDisplayNameVal.includes('  ')) {
+        setEditedDisplayName(checkDisplayNameVal);
+        setEditedDisplayNameValid(false);
+    } else if ((checkDisplayNameVal.length >= 1 && checkDisplayNameVal.length <= 30)) {
+        setEditedDisplayName(checkDisplayNameVal);
+        setEditedDisplayNameValid(true);
+    } else if (checkDisplayNameVal.length < 1 || checkDisplayNameVal.length > 30) {
+        setEditedDisplayName(checkDisplayNameVal);
+        setEditedDisplayNameValid(false);
+    }
+    // } else if (!regex.test(displayname)) {
+    //     setDisplayName(displayname);
+    //     setDisplayNameValid(false);
+    // }
+  };
 
   return (
     <div id="root" className='flex h-screen'>
@@ -589,7 +517,7 @@ function UserProfilePage() {
                         {/* TODO: Add functionality for Cancel button */}
                         <div className="flex justify-end">
                             <button
-                            onClick={handleSave} disabled={isUploadingCoverPhoto || !editedDisplayNameValid}
+                            onClick={handleEditProfileSave} disabled={!editedDisplayNameValid}
                             type="submit"
                             className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${(!isUploadingCoverPhoto &&editedDisplayNameValid) ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`} 
                             >
@@ -792,8 +720,8 @@ function UserProfilePage() {
                                   {/* delete pet profile confirmation modal */}
                                   {getCurrentUser && currentUserID === profileUserID ? (
                                       <Modal
-                                      isOpen={showConfirmation}
-                                      onRequestClose={() => setShowConfirmation(false)}
+                                      isOpen={showPetDeleteConfirmation}
+                                      onRequestClose={() => setShowPetDeleteConfirmation(false)}
                                       contentLabel="Delete Confirmation"
                                       style={confirmationModalStyle}
                                       >
@@ -813,7 +741,7 @@ function UserProfilePage() {
                                               >
                                                   Delete</button>
                                               <button 
-                                                onClick={() => setShowConfirmation(false)}
+                                                onClick={() => setShowPetDeleteConfirmation(false)}
                                                 className='rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-black hover:text-white font-bold'
                                               >
                                                 Cancel</button>
@@ -830,171 +758,18 @@ function UserProfilePage() {
                                           contentLabel="Create Pet Profile Label"
                                           style={createPetModalStyle}
                                       >
-                                          <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
-                                            <h2 className="font-bold text-xl gap-2 flex flex-row items-center">
-                                              <i className='fa-solid fa-paw'></i>
-                                              Add a New Pet
-                                            </h2>                                            
-
-                                            <div className='h-full flex flex-col justify-start'>
-                                              {/* Display Name */}
-                                              <div className="mb-4">
-                                                <label
-                                                htmlFor="displayname"
-                                                className="block text-sm font-medium text-gray-700 pt-5"
-                                                >
-                                                <span>Display Name</span>
-                                                <span className="text-red-500"> *</span>
-                                                </label>
-                                                <input
-                                                  type="text"
-                                                  id="display-name"
-                                                  className="mt-1 p-2 border rounded-md w-full"
-                                                  placeholder="Enter your pet's name"
-                                                  maxLength="20"
-                                                  value={petName}
-                                                  onChange={(e) => setPetName(e.target.value)}
-                                                  required
-                                                />
-                                              </div>
-
-                                              {/* Breed */}
-                                              <div className="mb-4">
-                                                  <label
-                                                  htmlFor="breed"
-                                                  className="block text-sm font-medium text-gray-700"
-                                                  >
-                                                  Breed
-                                                  <span className="text-red-500"> *</span>
-                                                  </label>
-                                                  <input
-                                                  type="text"
-                                                  className="mt-1 p-2 border rounded-md w-full"
-                                                  placeholder="Enter your pet's breed"
-                                                  value={petBreed}
-                                                  maxLength={50}
-                                                  onChange={(e) => setPetBreed(e.target.value)}
-                                                  required
-                                                  />
-                                              </div>
-
-                                              {/* Photo */}
-                                              <div className='mb-4'>
-                                                <label htmlFor="photo" className='block text-sm font-medium text-gray-700 mb-1'>
-                                                  Upload Photo 
-                                                  <span className="text-red-500"> *</span>
-                                                </label>
-                                                <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} required/>
-                                              </div>
-
-                                              {/* About */}
-                                              <div className="mb-3">
-                                                  <label
-                                                  htmlFor="bio"
-                                                  className="block text-sm font-medium text-gray-700"
-                                                  >
-                                                  About
-                                                  <span className="text-red-500"> *</span>
-                                                  </label>
-                                                  <textarea
-                                                    id="bio"
-                                                    className="mt-1 p-2 border rounded-md w-full resize-none"
-                                                    rows="4"
-                                                    placeholder="Tell us about your pet..."
-                                                    value={petAbout}
-                                                    maxLength={100}
-                                                    onChange={(e) => setPetAbout(e.target.value)}
-                                                    required
-                                                  />
-                                              </div>
-
-                                              {/* sex, birthdate, birthplace */}
-                                              <div className='flex flex-row gap-4 w-full'>
-                                                {/* Sex */}
-                                                <div className="mb-4 w-full">
-                                                    <label
-                                                    htmlFor="sex"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                    >
-                                                    Sex
-                                                    <span className="text-red-500"> *</span>
-                                                    </label>
-                                                    <select
-                                                      id="sex"
-                                                      name="sex"
-                                                      className="mt-1 p-2 h-10 border rounded-md w-full"
-                                                      value={petSex}
-                                                      onChange={(e) => setPetSex(e.target.value)}
-                                                      required
-                                                    >
-                                                      <option value="None" disabled>None</option>
-                                                      <option value="Male">Male</option>
-                                                      <option value="Female">Female</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* Birthdate */}
-                                                <div className="mb-4 w-full">
-                                                    <label
-                                                    htmlFor="birthdate"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                    >
-                                                    Year of Birth
-                                                    <span className="text-red-500"> *</span>
-                                                    </label>
-                                                    <input
-                                                    type="text"
-                                                    id="birthyear"
-                                                    name="birthyear"
-                                                    placeholder='2023'
-                                                    minLength={4}
-                                                    maxLength={4}
-                                                    className="mt-1 p-2 h-10 border rounded-md w-full"
-                                                    value={petBirthdate}
-                                                    onChange={(e) => setPetBirthdate(e.target.value)}
-                                                    required
-                                                    />
-                                                </div>
-
-                                                {/* place of birth */}
-                                                <div className="mb-4 w-full">
-                                                    <label
-                                                    htmlFor="location"
-                                                    className="block text-sm font-medium text-gray-700"
-                                                    >
-                                                    Place of Birth
-                                                    <span className="text-red-500"> *</span>
-                                                    </label>
-                                                    <input
-                                                    type="text"
-                                                    className="mt-1 p-2 h-10 border rounded-md w-full"
-                                                    placeholder={petBirthplace}
-                                                    value={petBirthplace}
-                                                    onChange={(e) => setPetBirthplace(e.target.value)}
-                                                    required
-                                                    />
-                                                </div>
-                                              </div>
-                                            </div>
-
-                                            {/* form button controls */}
-                                            <div className="flex justify-end">
-                                                <button
-                                                type="submit"
-                                                className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                                >
-                                                Create Pet Profile
-                                                </button>
-
-                                                <button
-                                                type="button"
-                                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                                onClick={() => setShowCreatePetForm(false)}
-                                                >
-                                                Cancel
-                                                </button>
-                                            </div>
-                                          </form>
+                                          <PetAccountSetup
+                                              props={{
+                                                  profileUserID: profileUserID,
+                                                  currentUserID: currentUserID,
+                                                  username: username,
+                                                  displayName: displayName,
+                                                  userPhotoURL: userPhotoURL,
+                                                  coverPhotoURL: coverPhotoURL,
+                                                  location: location,
+                                                  setShowCreatePetForm: setShowCreatePetForm
+                                              }}
+                                          />
                                       </Modal>
                                   ) : (
                                       profileUserID === currentUserID ? (
@@ -1080,5 +855,293 @@ function DisplayNameMessage({ editedDisplayName, editedDisplayNameValid, loading
   // } 
 }
 
+function PetNameMessage( { petName, petNameValid, loading }) {
+  if (loading) {
+    return <p className='mt-2 ml-2'>Checking...</p>;
+  } else if (petName === '') {
+    return null;
+  } else if (String(petName).length < 3 && String(petName).length > 15 && !petNameValid) {
+    return <p className='mt-2 ml-2'>Pet name should have 3-15 characters!</p>;
+  } else if (String(petName).includes('  ')) {
+      return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
+  } else if ((String(petName).startsWith(' ') || String(petName).endsWith(' ')) && !petNameValid) {
+      return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
+  } else if (!petNameValid) {
+      return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
+  }
+}
+
+function PetAccountSetup({ props }) {
+
+  const { 
+    profileUserID, currentUserID, username, 
+    displayName, location,
+    userPhotoURL, coverPhotoURL, 
+    setShowCreatePetForm 
+  } = props;
+
+  const [petName, setPetName] = useState(null);
+  const [petNameValid, setPetNameValid] = useState(false);
+  const [petAbout, setPetAbout] = useState(null);
+  const [petSex, setPetSex] = useState(null);
+  const [petBirthdate, setPetBirthdate] = useState(null);
+  const [petBirthplace, setPetBirthplace] = useState(location);
+  const [petBreed, setPetBreed] = useState(null);
+  const [petPhotoURL, setPetPhotoURL] = useState(null);
+
+  const handleCreatePetProfile = async (e) => {
+    e.preventDefault();
+
+      try {
+        if (profileUserID !== currentUserID) {
+            toast.error("You can only create a pet profile for your own user profile.");
+            return;
+        }
+
+        const petRef = firestore.collection('pets');
+        const newPetRef = petRef.doc();
+        const storageRef = storage.ref(`petProfilePictures/${newPetRef.id}/profilePic`);
+
+        const batch = firestore.batch();
+
+        batch.set(newPetRef, {
+          petOwnerID: currentUserID,
+          petOwnerUsername: username,
+          petOwnerDisplayName: displayName,
+          petOwnerPhotoURL: userPhotoURL,
+          petOwnerCoverPhotoURL: coverPhotoURL,
+
+          petName: petName,
+          about: petAbout,
+          sex: petSex,
+          breed: petBreed,
+          birthdate: petBirthdate,
+          birthplace: petBirthplace,
+          followers: [],
+          following: []
+        });
+
+        const uploadTask = storageRef.put(petPhotoURL);
+        await uploadTask;
+
+        const downloadURL = await storageRef.getDownloadURL();
+
+        if (!downloadURL) {
+          throw new Error('No download URL!');
+        }
+
+        batch.update(newPetRef, {
+          photoURL: downloadURL
+        });
+
+        await batch.commit();
+
+        toast.success("Pet profile created successfully!");
+        
+        setShowCreatePetForm(false);
+        setPetName('');
+        setPetAbout('');
+        setPetSex('');  
+        setPetBreed('');
+        setPetBirthdate('');
+        setPetBirthplace('');
+        setPetPhotoURL('');
+
+        // reload window
+        window.location.href = "/pet/"+newPetRef.id;
+  } catch (error) {
+        toast.error('Error creating pet profile: ' + error.message);
+      }
+  };
+
+  const handlePetDisplayNameVal = (val) => {
+    const checkDisplayNameVal = val;
+    const regex = /^[a-zA-Z0-9_.]*[a-zA-Z0-9](?:[a-zA-Z0-9_.]*[ ]?[a-zA-Z0-9_.])*[a-zA-Z0-9_.]$/;
+
+    if (checkDisplayNameVal.startsWith(' ') || checkDisplayNameVal.endsWith(' ')) {
+        setPetName(checkDisplayNameVal);
+        setPetNameValid(false);
+    } else if (checkDisplayNameVal.length >= 3 && checkDisplayNameVal.length <= 15) {
+        setPetName(checkDisplayNameVal);
+        setPetNameValid(true);
+    } else if (checkDisplayNameVal.length < 3 || checkDisplayNameVal.length > 15) {
+        setPetName(checkDisplayNameVal);
+        setPetNameValid(false);
+    } else if (!regex.test(checkDisplayNameVal)) {
+        setDisplayName(checkDisplayNameVal);
+        setPetNameValid(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
+      <h2 className="font-bold text-xl gap-2 flex flex-row items-center">
+        <i className='fa-solid fa-paw'></i>
+        Add a New Pet
+      </h2>                                            
+
+      <div className='h-full flex flex-col justify-start'>
+        {/* Display Name */}
+        <div className="mb-4">
+          <label
+          htmlFor="displayname"
+          className="block text-sm font-medium text-gray-700 pt-5"
+          >
+          <span>Display Name</span>
+          <span className="text-red-500"> *</span>
+          </label>
+          <input
+            type="text"
+            id="display-name"
+            className="mt-1 p-2 border rounded-md w-full"
+            placeholder="Enter your pet's name"
+            maxLength={15}
+            value={petName}
+            onChange={(e) => {handlePetDisplayNameVal(e.target.value)}}
+            required
+          />
+
+          <PetNameMessage petName={petName} petNameValid={petNameValid} />
+        </div>
+
+        {/* Breed */}
+        <div className="mb-4">
+            <label
+            htmlFor="breed"
+            className="block text-sm font-medium text-gray-700"
+            >
+            Breed
+            <span className="text-red-500"> *</span>
+            </label>
+            <input
+            type="text"
+            className="mt-1 p-2 border rounded-md w-full"
+            placeholder="Enter your pet's breed"
+            value={petBreed}
+            maxLength={50}
+            onChange={(e) => setPetBreed(e.target.value)}
+            required
+            />
+        </div>
+
+        {/* Photo */}
+        <div className='mb-4'>
+          <label htmlFor="photo" className='block text-sm font-medium text-gray-700 mb-1'>
+            Upload Photo 
+            <span className="text-red-500"> *</span>
+          </label>
+          <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} required/>
+        </div>
+
+        {/* About */}
+        <div className="mb-3">
+            <label
+            htmlFor="bio"
+            className="block text-sm font-medium text-gray-700"
+            >
+            About
+            <span className="text-red-500"> *</span>
+            </label>
+            <textarea
+              id="bio"
+              className="mt-1 p-2 border rounded-md w-full resize-none"
+              rows="4"
+              placeholder="Tell us about your pet..."
+              value={petAbout}
+              maxLength={100}
+              onChange={(e) => setPetAbout(e.target.value)}
+              required
+            />
+        </div>
+
+        {/* sex, birthdate, birthplace */}
+        <div className='flex flex-row gap-4 w-full'>
+          {/* Sex */}
+          <div className="mb-4 w-full">
+              <label
+              htmlFor="sex"
+              className="block text-sm font-medium text-gray-700"
+              >
+              Sex
+              <span className="text-red-500"> *</span>
+              </label>
+              <select
+                id="sex"
+                name="sex"
+                className="mt-1 p-2 h-10 border rounded-md w-full"
+                value={petSex}
+                onChange={(e) => setPetSex(e.target.value)}
+                required
+              >
+                <option value="None" disabled>None</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+          </div>
+
+          {/* Birthdate */}
+          <div className="mb-4 w-full">
+              <label
+              htmlFor="birthdate"
+              className="block text-sm font-medium text-gray-700"
+              >
+              Year of Birth
+              <span className="text-red-500"> *</span>
+              </label>
+              <input
+              type="text"
+              id="birthyear"
+              name="birthyear"
+              placeholder='2023'
+              minLength={4}
+              maxLength={4}
+              className="mt-1 p-2 h-10 border rounded-md w-full"
+              value={petBirthdate}
+              onChange={(e) => setPetBirthdate(e.target.value)}
+              required
+              />
+          </div>
+
+          {/* place of birth */}
+          <div className="mb-4 w-full">
+              <label
+              htmlFor="location"
+              className="block text-sm font-medium text-gray-700"
+              >
+              Place of Birth
+              <span className="text-red-500"> *</span>
+              </label>
+              <input
+              type="text"
+              className="mt-1 p-2 h-10 border rounded-md w-full"
+              placeholder={petBirthplace}
+              value={petBirthplace}
+              onChange={(e) => setPetBirthplace(e.target.value)}
+              required
+              />
+          </div>
+        </div>
+      </div>
+
+      {/* form button controls */}
+      <div className="flex justify-end">
+          <button
+          type="submit"
+          disabled={!petNameValid}
+          className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${petNameValid ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}>
+          Create Pet Profile
+          </button>
+
+          <button
+          type="button"
+          className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+          onClick={() => setShowCreatePetForm(false)}
+          >
+          Cancel
+          </button>
+      </div>
+    </form>
+  )
+}
 
 export default withAuth(UserProfilePage);
