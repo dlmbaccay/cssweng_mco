@@ -31,6 +31,7 @@ export default function WritePost() {
                                         <option value="petNeeds">Pet Needs</option>
                                         <option value="lostPets">Lost Pets</option>
                                         <option value="foundPets">Found Pets</option>
+                                        <option value="foundPets">Milestones</option>
                                     </select>
                                    {/*  <h1>Categories</h1> */}
                                 </div>
