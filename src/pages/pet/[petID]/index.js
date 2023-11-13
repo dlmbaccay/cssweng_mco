@@ -185,12 +185,14 @@ function PetProfilePage() {
                     </div>
 
                     <div id='content-container' className='h-4/5 flex flex-row'>
-                        {/* Left Panel */}
-                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center">
 
-                            <div className="flex justify-center w-48 h-48 absolute -translate-y-24">
-                                {petPhotoURL && <RoundIcon src={petPhotoURL} alt={petName + " profile picture"} />}
-                            </div>
+                        {/* Profile Picture */}
+                        <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16" style={{ zIndex: '10' }}>
+                            {petPhotoURL && <RoundIcon src={petPhotoURL} alt={petName + " profile picture"} />}
+                        </div>
+
+                        {/* Left Panel */}
+                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center overflow-y-auto overflow-x-hidden">
 
                             {/* petName */}
                             <div className="text-center mt-32 w-80">
