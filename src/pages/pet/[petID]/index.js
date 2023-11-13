@@ -186,8 +186,13 @@ function PetProfilePage() {
 
                     <div id='content-container' className='h-4/5 flex flex-row'>
 
+                        {/* Back Button */}
+                        <div className="flex items-center justify-center absolute -translate-y-28 ml-6 z-10">
+                            <i class="fa-solid fa-circle-chevron-left fa-2xl text-gray"></i>
+                        </div>
+
                         {/* Profile Picture */}
-                        <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16" style={{ zIndex: '10' }}>
+                        <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16 z-10">
                             {petPhotoURL && <RoundIcon src={petPhotoURL} alt={petName + " profile picture"} />}
                         </div>
 
