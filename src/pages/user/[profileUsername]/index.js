@@ -688,7 +688,7 @@ function UserProfilePage() {
                                   <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
                                 </div>
                               ) : (                   
-                                <div className="grid grid-cols-6 gap-12">
+                                <div className="grid grid-cols-4 gap-12">
                                   {pets.map((pet) => (
                                     <div key={pet.id} className="w-36 h-36 rounded-xl">
                                       <Link href={`/pet/${pet.id}`} className='rounded-lg hover:opacity-80 flex flex-col'>
@@ -1073,7 +1073,7 @@ function PetAccountSetup({ props }) {
                 onChange={(e) => setPetSex(e.target.value)}
                 required
               >
-                <option value="None" disabled>None</option>
+                <option value="Prefer Not to Say">Prefer Not to Say</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
