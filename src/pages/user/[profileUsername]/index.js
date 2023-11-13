@@ -370,13 +370,14 @@ function UserProfilePage() {
                     </div>
 
                     <div id='content-container' className='h-4/5 flex flex-row'>
-                        {/* Left Panel */}
-                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center">
+                        
+                        {/* Profile Picture */}
+                        <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16" style={{ zIndex: '10' }}>
+                            <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
+                        </div>
 
-                            {/* Profile Picture */}
-                            <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full">
-                                <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
-                            </div>
+                        {/* Left Panel */}
+                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center overflow-y-auto overflow-x-hidden">
 
                             {/* Display Name & Username */}
                             <div className="text-center mt-32 w-80">
@@ -552,9 +553,9 @@ function UserProfilePage() {
                             ) : (null)}
 
                             {/* About */}
-                            <div className="text-center mt-10 flex flex-col gap-2">
+                            <div className="text-center mt-10 flex flex-col gap-2 w-full max-w-full">
                                 <div className="text-lg font-bold text-raisin_black">About</div>
-                                <div className="text-base text-raisin_black pl-6 pr-6">
+                                <div className="text-base text-raisin_black pl-6 pr-6 whitespace-normal break-all w-full max-w-full">
                                     {about}
                                 </div>
                             </div>
