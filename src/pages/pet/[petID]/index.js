@@ -342,13 +342,11 @@ function PetProfilePage() {
                             </div>
 
                             {/* About */}
-                            <div className="text-center mt-5 ">
-                                <span className="text-lg font-bold text-raisin_black">About</span>
-                                <span className="text-base text-raisin_black">
-                                    <p className="mt-5 pl-4 pr-4">
-                                        {about}
-                                    </p>
-                                </span>
+                            <div className="text-center mt-10 flex flex-col gap-2 w-full max-w-full">
+                                <div className="text-lg font-bold text-raisin_black">About</div>
+                                <div className="text-base text-raisin_black pl-6 pr-6 whitespace-normal break-all w-full max-w-full">
+                                    {about}
+                                </div>
                             </div>
 
                             {/* Details */}
