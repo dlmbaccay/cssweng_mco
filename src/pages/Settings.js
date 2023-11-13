@@ -17,7 +17,79 @@ import CoverPhoto from '../components/CoverPhoto';
 import PostSnippet from '../components/PostSnippet';
 
 function Settings() {
+    const { user, username } = useUserData();
+    const router = Router;
+    const [userRef, setUserRef] = useState('');
+    const [petsRef, setPetsRef] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    const [userSwitches, setUserSwitches] = useState([
+        { id: 'Gender', value: 'gender',enabled: false },
+        { id: 'Birthday', value: 'birthdate', enabled: false },
+        { id: 'Location', value: 'location', enabled: false },
+        { id: 'Contact Number', value: 'contactNumber', enabled: false },
+        { id: 'E-mail', value: 'email', enabled: false },
+      ]);
+    
+      const [petSwitches, setPetSwitches] = useState([
+        { id: 'Pet Breed', value: 'breed', enabled: false },
+        { id: 'Pet Sex', value: 'sex', enabled: false },
+        { id: 'Pet Birthday', value: 'birthdate', enabled: false },
+        { id: 'Pet Location', value: 'birthplace', enabled: false },
+        { id: 'Favorite Food', value: 'favefood', enabled: false },
+        { id: 'Hobby', value: 'hobby', enabled: false },
+      ]);
+
+    useEffect(() => {
+        const userDocRef = firestore.collection('users').doc(user.uid);
+        const petsQueryRef = firestore.collection('pets').where('petOwnerID', '==', user.uid);
+    
+        userDocRef.get().then((doc) => {
+          if (doc.exists) {
+            setUserRef(doc.data());
+
+            const array = doc.data().hidden === undefined ? [] : doc.data().hidden;
+            const newSwitches = userSwitches.map(switchItem => {
+            if (array.includes(switchItem.value)) {
+                return { ...switchItem, enabled: true };
+            }
+            return switchItem;
+            });
+        
+            setUserSwitches(newSwitches);
+
+            // Add enabled switches to enabledUserSwitches
+            const newEnabledUserSwitches = newSwitches.filter(switchItem => switchItem.enabled).map(switchItem => switchItem.value);
+            setEnabledUserSwitches(newEnabledUserSwitches);
+          } else {
+            console.log("No such document!");
+          }
+        }).catch((error) => {
+          console.log("Error getting document:", error);
+        });
+    
+        petsQueryRef.get().then((querySnapshot) => {
+          const pets = [];
+          querySnapshot.forEach((doc) => {
+            pets.push(doc.data());
+          });
+          setPetsRef(pets);
+          const array = pets[0].hidden === undefined ? [] : pets[0].hidden;
+            const newSwitches = petSwitches.map(switchItem => {
+            if (array.includes(switchItem.value)) {
+                return { ...switchItem, enabled: true };
+            }
+            return switchItem;
+            });
+        
+            setPetSwitches(newSwitches);
+
+            const newEnabledPetSwitches = newSwitches.filter(switchItem => switchItem.enabled).map(switchItem => switchItem.value);
+            setEnabledPetSwitches(newEnabledPetSwitches);
+        }).catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+      }, []);
 
     const openChangePassword = () => {
           setModalIsOpen(true); // Open the modal when editing starts
@@ -61,31 +133,39 @@ function Settings() {
         });  
     };
 
-    const [switches, setSwitches] = useState([
-        // Pet Switches
-        // { id: 'Pet Name', value: 'petName', enabled: false },
-        { id: 'Pet Breed', value: 'breed', enabled: false },
-        { id: 'Pet Sex', value: 'sex', enabled: false },
-        { id: 'Pet Birthday', value: 'birthdate', enabled: false },
-        { id: 'Pet Location', value: 'birthplace', enabled: false },
-        { id: 'Favorite Food', value: 'favefood', enabled: false },
-        { id: 'Hobby', value: 'hobby', enabled: false },
-        // User Switches
-        { id: 'Gender', value: 'gender',enabled: false },
-        { id: 'Birthday', value: 'birthdate', enabled: false },
-        { id: 'Location', value: 'location', enabled: false },
-        { id: 'Contact Number', value: 'contactNumber', enabled: false },
-        { id: 'E-mail', value: 'email', enabled: false },
-        // Add more switches as needed
-    ]);
-    const petSwitchIDs = ['Pet Sex', 'Pet Breed', 'Pet Birthday', 'Pet Location'];
-    const userSwitchIDs = ['Gender', 'Birthday', 'Location'];
+    
+    // useEffect(() => {
+    //     const array = userRef.hidden === undefined ? '' : userRef.hidden;
+    //     const newSwitches = switches.map(switchItem => {
+    //       if (array.includes(switchItem.value)) {
+    //         return { ...switchItem, enabled: true };
+    //       }
+    //       return switchItem;
+    //     });
+    
+    //     setSwitches(newSwitches);
+    //   }, []); // Dependency array. Update switches whenever this array changes.
+
+    const petSwitchIDs = ['Pet Sex', 'Pet Breed', 'Pet Birthday', 'Pet Location', 'Favorite Food', 'Hobbby'];
+    const userSwitchIDs = ['Gender', 'Birthday', 'Location', 'Contact Number', 'E-mail'];
     const [enabledPetSwitches, setEnabledPetSwitches] = useState([]);
     const [enabledUserSwitches, setEnabledUserSwitches] = useState([]);
 
 
-    const toggleSwitch = (id, value) => {
-        setSwitches(switches.map(switchItem =>
+    const toggleUserSwitch = (id, value) => {
+        setUserSwitches(userSwitches.map(switchItem =>
+            switchItem.id === id ? { ...switchItem, enabled: !switchItem.enabled } : switchItem
+        ));
+        if (userSwitchIDs.includes(id)) {
+            if (enabledUserSwitches.includes(value)) {
+                setEnabledUserSwitches(enabledUserSwitches.filter((switchVal) => switchVal !== value));
+            } else {
+                setEnabledUserSwitches([...enabledUserSwitches, value]);
+            }
+        }
+    };
+    const togglePetSwitch = (id, value) => {
+        setPetSwitches(petSwitches.map(switchItem =>
             switchItem.id === id ? { ...switchItem, enabled: !switchItem.enabled } : switchItem
         ));
         if (petSwitchIDs.includes(id)) {
@@ -95,17 +175,9 @@ function Settings() {
                 setEnabledPetSwitches([...enabledPetSwitches, value]);
             }
         }
-        if (userSwitchIDs.includes(id)) {
-            if (enabledUserSwitches.includes(value)) {
-                setEnabledUserSwitches(enabledUserSwitches.filter((switchVal) => switchVal !== value));
-            } else {
-                setEnabledUserSwitches([...enabledUserSwitches, value]);
-            }
-        }
     };
 
-    const { user, username } = useUserData();
-    const router = Router;
+    
 
     function handleViewProfile() {
         router.push(`/user/${username}`);
@@ -204,12 +276,12 @@ function Settings() {
                         <div className="mb-4 justify-between">
                             <label htmlFor="user-visibility" className="block font-bold text-gray-700 text-xl">User Visibility Settings</label>
                             <br></br>
-                            {switches.slice(6, 11).map((switchItem) => (
+                            {userSwitches.map((switchItem) => (
                                 <div key={switchItem.id} className="flex justify-between items-center mb-4">
                                     <span>{switchItem.id}</span>
                                     <Switch
                                         checked={switchItem.enabled}
-                                        onChange={() => toggleSwitch(switchItem.id, switchItem.value)}
+                                        onChange={() => toggleUserSwitch(switchItem.id, switchItem.value)}
                                         className={`${switchItem.enabled ? 'bg-green-400' : 'bg-zinc-500'
                                             } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none`}
                                     >
@@ -229,12 +301,12 @@ function Settings() {
                         <div className="mb-4">
                             <label htmlFor="pet-visibility" className="block text-xl font-bold text-gray-700">Pet Visibility Settings</label>
                             <br></br>
-                            {switches.slice(0, 6).map((switchItem) => (
+                            {petSwitches.map((switchItem) => (
                                 <div key={switchItem.id} className="flex justify-between items-center mb-4">
                                     <span>{switchItem.id}</span>
                                     <Switch
                                         checked={switchItem.enabled}
-                                        onChange={() => toggleSwitch(switchItem.id, switchItem.value)}
+                                        onChange={() => togglePetSwitch(switchItem.id, switchItem.value)}
                                         className={`${switchItem.enabled ? 'bg-green-400' : 'bg-zinc-500'
                                             } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none`}
                                     >

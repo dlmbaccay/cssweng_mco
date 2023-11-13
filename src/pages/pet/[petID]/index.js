@@ -168,6 +168,10 @@ function PetProfilePage() {
         setActiveTab(tabName);
     };
 
+    const handleBack = () => {
+        router.push("/user/"+petOwnerUsername);
+    };
+
     if (!pet) {
         return (
             <Loader />
@@ -188,7 +192,7 @@ function PetProfilePage() {
 
                         {/* Back Button */}
                         <div className="flex items-center justify-center absolute -translate-y-28 ml-6 z-10">
-                            <i class="fa-solid fa-circle-chevron-left fa-2xl text-gray"></i>
+                            <i onClick={handleBack} class="fa-solid fa-circle-chevron-left fa-2xl text-gray cursor-pointer"></i>
                         </div>
 
                         {/* Profile Picture */}

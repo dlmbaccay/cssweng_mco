@@ -358,6 +358,10 @@ function UserProfilePage() {
         // }
     };
 
+    const handleBack = () => {
+        router.push('/Homepage');
+    };
+
     return (
         <div id="root" className='flex h-screen'>
             <NavBar />
@@ -373,7 +377,7 @@ function UserProfilePage() {
 
                         {/* Back Button */}
                         <div className="flex items-center justify-center absolute -translate-y-28 ml-6 z-10">
-                            <i class="fa-solid fa-circle-chevron-left fa-2xl text-gray"></i>
+                            <i onClick={handleBack} class="fa-solid fa-circle-chevron-left fa-2xl text-gray cursor-pointer"></i>
                         </div>
                         
                         {/* Profile Picture */}
