@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import { useRouter } from 'next/router';
 
 import { firestore, storage, STATE_CHANGED } from '@/src/lib/firebase';
-import { useUserData, usePetData, useUserIDfromUsername } from '@/src/lib/hooks'
+import { useUserData, usePetData, useUserIDfromUsername, useAllUserPosts } from '@/src/lib/hooks'
 import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
 
 import NavBar from '@/src/components/NavBar';
@@ -34,6 +34,7 @@ function UserProfilePage() {
     const [currentUser, setCurrentUser] = useState(null); // Current user data
     const [profileUser, setProfileUser] = useState(null); // Profile user data
     const [pets, setPets] = useState([]); // pets of the profile user
+    const [posts, setPosts] = useState([]); // posts of the profile user
 
     // variables for user profile
     const [username, setUsername] = useState(null);
@@ -108,7 +109,6 @@ function UserProfilePage() {
                 setGender(doc.data()?.gender);
                 setBirthdate(doc.data()?.birthdate);
                 setLocation(doc.data()?.location);
-                // setPetBirthplace(doc.data()?.location); // remove, just pass location through PetAccountSetup
                 setHidden(doc.data()?.hidden);
 
                 setFollowers(doc.data()?.followers);
@@ -129,6 +129,19 @@ function UserProfilePage() {
                         });
                     });
                     setPets(petsData);
+                });
+
+                // Fetch the 'posts' collection
+                const postsCollectionRef = firestore.collection('posts').where("authorID", "==", profileUserID);
+                postsCollectionRef.get().then((querySnapshot) => {
+                    const postsData = [];
+                    querySnapshot.forEach((doc) => {
+                        postsData.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    setPosts(postsData);
                 });
             });
         } else {
@@ -677,36 +690,24 @@ function UserProfilePage() {
                                         ) : null}
 
                                         <div className="flex mt-10 mb-10 flex-col gap-10">
-                                            <PostSnippet
-                                                username={username}
-                                                displayName={displayName}
-                                                publish_date='Sept 6 at 4:30 PM'
-                                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                                user_img_src={userPhotoURL}
-                                                post_img_src='/images/post1-image.png'
-                                            />
-                                            <PostSnippet
-                                                username={username}
-                                                displayName={displayName}
-                                                publish_date='Sept 6 at 4:30 PM'
-                                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                                user_img_src={userPhotoURL}
-                                                post_img_src='/images/post1-image.png'
-                                            />
-                                            <PostSnippet
-                                                username={username}
-                                                displayName={displayName}
-                                                publish_date='Sept 6 at 4:30 PM'
-                                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                                user_img_src={userPhotoURL}
-                                                post_img_src='/images/post1-image.png'
-                                            />
+                                            {posts.map((post) => (
+                                                <PostSnippet key={post.id} 
+                                                    props={{
+                                                        postID: post.id,
+                                                        postBody: post.postBody,
+                                                        postCategory: post.postCategory,
+                                                        postPets: post.postPets,
+                                                        postDate: post.postDate,
+                                                        imageUrls: post.imageUrls,
+                                                        authorID: post.authorID,
+                                                        authorDisplayName: post.authorDisplayName,
+                                                        authorUsername: post.authorUsername,
+                                                        authorPhotoURL: post.authorPhotoURL,
+                                                        likes: post.likes,
+                                                        comments: post.comments,
+                                                    }} 
+                                                />
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -849,16 +850,6 @@ function UserProfilePage() {
                                         className="flex justify-center w-full"
                                     >
                                         <div className="flex mt-10 flex-col gap-10">
-                                            <PostSnippet
-                                                username={username}
-                                                displayName={displayName}
-                                                publish_date='Sept 6 at 4:30 PM'
-                                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                            Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                            🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                                user_img_src={userPhotoURL}
-                                                post_img_src='/images/post1-image.png'
-                                            />
                                         </div>
                                     </div>
                                 )}
