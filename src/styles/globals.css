@@ -6,46 +6,67 @@
 
 ::-webkit-scrollbar {
     width: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: #C3C461;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background-color: #CBD5E0;
-  }
+}
 
-  .hover-tooltip:hover + .tooltip {
-    display: block;
-  }
-  
+::-webkit-scrollbar-thumb {
+  background-color: #C3C461;
+}
 
-  .tooltip {
-    background-color: #fff;
-    color: #333;
-    padding: 4px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
+::-webkit-scrollbar-track {
+  background-color: #CBD5E0;
+}
 
-  .bullet {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 8px;
-  }
+.hover-tooltip:hover + .tooltip {
+  display: block;
+}
 
-  .paw-background {
-    background-image: url('/images/paw-background.png'); /* Replace 'your-image-url.png' with the path to your image */
-    background-repeat: repeat;
-    background-size: 500px 500px;
-    /* You can also use other properties like background-size and background-position to control the image appearance */
-  }
+.tooltip {
+  background-color: #fff;
+  color: #333;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
 
-  .hide-scrollbar::-webkit-scrollbar {
-    width: 0;
-    display: none;
-  }
-  
+.bullet {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.paw-background {
+  background-image: url('/images/paw-background.png'); /* Replace 'your-image-url.png' with the path to your image */
+  background-repeat: repeat;
+  background-size: 500px 500px;
+  /* You can also use other properties like background-size and background-position to control the image appearance */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+.preview-image-container {
+  position: relative;
+}
+
+.delete-image-button {
+  box-sizing: border-box;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: small;
+  background-color: black; /* Add your desired background color */
+  color: white; /* Add your desired text color */
+  border: none;
+  cursor: pointer;
+  padding: 2px 7px;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.delete-image-button:hover {
+  background-color: red;
+}

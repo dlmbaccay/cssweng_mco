@@ -9,10 +9,11 @@ import { firestore, storage, STATE_CHANGED } from '@/src/lib/firebase';
 import { useUserData, usePetData, useUserIDfromUsername } from '@/src/lib/hooks'
 import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
 
-import NavBar from '../../../components/NavBar';
-import RoundIcon from '../../../components/RoundIcon';
-import CoverPhoto from '../../../components/CoverPhoto';
-import PostSnippet from '../../../components/PostSnippet';
+import NavBar from '@/src/components/NavBar';
+import RoundIcon from '@/src/components/RoundIcon';
+import CoverPhoto from '@/src/components/CoverPhoto';
+import PostSnippet from '@/src/components/PostSnippet';
+import CreatePost from '@/src/components/CreatePost';
 import withAuth from '@/src/components/withAuth';
 
 function UserProfilePage() {
@@ -377,7 +378,7 @@ function UserProfilePage() {
 
                         {/* Back Button */}
                         <div className="flex items-center justify-center absolute -translate-y-28 ml-6 z-10">
-                            <i onClick={handleBack} class="fa-solid fa-circle-chevron-left fa-2xl text-gray cursor-pointer"></i>
+                            <i onClick={handleBack} className="fa-solid fa-circle-chevron-left fa-2xl text-gray cursor-pointer hover:text-grass"></i>
                         </div>
                         
                         {/* Profile Picture */}
@@ -661,7 +662,16 @@ function UserProfilePage() {
                                                     onRequestClose={() => setShowCreatePostForm(false)}
                                                     style={createPostModalStyle}
                                                 >
-                                                    {/* <CreatePost userID={currentUserID} pets={pets} userPhotoURL={currentUser.photoURL} username={currentUser.username} /> */}
+                                                    <CreatePost 
+                                                        props={{
+                                                            currentUserID: currentUserID,
+                                                            pets: pets,
+                                                            displayName: displayName,
+                                                            username: username,
+                                                            userPhotoURL: userPhotoURL,
+                                                            setShowCreatePostForm: setShowCreatePostForm
+                                                        }}
+                                                    />
                                                 </Modal>
                                             </div>
                                         ) : null}
