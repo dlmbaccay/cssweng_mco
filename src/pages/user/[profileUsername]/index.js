@@ -693,6 +693,7 @@ function UserProfilePage() {
                                             {posts.map((post) => (
                                                 <PostSnippet key={post.id} 
                                                     props={{
+                                                        currentUserID: currentUserID,
                                                         postID: post.id,
                                                         postBody: post.postBody,
                                                         postCategory: post.postCategory,

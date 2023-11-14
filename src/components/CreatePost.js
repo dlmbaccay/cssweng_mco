@@ -125,6 +125,9 @@ export default function CreatePost({ props }) {
 
         // show success toast
         toast.success('Post created successfully!');
+
+        // reload page
+        window.location.reload();
     };
 
     return (
