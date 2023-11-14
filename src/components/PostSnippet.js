@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
-import { firestore } from '../lib/firebase';
+import { firestore, storage, firebase } from '../lib/firebase';
+import { arrayRemove } from 'firebase/firestore';
+import toast from 'react-hot-toast';
+
 
 import likeReaction from '/public/images/post-reactions/like.png'
 import heartReaction from '/public/images/post-reactions/heart.png'
@@ -85,8 +88,32 @@ export default function Post({ props }) {
     const [showDeletePostModal, setShowDeletePostModal] = useState(false);
 
     const handleDeletePost = async () => {
+      
+      // recap: every path created
+      // posts/postID (firestore)
+      // users/userID/posts/postID (firestore)
+      // posts/postID/imageURL (storage)
+      
+      // deleting post from firestore
       const postRef = firestore.collection('posts').doc(postID);
       await postRef.delete();
+
+      // delete image urls from storage
+      if (imageUrls) {
+        const imagesRef = storage.ref(`posts/${postID}`);
+        const deleteImages = imageUrls.map((imageUrl) => {
+          const imageRef = imagesRef.child(imageUrl);
+          return imageRef.delete();
+        });
+
+        await Promise.all(deleteImages);
+      }
+  
+      // delete postID from user posts
+      const userRef = firestore.collection('users').doc(currentUserID);
+      await userRef.update({
+        posts: arrayRemove(postID),
+      });
 
       // reload page
       window.location.reload();

@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Image from 'next/image'
 import Select from 'react-select'
 import { firestore, storage } from '../lib/firebase';
+import { arrayUnion } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
 export default function CreatePost({ props }) {
@@ -67,9 +68,6 @@ export default function CreatePost({ props }) {
         // create reference for post images
         const imagesRef = storage.ref(`posts/${postID}`);
 
-        // create reference for post image urls
-        const imageUrlsRef = firestore.collection('posts').doc(postID).collection('imageUrls');
-
         // upload images to storage
         const uploadImages = images.map((image) => {
             const imageRef = imagesRef.child(image.name);
@@ -80,11 +78,6 @@ export default function CreatePost({ props }) {
         const imageUrls = await Promise.all(uploadImages).then((snapshots) =>
             Promise.all(snapshots.map((snapshot) => snapshot.ref.getDownloadURL()))
         );
-
-        // add image urls to firestore
-        imageUrls.forEach((imageUrl) => {
-            imageUrlsRef.add({ imageUrl });
-        });
 
         // get post category
         const postCategory = selectedCategory.value;
@@ -114,6 +107,17 @@ export default function CreatePost({ props }) {
         // add post to firestore
         await postRef.set(post);
 
+        // add post to user posts as users/userID/posts/postID
+        const userRef = firestore.collection('users').doc(currentUserID);
+        await userRef.update({
+            posts: arrayUnion(postID),
+        });
+
+        // recap: every path created
+        // posts/postID
+        // users/userID/posts/postID
+        // storage -> posts/postID/image1, image2, image3, image4
+        
         // reset form
         setSelectedPets([]);
         setSelectedCategory(null);
@@ -125,9 +129,6 @@ export default function CreatePost({ props }) {
 
         // show success toast
         toast.success('Post created successfully!');
-
-        // reload page
-        window.location.reload();
     };
 
     return (

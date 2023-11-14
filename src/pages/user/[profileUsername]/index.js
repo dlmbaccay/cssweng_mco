@@ -34,6 +34,7 @@ function UserProfilePage() {
     const [currentUser, setCurrentUser] = useState(null); // Current user data
     const [profileUser, setProfileUser] = useState(null); // Profile user data
     const [pets, setPets] = useState([]); // pets of the profile user
+    const [postIDs, setPostIDs] = useState([]); // post IDs of the profile user
     const [posts, setPosts] = useState([]); // posts of the profile user
 
     // variables for user profile
@@ -72,6 +73,7 @@ function UserProfilePage() {
     // create post variables
     const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
+    // fetch current and profile user data
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -89,6 +91,7 @@ function UserProfilePage() {
 
     }, [currentUserID, profileUserID]);
 
+    // fetch profile user's data & pets
     useEffect(() => {
         let unsubscribe;
 
@@ -130,19 +133,6 @@ function UserProfilePage() {
                     });
                     setPets(petsData);
                 });
-
-                // Fetch the 'posts' collection
-                const postsCollectionRef = firestore.collection('posts').where("authorID", "==", profileUserID);
-                postsCollectionRef.get().then((querySnapshot) => {
-                    const postsData = [];
-                    querySnapshot.forEach((doc) => {
-                        postsData.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
-                    });
-                    setPosts(postsData);
-                });
             });
         } else {
             setProfileUser(null);
@@ -163,7 +153,32 @@ function UserProfilePage() {
         }
 
         return unsubscribe;
-    }, [profileUserID])
+    }, [profileUserID]);
+
+    // fetch all posts of the profile user
+    useEffect(() => {
+        let unsubscribe;
+
+        if (profileUserID) {
+            const postsCollectionRef = firestore.collection('posts').where("authorID", "==", profileUserID);
+            unsubscribe = postsCollectionRef.onSnapshot((querySnapshot) => {
+                const postsData = [];
+
+                querySnapshot.forEach((doc) => {
+                    postsData.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                setPosts(postsData);
+            });
+        } else {
+            setPosts([]);
+        }
+        
+        return unsubscribe;
+    }, [profileUserID]);
 
     const handleDeletePetProfile = async (petId) => {
         setDeletingPetId(petId);
