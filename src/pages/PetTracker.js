@@ -8,6 +8,11 @@ import { IoMdSearch } from 'react-icons/io';
 import { IconContext } from "react-icons";
 
 export default function PetTracker(){
+
+    const handleTabEvent = (tabName) => {
+        setActiveTab(tabName);
+    };
+
     return(
         
         <div className = 'bg-gray flex flex-row min-h-screen h-screen w-full'>
@@ -35,8 +40,25 @@ export default function PetTracker(){
                         <div className="w-12 h-12 bg-dark_gray rounded-[30px]"></div>
                         </div>
                 </div>
+                <div className="sticky flex flex-row w-full h-20 drop-shadow-xl">
+                    {/* <p>Lost Pets</p> */}
+                    <div id='main-content-container' className='flex flex-col w-full'>
+                        <div id="tab-actions" className="flex flex-row bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300">
+                            <button
+                                className="px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none">
+                                Lost Pets
+                            </button>
+                            <button
+                            className="px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none">
+                                Found Pets
+                            </button>
+                        </div>
+                    </div>
+                    {/* <button className="flex flex-row bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 items-center pl-5 pr-5">Lost Pets</button>
+                    <button>Found Pets</button> */}
+                </div>
                 <div className='flex flex-col justify-center items-center overflow-y-scroll scrollbar-hide overflow-hidden pl-10 pr-10'>
-                    <div className='bg-snow w-full max-w-5xl h-60 mr-40 ml-40 mt-20 justify-between flex flex-col drop-shadow-xl rounded-[30px]'>
+                    <div className='bg-snow w-full max-w-5xl h-60 mr-40 ml-40 justify-between flex flex-col drop-shadow-xl rounded-[30px]'>
                         <div className='flex flex-row'>
                             {/* Profile Picture */}
                             <div className="ml-10 mt-8 w-[145px] h-[115px] bg-dark_gray rounded-full"></div>
@@ -61,37 +83,7 @@ export default function PetTracker(){
                         className="flex justify-center w-full max-w-[859px] rounded-[20px] m-8"
                     >
                         <div class="flex flex-col h-fit max-h-[510px]">
-                            <Post 
-                                username='barknplay'
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src='/images/user1-image.png'
-                                post_img_src='/images/post1-image.png'
-                            />
-                            {/* space lang po to sorry po */}
-                            <div class="m-4"></div>
-                            <Post
-                                username='barknplay'
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src='/images/user1-image.png'
-                                post_img_src='/images/post1-image.png'
-                            />
-                            <div class="m-4"></div>
-                            <Post
-                                username='barknplay'
-                                publish_date='Sept 6 at 4:30 PM'    
-                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                    Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                    🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                user_img_src='/images/user1-image.png'
-                                post_img_src='/images/post1-image.png'
-                                className='m-4'
-                            />
+                            {/* Posts here */}
                         </div>
                     </div>
                 </div>
