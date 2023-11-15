@@ -91,6 +91,8 @@ function Home() {
             setAllPosts(postData);
         });
     }
+
+    return unsubscribe;
   });
 
   // create post variables

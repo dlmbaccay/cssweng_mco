@@ -5,12 +5,7 @@ import { auth } from '../lib/firebase';
 import { useUserData } from '../lib/hooks';
 import Link from 'next/link';
 import Image from 'next/image';
-
-function handleSignOut() {
-  auth.signOut().then(() => {
-    window.location.href = "/Login";
-  });
-}
+import toast from 'react-hot-toast';
 
 export default function NavBar() {
 
@@ -26,19 +21,19 @@ export default function NavBar() {
     <nav
       onMouseEnter={toggleSidebar}
       onMouseLeave={toggleSidebar}
-      className={`sticky z-10 bg-pale_yellow text-white w-16 h-screen flex flex-col justify-between items-center transition-all 
+      className={`sticky z-10 bg-pale_yellow text-white w-16 h-screen flex flex-col justify-between items-center  
       ${isSidebarExpanded ? "w-44" : "w-18"}`}
     >
 
       <div 
-        className={`flex flex-row items-center justify-center h-10 mt-8 cursor-pointer transition-all gap-2
+        className={`group flex flex-row items-center justify-center h-10 mt-8 cursor-pointer transition-all gap-2
         ${isSidebarExpanded ? "" : "flex justify-center items-center"}`}
         onClick={() => window.location.href = "/user/"+username}
       >
         {userPhotoURL && <Image src={userPhotoURL} alt='user pic' height={35} width={35} className={`rounded-full shadow-lg ${isSidebarExpanded ? "": ""}`}/> }
         
         {isSidebarExpanded && (
-          <span className="w-full flex items-center font-medium text-raisin_black hover:text-grass text-lg">
+          <span className="w-full flex items-center font-medium text-raisin_black group-hover:text-grass text-sm">
             Profile
           </span>
         )}
@@ -48,69 +43,68 @@ export default function NavBar() {
         className={`flex flex-col items-center w-full mb-8 transition-all
         ${isSidebarExpanded ? "w-48 flex flex-col items-center" : "w-16 flex flex-col items-center"}`}
       >
-
         <Link
           href='/Home'
-          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
-          ${isSidebarExpanded ? "" : ""}`}
+          className='group w-full h-fit flex flex-row mb-4 items-center'  
         >
-          <Image src="/images/home-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          <div className={`min-w-[30px] min-h-[30px] bg-grass rounded-full flex justify-center items-center group-hover:bg-raisin_black ${isSidebarExpanded ? "ml-6" : "ml-4"}`}>
+            <i className='fa-solid fa-home text-pale_yellow'></i>
+          </div>
+
           {isSidebarExpanded && (
-            <span className="flex items-center font-medium ml-2 transition-all">
-              Home
-            </span>
+            <p className='text-grass font-semibold ml-2 group-hover:text-raisin_black text-sm'>Home</p>
           )}
         </Link>
         
         <Link
           href='/'
-          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
-          ${isSidebarExpanded ? "" : ""}`}
+          className='group w-full h-fit flex flex-row mb-4 items-center'  
         >
-          <Image src="/images/groups-icon.png" alt="home icon" width={30} height={30} className={`transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          <div className={`min-w-[30px] min-h-[30px] bg-grass rounded-full flex justify-center items-center group-hover:bg-raisin_black ${isSidebarExpanded ? "ml-6" : "ml-4"}`}>
+            <i className='fa-solid fa-user-group text-sm text-pale_yellow'></i>
+          </div>
+
           {isSidebarExpanded && (
-            <span className="flex items-center font-medium ml-2 transition-all">
-              Groups
-            </span>
+            <p className='text-grass font-semibold ml-2 group-hover:text-raisin_black text-sm'>Groups</p>
+          )}
+        </Link>
+
+        <Link
+          href='/'
+          className='group w-full h-fit flex flex-row mb-4 items-center'  
+        >
+          <div className={`min-w-[30px] min-h-[30px] bg-grass rounded-full flex justify-center items-center group-hover:bg-raisin_black ${isSidebarExpanded ? "ml-6" : "ml-4"}`}>
+            <i className='fa-solid fa-earth-asia text-xl text-pale_yellow'></i>
+          </div>
+
+          {isSidebarExpanded && (
+            <p className='text-grass font-semibold ml-2 group-hover:text-raisin_black text-sm'>Foundations</p>
           )}
         </Link>
         
         <Link
           href='/'
-          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
-          ${isSidebarExpanded ? "" : ""}`}
+          className='group w-full h-fit flex flex-row mb-4 items-center'  
         >
-          <Image src="/images/foundations-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          <div className={`min-w-[30px] min-h-[30px] bg-grass rounded-full flex justify-center items-center group-hover:bg-raisin_black ${isSidebarExpanded ? "ml-6" : "ml-4"}`}>
+            <i className='fa-solid fa-bell text-lg text-pale_yellow'></i>
+          </div>
+
           {isSidebarExpanded && (
-            <span className="flex items-center font-medium ml-2 transition-all">
-              Foundations
-            </span>
-          )}
-        </Link>
-        
-        <Link
-          href='/'
-          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
-          ${isSidebarExpanded ? "" : ""}`}
-        >
-          <Image src="/images/notifications-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
-          {isSidebarExpanded && (
-            <span className="flex items-center font-medium ml-2 transition-all">
-              Notifications
-            </span>
+            <p className='text-grass font-semibold ml-2 group-hover:text-raisin_black text-sm'>Notifications</p>
           )}
         </Link>
 
         <Link
           href='/Settings'
-          className={`w-full h-7 mb-4 text-black hover:text-grass flex flex-row items-center transition-all
-          ${isSidebarExpanded ? "" : ""}`}
+          className='group w-full h-fit flex flex-row mb-4 items-center'  
         >
-          <Image src="/images/settings-icon.png" alt="home icon" width={30} height={30} className={` transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
+          <div className={`min-w-[30px] min-h-[30px] bg-grass rounded-full flex justify-center items-center group-hover:bg-raisin_black ${isSidebarExpanded ? "ml-6" : "ml-4"}`}>
+            <i className='fa-solid fa-gear text-lg text-pale_yellow'></i>
+          </div>
+
           {isSidebarExpanded && (
-            <span className="flex items-center font-medium ml-2 transition-all">
-              Settings
-            </span>
+            <p className='text-grass font-semibold ml-2 group-hover:text-raisin_black text-sm'>Settings</p>
           )}
         </Link>
 
@@ -120,18 +114,21 @@ export default function NavBar() {
           } border-citron`}
         />
 
-        <button
-          onClick={handleSignOut}
-          className={`mt-4 w-full h-7 text-black hover:text-grass flex flex-row items-center
-          ${isSidebarExpanded ? "" : ""}`}
-        >
-          <Image src="/images/logout-icon.png" alt="home icon" width={30} height={30} className={`transition-all ${isSidebarExpanded ? "ml-6" : "ml-4"}`}/>
-            {isSidebarExpanded && (
-            <span className="flex items-center font-medium ml-2  transition-all">
-              Logout
-            </span>
+        <button 
+          onClick={() => {
+            auth.signOut();
+            toast.success('Successfully logged out!');
+          }} 
+          className='group w-full h-fit flex flex-row mt-4 items-center'  
+          >
+          <div className={`min-w-[30px] min-h-[30px] bg-grass rounded-full flex justify-center items-center group-hover:bg-raisin_black ${isSidebarExpanded ? "ml-6" : "ml-4"}`}>
+            <i className='fa-solid fa-door-open text-sm text-pale_yellow'></i>
+          </div>
+
+          {isSidebarExpanded && (
+            <p className='text-grass font-semibold ml-2 group-hover:text-raisin_black text-sm'>Log Out</p>
           )}
-        </button>
+        </button>          
       </div>
     </nav>
   );
