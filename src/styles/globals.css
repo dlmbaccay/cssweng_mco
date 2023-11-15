@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'ShiningMonday';
+    src: url('/ShiningMonday-GOoGZ.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
 }
