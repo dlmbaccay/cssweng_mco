@@ -98,7 +98,7 @@ function Home() {
             <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
                 {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>}
                 <button
-                  className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-gray'
+                  className='bg-gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-white'
                   onClick={() => setShowCreatePostForm(true)}
                 >
                   <p className='text-md'>What`s on your mind?</p>
