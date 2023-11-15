@@ -460,27 +460,34 @@ function PetProfilePage() {
                                         className="flex justify-center w-full"
                                     >
                                         <div className='flex flex-col mt-8 mb-8 gap-8'>
-                                            {taggedPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
-                                                .map((post) => (
-                                                    <PostSnippet key={post.id} 
-                                                        props={{
-                                                            currentUserID: currentUserID,
-                                                            postID: post.id,
-                                                            postBody: post.postBody,
-                                                            postCategory: post.postCategory,
-                                                            postPets: post.postPets,
-                                                            postDate: post.postDate,
-                                                            imageUrls: post.imageUrls,
-                                                            authorID: post.authorID,
-                                                            authorDisplayName: post.authorDisplayName,
-                                                            authorUsername: post.authorUsername,
-                                                            authorPhotoURL: post.authorPhotoURL,
-                                                            likes: post.likes,
-                                                            comments: post.comments,
-                                                        }} 
-                                                    />
-                                                ))
-                                            }
+
+                                            {!taggedPosts ? (
+                                                <div className='mt-6 flex flex-col items-center justify-center h-full w-full'>
+                                                    <i className="fa-solid fa-hippo text-8xl text-grass"></i>
+                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                                </div>
+                                            ) :
+                                            
+                                            (taggedPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
+                                            .map((post) => (
+                                                <PostSnippet key={post.id} 
+                                                    props={{
+                                                        currentUserID: currentUserID,
+                                                        postID: post.id,
+                                                        postBody: post.postBody,
+                                                        postCategory: post.postCategory,
+                                                        postPets: post.postPets,
+                                                        postDate: post.postDate,
+                                                        imageUrls: post.imageUrls,
+                                                        authorID: post.authorID,
+                                                        authorDisplayName: post.authorDisplayName,
+                                                        authorUsername: post.authorUsername,
+                                                        authorPhotoURL: post.authorPhotoURL,
+                                                        likes: post.likes,
+                                                        comments: post.comments,
+                                                    }} 
+                                                />
+                                            )))}
                                         </div>
                                     </div>
                                 )}
