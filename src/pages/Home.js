@@ -120,7 +120,7 @@ function Home() {
 
             <button
               onClick={() => {
-                
+                setActiveContainer('Newsfeed');
               }}
               className='group flex flex-row items-center gap-2'>
               <i className='fa-solid fa-newspaper w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
