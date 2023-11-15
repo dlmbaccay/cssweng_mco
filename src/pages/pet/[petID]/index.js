@@ -18,9 +18,11 @@ import withAuth from '@/src/components/withAuth';
 
 function PetProfilePage() {
 
-    // useEffect(() => {
-    //   Modal.setAppElement('#root')
-    // }, []); 
+    useEffect(() => {
+        if (document.getElementById('root')) {
+            Modal.setAppElement('#root');
+        }
+    }, []);
 
     // variables for getting pet's information through current/profileIDs
     const router = useRouter();
@@ -54,6 +56,8 @@ function PetProfilePage() {
     // editing variables
     const [editedPetName, setEditedPetName] = useState(petName);
     const [editedAbout, setEditedAbout] = useState(about);
+
+    const [taggedPosts, setTaggedPosts] = useState(null);
 
     useEffect(() => {
         let unsubscribe;
@@ -96,6 +100,28 @@ function PetProfilePage() {
 
         return unsubscribe;
     }, [petID]);
+
+    // fetch all posts where pet is tagged
+    useEffect(() => {
+        let unsubscribe;
+
+        if (petID) {
+            // check if pet is tagged in any post
+            const petRef = firestore.collection('posts').where('postPets', 'array-contains', petID);
+            unsubscribe = petRef.onSnapshot((querySnapshot) => {
+                if (querySnapshot.size > 0) {
+                    const taggedPosts = querySnapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+
+                    setTaggedPosts(taggedPosts);
+                } else {
+                    setTaggedPosts(null);
+                }
+            });
+        }
+    }, [petID])
 
     const openEdit = () => {
         if (currentUser && currentUserID === petOwnerID) { // Check if the logged-in user is the owner of the pet
@@ -189,11 +215,6 @@ function PetProfilePage() {
                     </div>
 
                     <div id='content-container' className='h-4/5 flex flex-row'>
-
-                        {/* Back Button */}
-                        <div className="flex items-center justify-center absolute -translate-y-28 ml-6 z-10">
-                            <i onClick={handleBack} class="fa-solid fa-circle-chevron-left fa-2xl text-gray cursor-pointer"></i>
-                        </div>
 
                         {/* Profile Picture */}
                         <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16 z-10">
@@ -438,17 +459,28 @@ function PetProfilePage() {
                                         id="showcase"
                                         className="flex justify-center w-full"
                                     >
-                                        <div className="flex mt-10 mb-10 flex-col gap-10">
-                                            <PostSnippet
-                                                username={petOwnerUsername}
-                                                displayName={petOwnerDisplayName}
-                                                user_img_src={petOwnerPhotoURL}
-                                                publish_date='Sept 6 at 4:30 PM'
-                                                desc='Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 
-                                          Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 
-                                          🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.'
-                                                post_img_src='/images/post1-image.png'
-                                            />
+                                        <div className='flex flex-col mt-8 mb-8 gap-8'>
+                                            {taggedPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
+                                                .map((post) => (
+                                                    <PostSnippet key={post.id} 
+                                                        props={{
+                                                            currentUserID: currentUserID,
+                                                            postID: post.id,
+                                                            postBody: post.postBody,
+                                                            postCategory: post.postCategory,
+                                                            postPets: post.postPets,
+                                                            postDate: post.postDate,
+                                                            imageUrls: post.imageUrls,
+                                                            authorID: post.authorID,
+                                                            authorDisplayName: post.authorDisplayName,
+                                                            authorUsername: post.authorUsername,
+                                                            authorPhotoURL: post.authorPhotoURL,
+                                                            likes: post.likes,
+                                                            comments: post.comments,
+                                                        }} 
+                                                    />
+                                                ))
+                                            }
                                         </div>
                                     </div>
                                 )}
