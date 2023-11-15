@@ -27,5 +27,8 @@ module.exports = {
         'grass': '#5C8731'
       }
     },
+    plugins: [
+      require('tailwind-scrollbar-hide'),
+    ],
   },
 }
