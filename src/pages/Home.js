@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useCurrentUserPets, useUserData } from '../lib/hooks';
+import { useCurrentUserPets, useUserData, useAllPosts } from '../lib/hooks';
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
 import { useAllUsersAndPets } from '../lib/hooks';
 import Router from 'next/router';
@@ -27,7 +27,9 @@ function Home() {
   const { user, username, description, email, displayName, userPhotoURL } = useUserData();
   const router = Router;
 
-  const [ userPets, setUserPets ] = useState([]);
+  // const { userPets } = useCurrentUserPets(user?.uid);
+
+  // const { allPosts } = useAllPosts();
 
   const [ pageLoading, setPageLoading ] = useState(true);
 
@@ -155,7 +157,7 @@ function Home() {
 
             {/* create post */}
             <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
-                <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>
+                {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>}
                 <button
                   className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-gray'
                   onClick={() => setShowCreatePostForm(true)}
@@ -170,7 +172,7 @@ function Home() {
               onRequestClose={() => setShowCreatePostForm(false)}
               style={createPostModalStyle}
             >
-              <CreatePost 
+              {/* <CreatePost 
                 props={{
                     currentUserID: user.uid,
                     pets: userPets,
@@ -179,12 +181,36 @@ function Home() {
                     userPhotoURL: userPhotoURL,
                     setShowCreatePostForm: setShowCreatePostForm
                 }}
-              />
+              /> */}
             </Modal>
 
             {/* container */}
             <div className='flex flex-col w-fit items-center gap-8 mt-8 mb-14'>
-              
+              {/* { !allPosts ? (
+                <div>
+                </div>
+              ) : (
+                  allPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
+                  .map((post) => (
+                      <PostSnippet key={post.id} 
+                          props={{
+                              currentUserID: user.uid,
+                              postID: post.id,
+                              postBody: post.postBody,
+                              postCategory: post.postCategory,
+                              postPets: post.postPets,
+                              postDate: post.postDate,
+                              imageUrls: post.imageUrls,
+                              authorID: post.authorID,
+                              authorDisplayName: post.authorDisplayName,
+                              authorUsername: post.authorUsername,
+                              authorPhotoURL: post.authorPhotoURL,
+                              likes: post.likes,
+                              comments: post.comments,
+                          }} 
+                      />
+                  )))
+              } */}
             </div>
           </div>
         </div>
