@@ -48,53 +48,6 @@ function Home() {
       return () => unsubscribe();
   }, []);
 
-  // fetch all pets of the profile user
-  useEffect(() => {
-    let unsubscribe;
-
-    if (user) {
-        const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", user.uid);
-        petsCollectionRef.get().then((querySnapshot) => {
-            const petsData = [];
-            querySnapshot.forEach((doc) => {
-                petsData.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
-            });
-            setUserPets(petsData);
-        });
-    } else {
-        setUserPets([]);
-    }
-
-    return unsubscribe;
-  }, [user]);
-
-  // fetch all posts
-
-  const [allPosts, setAllPosts] = useState([]);
-
-  useEffect(() => {
-    let unsubscribe;
-
-    if (user) {
-        const postsCollectionRef = firestore.collection('posts');
-        postsCollectionRef.get().then((querySnapshot) => {
-            const postData = [];
-            querySnapshot.forEach((doc) => {
-                postData.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
-            });
-            setAllPosts(postData);
-        });
-    }
-
-    return unsubscribe;
-  });
-
   // create post variables
   const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
@@ -118,10 +71,14 @@ function Home() {
           <hr className='border border-xanthous opacity-50 ml-6 mr-6'/>
 
           {/* Home, Groups, Foundations, Notifications, Settings */}
-          <div className='flex flex-col mt-6 mb-4'>
+          <div
+            onClick={() => {
+              router.push(`/Home`);
+            }} 
+            className='flex flex-col mt-6 mb-4'>
             <button className='group flex flex-row items-center gap-2 pl-10 h-16'>
-              <i className='fa-solid fa-home w-[35px] h-[35px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black'></i>
-              <p className='text-grass text-md font-semibold group-hover:text-raisin_black'>Home</p>
+              <i className='fa-solid fa-home w-[35px] h-[35px] rounded-full bg-raisin_black flex items-center justify-center text-lg text-pale_yellow'></i>
+              <p className='text-raisin_black text-md font-semibold'>Home</p>
            </button>
 
             <button className='group flex flex-row items-center gap-2 pl-10 h-16 '>
@@ -227,27 +184,7 @@ function Home() {
 
             {/* container */}
             <div className='flex flex-col w-fit items-center gap-8 mt-8 mb-14'>
-              {allPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
-                  .map((post) => (
-                      <PostSnippet key={post.id} 
-                          props={{
-                              currentUserID: user.uid,
-                              postID: post.id,
-                              postBody: post.postBody,
-                              postCategory: post.postCategory,
-                              postPets: post.postPets,
-                              postDate: post.postDate,
-                              imageUrls: post.imageUrls,
-                              authorID: post.authorID,
-                              authorDisplayName: post.authorDisplayName,
-                              authorUsername: post.authorUsername,
-                              authorPhotoURL: post.authorPhotoURL,
-                              likes: post.likes,
-                              comments: post.comments,
-                          }} 
-                      />
-                  ))
-              }
+              
             </div>
           </div>
         </div>
@@ -258,7 +195,11 @@ function Home() {
           <div className='flex flex-col gap-4 mt-6 mb-6'>
             <h1 className='font-bold text-mustard text-3xl mb-2'>Menu</h1>
 
-            <button className='group flex flex-row items-center gap-2'>
+            <button
+              onClick={() => {
+                router.push(`/PetTracker`);
+              }}
+              className='group flex flex-row items-center gap-2'>
               <i className='fa-solid fa-paw w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
               <p className='text-grass text-lg group-hover:text-raisin_black'>Pet Tracker</p>
            </button>
