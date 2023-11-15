@@ -15,7 +15,7 @@ export default function CreatePost({ props }) {
     const [postBody, setPostBody] = useState('')
 
     const [selectedPets, setSelectedPets] = useState([])
-    const [selectedCategory, setSelectedCategory] = useState(null)
+    const [selectedCategory, setSelectedCategory] = useState({value: 'Default', label: 'Default'})
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
 
@@ -60,6 +60,11 @@ export default function CreatePost({ props }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (!postBody) {
+            toast.error('Bark up some words for your post!');
+            return;
+        }
 
         // create reference for post
         const postRef = firestore.collection('posts').doc();
@@ -156,7 +161,6 @@ export default function CreatePost({ props }) {
                         {value: 'Milestones', label: 'Milestones'},
                     ]}
                     value={selectedCategory}
-                    defaultValue={{value: 'Default', label: 'Default'}}
                     onChange={handleSelectCategory}
                     placeholder='Category'
                     className='w-1/3'

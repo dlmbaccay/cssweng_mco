@@ -31,10 +31,18 @@ export default function Post({ props }) {
         authorPhotoURL, likes, comments
     } = props 
 
+    const [error, setError] = useState(null);
+
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const [taggedPets, setTaggedPets] = useState([]);
+
+    const [editedCategory, setEditedCategory] = useState({ value: postCategory, label: postCategory });
+
+    const handleSelectEditedCategory = (editedCategory) => {
+      setEditedCategory(editedCategory);
+    };
 
     const handleHeartHover = () => {
       setIsOverlayVisible(true);
@@ -126,13 +134,24 @@ export default function Post({ props }) {
     const [newPostBody, setNewPostBody] = useState(postBody);
 
     const handleEditPost = async () => {
+
+      if (!newPostBody) {
+        toast.error('Bark up some words for your post!');
+        return;
+      }
+
       const postRef = firestore.collection('posts').doc(postID);
       await postRef.update({
-        postBody: newPostBody
+        postBody: newPostBody,
+        postCategory: editedCategory.value,
       });
 
       // reload page
-      window.location.reload();
+      // window.location.reload();
+
+      toast.success('Post edited successfully!');
+
+      setShowEditPostModal(false);
     }
 
     return (
@@ -296,7 +315,7 @@ export default function Post({ props }) {
 
               {/* Pets */}
               <div id='post-pets' className='ml-auto'>
-                {/* display their names */}
+                {/* display their names, if any */}
                 {postPets.length > 0 && (
                   <div className='flex flex-row items-center justify-center gap-2'>
                     <i class="fa-solid fa-tag"></i>
@@ -442,7 +461,7 @@ export default function Post({ props }) {
                         </div>
                       </div>
                     </Modal>
-                  </div>
+              </div>
             </div>
 
             <div id="right" className='flex flex-row gap-4'>
@@ -451,65 +470,81 @@ export default function Post({ props }) {
               </div>
 
               {currentUserID === authorID && (
-                <>
-                
-                  {/* EDIT */}
-                  <div id="edit-control">
-                    <i className="fa-solid fa-pencil hover:text-grass hover:scale- hover:cursor-pointer"
-                    onClick={() => setShowEditPostModal(true)}
-                    >
-                    </i>
+                  <>
+                    <div id="edit-control">
+                      <i className="fa-solid fa-pencil hover:text-grass hover:scale- hover:cursor-pointer"
+                      onClick={() => setShowEditPostModal(true)}
+                      >
+                      </i>
 
-                    <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={editPostModalStyle}>
-                      <div className='flex flex-col w-full h-full'>
-                        <div className='flex flex-row justify-center items-center'>
-                          <p className='font-semibold'>Edit Post</p>
+                      <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={editPostModalStyle}>
+                        <div className='flex flex-col w-full h-full'>
+                          <div className='flex flex-row justify-center items-center'>
+                            <p className='font-semibold'>Edit Post</p>
+                          </div>
+
+                          <div className='h-full'>
+
+                            <Select 
+                                options={[
+                                    {value: 'Default', label: 'Default'},
+                                    {value: 'Q&A', label: 'Q&A'},
+                                    {value: 'Tips', label: 'Tips'},
+                                    {value: 'Pet Needs', label: 'Pet Needs'},
+                                    {value: 'Lost Pets', label: 'Lost Pets'},
+                                    {value: 'Found Pets', label: 'Found Pets'},
+                                    {value: 'Milestones', label: 'Milestones'},
+                                ]}
+                                value={editedCategory}
+                                defaultValue={{value: 'Default', label: 'Default'}}
+                                onChange={handleSelectEditedCategory}
+                                placeholder='Category'
+                                className='w-full'
+                            />
+
+                            <textarea 
+                                id="post-body" 
+                                value={newPostBody}
+                                onChange={(event) => setNewPostBody(event.target.value)}
+                                placeholder='What`s on your mind?' 
+                                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[60%] p-4 mt-4' 
+                            />
+                          </div>
+                          
+                          <div className='flex flex-row gap-2'>
+                            <button 
+                              className='px-4 py-2 bg-black text-white font-semibold hover:bg-red-600 rounded-lg text-sm cursor-pointer w-1/2 transition-all'
+                              onClick={() => setShowEditPostModal(false)}>
+                                Cancel
+                            </button>
+
+                            <button 
+                              className='bg-xanthous hover:bg-pistachio text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all' 
+                              onClick={handleEditPost}>
+                                Save
+                            </button>
+                          </div>
                         </div>
+                      </Modal>
+                    </div>
 
-                        <div className='h-full mt-2 mb-3'>
-                          <textarea 
-                              id="post-body" 
-                              value={newPostBody}
-                              onChange={(event) => setNewPostBody(event.target.value)}
-                              placeholder='What`s on your mind?' 
-                              className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-full p-4' 
-                          />
+                    <div id="delete-control">
+                      <i className="fa-solid fa-trash hover:text-red-600 hover:scale- hover:cursor-pointer"
+                      onClick={() => setShowDeletePostModal(true)}
+                      ></i>
+
+                      <Modal isOpen={showDeletePostModal} onRequestClose={() => setShowDeletePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={confirmationModalStyle}>
+                        <div className='flex flex-col items-center justify-center gap-4'>
+                          <p className='font-bold text-base'>Are you sure you want to delete this post?</p>
+                          <div className='flex flex-row gap-4'>
+                            <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={handleDeletePost}>Delete</button>
+                            <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={() => setShowDeletePostModal(false)}>Cancel</button>
+                          </div>
                         </div>
-                        
-                        <div className='flex flex-row gap-2'>
-                          <button 
-                            className='px-4 py-2 bg-black text-white font-semibold hover:bg-red-600 rounded-lg text-sm cursor-pointer w-1/2 transition-all'
-                            onClick={() => setShowEditPostModal(false)}>
-                              Cancel
-                          </button>
-
-                          <button 
-                            className='bg-xanthous hover:bg-pistachio text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all' 
-                            onClick={handleEditPost}>
-                              Save
-                          </button>
-                        </div>
-                      </div>
-                    </Modal>
-                  </div>
-
-                  <div id="delete-control">
-                    <i className="fa-solid fa-trash hover:text-red-600 hover:scale- hover:cursor-pointer"
-                    onClick={() => setShowDeletePostModal(true)}
-                    ></i>
-
-                    <Modal isOpen={showDeletePostModal} onRequestClose={() => setShowDeletePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={confirmationModalStyle}>
-                      <div className='flex flex-col items-center justify-center gap-4'>
-                        <p className='font-bold text-base'>Are you sure you want to delete this post?</p>
-                        <div className='flex flex-row gap-4'>
-                          <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={handleDeletePost}>Delete</button>
-                          <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={() => setShowDeletePostModal(false)}>Cancel</button>
-                        </div>
-                      </div>
-                    </Modal>
-                  </div>
-                </>
-              )}
+                      </Modal>
+                    </div>
+                  </>
+                )}
             </div>
           </div>
         </div>
@@ -660,13 +695,31 @@ export default function Post({ props }) {
                             <p className='font-semibold'>Edit Post</p>
                           </div>
 
-                          <div className='h-full mt-2 mb-3'>
+                          <div className='h-full'>
+
+                            <Select 
+                                options={[
+                                    {value: 'Default', label: 'Default'},
+                                    {value: 'Q&A', label: 'Q&A'},
+                                    {value: 'Tips', label: 'Tips'},
+                                    {value: 'Pet Needs', label: 'Pet Needs'},
+                                    {value: 'Lost Pets', label: 'Lost Pets'},
+                                    {value: 'Found Pets', label: 'Found Pets'},
+                                    {value: 'Milestones', label: 'Milestones'},
+                                ]}
+                                value={editedCategory}
+                                defaultValue={{value: 'Default', label: 'Default'}}
+                                onChange={handleSelectEditedCategory}
+                                placeholder='Category'
+                                className='w-full'
+                            />
+
                             <textarea 
                                 id="post-body" 
                                 value={newPostBody}
                                 onChange={(event) => setNewPostBody(event.target.value)}
                                 placeholder='What`s on your mind?' 
-                                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-full p-4' 
+                                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[60%] p-4 mt-4' 
                             />
                           </div>
                           

@@ -739,25 +739,27 @@ function UserProfilePage() {
                                         ) : null}
 
                                         <div className="flex mt-10 mb-10 flex-col gap-10">
-                                            {posts.map((post) => (
-                                                <PostSnippet key={post.id} 
-                                                    props={{
-                                                        currentUserID: currentUserID,
-                                                        postID: post.id,
-                                                        postBody: post.postBody,
-                                                        postCategory: post.postCategory,
-                                                        postPets: post.postPets,
-                                                        postDate: post.postDate,
-                                                        imageUrls: post.imageUrls,
-                                                        authorID: post.authorID,
-                                                        authorDisplayName: post.authorDisplayName,
-                                                        authorUsername: post.authorUsername,
-                                                        authorPhotoURL: post.authorPhotoURL,
-                                                        likes: post.likes,
-                                                        comments: post.comments,
-                                                    }} 
-                                                />
-                                            ))}
+                                            {posts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
+                                                .map((post) => (
+                                                    <PostSnippet key={post.id} 
+                                                        props={{
+                                                            currentUserID: currentUserID,
+                                                            postID: post.id,
+                                                            postBody: post.postBody,
+                                                            postCategory: post.postCategory,
+                                                            postPets: post.postPets,
+                                                            postDate: post.postDate,
+                                                            imageUrls: post.imageUrls,
+                                                            authorID: post.authorID,
+                                                            authorDisplayName: post.authorDisplayName,
+                                                            authorUsername: post.authorUsername,
+                                                            authorPhotoURL: post.authorPhotoURL,
+                                                            likes: post.likes,
+                                                            comments: post.comments,
+                                                        }} 
+                                                    />
+                                                ))
+                                            }
                                         </div>
                                     </div>
                                 )}

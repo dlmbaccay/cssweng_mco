@@ -123,7 +123,7 @@ export const editPostModalStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '30%', 
-    height: '35%',
+    height: '40%',
     overflow: 'auto',
     padding: '20px',
     borderRadius: '8px',
