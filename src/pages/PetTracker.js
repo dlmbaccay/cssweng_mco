@@ -48,53 +48,6 @@ function Home() {
       return () => unsubscribe();
   }, []);
 
-  // fetch all pets of the profile user
-  useEffect(() => {
-    let unsubscribe;
-
-    if (user) {
-        const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", user.uid);
-        petsCollectionRef.get().then((querySnapshot) => {
-            const petsData = [];
-            querySnapshot.forEach((doc) => {
-                petsData.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
-            });
-            setUserPets(petsData);
-        });
-    } else {
-        setUserPets([]);
-    }
-
-    return unsubscribe;
-  }, [user]);
-
-  // fetch all posts
-
-  const [allPosts, setAllPosts] = useState([]);
-
-  useEffect(() => {
-    let unsubscribe;
-
-    if (user) {
-        const postsCollectionRef = firestore.collection('posts');
-        postsCollectionRef.get().then((querySnapshot) => {
-            const postData = [];
-            querySnapshot.forEach((doc) => {
-                postData.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
-            });
-            setAllPosts(postData);
-        });
-    }
-
-    return unsubscribe;
-  });
-
   // create post variables
   const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
@@ -200,9 +153,14 @@ function Home() {
           {/* main container */}
           <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-8 pb-8'>
 
+            {/* container controls -- Lost Pets & Found Pets */}
+            <div className='flex flex-row w-full h-10 bg-black'>
+
+            </div>
+
             {/* create post */}
             <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
-                <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>
+                {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/> }
                 <button
                   className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-gray'
                   onClick={() => setShowCreatePostForm(true)}
@@ -217,7 +175,7 @@ function Home() {
               onRequestClose={() => setShowCreatePostForm(false)}
               style={createPostModalStyle}
             >
-              <CreatePost 
+              {/* <CreatePost 
                 props={{
                     currentUserID: user.uid,
                     pets: userPets,
@@ -226,32 +184,12 @@ function Home() {
                     userPhotoURL: userPhotoURL,
                     setShowCreatePostForm: setShowCreatePostForm
                 }}
-              />
-            </Modal>
+              /> */}
+            </Modal>          
 
             {/* container */}
             <div className='flex flex-col w-fit items-center gap-8 mt-8 mb-14'>
-              {allPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
-                  .map((post) => (
-                      <PostSnippet key={post.id} 
-                          props={{
-                              currentUserID: user.uid,
-                              postID: post.id,
-                              postBody: post.postBody,
-                              postCategory: post.postCategory,
-                              postPets: post.postPets,
-                              postDate: post.postDate,
-                              imageUrls: post.imageUrls,
-                              authorID: post.authorID,
-                              authorDisplayName: post.authorDisplayName,
-                              authorUsername: post.authorUsername,
-                              authorPhotoURL: post.authorPhotoURL,
-                              likes: post.likes,
-                              comments: post.comments,
-                          }} 
-                      />
-                  ))
-              }
+
             </div>
           </div>
         </div>
@@ -263,8 +201,8 @@ function Home() {
             <h1 className='font-bold text-mustard text-3xl mb-2'>Menu</h1>
 
             <button onClick={() => router.push('/PetTracker')} className='group flex flex-row items-center gap-2'>
-              <i className='fa-solid fa-paw w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass text-lg group-hover:text-raisin_black'>Pet Tracker</p>
+              <i className='fa-solid fa-paw w-[40px] h-[40px] rounded-full flex items-center justify-center text-xl text-snow bg-raisin_black'></i>
+              <p className='text-lg text-raisin_black'>Pet Tracker</p>
            </button>
 
             <button className='group flex flex-row items-center gap-2'>
