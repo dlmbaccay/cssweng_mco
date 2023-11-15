@@ -634,6 +634,12 @@ function UserProfilePage() {
 
                             {/* Details */}
                             <div className="mt-6 flex flex-col items-center w-full gap-4">
+                                {hidden && !hidden.includes('birthdate') ? (
+                                    <div id="icons" className='flex flex-row gap-2 items-center'>
+                                        <i className="fa-solid fa-calendar"></i>
+                                        <p>{birthdate}</p>
+                                    </div>
+                                ) : ''}
                                 {hidden && !hidden.includes('location') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-location-dot"></i>
@@ -994,7 +1000,8 @@ function PetAccountSetup({ props }) {
                 birthdate: petBirthdate,
                 birthplace: petBirthplace,
                 followers: [],
-                following: []
+                following: [],
+                hidden: [],
             });
 
             // add petID reference to user's pets array

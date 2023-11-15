@@ -147,6 +147,7 @@ function AccountSetup() {
             email: user.email,
             followers: [],
             following: [],
+            hidden: [],
             
             // create a pet collections
             pets: {},

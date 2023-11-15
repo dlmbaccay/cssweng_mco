@@ -26,20 +26,20 @@ function Settings() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     const [userSwitches, setUserSwitches] = useState([
-        { id: 'Gender', value: 'gender',enabled: false },
-        { id: 'Birthday', value: 'birthdate', enabled: false },
-        { id: 'Location', value: 'location', enabled: false },
-        { id: 'Contact Number', value: 'contactNumber', enabled: false },
-        { id: 'E-mail', value: 'email', enabled: false },
+        { id: 'Gender', value: 'gender',enabled: true },
+        { id: 'Birthday', value: 'birthdate', enabled: true },
+        { id: 'Location', value: 'location', enabled: true },
+        { id: 'Contact Number', value: 'contactNumber', enabled: true },
+        { id: 'E-mail', value: 'email', enabled: true },
       ]);
     
     const [petSwitches, setPetSwitches] = useState([
-    { id: 'Pet Breed', value: 'breed', enabled: false },
-    { id: 'Pet Sex', value: 'sex', enabled: false },
-    { id: 'Pet Birthday', value: 'birthdate', enabled: false },
-    { id: 'Pet Location', value: 'birthplace', enabled: false },
-    { id: 'Favorite Food', value: 'favefood', enabled: false },
-    { id: 'Hobby', value: 'hobby', enabled: false },
+    { id: 'Pet Breed', value: 'breed', enabled: true },
+    { id: 'Pet Sex', value: 'sex', enabled: true },
+    { id: 'Pet Birthday', value: 'birthdate', enabled: true },
+    { id: 'Pet Location', value: 'birthplace', enabled: true },
+    { id: 'Favorite Food', value: 'favoritefood', enabled: true },
+    { id: 'Hobby', value: 'hobbies', enabled: true },
     ]);
 
     useEffect(() => {
@@ -53,7 +53,7 @@ function Settings() {
             const array = doc.data().hidden === undefined ? [] : doc.data().hidden;
             const newSwitches = userSwitches.map(switchItem => {
             if (array.includes(switchItem.value)) {
-                return { ...switchItem, enabled: true };
+                return { ...switchItem, enabled: false };
             }
             return switchItem;
             });
@@ -61,8 +61,8 @@ function Settings() {
             setUserSwitches(newSwitches);
 
             // Add enabled switches to enabledUserSwitches
-            const newEnabledUserSwitches = newSwitches.filter(switchItem => switchItem.enabled).map(switchItem => switchItem.value);
-            setEnabledUserSwitches(newEnabledUserSwitches);
+            const newDisabledUserSwitches = newSwitches.filter(switchItem => !switchItem.enabled).map(switchItem => switchItem.value);
+            setDisabledUserSwitches(newDisabledUserSwitches);
           } else {
             console.log("No such document!");
           }
@@ -79,15 +79,15 @@ function Settings() {
           const array = pets[0].hidden === undefined ? [] : pets[0].hidden;
             const newSwitches = petSwitches.map(switchItem => {
             if (array.includes(switchItem.value)) {
-                return { ...switchItem, enabled: true };
+                return { ...switchItem, enabled: false };
             }
             return switchItem;
             });
         
             setPetSwitches(newSwitches);
 
-            const newEnabledPetSwitches = newSwitches.filter(switchItem => switchItem.enabled).map(switchItem => switchItem.value);
-            setEnabledPetSwitches(newEnabledPetSwitches);
+            const newDisabledPetSwitches = newSwitches.filter(switchItem => !switchItem.enabled).map(switchItem => switchItem.value);
+            setDisabledPetSwitches(newDisabledPetSwitches);
         }).catch((error) => {
           console.log("Error getting documents: ", error);
         });
@@ -149,8 +149,8 @@ function Settings() {
 
     const petSwitchIDs = ['Pet Sex', 'Pet Breed', 'Pet Birthday', 'Pet Location', 'Favorite Food', 'Hobbby'];
     const userSwitchIDs = ['Gender', 'Birthday', 'Location', 'Contact Number', 'E-mail'];
-    const [enabledPetSwitches, setEnabledPetSwitches] = useState([]);
-    const [enabledUserSwitches, setEnabledUserSwitches] = useState([]);
+    const [disabledPetSwitches, setDisabledPetSwitches] = useState([]);
+    const [disabledUserSwitches, setDisabledUserSwitches] = useState([]);
 
 
     const toggleUserSwitch = (id, value) => {
@@ -158,10 +158,10 @@ function Settings() {
             switchItem.id === id ? { ...switchItem, enabled: !switchItem.enabled } : switchItem
         ));
         if (userSwitchIDs.includes(id)) {
-            if (enabledUserSwitches.includes(value)) {
-                setEnabledUserSwitches(enabledUserSwitches.filter((switchVal) => switchVal !== value));
+            if (disabledUserSwitches.includes(value)) {
+                setDisabledUserSwitches(disabledUserSwitches.filter((switchVal) => switchVal !== value));
             } else {
-                setEnabledUserSwitches([...enabledUserSwitches, value]);
+                setDisabledUserSwitches([...disabledUserSwitches, value]);
             }
         }
     };
@@ -171,12 +171,13 @@ function Settings() {
             switchItem.id === id ? { ...switchItem, enabled: !switchItem.enabled } : switchItem
         ));
         if (petSwitchIDs.includes(id)) {
-            if (enabledPetSwitches.includes(value)) {
-                setEnabledPetSwitches(enabledPetSwitches.filter((switchVal) => switchVal !== value));
+            if (disabledPetSwitches.includes(value)) {
+                setDisabledPetSwitches(disabledPetSwitches.filter((switchVal) => switchVal !== value));
             } else {
-                setEnabledPetSwitches([...enabledPetSwitches, value]);
+                setDisabledPetSwitches([...disabledPetSwitches, value]);
             }
         }
+        console.log(disabledPetSwitches);
     };
 
     async function hideInformation(event) {
@@ -189,12 +190,12 @@ function Settings() {
             const batch = firestore.batch();
     
             // Update user document
-            batch.update(userRef, { hidden: enabledUserSwitches });
+            batch.update(userRef, { hidden: disabledUserSwitches });
     
             // Update pet documents
             const petQuerySnapshot = await petsRef.get();
             petQuerySnapshot.forEach((doc) => {
-                batch.update(doc.ref, { hidden: enabledPetSwitches });
+                batch.update(doc.ref, { hidden: disabledPetSwitches });
             });
     
             try {
@@ -283,7 +284,7 @@ function Settings() {
                             <br></br>
                             {userSwitches.map((switchItem) => (
                                 <div key={switchItem.id} className="flex justify-between items-center mb-4">
-                                    <span>Hide {switchItem.id}</span>
+                                    <span>{switchItem.id}</span>
                                     <Switch
                                         checked={switchItem.enabled}
                                         onChange={() => toggleUserSwitch(switchItem.id, switchItem.value)}
@@ -308,7 +309,7 @@ function Settings() {
                             <br></br>
                             {petSwitches.map((switchItem) => (
                                 <div key={switchItem.id} className="flex justify-between items-center mb-4">
-                                    <span>Hide {switchItem.id}</span>
+                                    <span>{switchItem.id}</span>
                                     <Switch
                                         checked={switchItem.enabled}
                                         onChange={() => togglePetSwitch(switchItem.id, switchItem.value)}
