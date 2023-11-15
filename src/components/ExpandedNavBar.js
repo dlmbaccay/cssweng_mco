@@ -19,7 +19,10 @@ export default function ExpandedNavBar({ props }) {
               {<h1 className='text-md font-bold text-raisin_black mt-2'>{username}</h1>}
 
               <div>
-                <button className='bg-grass rounded-lg px-4 py-1 text-sm text-pale_yellow font-bold hover:bg-raisin_black transition-all mt-2' onClick={() => router.push(`/user/${username}`)}>View Profile</button>
+                <button className='bg-grass rounded-lg px-4 py-2 text-xs text-pale_yellow font-bold hover:bg-raisin_black transition-all mt-2 flex items-center justify-center gap-2' onClick={() => router.push(`/user/${username}`)}>
+                    <i className='fa-solid fa-user'/>
+                    Profile
+                </button>
               </div>
           </div>
 
