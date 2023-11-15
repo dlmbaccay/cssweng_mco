@@ -16,6 +16,12 @@ import RoundIcon from '../components/RoundIcon';
 import { createPostModalStyle } from '../lib/modalstyle';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 
+import Newsfeed from '../components/Menu/Newsfeed';
+import PetTracker from '../components/Menu/PetTracker';
+import Messages from '../components/Menu/Messages';
+import SavedPosts from '../components/Menu/SavedPosts';
+import Shops from '../components/Menu/Shops';
+
 
 function Home() {
 
@@ -49,6 +55,9 @@ function Home() {
 
   // create post variables
   const [showCreatePostForm, setShowCreatePostForm] = useState(false);
+
+  // menu container control
+  const [activeContainer, setActiveContainer] = useState('Newsfeed');
 
   if (!pageLoading) {
     return (
@@ -87,72 +96,19 @@ function Home() {
             <div className='flex flex-row justify-center items-center gap-2 mr-8'>
               <h1 className='font-bold font-shining text-3xl text-grass'>BantayBuddy</h1>
 
-              <div className='bg-grass w-[50px] h-[50px] rounded-full'>
+              <div className='bg-grass w-[40px] h-[40px] rounded-full'>
                 <Image src='/images/logo.png' alt='logo' width={100} height={100} className='rounded-full'/>
               </div>
             </div>
           </div>  
 
           {/* main container */}
-          <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-8 pb-8'>
-
-            {/* create post */}
-            <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
-                {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>}
-                <button
-                  className='bg-gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-white'
-                  onClick={() => setShowCreatePostForm(true)}
-                >
-                  <p className='text-md'>What`s on your mind?</p>
-                </button>
-            </div>
-
-            {/* create post modal */}
-            <Modal
-              isOpen={showCreatePostForm}
-              onRequestClose={() => setShowCreatePostForm(false)}
-              style={createPostModalStyle}
-            >
-              {/* <CreatePost 
-                props={{
-                    currentUserID: user.uid,
-                    pets: userPets,
-                    displayName: displayName,
-                    username: username,
-                    userPhotoURL: userPhotoURL,
-                    setShowCreatePostForm: setShowCreatePostForm
-                }}
-              /> */}
-            </Modal>
-
-            {/* container */}
-            <div className='flex flex-col w-fit items-center gap-8 mt-8 mb-14'>
-              {/* { !allPosts ? (
-                <div>
-                </div>
-              ) : (
-                  allPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
-                  .map((post) => (
-                      <PostSnippet key={post.id} 
-                          props={{
-                              currentUserID: user.uid,
-                              postID: post.id,
-                              postBody: post.postBody,
-                              postCategory: post.postCategory,
-                              postPets: post.postPets,
-                              postDate: post.postDate,
-                              imageUrls: post.imageUrls,
-                              authorID: post.authorID,
-                              authorDisplayName: post.authorDisplayName,
-                              authorUsername: post.authorUsername,
-                              authorPhotoURL: post.authorPhotoURL,
-                              likes: post.likes,
-                              comments: post.comments,
-                          }} 
-                      />
-                  )))
-              } */}
-            </div>
+          <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center'>
+              { activeContainer === 'Newsfeed' && <Newsfeed /> }
+              { activeContainer === 'Pet Tracker' && <PetTracker /> }
+              { activeContainer === 'Messages' && <Messages /> }
+              { activeContainer === 'Saved Posts' && <SavedPosts /> }
+              { activeContainer === 'Shops' && <Shops /> }
           </div>
         </div>
 
@@ -160,38 +116,60 @@ function Home() {
         <div className='w-1/6 bg-snow drop-shadow-xl h-screen p-10 flex flex-col'>
           {/* menu */}
           <div className='flex flex-col gap-4 mt-6 mb-6'>
-            <h1 className='font-bold text-mustard text-3xl mb-2'>Menu</h1>
+            <h1 className='font-bold font-shining text-mustard text-4xl mb-2'>Menu</h1>
 
             <button
               onClick={() => {
-                router.push(`/PetTracker`);
+                
+              }}
+              className='group flex flex-row items-center gap-2'>
+              <i className='fa-solid fa-newspaper w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
+              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Newsfeed</p>
+           </button>
+
+
+            <button
+              onClick={() => {
+                setActiveContainer('Pet Tracker');
               }}
               className='group flex flex-row items-center gap-2'>
               <i className='fa-solid fa-paw w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass text-lg group-hover:text-raisin_black'>Pet Tracker</p>
+              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Pet Tracker</p>
            </button>
-
-            <button className='group flex flex-row items-center gap-2'>
+            
+            <button 
+              onClick={() => {
+                setActiveContainer('Messages');
+              }}
+              className='group flex flex-row items-center gap-2'>
               <i className='fa-solid fa-envelope w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass text-lg group-hover:text-raisin_black'>Messages</p>
+              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Messages</p>
             </button>
 
-            <button className='group flex flex-row items-center gap-2'>
+            <button 
+              onClick={() => {
+                setActiveContainer('Saved Posts');
+              }}
+              className='group flex flex-row items-center gap-2'>
               <i className='fa-solid fa-bookmark w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass text-lg group-hover:text-raisin_black'>Saved Posts</p>
+              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Saved Posts</p>
             </button>
 
-            <button className='group flex flex-row items-center gap-2'>
+            <button 
+              onClick={() => {
+                setActiveContainer('Shops');
+              }}
+              className='group flex flex-row items-center gap-2'>
               <i className='fa-solid fa-cart-shopping w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass text-lg group-hover:text-raisin_black'>Shops</p>
+              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Shops</p>
             </button>
           </div>
 
           <hr className='text-dark_gray'/>
 
-        {/* events */}
+          {/* events */}
           <div className='flex flex-col mt-6'>
-            <h1 className='font-bold text-mustard text-3xl mb-2'>Events</h1>
+            <h1 className='font-bold font-shining text-mustard text-4xl mb-2'>Events</h1>
 
             {/* events to be added here */}
           </div>
