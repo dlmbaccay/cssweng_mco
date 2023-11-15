@@ -104,24 +104,19 @@ export default function Post({ props }) {
       await postRef.delete();
 
       // delete image urls from storage
-      if (imageUrls) {
-        const imagesRef = storage.ref(`posts/${postID}`);
-        const deleteImages = imageUrls.map((imageUrl) => {
-          const imageRef = imagesRef.child(imageUrl);
-          return imageRef.delete();
-        });
-
-        await Promise.all(deleteImages);
-      }
+      imageUrls.forEach(async (url) => {
+        const imageRef = storage.refFromURL(url);
+        await imageRef.delete();
+      });
   
       // delete postID from user posts
-      const userRef = firestore.collection('users').doc(currentUserID);
+      const userRef = firestore.collection('users').doc(authorID);
       await userRef.update({
-        posts: arrayRemove(postID),
+        posts: arrayRemove(postID)
       });
 
       // reload page
-      window.location.reload();
+      // window.location.reload();
     }
 
     const [showSharePostModal, setShowSharePostModal] = useState(false);
