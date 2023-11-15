@@ -6,6 +6,7 @@ import { useAllUsersAndPets } from '../lib/hooks';
 import Router from 'next/router';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Switch } from '@headlessui/react';
 import Modal from 'react-modal';
 import { changePasswordStyle } from '../lib/modalstyle';
@@ -15,9 +16,10 @@ import NavBar from '../components/NavBar';
 import RoundIcon from '../components/RoundIcon';
 import CoverPhoto from '../components/CoverPhoto';
 import PostSnippet from '../components/PostSnippet';
+import ExpandedNavBar from '../components/ExpandedNavBar';
 
 function Settings() {
-    const { user, username } = useUserData();
+    const { user, username, userPhotoURL } = useUserData();
     const router = Router;
     const [userRef, setUserRef] = useState('');
     const [petsRef, setPetsRef] = useState('');
@@ -31,14 +33,14 @@ function Settings() {
         { id: 'E-mail', value: 'email', enabled: false },
       ]);
     
-      const [petSwitches, setPetSwitches] = useState([
-        { id: 'Pet Breed', value: 'breed', enabled: false },
-        { id: 'Pet Sex', value: 'sex', enabled: false },
-        { id: 'Pet Birthday', value: 'birthdate', enabled: false },
-        { id: 'Pet Location', value: 'birthplace', enabled: false },
-        { id: 'Favorite Food', value: 'favefood', enabled: false },
-        { id: 'Hobby', value: 'hobby', enabled: false },
-      ]);
+    const [petSwitches, setPetSwitches] = useState([
+    { id: 'Pet Breed', value: 'breed', enabled: false },
+    { id: 'Pet Sex', value: 'sex', enabled: false },
+    { id: 'Pet Birthday', value: 'birthdate', enabled: false },
+    { id: 'Pet Location', value: 'birthplace', enabled: false },
+    { id: 'Favorite Food', value: 'favefood', enabled: false },
+    { id: 'Hobby', value: 'hobby', enabled: false },
+    ]);
 
     useEffect(() => {
         const userDocRef = firestore.collection('users').doc(user.uid);
@@ -133,7 +135,6 @@ function Settings() {
         });  
     };
 
-    
     // useEffect(() => {
     //     const array = userRef.hidden === undefined ? '' : userRef.hidden;
     //     const newSwitches = switches.map(switchItem => {
@@ -164,6 +165,7 @@ function Settings() {
             }
         }
     };
+
     const togglePetSwitch = (id, value) => {
         setPetSwitches(petSwitches.map(switchItem =>
             switchItem.id === id ? { ...switchItem, enabled: !switchItem.enabled } : switchItem
@@ -176,12 +178,6 @@ function Settings() {
             }
         }
     };
-
-    
-
-    function handleViewProfile() {
-        router.push(`/user/${username}`);
-    }
 
     async function hideInformation(event) {
         event.preventDefault();
@@ -212,12 +208,21 @@ function Settings() {
         await updateHiddenField();
     }
     
-      
     return (
         <div>
-            <div id="root" className='flex h-screen paw-background'>
-                <NavBar />
-                <div className="flex justify-center items-center h-full w-full">
+            <div id="root" className='flex flex-row h-screen paw-background'>
+                {/* home navbar */}
+                <div className='w-1/6'>
+                    {(userPhotoURL && username) && <ExpandedNavBar 
+                        props={{
+                        userPhotoURL: userPhotoURL,
+                        username: username,
+                        activePage: "Settings"
+                        }}
+                    />}
+                </div>
+
+                <div className="w-5/6 flex justify-center items-center h-full">
                     <form
                         onSubmit={hideInformation}
                         className="bg-pale_yellow rounded-lg p-10 w-1/2 overflow-auto h-screen">
@@ -337,3 +342,9 @@ function Settings() {
 
 
 export default withAuth(Settings);
+
+/*
+
+
+
+*/

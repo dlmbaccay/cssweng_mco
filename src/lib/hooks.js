@@ -134,47 +134,26 @@ export function useAllUsersAndPets() {
   return { allUsers, allPets };
 }
 
-export async function useAllPosts() {
-  const [allPosts, setAllPosts] = useState([]);
-
-  useEffect(() => {
-    let unsubscribe;
-
-    const postsCollectionRef = firestore.collection('posts');
-    postsCollectionRef.get().then((querySnapshot) => {
-        const postData = [];
-        querySnapshot.forEach((doc) => {
-            postData.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-        setAllPosts(postData);
-    }, [postsCollectionRef]);
-
-    return unsubscribe;
-  });
-
-  return allPosts;
-}
-
-export async function useCurrentUserPets(user) {
+export function useCurrentUserPets(user) {
   const [userPets, setUserPets] = useState([]);
-  
-  // fetch all pets of the profile user
+
   useEffect(() => {
-    let unsubscribe;
+    if (!user) {
+      setUserPets([]);
+      return;
+    }
 
     const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", user.uid);
-    petsCollectionRef.get().then((querySnapshot) => {
-        const petsData = [];
-        querySnapshot.forEach((doc) => {
-            petsData.push({
-                id: doc.id,
-                ...doc.data()
-            });
+
+    const unsubscribe = petsCollectionRef.onSnapshot((querySnapshot) => {
+      const petsData = [];
+      querySnapshot.forEach((doc) => {
+        petsData.push({
+          id: doc.id,
+          ...doc.data()
         });
-        setUserPets(petsData);
+      });
+      setUserPets(petsData);
     });
 
     return unsubscribe;
