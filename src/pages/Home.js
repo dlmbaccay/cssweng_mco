@@ -192,7 +192,7 @@ function Home() {
           </div>  
 
           {/* main container */}
-          <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-8 pb-8 pl-36 pr-36'>
+          <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-8 pb-8'>
 
             {/* create post */}
             <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
@@ -205,7 +205,7 @@ function Home() {
                 </button>
             </div>
 
-              {/* create post modal */}
+            {/* create post modal */}
             <Modal
               isOpen={showCreatePostForm}
               onRequestClose={() => setShowCreatePostForm(false)}
@@ -224,7 +224,7 @@ function Home() {
             </Modal>
 
             {/* container */}
-            <div className='flex flex-col w-full h-full justify-start items-center gap-8 mt-8'>
+            <div className='flex flex-col w-fit items-center gap-8 mt-8 mb-14'>
               {allPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
                   .map((post) => (
                       <PostSnippet key={post.id} 
