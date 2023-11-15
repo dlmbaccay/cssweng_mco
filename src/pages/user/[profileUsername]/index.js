@@ -723,7 +723,7 @@ function UserProfilePage() {
                                                         comments: post.comments,
                                                     }} 
                                                 />
-                                            ))}
+                                            )).reverse()}
                                         </div>
                                     </div>
                                 )}
