@@ -117,6 +117,8 @@ export default function Post({ props }) {
 
       // reload page
       // window.location.reload();
+
+      toast.success('Post deleted successfully!');
     }
 
     const [showSharePostModal, setShowSharePostModal] = useState(false);
