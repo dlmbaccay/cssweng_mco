@@ -133,3 +133,30 @@ export function useAllUsersAndPets() {
 
   return { allUsers, allPets };
 }
+
+export function useCurrentUserPets() {
+  const [currentUserPets, setCurrentUserPets] = useState([]);
+
+  useEffect(() => {
+    let unsubscribe;
+
+    const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", auth.currentUser.uid);
+
+    unsubscribe = petsCollectionRef.onSnapshot((querySnapshot) => {
+      const petsData = [];
+      querySnapshot.forEach((doc) => {
+        petsData.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      setCurrentUserPets(petsData);
+    }, (error) => {
+      toast.error("Error fetching pets: ", error);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  return currentUserPets;
+}

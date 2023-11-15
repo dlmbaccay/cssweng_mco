@@ -1,16 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Image from 'next/image'
 import Select from 'react-select'
 import { firestore, storage } from '../lib/firebase';
 import { arrayUnion } from 'firebase/firestore';
 import toast from 'react-hot-toast';
+import { useCurrentUserPets } from '../lib/hooks';
 
 export default function CreatePost({ props }) {
 
     const { 
-        currentUserID, pets, displayName,
+        currentUserID, displayName,
         username, userPhotoURL, setShowCreatePostForm 
     } = props
+
+    const currentUserPets = useCurrentUserPets();
 
     const [postBody, setPostBody] = useState('')
 
@@ -166,14 +169,16 @@ export default function CreatePost({ props }) {
                     className='w-1/3'
                 />
 
-                <Select 
-                    options={pets.map(pet => ({value: pet.id, label: pet.petName}))}
-                    value={selectedPets}
-                    onChange={handleSelectPets}
-                    isMulti
-                    placeholder='Pet(s)'
-                    className='w-2/3'
-                />
+                {currentUserPets && (
+                    <Select 
+                        options={currentUserPets.map(pet => ({ value: pet.id, label: pet.petName }))}
+                        value={selectedPets}
+                        onChange={handleSelectPets}
+                        isMulti
+                        placeholder='Pet(s)'
+                        className='w-2/3'
+                    />
+                )}
             </div>
         </div>  
 

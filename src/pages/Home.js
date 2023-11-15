@@ -32,6 +32,7 @@ function Home() {
   }, []);
 
   const { user, username, description, email, displayName, userPhotoURL } = useUserData();
+  
   const router = Router;
 
   const [ pageLoading, setPageLoading ] = useState(true);
@@ -116,7 +117,6 @@ function Home() {
                     userPhotoURL: userPhotoURL,
                     showCreatePostForm: showCreatePostForm,
                     setShowCreatePostForm: setShowCreatePostForm,
-                    // userPets: userPets
                   }}
                 /> 
               }

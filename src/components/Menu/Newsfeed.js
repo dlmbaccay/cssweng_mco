@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image'
 import Modal from 'react-modal'
 import { createPostModalStyle } from '../../lib/modalstyle'
 import CreatePost from '../CreatePost'
+
+import { firestore } from '../../lib/firebase'
+import { collection, query, orderBy, startAfter, limit, getDocs } from 'firebase/firestore';
 
 export default function Newsfeed({ props }) {
 
@@ -32,19 +35,21 @@ export default function Newsfeed({ props }) {
                 onRequestClose={() => setShowCreatePostForm(false)}
                 style={createPostModalStyle}
             >
-                {/* <CreatePost 
+                <CreatePost 
                   props={{
                       currentUserID: user.uid,
-                      pets: userPets,
                       displayName: displayName,
                       username: username,
                       userPhotoURL: userPhotoURL,
                       setShowCreatePostForm: setShowCreatePostForm,
                   }}
-                /> */}
+                />
             </Modal>
         </div>
 
+        <div className='w-full h-full'>
+          
+        </div>
       </div>
     </>
   )
