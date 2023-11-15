@@ -87,7 +87,7 @@ function Home() {
               <input 
                 type='text'
                 placeholder='Search'
-                className={`w-full h-8 pr-4 outline-none rounded-r-full transition-all group-hover:bg-white text-md ${isSearchInputFocused ? 'bg-white' : 'bg-gray'}`}
+                className={`w-full h-8 pr-4 outline-none rounded-r-full transition-all group-hover:bg-white text-sm ${isSearchInputFocused ? 'bg-white' : 'bg-gray'}`}
                 onFocus={() => setIsSearchInputFocused(true)}
                 onBlur={() => setIsSearchInputFocused(false)}
               />
@@ -103,9 +103,39 @@ function Home() {
           </div>  
 
           {/* main container */}
-          <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center'>
-              { activeContainer === 'Newsfeed' && <Newsfeed /> }
-              { activeContainer === 'Pet Tracker' && <PetTracker /> }
+          <div className='h-full w-full overflow-y-scroll'>
+
+              { activeContainer === 'Newsfeed' && 
+                <Newsfeed 
+                  props={{
+                    user: user,
+                    username: username,
+                    description: description,
+                    email: email,
+                    displayName: displayName,
+                    userPhotoURL: userPhotoURL,
+                    showCreatePostForm: showCreatePostForm,
+                    setShowCreatePostForm: setShowCreatePostForm,
+                    // userPets: userPets
+                  }}
+                /> 
+              }
+
+              { activeContainer === 'Pet Tracker' && 
+                <PetTracker 
+                  props={{
+                    user: user,
+                    username: username,
+                    description: description,
+                    email: email,
+                    displayName: displayName,
+                    userPhotoURL: userPhotoURL,
+                    showCreatePostForm: showCreatePostForm,
+                    setShowCreatePostForm: setShowCreatePostForm,
+                  }}
+                />
+              }
+              
               { activeContainer === 'Messages' && <Messages /> }
               { activeContainer === 'Saved Posts' && <SavedPosts /> }
               { activeContainer === 'Shops' && <Shops /> }
@@ -123,8 +153,8 @@ function Home() {
                 setActiveContainer('Newsfeed');
               }}
               className='group flex flex-row items-center gap-2'>
-              <i className='fa-solid fa-newspaper w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Newsfeed</p>
+              <i className={`fa-solid fa-newspaper w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black ${activeContainer === "Newsfeed" ? "bg-raisin_black" : ""}`}></i>
+              <p className={`text-grass font-shining text-xl group-hover:text-raisin_black ${activeContainer === "Newsfeed" ? "text-raisin_black" : ""}`}>Newsfeed</p>
            </button>
 
 
@@ -133,8 +163,8 @@ function Home() {
                 setActiveContainer('Pet Tracker');
               }}
               className='group flex flex-row items-center gap-2'>
-              <i className='fa-solid fa-paw w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Pet Tracker</p>
+              <i className={`fa-solid fa-paw w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black ${activeContainer === "Pet Tracker" ? "bg-raisin_black" : ""}`}></i>
+              <p className={`text-grass font-shining text-xl group-hover:text-raisin_black ${activeContainer === "Pet Tracker" ? "text-raisin_black" : ""}`}>Pet Tracker</p>
            </button>
             
             <button 
@@ -142,8 +172,8 @@ function Home() {
                 setActiveContainer('Messages');
               }}
               className='group flex flex-row items-center gap-2'>
-              <i className='fa-solid fa-envelope w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Messages</p>
+              <i className={`fa-solid fa-envelope w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black ${activeContainer === "Messages" ? "bg-raisin_black" : ""}`}></i>
+              <p className={`text-grass font-shining text-xl group-hover:text-raisin_black ${activeContainer === "Messages" ? "text-raisin_black" : ""}`}>Messages</p>
             </button>
 
             <button 
@@ -151,8 +181,8 @@ function Home() {
                 setActiveContainer('Saved Posts');
               }}
               className='group flex flex-row items-center gap-2'>
-              <i className='fa-solid fa-bookmark w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Saved Posts</p>
+              <i className={`fa-solid fa-bookmark w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black ${activeContainer === "Saved Posts" ? "bg-raisin_black" : ""}`}></i>
+              <p className={`text-grass font-shining text-xl group-hover:text-raisin_black ${activeContainer === "Saved Posts" ? "text-raisin_black" : ""}`}>Saved Posts</p>
             </button>
 
             <button 
@@ -160,8 +190,8 @@ function Home() {
                 setActiveContainer('Shops');
               }}
               className='group flex flex-row items-center gap-2'>
-              <i className='fa-solid fa-cart-shopping w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black'></i>
-              <p className='text-grass font-shining text-xl group-hover:text-raisin_black'>Shops</p>
+              <i className={`fa-solid fa-cart-shopping w-[40px] h-[40px] rounded-full bg-grass flex items-center justify-center text-xl text-snow group-hover:bg-raisin_black ${activeContainer === "Shops" ? "bg-raisin_black" : ""}`}></i>
+              <p className={`text-grass font-shining text-xl group-hover:text-raisin_black ${activeContainer === "Shops" ? "text-raisin_black" : ""}`}>Shops</p>
             </button>
           </div>
 

@@ -133,31 +133,3 @@ export function useAllUsersAndPets() {
 
   return { allUsers, allPets };
 }
-
-export function useCurrentUserPets(user) {
-  const [userPets, setUserPets] = useState([]);
-
-  useEffect(() => {
-    if (!user) {
-      setUserPets([]);
-      return;
-    }
-
-    const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", user.uid);
-
-    const unsubscribe = petsCollectionRef.onSnapshot((querySnapshot) => {
-      const petsData = [];
-      querySnapshot.forEach((doc) => {
-        petsData.push({
-          id: doc.id,
-          ...doc.data()
-        });
-      });
-      setUserPets(petsData);
-    });
-
-    return unsubscribe;
-  }, [user]);
-
-  return userPets;
-}
