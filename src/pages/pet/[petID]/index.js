@@ -40,6 +40,8 @@ function PetProfilePage() {
     const [breed, setBreed] = useState(null);
     const [birthdate, setBirthdate] = useState(null);
     const [birthplace, setBirthplace] = useState(null);
+    const [favoriteFood, setFavoriteFood] = useState(null);
+    const [hobbies, setHobbies] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
     const [hidden, setHidden] = useState(null);
 
@@ -80,6 +82,8 @@ function PetProfilePage() {
                     setPetPhotoURL(doc.data().photoURL);
                     setBirthdate(doc.data()?.birthdate);
                     setBirthplace(doc.data()?.birthplace);
+                    setFavoriteFood(doc.data().favoriteFood);
+                    setHobbies(doc.data().hobbies);
                     setHidden(doc.data()?.hidden);
 
                     setPetOwnerID(doc.data().petOwnerID);
@@ -138,6 +142,8 @@ function PetProfilePage() {
             const updateData = {
                 petName: editedPetName,
                 about: editedAbout,
+                favoriteFood: favoriteFood,
+                hobbies: hobbies,
                 photoURL: petPhotoURL
             };
 
@@ -398,21 +404,21 @@ function PetProfilePage() {
                                 {hidden && !hidden.includes('birthdate') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-calendar"></i>
-                                        <p>01/02/03</p>  {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{birthdate}</p>  {/* I just put a hardcoded value for now since di pa defined */}
                                     </div>
                                 ) : ''}
 
-                                {hidden && !hidden.includes('location') ? (
+                                {hidden && !hidden.includes('birthplace') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-map-marker-alt"></i>
-                                        <p>Manila</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{birthplace}</p> {/* I just put a hardcoded value for now since di pa defined */}
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('favoriteFood') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-utensils"></i>
-                                        <p>Chicken</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>chimken</p> {/* I just put a hardcoded value for now since di pa defined */}
                                     </div>
                                 ) : ''}
 
