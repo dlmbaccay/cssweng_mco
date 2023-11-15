@@ -16,6 +16,7 @@ import PostSnippet from '@/src/components/PostSnippet';
 import CreatePost from '@/src/components/CreatePost';
 import withAuth from '@/src/components/withAuth';
 import { arrayUnion } from 'firebase/firestore';
+import { set } from 'react-hook-form';
 
 function UserProfilePage() {
 
@@ -139,29 +140,11 @@ function UserProfilePage() {
             setEditedDisplayName(null);
             setEditedAbout(null);
             setEditedLocation(null);
-            setPetIDs([]);
         }
 
         return unsubscribe;
     }, [profileUserID]);
-
-    // fetch all pets of the profile user using petIDs
-    useEffect(() => {
-        const petRef = firestore.collection('pets');
-
-        if (petIDs) {
-            petIDs.forEach(petID => {
-                const petDocRef = petRef.doc(petID);
-
-                petDocRef.get().then(doc => {
-                    const petData = doc.data();
-
-                    setPets(prevPets => [...prevPets, petData]);
-                });
-            });
-        }
-    }, [petIDs]); 
-        
+       
     // fetch all posts of the profile user
     useEffect(() => {
         let unsubscribe;
@@ -184,6 +167,29 @@ function UserProfilePage() {
             setPosts([]);
         }
         
+        return unsubscribe;
+    }, [profileUserID]);
+
+    // fetch all pets of the profile user
+    useEffect(() => {
+        let unsubscribe;
+
+        if (profileUserID) {
+            const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", profileUserID);
+            petsCollectionRef.get().then((querySnapshot) => {
+                const petsData = [];
+                querySnapshot.forEach((doc) => {
+                    petsData.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                setPets(petsData);
+            });
+        } else {
+            setPets([]);
+        }
+
         return unsubscribe;
     }, [profileUserID]);
 
@@ -216,8 +222,34 @@ function UserProfilePage() {
                 await storageRef.delete();
             }
 
-            // const storageRef = storage.ref(`petProfilePictures/${deletingPetId}/profilePic`);
-            // await storageRef.delete();
+            // Remove the pet from the user's pets array
+            const userRef = firestore.collection('users').doc(currentUserID);
+            const userDoc = await userRef.get();
+            const userData = userDoc.data();
+
+            const updatedPets = userData.pets.filter(id => id !== deletingPetId);
+
+            await userRef.update({
+                pets: updatedPets
+            });
+
+            // Remove the pet from the user's posts
+            const postsSnapshot = await firestore.collection('posts').where('authorID', '==', currentUserID).get();
+            const postIds = postsSnapshot.docs.map(doc => doc.id);
+            const postRef = firestore.collection('posts');
+
+            postIds.forEach(postId => {
+                const postDocRef = postRef.doc(postId);
+
+                postDocRef.get().then(doc => {
+                    const postData = doc.data();
+                    const updatedPostPets = postData.postPets.filter(id => id !== deletingPetId);
+
+                    postDocRef.update({
+                        postPets: updatedPostPets
+                    });
+                });
+            });
 
             // Delete the pet's document from Firestore
             await petRef.delete();
@@ -410,11 +442,6 @@ function UserProfilePage() {
                     </div>
 
                     <div id='content-container' className='h-4/5 flex flex-row'>
-
-                        {/* Back Button */}
-                        <div className="flex items-center justify-center absolute -translate-y-28 ml-6 z-10">
-                            <i onClick={handleBack} className="fa-solid fa-circle-chevron-left fa-2xl text-gray cursor-pointer hover:text-grass"></i>
-                        </div>
                         
                         {/* Profile Picture */}
                         <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16 z-10">
@@ -730,7 +757,7 @@ function UserProfilePage() {
                                                         comments: post.comments,
                                                     }} 
                                                 />
-                                            )).reverse()}
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -772,7 +799,7 @@ function UserProfilePage() {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    ))}
+                                                    )).reverse()}
 
                                                     {/* delete pet profile confirmation modal */}
                                                     {getCurrentUser && currentUserID === profileUserID ? (
