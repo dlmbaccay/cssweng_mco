@@ -15,6 +15,7 @@ import CoverPhoto from '@/src/components/CoverPhoto';
 import PostSnippet from '@/src/components/PostSnippet';
 import CreatePost from '@/src/components/CreatePost';
 import withAuth from '@/src/components/withAuth';
+import { arrayUnion } from 'firebase/firestore';
 
 function UserProfilePage() {
 
@@ -34,6 +35,7 @@ function UserProfilePage() {
     const [currentUser, setCurrentUser] = useState(null); // Current user data
     const [profileUser, setProfileUser] = useState(null); // Profile user data
     const [pets, setPets] = useState([]); // pets of the profile user
+    const [petIDs, setPetIDs] = useState([]); // pet IDs of the profile user
     const [postIDs, setPostIDs] = useState([]); // post IDs of the profile user
     const [posts, setPosts] = useState([]); // posts of the profile user
 
@@ -91,7 +93,7 @@ function UserProfilePage() {
 
     }, [currentUserID, profileUserID]);
 
-    // fetch profile user's data & pets
+    // fetch profile user's data
     useEffect(() => {
         let unsubscribe;
 
@@ -113,6 +115,7 @@ function UserProfilePage() {
                 setBirthdate(doc.data()?.birthdate);
                 setLocation(doc.data()?.location);
                 setHidden(doc.data()?.hidden);
+                setPetIDs(doc.data()?.pets);
 
                 setFollowers(doc.data()?.followers);
                 setFollowing(doc.data()?.following);
@@ -120,19 +123,6 @@ function UserProfilePage() {
                 setEditedDisplayName(doc.data()?.displayName);
                 setEditedAbout(doc.data()?.about);
                 setEditedLocation(doc.data()?.location);
-
-                // Fetch the 'pets' collection
-                const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", profileUserID);
-                petsCollectionRef.get().then((querySnapshot) => {
-                    const petsData = [];
-                    querySnapshot.forEach((doc) => {
-                        petsData.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
-                    });
-                    setPets(petsData);
-                });
             });
         } else {
             setProfileUser(null);
@@ -149,12 +139,29 @@ function UserProfilePage() {
             setEditedDisplayName(null);
             setEditedAbout(null);
             setEditedLocation(null);
-            setPets([])
+            setPetIDs([]);
         }
 
         return unsubscribe;
     }, [profileUserID]);
 
+    // fetch all pets of the profile user using petIDs
+    useEffect(() => {
+        const petRef = firestore.collection('pets');
+
+        if (petIDs) {
+            petIDs.forEach(petID => {
+                const petDocRef = petRef.doc(petID);
+
+                petDocRef.get().then(doc => {
+                    const petData = doc.data();
+
+                    setPets(prevPets => [...prevPets, petData]);
+                });
+            });
+        }
+    }, [petIDs]); 
+        
     // fetch all posts of the profile user
     useEffect(() => {
         let unsubscribe;
@@ -959,6 +966,12 @@ function PetAccountSetup({ props }) {
                 birthplace: petBirthplace,
                 followers: [],
                 following: []
+            });
+
+            // add petID reference to user's pets array
+            const userRef = firestore.collection('users').doc(currentUserID);
+            batch.update(userRef, {
+                pets: arrayUnion(newPetRef.id)
             });
 
             const uploadTask = storageRef.put(petPhotoURL);
