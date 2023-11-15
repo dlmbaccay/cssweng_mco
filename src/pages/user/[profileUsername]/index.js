@@ -711,7 +711,7 @@ function UserProfilePage() {
 
                                                     <button className='flex flex-col w-full h-full ml-4'>
                                                         <div
-                                                            className='w-full h-full text-raisin_black text-md bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-neutral-50 hover:cursor-pointer'
+                                                            className='w-full h-full text-raisin_black text-sm bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-neutral-50 hover:cursor-pointer'
                                                             onClick={() => setShowCreatePostForm(true)}
                                                         >
                                                             What`s on your mind?

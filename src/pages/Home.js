@@ -31,6 +31,8 @@ function Home() {
 
   const [ pageLoading, setPageLoading ] = useState(true);
 
+  const [isSearchInputFocused, setIsSearchInputFocused] = useState(false);
+
   useEffect(() => {
       const unsubscribe = auth.onAuthStateChanged(user => {
         if (user) {
@@ -51,12 +53,12 @@ function Home() {
 
   if (!pageLoading) {
     return (
-      <div className='flex flex-row w-full h-screen'>
+      <div className='flex flex-row w-full h-screen overflow-hidden'>
 
         {/* home navbar */}
-        <div className='w-1/6 bg-pale_yellow drop-shadow-xl'>
+        <div className='w-1/6 bg-pale_yellow drop-shadow-xl flex flex-col'>
           {/* user meta */}
-          <div className='flex flex-col justify-center items-center gap-2 mt-10 mb-6'>
+          <div className='flex flex-col justify-center items-center gap-2 mt-20 mb-8'>
               {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={100} height={100} className='rounded-full'/>}
 
               {username && <h1 className='text-md font-bold text-raisin_black mt-2'>{username}</h1>}
@@ -117,15 +119,71 @@ function Home() {
           </div>
         </div>
 
-        {/* main container */}
+        {/* middle */}
         <div className='w-4/6 bg-gray'>
-      
+            
+          {/* search and logo bar */}
+          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+              
+            <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8'>
+              <i
+                className={`fa-solid fa-search w-[40px] h-8 text-raisin_black text-sm flex justify-center items-center rounded-l-full transition-all cursor-pointer group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg-gray'}`}
+                // onClick={}
+              />
+              <input 
+                type='text'
+                placeholder='Search'
+                className={`w-full h-8 pr-4 outline-none rounded-r-full transition-all group-hover:bg-white text-md ${isSearchInputFocused ? 'bg-white' : 'bg-gray'}`}
+                onFocus={() => setIsSearchInputFocused(true)}
+                onBlur={() => setIsSearchInputFocused(false)}
+              />
+            </div>
+
+            <div className='flex flex-row justify-center items-center gap-4 mr-8'>
+              <h1 className='font-bold text-lg'>BantayBuddy</h1>
+
+              <div className='bg-grass w-[40px] h-[40px] rounded-full'></div>
+            </div>
+          </div>  
+
+          {/* main container */}
+          <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-8 pb-8 pl-36 pr-36'>
+
+            {/* create post */}
+            <div className='flex flex-row w-[800px] h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
+                <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>
+                <button
+                  className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-gray'
+                  onClick={() => setShowCreatePostForm(true)}
+                >
+                  <p className='text-md'>What`s on your mind?</p>
+                </button>
+
+                <Modal
+                  isOpen={showCreatePostForm}
+                  onRequestClose={() => setShowCreatePostForm(false)}
+                  style={createPostModalStyle}
+                >
+                  <div>
+
+                  </div>
+                  
+                </Modal>
+            </div>
+
+            {/* container */}
+            <div className=''>
+
+            </div>
+          </div>
+
+
         </div>
 
         {/* right navbar */}
         <div className='w-1/6 bg-snow drop-shadow-xl h-screen p-10 flex flex-col'>
           {/* menu */}
-          <div className='flex flex-col gap-4 mb-6'>
+          <div className='flex flex-col gap-4 mt-6 mb-6'>
             <h1 className='font-bold text-mustard text-3xl mb-2'>Menu</h1>
 
             <button className='group flex flex-row items-center gap-2'>
