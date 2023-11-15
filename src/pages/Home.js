@@ -27,7 +27,7 @@ function Home() {
   const { user, username, description, email, displayName, userPhotoURL } = useUserData();
   const router = Router;
 
-  const { allUsers, allPets } = useAllUsersAndPets();
+  const [ userPets, setUserPets ] = useState([]);
 
   const [ pageLoading, setPageLoading ] = useState(true);
 
@@ -48,6 +48,51 @@ function Home() {
       return () => unsubscribe();
   }, []);
 
+  // fetch all pets of the profile user
+  useEffect(() => {
+    let unsubscribe;
+
+    if (user) {
+        const petsCollectionRef = firestore.collection('pets').where("petOwnerID", "==", user.uid);
+        petsCollectionRef.get().then((querySnapshot) => {
+            const petsData = [];
+            querySnapshot.forEach((doc) => {
+                petsData.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            setUserPets(petsData);
+        });
+    } else {
+        setUserPets([]);
+    }
+
+    return unsubscribe;
+  }, [user]);
+
+  // fetch all posts
+
+  const [allPosts, setAllPosts] = useState([]);
+
+  useEffect(() => {
+    let unsubscribe;
+
+    if (user) {
+        const postsCollectionRef = firestore.collection('posts');
+        postsCollectionRef.get().then((querySnapshot) => {
+            const postData = [];
+            querySnapshot.forEach((doc) => {
+                postData.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            setAllPosts(postData);
+        });
+    }
+  });
+
   // create post variables
   const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
@@ -58,7 +103,7 @@ function Home() {
         {/* home navbar */}
         <div className='w-1/6 bg-pale_yellow drop-shadow-xl flex flex-col'>
           {/* user meta */}
-          <div className='flex flex-col justify-center items-center gap-2 mt-20 mb-8'>
+          <div className='flex flex-col justify-center items-center gap-2 mt-10 mb-8'>
               {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={100} height={100} className='rounded-full'/>}
 
               {username && <h1 className='text-md font-bold text-raisin_black mt-2'>{username}</h1>}
@@ -150,7 +195,7 @@ function Home() {
           <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-8 pb-8 pl-36 pr-36'>
 
             {/* create post */}
-            <div className='flex flex-row w-[800px] h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
+            <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
                 <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>
                 <button
                   className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-gray'
@@ -158,26 +203,51 @@ function Home() {
                 >
                   <p className='text-md'>What`s on your mind?</p>
                 </button>
-
-                <Modal
-                  isOpen={showCreatePostForm}
-                  onRequestClose={() => setShowCreatePostForm(false)}
-                  style={createPostModalStyle}
-                >
-                  <div>
-
-                  </div>
-                  
-                </Modal>
             </div>
+
+              {/* create post modal */}
+            <Modal
+              isOpen={showCreatePostForm}
+              onRequestClose={() => setShowCreatePostForm(false)}
+              style={createPostModalStyle}
+            >
+              <CreatePost 
+                props={{
+                    currentUserID: user.uid,
+                    pets: userPets,
+                    displayName: displayName,
+                    username: username,
+                    userPhotoURL: userPhotoURL,
+                    setShowCreatePostForm: setShowCreatePostForm
+                }}
+              />
+            </Modal>
 
             {/* container */}
-            <div className=''>
-
+            <div className='flex flex-col w-full h-full justify-start items-center gap-8 mt-8'>
+              {allPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
+                  .map((post) => (
+                      <PostSnippet key={post.id} 
+                          props={{
+                              currentUserID: user.uid,
+                              postID: post.id,
+                              postBody: post.postBody,
+                              postCategory: post.postCategory,
+                              postPets: post.postPets,
+                              postDate: post.postDate,
+                              imageUrls: post.imageUrls,
+                              authorID: post.authorID,
+                              authorDisplayName: post.authorDisplayName,
+                              authorUsername: post.authorUsername,
+                              authorPhotoURL: post.authorPhotoURL,
+                              likes: post.likes,
+                              comments: post.comments,
+                          }} 
+                      />
+                  ))
+              }
             </div>
           </div>
-
-
         </div>
 
         {/* right navbar */}
