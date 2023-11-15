@@ -283,7 +283,7 @@ function Settings() {
                             <br></br>
                             {userSwitches.map((switchItem) => (
                                 <div key={switchItem.id} className="flex justify-between items-center mb-4">
-                                    <span>{switchItem.id}</span>
+                                    <span>Hide {switchItem.id}</span>
                                     <Switch
                                         checked={switchItem.enabled}
                                         onChange={() => toggleUserSwitch(switchItem.id, switchItem.value)}
@@ -308,7 +308,7 @@ function Settings() {
                             <br></br>
                             {petSwitches.map((switchItem) => (
                                 <div key={switchItem.id} className="flex justify-between items-center mb-4">
-                                    <span>{switchItem.id}</span>
+                                    <span>Hide {switchItem.id}</span>
                                     <Switch
                                         checked={switchItem.enabled}
                                         onChange={() => togglePetSwitch(switchItem.id, switchItem.value)}
@@ -342,9 +342,3 @@ function Settings() {
 
 
 export default withAuth(Settings);
-
-/*
-
-
-
-*/
