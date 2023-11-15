@@ -84,10 +84,12 @@ function Home() {
               />
             </div>
 
-            <div className='flex flex-row justify-center items-center gap-4 mr-8'>
-              <h1 className='font-bold text-lg'>BantayBuddy</h1>
+            <div className='flex flex-row justify-center items-center gap-2 mr-8'>
+              <h1 className='font-bold font-shining text-3xl text-grass'>BantayBuddy</h1>
 
-              <div className='bg-grass w-[40px] h-[40px] rounded-full'></div>
+              <div className='bg-grass w-[50px] h-[50px] rounded-full'>
+                <Image src='/images/logo.png' alt='logo' width={100} height={100} className='rounded-full'/>
+              </div>
             </div>
           </div>  
 
