@@ -65,12 +65,12 @@ export default function Newsfeed({ props }) {
       <div className='flex flex-col justify-center items-center pt-8 pb-8'>
         {/* create post */}
         <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
-            {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full'/>}
+            {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full drop-shadow-lg'/>}
             <button
-                className='bg-gray h-[60px] w-[85%] text-sm rounded-xl flex pl-4 items-center hover:bg-white'
+                className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-lg flex pl-4 items-center hover:bg-gray drop-shadow-md'
                 onClick={() => setShowCreatePostForm(true)}
             >
-                <input className='text-sm bg-transparent' placeholder='What`s on your mind?' disabled />
+                What`s on your mind, {displayName}?
             </button>
 
             {/* create post modal */}
