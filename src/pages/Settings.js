@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useUserData } from '../lib/hooks';
-import { auth, firestore, googleAuthProvider } from '../lib/firebase'
+import { firestore } from '../lib/firebase'
 import { getAuth, updatePassword } from "firebase/auth";
-import { useAllUsersAndPets } from '../lib/hooks';
 import Router from 'next/router';
 import toast from 'react-hot-toast';
-import Link from 'next/link';
-import Image from 'next/image';
 import { Switch } from '@headlessui/react';
 import Modal from 'react-modal';
 import { changePasswordStyle } from '../lib/modalstyle';
 import { checkPassword } from '../lib/formats';
 import withAuth from '../components/withAuth';
-import NavBar from '../components/NavBar';
-import RoundIcon from '../components/RoundIcon';
-import CoverPhoto from '../components/CoverPhoto';
-import PostSnippet from '../components/PostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 
 function Settings() {
@@ -152,7 +145,6 @@ function Settings() {
     const [disabledPetSwitches, setDisabledPetSwitches] = useState([]);
     const [disabledUserSwitches, setDisabledUserSwitches] = useState([]);
 
-
     const toggleUserSwitch = (id, value) => {
         setUserSwitches(userSwitches.map(switchItem =>
             switchItem.id === id ? { ...switchItem, enabled: !switchItem.enabled } : switchItem
@@ -180,7 +172,7 @@ function Settings() {
         console.log(disabledPetSwitches);
     };
 
-    async function hideInformation(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
     
         const updateHiddenField = async () => {
@@ -201,6 +193,7 @@ function Settings() {
             try {
                 await batch.commit();
                 console.log('Documents updated successfully');
+                toast.success("Settings updated successfully!");
             } catch (error) {
                 console.error('Error updating documents:', error);
             }
@@ -225,114 +218,122 @@ function Settings() {
 
                 <div className="w-5/6 flex justify-center items-center h-full">
                     <form
-                        onSubmit={hideInformation}
-                        className="bg-pale_yellow rounded-lg p-10 w-1/2 overflow-auto h-screen">
-                        <h1 className="font-bold text-3xl">Settings</h1>
-                        <br></br>
+                        onSubmit={handleSubmit}
+                        className="rounded-lg drop-shadow-lg p-10 w-3/4 h-[90%] overflow-auto flex flex-col justify-start items-center">
 
-                        <label htmlFor="user-visibility" className="block font-bold text-gray-700 text-xl ">Security Settings</label>
-                        <br></br>
-                        {/* Change password */}
-                        <div className="mb-4">
-                            <button onClick={openChangePassword} className="bg-xanthous w-full mt-2 text-white text-sm p-2 rounded-md hover:opacity-80 transition-all">
-                                Change Password
-                            </button>
-                            {modalIsOpen && (
-                                <Modal
-                                isOpen={modalIsOpen}
-                                onRequestClose={() => setModalIsOpen(false)}
-                                style={changePasswordStyle}
-                                >
-                                    
-                                    <div className='w-72'>
-                                        <div className='relative w-[100%] justify-evenly items-left flex flex-col mb-3'>
-                                            <label className="block text-sm font-medium text-gray-700">New Password</label>
-                                            <input 
-                                                type="password" 
-                                                value={newPassword}
-                                                onChange={(e) => setNewPassword(e.target.value.trim())}
-                                                className={`hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none ${newPassword === '' ? '': !checkPassword(newPassword) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
-                                            
-                                            <div className="tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform -translate-x-3 translate-y-1 tracking-wide">
-                                                <p className='text-base text-slate-700'>Password must:</p>
-                                                <ul className="list-none pl-2">
-                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
-                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/[A-Z]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one uppercase letter.</li>
-                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/[a-z]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one lowercase letter.</li>
-                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/[0-9]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>
-                                                    <li className='text-sm text-slate-600'><span className={`bullet ${/\W/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one special character.</li>
-                                                </ul>
+                        <div className='mt-2 flex flex-col justify-center items-center w-[750px] h-[150px] p-4 bg-pale_yellow rounded-lg drop-shadow-md mb-8'>
+                            <label htmlFor="user-visibility" className="block font-bold text-grass font-shining text-3xl mb-4">Security</label>
+                            
+                            <div> {/* Change password */}
+                                <button type='button' onClick={openChangePassword} className="bg-grass mt-2 mb-2 text-pale_yellow text-xs px-4 font-semibold py-2 rounded-md hover:bg-raisin_black transition-all">
+                                    <i className='fa-solid fa-key mr-2'></i>
+                                    Change Password
+                                </button>
+                                
+                                {modalIsOpen && (
+                                    <Modal
+                                    isOpen={modalIsOpen}
+                                    onRequestClose={() => setModalIsOpen(false)}
+                                    style={changePasswordStyle}
+                                    >
+                                        <div className='w-full flex flex-col justify-between h-full'>
+                                            <div>
+                                                <div className='flex flex-col mb-3'>
+                                                    <label className="block text-sm font-medium text-raisin_black">New Password</label>
+                                                    <input 
+                                                        type="password" 
+                                                        value={newPassword}
+                                                        minLength={8}
+                                                        maxLength={16}
+                                                        onChange={(e) => setNewPassword(e.target.value.trim())}
+                                                        className={`w-full hover-tooltip bg-dark_gray rounded-md mt-2 pl-4 pr-4 h-10 text-sm font-semibold outline-none ${newPassword === '' ? '': !checkPassword(newPassword) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
+                                                    
+                                                    <div className="mt-2 tooltip text-sm rounded transform tracking-wide">
+                                                        <ul className="list-none">
+                                                            <li className='text-xs text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
+                                                            <li className='text-xs text-slate-600'><span className={`bullet ${/[A-Z]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one uppercase letter.</li>
+                                                            <li className='text-xs text-slate-600'><span className={`bullet ${/[a-z]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one lowercase letter.</li>
+                                                            <li className='text-xs text-slate-600'><span className={`bullet ${/[0-9]/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>
+                                                            <li className='text-xs text-slate-600'><span className={`bullet ${/\W/.test(newPassword) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one special character.</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-raisin_black">Confirm Password</label>
+                                                
+                                                    <input 
+                                                        type="password" 
+                                                        value={confirmPassword}
+                                                        onChange={(e) => setConfirmPassword(e.target.value.trim())}
+                                                        className='bg-dark_gray rounded-md mt-2 mb-4 pl-4 pr-4 w-full h-10 text-sm font-semibold outline-none' placeholder='Confirm Password'/>
+                                                </div>
                                             </div>
+
+                                            {passwordError && <p className="text-red-500">{passwordError}</p>}
+
+                                            <button 
+                                                onClick={handleChangePassword}
+                                                className="bg-grass text-pale_yellow text-sm px-4 font-semibold py-3 rounded-md hover:bg-raisin_black transition-all"
+                                            >
+                                                Change Password
+                                            </button>
                                         </div>
-                                        <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                                        <input 
-                                            type="password" 
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value.trim())}
-                                            className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Confirm Password'/>
-                                        {passwordError && <p className="text-red-500">{passwordError}</p>}
-                                        <button onClick={handleChangePassword}>Change Password</button>
+                                    </Modal>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className='flex flex-row justify-center items-start gap-12'>
+                            <div className="justify-start items-center w-[350px] h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg shadow-lg"> {/* User Visibility */}
+                                <label htmlFor="user-visibility" className="font-shining text-3xl font-bold text-grass mb-4">User Visibility</label>
+
+                                {userSwitches.map((switchItem) => (
+                                    <div key={switchItem.id} className="flex justify-between w-full items-center mb-4">
+                                        <span className='text-md'>{switchItem.id}</span>
+                                        <Switch
+                                            checked={switchItem.enabled}
+                                            onChange={() => toggleUserSwitch(switchItem.id, switchItem.value)}
+                                            className={`${switchItem.enabled ? 'bg-grass' : 'bg-raisin_black'
+                                                } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none`}
+                                        >
+                                            <span className="sr-only">Enable notifications</span>
+                                            <span
+                                                className={`${switchItem.enabled ? 'translate-x-6' : 'translate-x-1'
+                                                    } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+                                            />
+                                        </Switch>
                                     </div>
-                                </Modal>
-                            )}
-                        </div>
-                        <br></br>
-
-                        {/* User Visibility Settings*/}
-                        <div className="mb-4 justify-between">
-                            <label htmlFor="user-visibility" className="block font-bold text-gray-700 text-xl">User Visibility Settings</label>
-                            <br></br>
-                            {userSwitches.map((switchItem) => (
-                                <div key={switchItem.id} className="flex justify-between items-center mb-4">
-                                    <span>{switchItem.id}</span>
-                                    <Switch
-                                        checked={switchItem.enabled}
-                                        onChange={() => toggleUserSwitch(switchItem.id, switchItem.value)}
-                                        className={`${switchItem.enabled ? 'bg-green-400' : 'bg-zinc-500'
-                                            } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none`}
-                                    >
-                                        <span className="sr-only">Enable notifications</span>
-                                        <span
-                                            className={`${switchItem.enabled ? 'translate-x-6' : 'translate-x-1'
-                                                } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
-                                        />
-                                    </Switch>
-                                </div>
-                            ))}
-                        </div>
-                        <br></br>
-
-
-                        {/* Pet Visibility Settings */}
-                        <div className="mb-4">
-                            <label htmlFor="pet-visibility" className="block text-xl font-bold text-gray-700">Pet Visibility Settings</label>
-                            <br></br>
-                            {petSwitches.map((switchItem) => (
-                                <div key={switchItem.id} className="flex justify-between items-center mb-4">
-                                    <span>{switchItem.id}</span>
-                                    <Switch
-                                        checked={switchItem.enabled}
-                                        onChange={() => togglePetSwitch(switchItem.id, switchItem.value)}
-                                        className={`${switchItem.enabled ? 'bg-green-400' : 'bg-zinc-500'
-                                            } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none`}
-                                    >
-                                        <span className="sr-only">Enable notifications</span>
-                                        <span
-                                            className={`${switchItem.enabled ? 'translate-x-6' : 'translate-x-1'
-                                                } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
-                                        />
-                                    </Switch>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
+        
+                            <div className="justify-start items-center w-[350px] h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg drop-shadow-md"> {/* Pet Visibility */}
+                                <label htmlFor="pet-visibility" className="font-shining text-3xl font-bold text-grass mb-4">Pet Visibility</label>
+                                {petSwitches.map((switchItem) => (
+                                    <div key={switchItem.id} className="flex justify-between w-full items-center mb-4">
+                                        <span className='text-md'>{switchItem.id}</span>
+                                        <Switch
+                                            checked={switchItem.enabled}
+                                            onChange={() => togglePetSwitch(switchItem.id, switchItem.value)}
+                                            className={`${switchItem.enabled ? 'bg-grass' : 'bg-raisin_black'
+                                                } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none`}
+                                        >
+                                            <span className="sr-only">Enable notifications</span>
+                                            <span
+                                                className={`${switchItem.enabled ? 'translate-x-6' : 'translate-x-1'
+                                                    } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+                                            />
+                                        </Switch>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         {/* buttons */}
-                        <br></br>
-                        <div className="flex justify-end">
-                            <button type='submit' className="py-2 px-4 rounded-md bg-pistachio text-white transition-all hover:scale-105 active:scale-100">
+                        <div className="flex mt-8">
+                            <button type='submit' className="py-3 px-8 rounded-md bg-grass text-pale_yellow font-shining transition-all hover:scale-105 active:scale-100 hover:bg-raisin_black text-xl">
                                 Save Changes
                             </button>
-
                         </div>
                     </form>
                 </div>

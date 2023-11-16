@@ -142,10 +142,10 @@ export const changePasswordStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '30%', 
-    height: '30%',
+    height: '45%',
     overflow: 'auto',
     padding: '20px',
     borderRadius: '8px',
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#FFF',
   },
 }
