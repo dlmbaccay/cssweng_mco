@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { STATE_CHANGED, firestore, storage } from '@/src/lib/firebase';
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { useUserData, useUserIDfromUsername } from '@/src/lib/hooks'; // Import the useUser hook
 import { formatDateWithWords } from '../../../lib/formats';
 import { editPetProfileStyle } from '../../../lib/modalstyle';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast'
@@ -59,8 +61,6 @@ function PetProfilePage() {
     const [editedPetName, setEditedPetName] = useState(petName);
     const [editedAbout, setEditedAbout] = useState(about);
 
-    const [taggedPosts, setTaggedPosts] = useState(null);
-
     useEffect(() => {
         let unsubscribe;
 
@@ -105,27 +105,27 @@ function PetProfilePage() {
         return unsubscribe;
     }, [petID]);
 
-    // fetch all posts where pet is tagged
-    useEffect(() => {
-        let unsubscribe;
+    // // fetch all posts where pet is tagged
+    // useEffect(() => {
+    //     let unsubscribe;
 
-        if (petID) {
-            // check if pet is tagged in any post
-            const petRef = firestore.collection('posts').where('postPets', 'array-contains', petID);
-            unsubscribe = petRef.onSnapshot((querySnapshot) => {
-                if (querySnapshot.size > 0) {
-                    const taggedPosts = querySnapshot.docs.map((doc) => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
+    //     if (petID) {
+    //         // check if pet is tagged in any post
+    //         const petRef = firestore.collection('posts').where('postPets', 'array-contains', petID);
+    //         unsubscribe = petRef.onSnapshot((querySnapshot) => {
+    //             if (querySnapshot.size > 0) {
+    //                 const taggedPosts = querySnapshot.docs.map((doc) => ({
+    //                     id: doc.id,
+    //                     ...doc.data()
+    //                 }));
 
-                    setTaggedPosts(taggedPosts);
-                } else {
-                    setTaggedPosts(null);
-                }
-            });
-        }
-    }, [petID])
+    //                 setTaggedPosts(taggedPosts);
+    //             } else {
+    //                 setTaggedPosts(null);
+    //             }
+    //         });
+    //     }
+    // }, [petID])
 
     const openEdit = () => {
         if (currentUser && currentUserID === petOwnerID) { // Check if the logged-in user is the owner of the pet
@@ -200,10 +200,67 @@ function PetProfilePage() {
         setActiveTab(tabName);
     };
 
-    const handleBack = () => {
-        router.push("/user/"+petOwnerUsername);
-    };
+    const [taggedPosts, setTaggedPosts] = useState([]);
+    const [lastVisible, setLastVisible] = useState(null);
+    const [loading, setLoading] = useState(false);
 
+    // Initial fetch
+    useEffect(() => {
+        if (!petID) return;
+
+        setLoading(true);
+
+        const q = query(
+            collection(firestore, "posts"),
+            where("postPets", "array-contains", petID),
+            limit(5)
+        );
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const newPosts = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+
+            setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+            setTaggedPosts(newPosts);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching posts:", error);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [petID]);
+
+    // Function to fetch more posts
+    const fetchMorePosts = async () => {
+        if (!lastVisible || loading) return;
+
+        setLoading(true);
+
+        const nextQuery = query(
+            collection(firestore, "posts"),
+            where("postPets", "array-contains", petID),
+            startAfter(lastVisible),
+            limit(5)
+        );
+
+        const querySnapshot = await getDocs(nextQuery);
+        if (!querySnapshot.empty) {
+            const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+            const newPosts = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+
+            setLastVisible(newLastVisible);
+            setTaggedPosts(prevPosts => [...prevPosts, ...newPosts]);
+        }
+
+        setLoading(false);
+    };
+    
     if (!pet) {
         return (
             <Loader />
@@ -465,18 +522,10 @@ function PetProfilePage() {
                                         id="showcase"
                                         className="flex justify-center w-full"
                                     >
-                                        <div className='flex flex-col mt-8 mb-8 gap-8'>
-
-                                            {!taggedPosts ? (
-                                                <div className='mt-6 flex flex-col items-center justify-center h-full w-full'>
-                                                    <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
-                                                </div>
-                                            ) :
-                                            
-                                            (taggedPosts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
-                                            .map((post) => (
-                                                <PostSnippet key={post.id} 
+                                        <div className='flex flex-col mt-8 mb-8 gap-8 items-center'>
+                                            {taggedPosts.map((post, index) => (
+                                                <div key={post.id}>
+                                                    <PostSnippet
                                                     props={{
                                                         currentUserID: currentUserID,
                                                         postID: post.id,
@@ -491,9 +540,21 @@ function PetProfilePage() {
                                                         authorPhotoURL: post.authorPhotoURL,
                                                         likes: post.likes,
                                                         comments: post.comments,
-                                                    }} 
-                                                />
-                                            )))}
+                                                    }}
+                                                    />
+                                                </div>
+                                            ))}
+                                            {loading && <div>Loading...</div>}
+                                            {lastVisible && (
+                                                <button
+                                                className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
+                                                onClick={fetchMorePosts}
+                                                disabled={loading}
+                                                >
+                                                Load More
+                                                </button>
+                                            )}
+                                            
                                         </div>
                                     </div>
                                 )}
@@ -510,10 +571,10 @@ function PetProfilePage() {
 
                                         {/* if w/ media */}
                                         {/* <div className="grid grid-cols-8">
-                                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                              </div> */}
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                        </div> */}
                                     </div>
                                 )}
 
@@ -529,10 +590,10 @@ function PetProfilePage() {
 
                                         {/* if w/ media */}
                                         {/* <div className="grid grid-cols-8">
-                                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                  <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                              </div> */}
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                        </div> */}
                                     </div>
                                 )}
 
