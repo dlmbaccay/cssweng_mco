@@ -75,7 +75,7 @@ function Home() {
         </div>
 
         {/* middle */}
-        <div className='w-4/6 bg-gray'>
+        <div className='w-4/6 bg-dark_gray'>
             
           {/* search and logo bar */}
           <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>

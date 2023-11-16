@@ -107,10 +107,10 @@ export default function PetTracker({ props }) {
       <div className='flex flex-col justify-center items-center pt-8 pb-8'>
 
         {/* create post */}
-        <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-lg items-center justify-evenly'>
+        <div className='flex flex-row w-[800px] min-h-[100px] bg-snow drop-shadow-lg rounded-3xl items-center justify-evenly'>
             {userPhotoURL && <Image src={userPhotoURL} alt={'profile picture'} width={50} height={50} className='h-[60px] w-[60px] rounded-full drop-shadow-lg'/>}
             <button
-                className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-lg flex pl-4 items-center hover:bg-gray drop-shadow-md'
+                className='bg-dark_gray h-[60px] w-[85%] text-sm rounded-2xl flex pl-4 items-center hover:bg-gray drop-shadow-sm'
                 onClick={() => setShowCreatePostForm(true)}
             >
                 What`s on your mind, {displayName}?
