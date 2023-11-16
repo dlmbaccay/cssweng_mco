@@ -1,3 +1,7 @@
 main branch
 
-# Sprint 1 Deployment
+# Sprint 2 Deployment
+
+BantayBuddy is hosted through Vercel.
+
+View the deployed production site [here](https://bantaybuddy.vercel.app).
