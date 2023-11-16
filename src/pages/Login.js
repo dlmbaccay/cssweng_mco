@@ -149,7 +149,7 @@ export default function Login() {
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen justify-evenly items-center flex flex-col lg:flex-row '>
 
-            <div id="login" className='bg-jasmine w-[500px] h-[500px] rounded-3xl flex pl-12 pr-12 flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine drop-shadow-md w-[500px] h-[500px] rounded-3xl flex pl-12 pr-12 flex-col justify-center items-center'>
 
                 <h1 className='text-6xl font-bold font-shining mb-4 text-grass'>BantayBuddy</h1>
                 
@@ -197,7 +197,7 @@ export default function Login() {
 
             <div 
                 id="showcase" 
-                className="flex justify-center w-fit h-fit rounded-lg" 
+                className="flex justify-center w-fit h-fit rounded-lg drop-shadow-md" 
             >
                 <div className="flex flex-col">
                     <PostSnippet
