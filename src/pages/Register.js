@@ -108,26 +108,24 @@ export default function Register() {
     return (
         <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen justify-evenly items-center flex flex-col lg:flex-row'>
 
-            <div id="login" className='bg-jasmine w-[600px] h-[500px] rounded-3xl flex flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine w-[500px] h-[500px] rounded-3xl pl-12 pr-12 flex flex-col justify-center items-center'>
                 <div>
-                    <h1 className='text-3xl font-bold mb-3'>
-                        BantayBuddy Register
-                    </h1>
+                    <h1 className='text-6xl font-bold font-shining mb-4 text-grass'>BantayBuddy</h1>
                 </div>
 
                 <input 
                     type="text" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value.trim())}
-                    className='bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Email Address'/>
+                    className='bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 text-lg font-semibold outline-none' placeholder='Email Address'/>
                 <div className='relative w-[100%] justify-evenly items-center flex flex-col lg:flex-row'>
                     <input 
                         type="password" 
                         value={password}
                         onChange={(e) => setPassword(e.target.value.trim())}
-                        className={`hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none ${password === '' ? '': !checkPassword(password) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
+                        className={`hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 text-lg font-semibold outline-none ${password === '' ? '': !checkPassword(password) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
                     
-                    <div className="tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform -translate-x-3 translate-y-1 tracking-wide">
+                    <div className="z-10 tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform translate-x-4 -translate-y-5 tracking-wide">
                         <p className='text-base text-slate-700'>Password must:</p>
                         <ul className="list-none pl-2">
                             <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
@@ -143,15 +141,15 @@ export default function Register() {
                     type="password" 
                     value={confirm_password}
                     onChange={(e) => setConfirmPassword(e.target.value.trim())}
-                    className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-[90%] h-12 text-lg font-semibold outline-none' placeholder='Confirm Password'/>
+                    className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-full h-12 text-lg font-semibold outline-none' placeholder='Confirm Password'/>
 
                 <button 
                     onClick={handleSignUp}
-                    className='bg-xanthous rounded-xl mt-4 mb-3 w-[90%] h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
-                    Submit
+                    className='bg-xanthous rounded-xl mt-4 mb-3 w-full h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
+                    Register
                 </button>
 
-                <span className='w-[90%]'>
+                <span className='w-full'>
                     {/* google */}
                     <button 
                         onClick={handleGooglePopUp}

@@ -147,25 +147,25 @@ export default function Login() {
     }
             
     return (
-        <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen justify-evenly items-center flex flex-col lg:flex-row'>
+        <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen justify-evenly items-center flex flex-col lg:flex-row '>
 
-            <div id="login" className='bg-jasmine w-[600px] h-[500px] rounded-3xl flex flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine w-[500px] h-[500px] rounded-3xl flex pl-12 pr-12 flex-col justify-center items-center'>
 
-                <h1 className='text-3xl font-bold mb-3'>BantayBuddy Login</h1>
+                <h1 className='text-6xl font-bold font-shining mb-4 text-grass'>BantayBuddy</h1>
                 
                 <input 
                     type="text" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value.trim())}
                     placeholder='Email Address'
-                    className='bg-light_yellow rounded-xl mt-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' />
+                    className='bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 text-lg font-semibold outline-none' />
                 
                 <input 
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value.trim())}
                     placeholder='Password'
-                    className='bg-light_yellow rounded-xl mt-3 mb-3 p-4 w-[90%] h-12 text-lg font-semibold outline-none' />
+                    className='bg-light_yellow rounded-xl mt-3 mb-3 p-4 w-full h-12 text-lg font-semibold outline-none' />
                 
                 <p 
                     onClick={handleForgotPassword}
@@ -175,11 +175,11 @@ export default function Login() {
 
                 <button 
                     onClick={handleLogin}
-                    className='bg-xanthous rounded-xl mt-3 mb-3 w-[90%] h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
-                    Submit
+                    className='bg-xanthous rounded-xl mt-3 mb-3 w-full h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
+                    Log In
                 </button>
                 
-                <span className='w-[90%]'>
+                <span className='w-full'>
                     {/* google */}
                     <button 
                         onClick={handleGooglePopUp}
