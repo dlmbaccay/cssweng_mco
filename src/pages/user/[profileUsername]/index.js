@@ -426,10 +426,6 @@ function UserProfilePage() {
         // }
     };
 
-    const handleBack = () => {
-        router.push('/Homepage');
-    };
-
     return (
         <div id="root" className='flex h-screen'>
             <NavBar />

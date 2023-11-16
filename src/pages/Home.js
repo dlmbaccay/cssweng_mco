@@ -80,15 +80,15 @@ function Home() {
           {/* search and logo bar */}
           <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
               
-            <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
+            <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm hover:drop-shadow-md'>
               <i
-                className={`fa-solid fa-search w-[40px] h-8 text-raisin_black text-sm flex justify-center items-center rounded-l-full transition-all cursor-pointer group-hover:bg-white group-hover:drop-shadow-md ${isSearchInputFocused ? 'bg-white' : 'bg-gray'}`}
+                className={`fa-solid fa-search w-[40px] h-8 text-raisin_black text-sm flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-gray ${isSearchInputFocused ? 'bg-gray' : 'bg-dark_gray'}`}
                 // onClick={}
               />
               <input 
                 type='text'
                 placeholder='Search'
-                className={`w-full h-8 pr-4 outline-none rounded-r-full transition-all group-hover:bg-white group-hover:drop-shadow-md  text-sm ${isSearchInputFocused ? 'bg-white' : 'bg-gray'}`}
+                className={`w-full h-8 pr-4 outline-none rounded-r-lg transition-all group-hover:bg-gray text-sm ${isSearchInputFocused ? 'bg-gray' : 'bg-dark_gray'}`}
                 onFocus={() => setIsSearchInputFocused(true)}
                 onBlur={() => setIsSearchInputFocused(false)}
               />
