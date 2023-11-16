@@ -116,7 +116,7 @@ export default function Newsfeed({ props }) {
           {loading && <div>Loading...</div>}
           {lastVisible && (
             <button
-              className='mt-4 px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
+              className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
               onClick={fetchMorePosts}
               disabled={loading}
             >
