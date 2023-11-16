@@ -197,8 +197,7 @@ export default function Login() {
 
             <div 
                 id="showcase" 
-                className="flex scrollbar-hide overflow-y-scroll justify-center w-fit h-fit rounded-lg" 
-                style={{ scrollSnapType: 'y mandatory' }}
+                className="flex justify-center w-fit h-fit rounded-lg" 
             >
                 <div className="flex flex-col">
                     <PostSnippet
@@ -215,7 +214,6 @@ export default function Login() {
                             likes: [],
                             comments: [],
                         }} 
-                        style={{ scrollSnapAlign: 'start' }}
                     />
                 </div>
             </div>
