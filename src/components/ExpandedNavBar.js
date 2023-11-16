@@ -1,6 +1,8 @@
 import React from 'react'
 import Image from 'next/image';
 import Router from 'next/router';
+import { auth } from '../lib/firebase';
+import toast from 'react-hot-toast';
 
 export default function ExpandedNavBar({ props }) {
     
