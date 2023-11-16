@@ -357,7 +357,12 @@ function UserProfilePage() {
                 ...prevUser,
                 following: updatedFollowing
             }));
-            toast.success('Followed user successfully!');
+            // Show toast notification based on whether the user was followed or unfollowed
+            if (isFollowing) {
+                toast.success('Unfollowed successfully!');
+            } else {
+                toast.success('Followed successfully!');
+            }
 
             // Update followers for profileUser
             await firestore.collection('users').doc(profileUserID).update({
@@ -1042,6 +1047,8 @@ function PetAccountSetup({ props }) {
                 birthplace: petBirthplace,
                 followers: [],
                 following: [],
+                favoriteFood: "",
+                hobbies: "",
                 hidden: [],
             });
 

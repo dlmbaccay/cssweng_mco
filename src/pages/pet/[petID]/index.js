@@ -189,7 +189,12 @@ function PetProfilePage() {
                     ...prevPet,
                     followers: updatedFollowers
                 }));
-                toast.success('Followed successfully!');
+                // Show toast notification based on whether the user was followed or unfollowed
+                if (isFollowing) {
+                    toast.success('Unfollowed successfully!');
+                } else {
+                    toast.success('Followed successfully!');
+                }
             })
             .catch(error => {
                 console.error('Error updating followers:', error);
