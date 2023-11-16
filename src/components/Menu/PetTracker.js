@@ -6,7 +6,7 @@ import CreatePost from '../CreatePost';
 import PostSnippet from '../PostSnippet';
 
 import { firestore } from '../../lib/firebase';
-import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
 
 export default function PetTracker({ props }) {
   const { 
@@ -31,11 +31,15 @@ export default function PetTracker({ props }) {
   useEffect(() => {
     setLoadingLost(true);
 
-    const q = query(collection(firestore, "posts"), orderBy("postDate", "desc"), limit(3));
+    const q = query(
+      collection(firestore, "posts"), 
+      where("postCategory", "==", "Lost Pets"),
+      orderBy("postDate", "desc"), limit(3)
+    );
 
     const unsubscribe = onSnapshot(q, 
         (snapshot) => {
-            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(post => post.postCategory === "Lost Pets");
+            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setLastVisibleLost(snapshot.docs[snapshot.docs.length - 1]);
             setLostPets(newPosts);
             setLoadingLost(false);
@@ -53,11 +57,16 @@ export default function PetTracker({ props }) {
   useEffect(() => {
     setLoadingFound(true);
 
-    const q = query(collection(firestore, "posts"), orderBy("postDate", "desc"), limit(3));
+    const q = query(
+      collection(firestore, "posts"), 
+      where("postCategory", "==", "Found Pets"),
+      orderBy("postDate", "desc"), 
+      limit(3)
+    );
 
     const unsubscribe = onSnapshot(q, 
         (snapshot) => {
-            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(post => post.postCategory === "Found Pets");
+            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setLastVisibleFound(snapshot.docs[snapshot.docs.length - 1]);
             setFoundPets(newPosts);
             setLoadingFound(false);
@@ -75,11 +84,17 @@ export default function PetTracker({ props }) {
   const fetchMoreLostPets = async () => {
     if (lastVisibleLost && !loadingLost) {
         setLoadingLost(true);
-        const nextQuery = query(collection(firestore, "posts"), orderBy("postDate", "desc"), startAfter(lastVisibleLost), limit(3));
+        const nextQuery = query(
+          collection(firestore, "posts"), 
+          where("postCategory", "==", "Lost Pets"),
+          orderBy("postDate", "desc"), 
+          startAfter(lastVisibleLost), 
+          limit(3)
+        );
         const querySnapshot = await getDocs(nextQuery);
         const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
         setLastVisibleLost(newLastVisible);
-        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(post => post.postCategory === "Lost Pets");
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         setLostPets(prevPosts => [...prevPosts, ...newPosts]);
         setLoadingLost(false);
@@ -90,7 +105,13 @@ export default function PetTracker({ props }) {
   const fetchMoreFoundPets = async () => {
     if (lastVisibleFound && !loadingFound) {
         setLoadingFound(true);
-        const nextQuery = query(collection(firestore, "posts"), orderBy("postDate", "desc"), startAfter(lastVisibleFound), limit(3));
+        const nextQuery = query(
+          collection(firestore, "posts"), 
+          where("postCategory", "==", "Found Pets"),
+          orderBy("postDate", "desc"), 
+          startAfter(lastVisibleFound), 
+          limit(3)
+        );
         const querySnapshot = await getDocs(nextQuery);
         const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
         setLastVisibleFound(newLastVisible);

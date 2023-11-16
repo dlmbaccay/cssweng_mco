@@ -11,6 +11,7 @@ export default function RoundIcon(props) {
           src={src}
           alt={alt}
           layout="fill"
+          sizes={100}
           objectFit="cover"
         />
       </div>

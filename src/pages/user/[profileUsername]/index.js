@@ -6,6 +6,7 @@ import Modal from 'react-modal';
 import { useRouter } from 'next/router';
 
 import { firestore, storage, STATE_CHANGED } from '@/src/lib/firebase';
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
 import { useUserData, usePetData, useUserIDfromUsername, useAllUserPosts } from '@/src/lib/hooks'
 import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
 
@@ -38,7 +39,6 @@ function UserProfilePage() {
     const [pets, setPets] = useState([]); // pets of the profile user
     const [petIDs, setPetIDs] = useState([]); // pet IDs of the profile user
     const [postIDs, setPostIDs] = useState([]); // post IDs of the profile user
-    const [posts, setPosts] = useState([]); // posts of the profile user
 
     // variables for user profile
     const [username, setUsername] = useState(null);
@@ -70,7 +70,6 @@ function UserProfilePage() {
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
     const [activeTab, setActiveTab] = useState('Posts');
-    const [loading, setLoading] = useState(false);
     const [editedDisplayNameValid, setEditedDisplayNameValid] = useState(true);
 
     // create post variables
@@ -145,30 +144,30 @@ function UserProfilePage() {
         return unsubscribe;
     }, [profileUserID]);
        
-    // fetch all posts of the profile user
-    useEffect(() => {
-        let unsubscribe;
+    // // fetch all posts of the profile user
+    // useEffect(() => {
+    //     let unsubscribe;
 
-        if (profileUserID) {
-            const postsCollectionRef = firestore.collection('posts').where("authorID", "==", profileUserID);
-            unsubscribe = postsCollectionRef.onSnapshot((querySnapshot) => {
-                const postsData = [];
+    //     if (profileUserID) {
+    //         const postsCollectionRef = firestore.collection('posts').where("authorID", "==", profileUserID);
+    //         unsubscribe = postsCollectionRef.onSnapshot((querySnapshot) => {
+    //             const postsData = [];
 
-                querySnapshot.forEach((doc) => {
-                    postsData.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
+    //             querySnapshot.forEach((doc) => {
+    //                 postsData.push({
+    //                     id: doc.id,
+    //                     ...doc.data()
+    //                 });
+    //             });
 
-                setPosts(postsData);
-            });
-        } else {
-            setPosts([]);
-        }
+    //             setPosts(postsData);
+    //         });
+    //     } else {
+    //         setPosts([]);
+    //     }
         
-        return unsubscribe;
-    }, [profileUserID]);
+    //     return unsubscribe;
+    // }, [profileUserID]);
 
     // fetch all pets of the profile user
     useEffect(() => {
@@ -424,6 +423,60 @@ function UserProfilePage() {
         //     setDisplayName(displayname);
         //     setDisplayNameValid(false);
         // }
+    };
+
+    const [posts, setPosts] = useState([]);   
+    const [lastVisible, setLastVisible] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+
+        // indexed in query builder
+        const q = query(
+            collection(firestore, "posts"),
+            where("authorID", "==", profileUserID),
+            orderBy("postDate", "desc"),
+            limit(5)
+        );
+
+        const unsubscribe = onSnapshot(q, 
+            (snapshot) => {
+                const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+                setPosts(newPosts);
+                setLoading(false);
+            },
+            (error) => {
+                console.error("Error fetching posts:", error);
+                setLoading(false);
+            }
+        );
+
+        return () => unsubscribe();
+    }, [profileUserID]);
+
+    const fetchMorePosts = async () => {
+        if (lastVisible && !loading) {
+            setLoading(true);
+            
+            const nextQuery = query(
+                collection(firestore, "posts"), 
+                where("authorID", "==", profileUserID), 
+                orderBy("postDate", "desc"), 
+                startAfter(lastVisible), 
+                limit(5)
+            );
+
+            const querySnapshot = await getDocs(nextQuery);
+            const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+            setLastVisible(newLastVisible);
+            const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+            setPosts(prevPosts => [...prevPosts, ...newPosts]);
+            setLoading(false);
+        }
     };
 
     return (
@@ -687,12 +740,6 @@ function UserProfilePage() {
                                     onClick={() => handleTabEvent('Media')}>
                                     Media
                                 </button>
-                                <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Lost Pets' ? 'bg-citron text-white' : ''
-                                        }`}
-                                    onClick={() => handleTabEvent('Lost Pets')}>
-                                    Lost Pets
-                                </button>
                             </div>
 
                             <div id="tab-container" className='overflow-y-scroll'>
@@ -702,9 +749,8 @@ function UserProfilePage() {
                                         id="showcase"
                                         className="flex flex-col items-center justify-center w-full"
                                     >
-
                                         {currentUserID === profileUserID ? (
-                                            <div id='create-post' className='mt-10 shadow-sm bg-snow w-[800px] h-[100px] rounded-3xl p-6 flex flex-col'>
+                                            <div id='create-post' className='mt-10 shadow-sm bg-snow w-[800px] h-[100px] rounded-3xl drop-shadow-md p-6 flex flex-col'>
 
                                                 <div className='flex flex-row w-full h-full items-center'>
                                                     <div className='h-[50px] w-[50px] flex items-center'>
@@ -713,7 +759,7 @@ function UserProfilePage() {
 
                                                     <button className='flex flex-col w-full h-full ml-4'>
                                                         <div
-                                                            className='w-full h-full text-raisin_black text-sm bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-neutral-50 hover:cursor-pointer'
+                                                            className='w-full h-full text-raisin_black text-sm bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-gray hover:cursor-pointer'
                                                             onClick={() => setShowCreatePostForm(true)}
                                                         >
                                                             What`s on your mind?
@@ -740,28 +786,38 @@ function UserProfilePage() {
                                             </div>
                                         ) : null}
 
-                                        <div className="flex mt-10 mb-10 flex-col gap-10">
-                                            {posts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate))
-                                                .map((post) => (
-                                                    <PostSnippet key={post.id} 
-                                                        props={{
-                                                            currentUserID: currentUserID,
-                                                            postID: post.id,
-                                                            postBody: post.postBody,
-                                                            postCategory: post.postCategory,
-                                                            postPets: post.postPets,
-                                                            postDate: post.postDate,
-                                                            imageUrls: post.imageUrls,
-                                                            authorID: post.authorID,
-                                                            authorDisplayName: post.authorDisplayName,
-                                                            authorUsername: post.authorUsername,
-                                                            authorPhotoURL: post.authorPhotoURL,
-                                                            likes: post.likes,
-                                                            comments: post.comments,
-                                                        }} 
+                                        <div className="flex mt-10 mb-10 flex-col gap-10 justify-start items-center">
+                                            {posts.map((post, index) => (
+                                                <div key={post.id}>
+                                                    <PostSnippet
+                                                    props={{
+                                                        currentUserID: currentUserID,
+                                                        postID: post.id,
+                                                        postBody: post.postBody,
+                                                        postCategory: post.postCategory,
+                                                        postPets: post.postPets,
+                                                        postDate: post.postDate,
+                                                        imageUrls: post.imageUrls,
+                                                        authorID: post.authorID,
+                                                        authorDisplayName: post.authorDisplayName,
+                                                        authorUsername: post.authorUsername,
+                                                        authorPhotoURL: post.authorPhotoURL,
+                                                        likes: post.likes,
+                                                        comments: post.comments,
+                                                    }}
                                                     />
-                                                ))
-                                            }
+                                                </div>
+                                            ))}
+                                            {loading && <div>Loading...</div>}
+                                            {lastVisible && (
+                                                <button
+                                                className='px-4 py-2 text-white w-fit bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
+                                                onClick={fetchMorePosts}
+                                                disabled={loading}
+                                                >
+                                                Load More
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -894,17 +950,6 @@ function UserProfilePage() {
                             <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
                             <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
                           </div> */}
-                                    </div>
-                                )}
-
-                                {/* Lost Pets */}
-                                {activeTab === 'Lost Pets' && (
-                                    <div
-                                        id="showcase"
-                                        className="flex justify-center w-full"
-                                    >
-                                        <div className="flex mt-10 flex-col gap-10">
-                                        </div>
                                     </div>
                                 )}
                             </div>

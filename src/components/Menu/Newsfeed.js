@@ -6,7 +6,7 @@ import CreatePost from '../CreatePost';
 import PostSnippet from '../PostSnippet';
 
 import { firestore } from '../../lib/firebase';
-import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
 
 export default function Newsfeed({ props }) {
   const { 
@@ -22,14 +22,17 @@ export default function Newsfeed({ props }) {
   useEffect(() => {
     setLoading(true);
 
-    const q = query(collection(firestore, "posts"), orderBy("postDate", "desc"), limit(5));
+    // indexed in query builder
+    const q = query(
+      collection(firestore, "posts"),
+      where("postCategory", "in", ["Default", "Q&A", "Tips", "Pet Needs", "Milestones"]),
+      orderBy("postDate", "desc"),
+      limit(5)
+    )
 
     const unsubscribe = onSnapshot(q, 
         (snapshot) => {
-            const newPosts = 
-              snapshot.docs
-              .map(doc => ({ id: doc.id, ...doc.data() }))
-              .filter(post => post.postCategory !== "Lost Pets" && post.postCategory !== "Found Pets");
+            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
             
             setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
             setPosts(newPosts);
@@ -47,13 +50,19 @@ export default function Newsfeed({ props }) {
   const fetchMorePosts = async () => {
     if (lastVisible && !loading) {
         setLoading(true);
-        const nextQuery = query(collection(firestore, "posts"), orderBy("postDate", "desc"), startAfter(lastVisible), limit(5));
+        const nextQuery = query(
+          collection(firestore, "posts"), 
+          where("postCategory", "in", ["Default", "Q&A", "Tips", "Pet Needs", "Milestones"]),
+          orderBy("postDate", "desc"), 
+          startAfter(lastVisible), 
+          limit(5)
+        );
+
         const querySnapshot = await getDocs(nextQuery);
         const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
         setLastVisible(newLastVisible);
-        const newPosts = querySnapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(post => post.postCategory !== "Lost Pets" && post.postCategory !== "Found Pets");
+
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
         setPosts(prevPosts => [...prevPosts, ...newPosts]);
         setLoading(false);
