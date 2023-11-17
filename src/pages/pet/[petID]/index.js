@@ -60,10 +60,9 @@ function PetProfilePage() {
     const [petOwnerCoverPhotoURL, setPetOwnerCoverPhotoURL] = useState(null);
 
     // editing variables
-    const [editedPetName, setEditedPetName] = useState(petName);
-    const [editedAbout, setEditedAbout] = useState(about);
-    const [editedPetFavoriteFood, setEditedPetFavoriteFood] = useState(favoriteFood);
-    const [editedPetHobbies, setEditedPetHobbies] = useState(hobbies);
+    const [editedAbout, setEditedAbout] = useState(null);
+    const [editedPetFavoriteFood, setEditedPetFavoriteFood] = useState(null);
+    const [editedPetHobbies, setEditedPetHobbies] = useState(null);
 
     useEffect(() => {
         let unsubscribe;
@@ -80,7 +79,6 @@ function PetProfilePage() {
                     setPetName(doc.data().petName);
                     setAbout(doc.data().about);
                     setFollowers(doc.data().followers);
-                    // setFollowing(doc.data().following);
                     setSex(doc.data().sex);
                     setBreed(doc.data().breed);
                     setPetPhotoURL(doc.data().photoURL);
@@ -98,6 +96,8 @@ function PetProfilePage() {
 
                     setEditedPetName(doc.data().petName);
                     setEditedAbout(doc.data().about);
+                    setEditedPetFavoriteFood(doc.data().favoriteFood);
+                    setEditedPetHobbies(doc.data().hobbies);
                 } else {
                     setPet(null);
                 }
@@ -185,6 +185,24 @@ function PetProfilePage() {
 
     const handleTabEvent = (tabName) => {
         setActiveTab(tabName);
+    };
+
+    const [editedPetName, setEditedPetName] = useState(null);
+    const [editPetNameValid, setEditPetNameValid] = useState(true);
+
+    const handlePetNameVal = (val) => {
+        const checkPetNameValue = val;
+
+        if (checkPetNameValue.startsWith(' ') || checkPetNameValue.endsWith(' ') || checkPetNameValue.includes('  ')) {
+            setEditedPetName(checkPetNameValue);
+            setEditPetNameValid(false);
+        } else if ((checkPetNameValue.length >= 3 && checkPetNameValue.length <= 15)) {
+            setEditedPetName(checkPetNameValue);
+            setEditPetNameValid(true);
+        } else if (checkPetNameValue.length < 3 || checkPetNameValue.length > 15) {
+            setEditedPetName(checkPetNameValue);
+            setEditPetNameValid(false);
+        }
     };
 
     const [taggedPosts, setTaggedPosts] = useState([]);
@@ -361,12 +379,15 @@ function PetProfilePage() {
                                                             type="text"
                                                             id="pet-name"
                                                             className="mt-1 p-2 border rounded-md w-full"
-                                                            maxLength="20"
+                                                            minLength={3}
+                                                            maxLength={15}
                                                             value={editedPetName}
                                                             placeholder='What`s your pet`s name?'
-                                                            onChange={(e) => setEditedPetName(e.target.value)}
+                                                            onChange={(e) => handlePetNameVal(e.target.value)}
                                                             required
                                                         />
+
+                                                        <PetNameMessage petName={editedPetName} petNameValid={editPetNameValid} loading={false} />
                                                     </div>
 
                                                     {/* About */}
@@ -441,22 +462,21 @@ function PetProfilePage() {
 
                                         <div className='flex justify-end'>
                                             <button
-                                                type="submit"
-                                                className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                            >
-                                                Save
-                                            </button>
-
-                                            <button
                                                 type="button"
                                                 onClick={() => setModalIsOpen(false)}
                                                 className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
                                             >
                                                 Cancel
                                             </button>
+
+                                            <button
+                                                type="submit"
+                                                disabled={!editPetNameValid}
+                                                className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${editPetNameValid ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}>
+                                                Save
+                                            </button>
                                         </div>
                                     </form>
-
                                 </Modal>
                             )}
 
@@ -466,10 +486,6 @@ function PetProfilePage() {
                                     <span className="text-raisin_black text-xl font-bold"> {pet.followers ? pet.followers.length : 0}</span>
                                     <span className="text-grass font-bold text-sm">Followers</span>
                                 </div>
-                                {/* <div className="flex flex-col items-center">
-                              <span className="text-raisin_black text-lg font-bold">69</span>
-                              <span className="text-gray-500 text-sm">Following</span>
-                          </div> */}
                             </div>
 
                             {/* About */}
@@ -499,28 +515,28 @@ function PetProfilePage() {
                                 {hidden && !hidden.includes('birthdate') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-calendar"></i>
-                                        <p>{birthdate}</p>  {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{birthdate}</p>  
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('birthplace') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-map-marker-alt"></i>
-                                        <p>{birthplace}</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{birthplace}</p> 
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('favoriteFood') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-utensils"></i>
-                                        <p>{favoriteFood}</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{favoriteFood}</p> 
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('hobbies') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-heart"></i>
-                                        <p>{hobbies}</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{hobbies}</p> 
                                     </div>
                                 ) : ''}
                             </div>
@@ -644,6 +660,22 @@ function PetProfilePage() {
             }
         </div>
     )
+}
+
+function PetNameMessage({ petName, petNameValid, loading }) {
+    if (loading) {
+        return <p className='mt-2 ml-2'>Checking...</p>;
+    } else if (petName === '') {
+        return null;
+    } else if (String(petName).length < 3 && String(petName).length > 15 && !petNameValid) {
+        return <p className='mt-2 ml-2'>Pet name should have 3-15 characters!</p>;
+    } else if (String(petName).includes('  ')) {
+        return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
+    } else if ((String(petName).startsWith(' ') || String(petName).endsWith(' ')) && !petNameValid) {
+        return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
+    } else if (!petNameValid) {
+        return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
+    }
 }
 
 export default withAuth(PetProfilePage);

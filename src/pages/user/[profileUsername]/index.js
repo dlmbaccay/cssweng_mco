@@ -1115,7 +1115,7 @@ function PetAccountSetup({ props }) {
             setPetName(checkDisplayNameVal);
             setPetNameValid(false);
         } else if (!regex.test(checkDisplayNameVal)) {
-            setDisplayName(checkDisplayNameVal);
+            setPetName(checkDisplayNameVal);
             setPetNameValid(false);
         }
     };
@@ -1142,6 +1142,7 @@ function PetAccountSetup({ props }) {
                         id="display-name"
                         className="mt-1 p-2 border rounded-md w-full"
                         placeholder="Enter your pet's name"
+                        minLength={3}
                         maxLength={15}
                         value={petName}
                         onChange={(e) => { handlePetDisplayNameVal(e.target.value) }}

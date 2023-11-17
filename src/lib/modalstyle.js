@@ -9,7 +9,7 @@ export const editPetProfileStyle = {
       left: '50%',
       transform: 'translate(-50%, -50%)',
       width: '40%', 
-      height: '50%',
+      height: '60%',
       overflow: 'auto',
       padding: '20px',
       borderRadius: '8px',
