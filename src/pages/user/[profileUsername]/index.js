@@ -46,6 +46,7 @@ function UserProfilePage() {
     const [about, setAbout] = useState(null);
     const [displayName, setDisplayName] = useState(null);
     const [email, setEmail] = useState(null);
+    const [phoneNumber, setPhoneNumber] = useState(null);
     const [userPhotoURL, setUserPhotoURL] = useState(null);
     const [coverPhotoURL, setCoverPhotoURL] = useState(null);
     const [followers, setFollowers] = useState(null);
@@ -110,6 +111,7 @@ function UserProfilePage() {
                 setAbout(doc.data()?.about);
                 setDisplayName(doc.data()?.displayName);
                 setEmail(doc.data()?.email);
+                setPhoneNumber(doc.data()?.phoneNumber);
                 setUserPhotoURL(doc.data()?.photoURL);
                 setCoverPhotoURL(doc.data()?.coverPhotoURL);
                 setGender(doc.data()?.gender);
@@ -616,19 +618,16 @@ function UserProfilePage() {
                                         </div>
 
                                         <div className='flex flex-row w-full justify-evenly'>
-                                            {/* gender not editable */}
                                             <div className='font-medium'>
                                                 <p>Gender: {gender}</p>
                                             </div>
 
-                                            {/* birthdate not editable */}
                                             <div className="font-medium">
                                                 <p>Birthdate: {birthdate}</p>
                                             </div>
                                         </div>
 
 
-                                        {/* TODO: Add functionality for Cancel button */}
                                         <div className="flex justify-end">
                                             <button
                                                 onClick={handleEditProfileSave} disabled={!editedDisplayNameValid}
@@ -697,14 +696,14 @@ function UserProfilePage() {
                                 {hidden && !hidden.includes('contactNumber') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-phone"></i>
-                                        <p>096969696969</p>{/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{phoneNumber}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('email') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-envelope"></i>
-                                        <p>placeholder@email.com</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{email}</p>
                                     </div>
                                 ) : ''}
                             </div>
@@ -943,10 +942,10 @@ function UserProfilePage() {
 
                                         {/* if w/ media */}
                                         {/* <div className="grid grid-cols-8">
-                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                          </div> */}
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
+                                        </div> */}
                                     </div>
                                 )}
                             </div>
