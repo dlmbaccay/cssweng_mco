@@ -62,6 +62,8 @@ function PetProfilePage() {
     // editing variables
     const [editedPetName, setEditedPetName] = useState(petName);
     const [editedAbout, setEditedAbout] = useState(about);
+    const [editedPetFavoriteFood, setEditedPetFavoriteFood] = useState(favoriteFood);
+    const [editedPetHobbies, setEditedPetHobbies] = useState(hobbies);
 
     useEffect(() => {
         let unsubscribe;
@@ -122,8 +124,8 @@ function PetProfilePage() {
             const updateData = {
                 petName: editedPetName,
                 about: editedAbout,
-                favoriteFood: favoriteFood,
-                hobbies: hobbies,
+                favoriteFood: editedPetFavoriteFood,
+                hobbies: editedPetHobbies,
                 photoURL: petPhotoURL
             };
 
@@ -384,6 +386,48 @@ function PetProfilePage() {
                                                             onChange={(e) => setEditedAbout(e.target.value)}
                                                         />
                                                     </div>
+
+                                                    {/* Hobbies */}
+                                                    <div className="mb-4 w-full">
+                                                        <label
+                                                            htmlFor="hobbies"
+                                                            className="block text-sm font-medium text-gray-700"
+                                                        >
+                                                            <span>Hobbies</span>
+                                                        </label>
+
+                                                        <input
+                                                            type="text"
+                                                            id="hobbies"
+                                                            className="mt-1 p-2 border rounded-md w-full"
+                                                            maxLength="50"
+                                                            value={editedPetHobbies}
+                                                            placeholder='What`s your pet`s hobbies?'
+                                                            onChange={(e) => setEditedPetHobbies(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    {/* Favorite Food */}
+                                                    <div className="mb-4 w-full">
+                                                        <label
+                                                            htmlFor="faveFood"
+                                                            className="block text-sm font-medium text-gray-700"
+                                                        >
+                                                            <span>Favorite Food</span>
+                                                        </label>
+
+                                                        <input
+                                                            type="text"
+                                                            id="faveFood"
+                                                            className="mt-1 p-2 border rounded-md w-full"
+                                                            maxLength="30"
+                                                            value={editedPetFavoriteFood}
+                                                            placeholder='What`s your pet`s favorite food?'
+                                                            onChange={(e) => setEditedPetFavoriteFood(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -469,14 +513,14 @@ function PetProfilePage() {
                                 {hidden && !hidden.includes('favoriteFood') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-utensils"></i>
-                                        <p>chimken</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{favoriteFood}</p> {/* I just put a hardcoded value for now since di pa defined */}
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('hobbies') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-heart"></i>
-                                        <p>Barking</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{hobbies}</p> {/* I just put a hardcoded value for now since di pa defined */}
                                     </div>
                                 ) : ''}
                             </div>

@@ -1006,6 +1006,8 @@ function PetAccountSetup({ props }) {
     const [petBirthdate, setPetBirthdate] = useState(null);
     const [petBirthplace, setPetBirthplace] = useState(location);
     const [petBreed, setPetBreed] = useState(null);
+    const [petFaveFood, setPetFaveFood] = useState(null);
+    const [petHobbies, setPetHobbies] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
 
     const handleCreatePetProfile = async (e) => {
@@ -1038,8 +1040,8 @@ function PetAccountSetup({ props }) {
                 birthplace: petBirthplace,
                 followers: [],
                 following: [],
-                favoriteFood: "",
-                hobbies: "",
+                favoriteFood: petFaveFood,
+                hobbies: petHobbies,
                 hidden: [],
             });
 
@@ -1148,6 +1150,46 @@ function PetAccountSetup({ props }) {
                         value={petBreed}
                         maxLength={50}
                         onChange={(e) => setPetBreed(e.target.value)}
+                        required
+                    />
+                </div>
+
+                {/* Favorite Food */}
+                <div className="mb-4">
+                    <label
+                        htmlFor="favoriteFood"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Favorite Food
+                        <span className="text-red-500"> *</span>
+                    </label>
+                    <input
+                        type="text"
+                        className="mt-1 p-2 border rounded-md w-full"
+                        placeholder="Enter your pet's favorite food"
+                        value={petFaveFood}
+                        maxLength={30}
+                        onChange={(e) => setPetFaveFood(e.target.value)}
+                        required
+                    />
+                </div>
+
+                {/* Hobbies */}
+                <div className="mb-4">
+                    <label
+                        htmlFor="hobbies"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Hobbies
+                        <span className="text-red-500"> *</span>
+                    </label>
+                    <input
+                        type="text"
+                        className="mt-1 p-2 border rounded-md w-full"
+                        placeholder="Enter your pet's hobbies"
+                        value={petHobbies}
+                        maxLength={50}
+                        onChange={(e) => setPetHobbies(e.target.value)}
                         required
                     />
                 </div>
