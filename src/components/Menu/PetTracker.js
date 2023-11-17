@@ -122,7 +122,6 @@ export default function PetTracker({ props }) {
     }
   };
 
-
   return (
     <>
       <div className='flex flex-col justify-center items-center pt-8 pb-8'>

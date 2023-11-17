@@ -199,37 +199,11 @@ export default function Post({ props }) {
 
             {/* Footer */}
             <div id='post-footer' className='mt-4 flex flex-row w-full justify-between relative'>
-              {isOverlayVisible && (
-                  <div id='overlay' className='absolute bottom-5 left-0' 
-                  onMouseEnter={handleOverlayHover}
-                  onMouseLeave={handleOverlayLeave}>
-                    <div className='flex flex-row gap-2 w-[250px] h-[50px] bg-snow rounded-3xl drop-shadow-xl'>
-                      <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
-                        <Image src={likeReaction} alt="like reaction" />
-                      </div>
-                      <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
-                        <Image src={heartReaction} alt="like reaction" />
-                      </div>
-                      <div className='w-100 h-100 mt-1 hover:scale-125 hover:transform'>
-                        <Image src={laughReaction} alt="like reaction" />
-                      </div>
-                      <div className='w-100 h-100 mt-1 hover:scale-125 hover:transform'>
-                        <Image src={wowReaction} alt="like reaction" />
-                      </div>
-                      <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
-                        <Image src={sadReaction} alt="like reaction" />
-                      </div>
-                      <div className='w-100 h-100 mt-2 hover:scale-125 hover:transform'>
-                        <Image src={angryReaction} alt="like reaction" />
-                      </div>
-                    </div>
-                  </div>
-                )}
+              
               <div id="left" className='flex flex-row gap-4'>
                 <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
                   <i className="fa-solid fa-heart hover:text-grass hover:scale- hover:cursor-pointer" 
-                  onMouseEnter={handleHeartHover}
-                  onMouseLeave={handleHeartLeave}></i>
+                  ></i>
                   <p>0</p>
                 </div>
                 

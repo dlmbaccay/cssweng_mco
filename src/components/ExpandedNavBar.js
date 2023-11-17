@@ -144,6 +144,7 @@ export default function ExpandedNavBar({ props }) {
           <button 
             onClick={() => {
               auth.signOut();
+              router.push('/');
               toast.success('Successfully logged out!');
             }} 
             className='group flex flex-row items-center gap-2 pl-10 h-10'

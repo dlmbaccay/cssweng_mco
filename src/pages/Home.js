@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from 'react'
+import { auth, firestore } from '../lib/firebase'
 import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs } from 'firebase/firestore';
-import { useCurrentUserPets, useUserData, useAllPosts } from '../lib/hooks';
-import { auth, firestore, googleAuthProvider } from '../lib/firebase'
-import { useAllUsersAndPets } from '../lib/hooks';
-import Router from 'next/router';
-import PostSnippet from '../components/PostSnippet';
-import Modal from 'react-modal';
-import toast from 'react-hot-toast';
-import NavBar from '../components/NavBar';
-import Link from 'next/link';
+import { useUserData } from '../lib/hooks';
 import withAuth from '../components/withAuth';
+
+import Router from 'next/router';
+import Modal from 'react-modal';
 import Image from 'next/image';
-import Loader from '../components/Loader';
+
 import CreatePost from '../components/CreatePost';
-import RoundIcon from '../components/RoundIcon';
-import { createPostModalStyle } from '../lib/modalstyle';
+import PostSnippet from '../components/PostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
-
-import Newsfeed from '../components/Menu/Newsfeed';
-import PetTracker from '../components/Menu/PetTracker';
-import Messages from '../components/Menu/Messages';
-import SavedPosts from '../components/Menu/SavedPosts';
-import Shops from '../components/Menu/Shops';
-
+import { createPostModalStyle } from '../lib/modalstyle';
 
 function Home() {
 
@@ -32,23 +21,20 @@ function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) setPageLoading(false);
+      else setPageLoading(true);
+    });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, []);
+
   const { user, username, description, email, displayName, userPhotoURL } = useUserData();
   const router = Router;
   const [ pageLoading, setPageLoading ] = useState(true);
   const [ isSearchInputFocused, setIsSearchInputFocused ] = useState(false);
   const [ showCreatePostForm, setShowCreatePostForm ] = useState(false);
-
-  useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) { // User is signed in.
-          setPageLoading(false);
-        } else { // No user is signed in.
-          setPageLoading(true);
-        }
-      });
-
-      return () => unsubscribe(); // Cleanup subscription on unmount
-  }, []);
 
   const [posts, setPosts] = useState([]);
   const [lastVisible, setLastVisible] = useState(null);
@@ -119,7 +105,6 @@ function Home() {
         <div className='w-full bg-dark_gray'>            
           {/* search and logo bar */}
           <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
-              
             <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
               <i
                 className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
@@ -222,6 +207,7 @@ function Home() {
                     Load More
                   </button>
                 )}
+                
               </div>
             </div>
 
@@ -229,9 +215,7 @@ function Home() {
         </div>
       </div>   
     )
-  } else {
-    return null;
-  }
+  } else return null;
 }
 
 export default withAuth(Home);
