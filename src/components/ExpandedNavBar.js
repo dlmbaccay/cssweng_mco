@@ -46,7 +46,7 @@ export default function ExpandedNavBar({ props }) {
           <div 
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className='w-full h-screen bg-pale_yellow drop-shadow-xl flex flex-col'>
+            className='w-[300px] h-screen bg-pale_yellow drop-shadow-xl flex flex-col'>
             
             {/* user meta */}
             <button 

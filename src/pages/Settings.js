@@ -206,7 +206,7 @@ function Settings() {
         <div>
             <div id="root" className='flex flex-row h-screen paw-background'>
                 {/* home navbar */}
-                <div className='w-[20%]'>
+                <div className='w-[300px]'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
                             props={{
                             userPhotoURL: userPhotoURL,

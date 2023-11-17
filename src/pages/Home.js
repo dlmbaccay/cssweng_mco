@@ -92,7 +92,7 @@ function Home() {
     return (
       <div className='flex flex-row w-full h-screen overflow-hidden'>
 
-        <div className='w-[20%]'>
+        <div className='w-[300px]'>
           {(userPhotoURL && username) && <ExpandedNavBar 
             props={{
               userPhotoURL: userPhotoURL,
