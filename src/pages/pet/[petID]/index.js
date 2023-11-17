@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { STATE_CHANGED, firestore, storage } from '@/src/lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
+
 import { useRouter } from 'next/router';
 import { useUserData, useUserIDfromUsername } from '@/src/lib/hooks'; // Import the useUser hook
 import { formatDateWithWords } from '../../../lib/formats';
@@ -12,6 +13,7 @@ import toast from 'react-hot-toast'
 import Modal from 'react-modal'; // Import the Modal component  
 
 import NavBar from '@/src/components/NavBar';
+import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import Loader from '@/src/components/Loader';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import RoundIcon from '@/src/components/RoundIcon';
@@ -104,28 +106,6 @@ function PetProfilePage() {
 
         return unsubscribe;
     }, [petID]);
-
-    // // fetch all posts where pet is tagged
-    // useEffect(() => {
-    //     let unsubscribe;
-
-    //     if (petID) {
-    //         // check if pet is tagged in any post
-    //         const petRef = firestore.collection('posts').where('postPets', 'array-contains', petID);
-    //         unsubscribe = petRef.onSnapshot((querySnapshot) => {
-    //             if (querySnapshot.size > 0) {
-    //                 const taggedPosts = querySnapshot.docs.map((doc) => ({
-    //                     id: doc.id,
-    //                     ...doc.data()
-    //                 }));
-
-    //                 setTaggedPosts(taggedPosts);
-    //             } else {
-    //                 setTaggedPosts(null);
-    //             }
-    //         });
-    //     }
-    // }, [petID])
 
     const openEdit = () => {
         if (currentUser && currentUserID === petOwnerID) { // Check if the logged-in user is the owner of the pet
@@ -274,10 +254,19 @@ function PetProfilePage() {
 
     return (
         <div id="root" className='flex'>
-            <NavBar />
+            <div className='w-fit'>
+                {(petOwnerPhotoURL && petOwnerUsername) && <ExpandedNavBar 
+                    props={{
+                    userPhotoURL: petOwnerPhotoURL,
+                    username: petOwnerUsername,
+                    activePage: "Profile",
+                    expanded: false
+                    }}
+                />}
+            </div>
 
             {pet && currentUser &&
-                <div className="flex-1 h-screen">
+                <div className="h-screen w-full">
                     <div id='header-container' className='h-1/5 border-l border-neutral-300'>
                         <CoverPhoto src={petOwnerCoverPhotoURL} alt={petOwnerUsername + " cover photo"} />
                     </div>
@@ -550,7 +539,9 @@ function PetProfilePage() {
                                                     />
                                                 </div>
                                             ))}
+
                                             {loading && <div>Loading...</div>}
+
                                             {lastVisible && (
                                                 <button
                                                 className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
@@ -560,7 +551,6 @@ function PetProfilePage() {
                                                 Load More
                                                 </button>
                                             )}
-                                            
                                         </div>
                                     </div>
                                 )}
@@ -602,7 +592,6 @@ function PetProfilePage() {
                                         </div> */}
                                     </div>
                                 )}
-
                             </div>
                         </div>
                     </div>

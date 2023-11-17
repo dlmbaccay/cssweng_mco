@@ -741,43 +741,47 @@ function UserProfilePage() {
                                         className="flex flex-col items-center justify-center w-full"
                                     >
                                         {currentUserID === profileUserID ? (
-                                            <div id='create-post' className='mt-10 shadow-sm bg-snow w-[800px] h-[100px] rounded-3xl drop-shadow-md p-6 flex flex-col'>
+                                            
+                                        <div 
+                                            className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center mt-8 hover:drop-shadow-md'>
 
-                                                <div className='flex flex-row w-full h-full items-center'>
-                                                    <div className='h-[50px] w-[50px] flex items-center'>
-                                                        <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
-                                                    </div>
+                                            {userPhotoURL && <Image
+                                                src={userPhotoURL}
+                                                alt="user photo"
+                                                width={50}
+                                                height={50}
+                                                onClick={() => router.push(`/user/${username}`)}
+                                                className='rounded-full h-[50px] w-[50px] hover:opacity-95 transition-all cursor-pointer'
+                                            />}
 
-                                                    <button className='flex flex-col w-full h-full ml-4'>
-                                                        <div
-                                                            className='w-full h-full text-raisin_black text-sm bg-white rounded-2xl p-2 pl-4 focus:outline-none flex items-center hover:bg-gray hover:cursor-pointer'
-                                                            onClick={() => setShowCreatePostForm(true)}
-                                                        >
-                                                            What`s on your mind?
-                                                        </div>
-                                                    </button>
-                                                </div>
+                                            <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left pl-4 text-sm text-raisin_black hover:bg-gray transition-all'>
+                                                <p>What&apos;s on your mind, {displayName}?</p>
+                                            </button>
 
-                                                <Modal
-                                                    isOpen={showCreatePostForm}
-                                                    onRequestClose={() => setShowCreatePostForm(false)}
-                                                    style={createPostModalStyle}
-                                                >
-                                                    <CreatePost 
-                                                        props={{
-                                                            currentUserID: currentUserID,
-                                                            pets: pets,
-                                                            displayName: displayName,
-                                                            username: username,
-                                                            userPhotoURL: userPhotoURL,
-                                                            setShowCreatePostForm: setShowCreatePostForm
-                                                        }}
-                                                    />
-                                                </Modal>
-                                            </div>
+                                            <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
+                                                <i className='fa-solid fa-image'/>
+                                            </button>
+
+                                            <Modal
+                                                isOpen={showCreatePostForm}
+                                                onRequestClose={() => setShowCreatePostForm(false)}
+                                                style={createPostModalStyle}
+                                            >
+                                                <CreatePost 
+                                                    props={{
+                                                    createType: 'original',
+                                                    currentUserID: currentUserID,
+                                                    displayName: displayName,
+                                                    username: username,
+                                                    userPhotoURL: userPhotoURL,
+                                                    setShowCreatePostForm: setShowCreatePostForm,
+                                                    }}
+                                                />
+                                            </Modal>
+                                        </div>
                                         ) : null}
 
-                                        <div className="flex mt-10 mb-10 flex-col gap-10 justify-start items-center">
+                                        <div className="flex mt-8 mb-8 flex-col gap-8 justify-start items-center">
                                             {posts.map((post, index) => (
                                                 <div key={post.id}>
                                                     <PostSnippet

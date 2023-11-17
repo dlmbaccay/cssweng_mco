@@ -205,7 +205,7 @@ export default function PetTracker() {
                         <p>What&apos;s on your mind, {displayName}?</p>
                         </button>
 
-                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:opacity-60 transition-all flex items-center justify-center'>
+                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:text-pale_yellow hover:bg-grass transition-all flex items-center justify-center'>
                         <i className='fa-solid fa-image'/>
                         </button>
 

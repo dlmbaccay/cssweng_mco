@@ -220,7 +220,7 @@ function Settings() {
                 <div className="w-full flex justify-center items-center h-full">
                     <form
                         onSubmit={handleSubmit}
-                        className="rounded-lg drop-shadow-lg p-10 w-3/4 h-[90%] overflow-auto flex flex-col justify-start items-center">
+                        className="rounded-lg drop-shadow-lg p-10 w-full h-full overflow-auto flex flex-col justify-start items-center">
 
                         <div className='mt-2 flex flex-col justify-center items-center w-[750px] h-[150px] p-4 bg-pale_yellow rounded-lg drop-shadow-md mb-8'>
                             <label htmlFor="user-visibility" className="block font-bold text-grass font-shining text-3xl mb-4">Security</label>
