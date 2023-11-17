@@ -218,7 +218,7 @@ export default function CreatePost({ props }) {
                             maxLength={50}
                             value={postTrackerLocation}
                             onChange={(event) => setPostTrackerLocation(event.target.value)}
-                            placeholder='Tracker Location'
+                            placeholder='Last Seen At'
                             className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
                         />
                 )    
