@@ -28,7 +28,7 @@ function Settings() {
     
     const [petSwitches, setPetSwitches] = useState([
     { id: 'Pet Breed', value: 'breed', enabled: true },
-    { id: 'Pet Sex', value: 'sex', enabled: true },
+    { id: 'Pet Gender', value: 'sex', enabled: true },
     { id: 'Pet Birthday', value: 'birthdate', enabled: true },
     { id: 'Pet Location', value: 'birthplace', enabled: true },
     { id: 'Favorite Food', value: 'favoriteFood', enabled: true },
@@ -140,7 +140,7 @@ function Settings() {
     //     setSwitches(newSwitches);
     //   }, []); // Dependency array. Update switches whenever this array changes.
 
-    const petSwitchIDs = ['Pet Sex', 'Pet Breed', 'Pet Birthday', 'Pet Location', 'Favorite Food', 'Hobby'];
+    const petSwitchIDs = ['Pet Gender', 'Pet Breed', 'Pet Birthday', 'Pet Location', 'Favorite Food', 'Hobby'];
     const userSwitchIDs = ['Gender', 'Birthday', 'Location', 'Contact Number', 'E-mail'];
     const [disabledPetSwitches, setDisabledPetSwitches] = useState([]);
     const [disabledUserSwitches, setDisabledUserSwitches] = useState([]);

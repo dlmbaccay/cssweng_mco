@@ -97,71 +97,153 @@ function AccountSetup() {
             setAvailableUsername(!exists);
             setLoading(false);
         }
-        }, 500),
+        }, 1000),
         []
     );
 
     // Creates a Firebase Upload Task
-    const uploadFile = async (e) => {
-        const userPhotoFile = Array.from(e.target.files)[0];
+    // const uploadFile = async (e) => {
+    //     const userPhotoFile = Array.from(e.target.files)[0];
         
-        // Check the file type
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!allowedTypes.includes(userPhotoFile.type)) {
-          toast.error('Invalid file type. Please upload a JPG, PNG, or GIF file.');
-          e.target.value = '';
-          return;
+    //     // Check the file type
+    //     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    //     if (!allowedTypes.includes(userPhotoFile.type)) {
+    //       toast.error('Invalid file type. Please upload a JPG, PNG, or GIF file.');
+    //       e.target.value = '';
+    //       return;
+    //     } else {
+    //         const userPhotoURL = storage.ref(`profilePictures/${user.uid}/profilePic`);
+    //         const userTask = userPhotoURL.put(userPhotoFile);
+        
+    //         // Listen to updates to upload task
+    //         userTask.on(STATE_CHANGED, (snapshot) => {
+    //         userTask
+    //             .then((d) => userPhotoURL.getDownloadURL())
+    //             .then((url) => { setUserPhotoURL(url); });
+    //         });
+    //     }
+    //   };
+
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+
+    const handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
+      
+        if (file !== undefined && allowedTypes.includes(file.type)) {
+            setSelectedFile(file);
+            setPreviewUrl(URL.createObjectURL(file));
         } else {
-            const userPhotoURL = storage.ref(`profilePictures/${user.uid}/profilePic`);
-            const userTask = userPhotoURL.put(userPhotoFile);
-        
-            // Listen to updates to upload task
-            userTask.on(STATE_CHANGED, (snapshot) => {
-            userTask
-                .then((d) => userPhotoURL.getDownloadURL())
-                .then((url) => { setUserPhotoURL(url); });
-            });
+            event.target.value = null;
+            setSelectedFile(null);
+            setPreviewUrl(null);
+            toast.error('Invalid file type. Only PNG, JPEG, and GIF allowed.')
         }
-      };
+    };
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        let URL;
 
-        // Create refs for both documents
-        const userDoc = firestore.doc(`users/${user.uid}`);
-        const usernameDoc = firestore.doc(`usernames/${usernameFormValue}`);
+        if (selectedFile) {
+            const storagePath = `profilePictures/${user.uid}/profilePic`;
+            const storageRef = storage.ref().child(storagePath);
+            const uploadTask = storageRef.put(selectedFile);
 
-        const batch = firestore.batch();
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Handle progress updates here
+                    const progress = Math.round(
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    );
+                    // Update progress state if needed
+                },
+                (error) => {
+                    // Handle error here
+                    // console.error(error);
+                    toast.error('Error uploading file.');
+                },
+                async () => {
+                    // Handle successful upload here
+                    toast.success('Photo uploaded successfully!');
+                    URL = await uploadTask.snapshot.ref.getDownloadURL(); 
+                    // Create refs for both documents
+                    const userDoc = firestore.doc(`users/${user.uid}`);
+                    const usernameDoc = firestore.doc(`usernames/${usernameFormValue}`);
 
-        batch.set(userDoc, {
-            username: usernameFormValue,
-            displayName: displayName,
-            photoURL: userPhotoURL,
-            // displayName: document.querySelector("#display-name").value,
-            about: document.querySelector("#about").value,
-            email: user.email,
-            followers: [],
-            following: [],
-            hidden: [],
-            
-            // create a pet collections
-            pets: {},
-            
-            coverPhotoURL: coverPhotoURL,
-            gender: document.querySelector("#genderSelect").value,
-            birthdate: document.querySelector("#birthdate").value,
-            location: document.querySelector("#location").value,
-            phoneNumber: document.querySelector("#phone-number").value,
-        })
+                    const batch = firestore.batch();
 
-        batch.set(usernameDoc, { uid: user.uid });
+                    batch.set(userDoc, {
+                        username: usernameFormValue,
+                        displayName: displayName,
+                        photoURL: URL,
+                        // displayName: document.querySelector("#display-name").value,
+                        about: document.querySelector("#about").value,
+                        email: user.email,
+                        followers: [],
+                        following: [],
+                        hidden: [],
+                        
+                        // create a pet collections
+                        pets: {},
+                        
+                        coverPhotoURL: coverPhotoURL,
+                        gender: document.querySelector("#genderSelect").value,
+                        birthdate: document.querySelector("#birthdate").value,
+                        location: document.querySelector("#location").value,
+                        phoneNumber: document.querySelector("#phone-number").value,
+                    })
 
-        await batch.commit();
+                    batch.set(usernameDoc, { uid: user.uid });
 
-        toast.success(`Welcome to BantayBuddy, ${usernameFormValue}!`)
+                    await batch.commit();
+                                
+                    toast.success(`Welcome to BantayBuddy, ${usernameFormValue}!`)
 
-        // push to Profile
-        router.push(`/user/${usernameFormValue}`);
+                    // push to Profile
+                    router.push(`/user/${usernameFormValue}`);
+                }
+            );
+        } else {
+            // Create refs for both documents
+            const userDoc = firestore.doc(`users/${user.uid}`);
+            const usernameDoc = firestore.doc(`usernames/${usernameFormValue}`);
+
+            const batch = firestore.batch();
+
+            batch.set(userDoc, {
+                username: usernameFormValue,
+                displayName: displayName,
+                photoURL: userPhotoURL,
+                // displayName: document.querySelector("#display-name").value,
+                about: document.querySelector("#about").value,
+                email: user.email,
+                followers: [],
+                following: [],
+                hidden: [],
+                
+                // create a pet collections
+                pets: {},
+                
+                coverPhotoURL: coverPhotoURL,
+                gender: document.querySelector("#genderSelect").value,
+                birthdate: document.querySelector("#birthdate").value,
+                location: document.querySelector("#location").value,
+                phoneNumber: document.querySelector("#phone-number").value,
+            })
+
+            batch.set(usernameDoc, { uid: user.uid });
+
+            await batch.commit();
+                
+            toast.success(`Welcome to BantayBuddy, ${usernameFormValue}!`)
+
+            // push to Profile
+            router.push(`/user/${usernameFormValue}`);
+        }
+
     };
 
     if (!pageLoading){
@@ -205,7 +287,14 @@ function AccountSetup() {
                         {/* profile picture */}
                         <div className="mt-4 mb-4">
                             <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
-                            <input type="file" className="mt-1 p-2 border rounded-md w-full" onChange={uploadFile} accept="image/x-png,image/gif,image/jpeg" />
+                            <div className="mt-1 p-2 border rounded-md w-full">
+                                <input type="file"  onChange={handleFileSelect} accept="image/x-png,image/gif,image/jpeg" />
+                                {previewUrl && (
+                                    <div className='relative mx-auto w-3/12 aspect-square'>
+                                        <Image src={previewUrl} alt="Preview" layout="fill" style={{objectFit: 'cover'}}/>
+                                    </div>
+                                )}
+                            </div>
                             <p className="text-sm text-gray-500 mt-1">Upload a profile picture (JPG, PNG, or GIF).</p>
                         </div>
 

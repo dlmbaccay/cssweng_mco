@@ -52,7 +52,7 @@ export default function ExpandedNavBar({ props }) {
             <button 
               onClick={() => {router.push(`/user/${username}`)}}
               className='group flex flex-col justify-center items-center mt-10 gap-4'>
-                {<Image src={userPhotoURL} alt={'profile picture'} width={100} height={100} className='rounded-full group-hover:scale-105 transition-all'/>}
+                  {<Image src={userPhotoURL} alt={'profile picture'} width={100} height={100} className='rounded-full group-hover:scale-105 transition-all aspect-square object-cover'/>}
                 <p className='text-raisin_black text-xl font-shining font-semibold group-hover:scale-105 group-hover:text-grass transition-all'>{username} </p>
             </button>
 

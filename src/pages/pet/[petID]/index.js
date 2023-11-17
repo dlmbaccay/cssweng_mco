@@ -121,21 +121,66 @@ function PetProfilePage() {
         const batch = firestore.batch();
 
         try {
+            const uploadFile = async (ref, file, field) => {
+                const task = ref.put(file);
+                task.on(
+                    'state_changed',
+                    (snapshot) => {
+                       const progress = Math.round(
+                           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                       );
+                    },
+                    (error) => {
+                       toast.error('Error uploading file.');
+                    },
+                    async () => {
+                       toast.success('Photo uploaded successfully!');
+                       let url = await task.snapshot.ref.getDownloadURL(); 
+                       const petRef = firestore.doc(`pets/${petID}`);
+                       petRef.update({ [field]: url });
+                    }
+                );
+            };
+
+            if (selectedProfileFile) {
+                await uploadFile(storage.ref(`petProfilePictures/${petID}/profilePic`), selectedProfileFile, 'photoURL');
+            }
+
             const updateData = {
                 petName: editedPetName,
                 about: editedAbout,
                 favoriteFood: editedPetFavoriteFood,
                 hobbies: editedPetHobbies,
-                photoURL: petPhotoURL
+                // photoURL: petPhotoURL
             };
 
             batch.update(petRef, updateData);
 
             await batch.commit();
             setModalIsOpen(false);
+            setSelectedProfileFile(null);
+            setPreviewProfileUrl(null);
             toast.success(petName + '`s profile updated successfully!');
         } catch (error) {
             console.error('Error saving pet:', error);
+        }
+    };
+
+    const [selectedProfileFile, setSelectedProfileFile] = useState(null);
+    const [previewProfileUrl, setPreviewProfileUrl] = useState(null);
+
+    const handleProfileFileSelect = (event) => {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
+      
+        if (file !== undefined && allowedTypes.includes(file.type)) {
+            setSelectedProfileFile(file);
+            setPreviewProfileUrl(URL.createObjectURL(file));
+        } else {
+            event.target.value = null;
+            setSelectedProfileFile(null);
+            setPreviewProfileUrl(null);
+            toast.error('Invalid file type. Only PNG, JPEG, and GIF allowed.')
         }
     };
 
@@ -350,8 +395,13 @@ function PetProfilePage() {
                                                         <h1 className='font-medium mb-2'>Change Profile Picture</h1>
 
                                                         <div>
-                                                            <label htmlFor='pet-profile-pic' className="block text-sm font-medium text-gray-700">
-                                                                <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='rounded-full shadow-lg cursor-pointer hover:opacity-50' />
+                                                            <label htmlFor='pet-profile-pic'>
+                                                                <div className='relative mx-auto w-full cursor-pointer' style={{height: '200px', width: '200px'}}>
+                                                                    {previewProfileUrl ? (
+                                                                        <Image src={previewProfileUrl} alt="Preview" layout='fill' className='object-cover rounded-full'/>
+                                                                    ): (petPhotoURL && <Image src={petPhotoURL} alt={petName + " cover photo"} layout='fill' className='object-cover rounded-full'/>)}
+                                                                </div>
+                                                                {/* <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='rounded-full shadow-lg cursor-pointer hover:opacity-50' /> */}
                                                             </label>
                                                         </div>
 
@@ -359,7 +409,7 @@ function PetProfilePage() {
                                                             type="file"
                                                             id='pet-profile-pic'
                                                             className="hidden"
-                                                            onChange={uploadPetProfilePictureFile}
+                                                            onChange={handleProfileFileSelect}
                                                         />
                                                     </div>
                                                 </div>

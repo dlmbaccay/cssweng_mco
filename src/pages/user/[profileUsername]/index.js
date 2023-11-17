@@ -69,6 +69,7 @@ function UserProfilePage() {
 
     // misc variables
     const [showEditProfile, setShowEditProfile] = useState(false);
+    const [isUploadingProfilePhoto, setIsUploadingProfilePhoto] = useState(false);
     const [isUploadingCoverPhoto, setIsUploadingCoverPhoto] = useState(false);
     const [activeTab, setActiveTab] = useState('Posts');
     const [editedDisplayNameValid, setEditedDisplayNameValid] = useState(true);
@@ -251,67 +252,94 @@ function UserProfilePage() {
     const handleEditProfileSave = async () => {
         const userRef = firestore.collection('users').doc(profileUserID);
         const batch = firestore.batch();
-
+     
         try {
+            const uploadFile = async (ref, file, field) => {
+                const task = ref.put(file);
+                task.on(
+                    'state_changed',
+                    (snapshot) => {
+                       const progress = Math.round(
+                           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                       );
+                    },
+                    (error) => {
+                       toast.error('Error uploading file.');
+                    },
+                    async () => {
+                       toast.success('Photo uploaded successfully!');
+                       let url = await task.snapshot.ref.getDownloadURL(); 
+                       const userRef = firestore.doc(`users/${currentUserID}`);
+                       userRef.update({ [field]: url });
+                    }
+                );
+            };
+     
+            if (selectedCoverFile) {
+                await uploadFile(storage.ref(`profilePictures/${profileUserID}/coverPic`), selectedCoverFile, 'coverPhotoURL');
+            }
+            if (selectedProfileFile) {
+                await uploadFile(storage.ref(`profilePictures/${profileUserID}/profilePic`), selectedProfileFile, 'photoURL');
+            }
+            
+           
+     
             const updateData = {
                 displayName: editedDisplayName,
                 about: editedAbout,
-                coverPhotoURL: coverPhotoURL,
-                photoURL: userPhotoURL,
                 location: editedLocation
             };
-
+     
             batch.update(userRef, updateData);
-
+     
             await batch.commit();
             setShowEditProfile(false);
+            setSelectedProfileFile(null);
+            setSelectedCoverFile(null);
+            setPreviewCoverUrl(null);
+            setPreviewProfileUrl(null);
             toast.success('User profile updated successfully!');
-
+     
         } catch (error) {
-            toast.error('Error saving profile:', error);
+            toast.error('Error saving profile:'+ error);
         }
     }
+     
 
-    const uploadUserProfilePicFile = async (e) => {
-        const file = Array.from(e.target.files)[0];
-        const ref = storage.ref(`profilePictures/${profileUserID}/profilePic`);
-        const task = ref.put(file);
+    const [selectedProfileFile, setSelectedProfileFile] = useState(null);
+    const [previewProfileUrl, setPreviewProfileUrl] = useState(null);
+    const [selectedCoverFile, setSelectedCoverFile] = useState(null);
+    const [previewCoverUrl, setPreviewCoverUrl] = useState(null);
 
-        task.on(STATE_CHANGED, (snapshot) => {
-            task
-                .then((d) => ref.getDownloadURL())
-                .then((url) => {
-                    setUserPhotoURL(url);
+    const handleProfileFileSelect = (event) => {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
+      
+        if (file !== undefined && allowedTypes.includes(file.type)) {
+            setSelectedProfileFile(file);
+            setPreviewProfileUrl(URL.createObjectURL(file));
+        } else {
+            event.target.value = null;
+            setSelectedProfileFile(null);
+            setPreviewProfileUrl(null);
+            toast.error('Invalid file type. Only PNG, JPEG, and GIF allowed.')
+        }
+    };
 
-                    const userRef = firestore.doc(`users/${currentUserID}`);
-                    userRef.update({ photoURL: url });
-                });
-        });
-    }
-
-    const uploadCoverPhotoFile = async (e) => {
-        setIsUploadingCoverPhoto(true);
-
-        const file = Array.from(e.target.files)[0];
-
-        const ref = storage.ref(`coverPictures/${profileUserID}/coverPic`);
-
-        const task = ref.put(file);
-
-        task.on(STATE_CHANGED, (snapshot) => {
-            task
-                .then((d) => ref.getDownloadURL())
-                .then((url) => {
-                    setCoverPhotoURL(url);
-                    const userRef = firestore.doc(`users/${currentUserID}`);
-                    userRef.update({ coverPhotoURL: url });
-                })
-                .finally(() => {
-                    setIsUploadingCoverPhoto(false); // Set back to false after the upload is done
-                });
-        });
-
-    }
+    const handleCoverFileSelect = (event) => {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
+      
+        if (file !== undefined && allowedTypes.includes(file.type)) {
+            setSelectedCoverFile(file);
+            setPreviewCoverUrl(URL.createObjectURL(file));
+        } else {
+            event.target.value = null;
+            setSelectedCoverFile(null);
+            setPreviewCoverUrl(null);
+            toast.error('Invalid file type. Only PNG, JPEG, and GIF allowed.')
+        }
+    };
 
     const handleFollow = async () => {
         const isFollowing = currentUser.following && currentUser.following.includes(profileUserID);
@@ -536,19 +564,24 @@ function UserProfilePage() {
                                                 <h1 className='font-medium mb-2 text-center'>Change Profile Picture</h1>
                                                 <label htmlFor="userPhoto">
                                                     <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full shadow-lg hover:opacity-50">
-                                                        <RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />
+                                                        {previewProfileUrl ? (<RoundIcon src={previewProfileUrl} alt={"Preview"} />): 
+                                                        (<RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />)}
                                                     </div>
                                                 </label>
-                                                <input type="file" id="userPhoto" onChange={uploadUserProfilePicFile} className='hidden' />
+                                                <input type="file" id="userPhoto" onChange={handleProfileFileSelect} className='hidden' />
                                             </div>
 
                                             {/* cover photo */}
                                             <div>
                                                 <h1 className='font-medium mb-2 text-center'>Change Cover Photo</h1>
                                                 <label htmlFor="coverPhoto">
-                                                    {profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt='cover photo picture' height={200} width={350} className="cursor-pointer hover:opacity-50 h-48 shadow-lg rounded-lg" />}
+                                                    <div className='relative mx-auto w-full' style={{height: '200px', width: '350px'}}>
+                                                        {previewCoverUrl ? (
+                                                            <Image src={previewCoverUrl} alt="Preview" layout='fill' className='object-cover rounded-lg'/>
+                                                        ): (profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} layout='fill' className='object-cover rounded-lg'/>)}
+                                                    </div>
                                                 </label>
-                                                <input type="file" id="coverPhoto" onChange={uploadCoverPhotoFile} className="hidden" />
+                                                <input type="file" id="coverPhoto" onChange={handleCoverFileSelect} className="hidden" />
                                             </div>
                                         </div>
 
@@ -1027,6 +1060,25 @@ function PetAccountSetup({ props }) {
     const [petHobbies, setPetHobbies] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
 
+    const [selectedPetProfile, setSelectedPetProfile] = useState(null);
+    const [previewPetProfile, setPreviewPetProfile] = useState(null);
+
+    const handlePetProfileSelect = (event) => {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
+      
+        if (file !== undefined && allowedTypes.includes(file.type)) {
+            setPetPhotoURL(file);
+            setPreviewPetProfile(URL.createObjectURL(file));
+        } else {
+            event.target.value = null;
+            setPetPhotoURL(null);
+            setPreviewPetProfile(null);
+            toast.error('Invalid file type. Only PNG, JPEG, and GIF allowed.')
+        }
+    };
+
+
     const handleCreatePetProfile = async (e) => {
         e.preventDefault();
 
@@ -1218,7 +1270,10 @@ function PetAccountSetup({ props }) {
                         Upload Photo
                         <span className="text-red-500"> *</span>
                     </label>
-                    <input type="file" id="photo" onChange={e => setPetPhotoURL(e.target.files[0])} required />
+                    <input type="file" id="photo" onChange={e => handlePetProfileSelect(e)} required />
+                    <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full hover:opacity-50">
+                        {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />): null}
+                    </div>
                 </div>
 
                 {/* About */}
