@@ -25,7 +25,6 @@ export default function Newsfeed({ props }) {
     // indexed in query builder
     const q = query(
       collection(firestore, "posts"),
-      where("postCategory", "in", ["Default", "Q&A", "Tips", "Pet Needs", "Milestones"]),
       orderBy("postDate", "desc"),
       limit(5)
     )
@@ -51,8 +50,7 @@ export default function Newsfeed({ props }) {
     if (lastVisible && !loading) {
         setLoading(true);
         const nextQuery = query(
-          collection(firestore, "posts"), 
-          where("postCategory", "in", ["Default", "Q&A", "Tips", "Pet Needs", "Milestones"]),
+          collection(firestore, "posts"),
           orderBy("postDate", "desc"), 
           startAfter(lastVisible), 
           limit(5)

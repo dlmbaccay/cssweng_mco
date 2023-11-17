@@ -156,7 +156,7 @@ export default function Post({ props }) {
 
     return (
       currentUserID === '123'? ( // if not logged in
-        <div className='shadow-sm hover:shadow-lg bg-snow w-[800px] h-[500px] rounded-3xl p-6 flex flex-col'>
+        <div className='shadow-sm hover:shadow-lg bg-snow w-[700px] h-[500px] rounded-3xl p-6 flex flex-col'>
           {/* Header */}
             <div id="post-header" className='flex flex-row'>
 
@@ -268,7 +268,7 @@ export default function Post({ props }) {
         </div>
       ) : (
         imageUrls.length === 0 ? (
-        <div className='shadow-sm hover:shadow-lg bg-snow w-[800px] h-[250px] rounded-3xl p-6 flex flex-col justify-between'>
+        <div className='shadow-sm hover:shadow-lg bg-snow w-[700px] min-h-fit max-h-[250px] rounded-3xl p-6 flex flex-col justify-between'>
         {/* Header */}
           <div id="post-header" className='flex flex-row'>
 
@@ -549,7 +549,7 @@ export default function Post({ props }) {
           </div>
         </div>
         ) : (
-          <div className='shadow-sm hover:shadow-lg bg-snow w-[800px] h-[500px] rounded-3xl p-6 flex flex-col'>
+          <div className='shadow-sm hover:shadow-lg bg-snow w-[700px] h-[500px] rounded-3xl p-6 flex flex-col'>
           {/* Header */}
             <div id="post-header" className='flex flex-row'>
 
