@@ -9,6 +9,7 @@ import { useCurrentUserPets } from '../lib/hooks';
 export default function CreatePost({ props }) {
 
     const { 
+        createType,
         currentUserID, displayName,
         username, userPhotoURL, setShowCreatePostForm 
     } = props

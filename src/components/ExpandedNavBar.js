@@ -11,7 +11,6 @@ export default function ExpandedNavBar({ props }) {
 
     return (
     <>
-        {/* home navbar */}
         <div className='w-full h-screen bg-pale_yellow drop-shadow-xl flex flex-col'>
           
           {/* user meta */}
@@ -25,35 +24,118 @@ export default function ExpandedNavBar({ props }) {
           <hr className='border border-xanthous opacity-30 ml-6 mr-6 mt-6 mb-6'/>
 
           <div className='flex flex-col gap-4'>
-
-            <button onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-              <i className={`transition-all fa-solid fa-home w-[30px] h-[30px] rounded-full bg-grass flex items-center justify-center text-md text-pale_yellow group-hover:bg-raisin_black ${activePage === 'Home' ? "bg-raisin_black" : ""}`}></i>
-              <p className={`transition-all text-grass text-xl font-shining font-semibold group-hover:text-raisin_black ${activePage === 'Home' ? "text-raisin_black" : ""}`}>Home</p>
+            <button 
+              onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+              <i 
+                className={`
+                text-md w-[35px] h-[35px]
+                flex items-center justify-center
+                fa-solid fa-home rounded-full 
+                bg-grass text-pale_yellow 
+                transition-all group-hover:bg-raisin_black 
+                ${activePage === 'Home' ? "bg-raisin_black" : ""}
+                `}/>
+              <p className={`
+              text-grass text-2xl
+                font-shining font-semibold 
+                transition-all  group-hover:text-raisin_black 
+                ${activePage === 'Home' ? "text-raisin_black" : ""}`}>
+                  Home</p>
             </button>
 
-            <button onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-              <i className={`transition-all fa-solid fa-paw w-[30px] h-[30px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black ${activePage === 'Pet Tracker' ? "bg-raisin_black" : ""}`}></i>
-              <p className={`transition-all text-grass text-xl font-shining font-semibold group-hover:text-raisin_black ${activePage === 'Pet Tracker' ? "text-raisin_black" : ""}`}>Pet Tracker</p>
+            <button 
+              onClick={() => router.push('/PetTracker')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+              <i 
+                className={`
+                text-md w-[35px] h-[35px]
+                flex items-center justify-center
+                fa-solid fa-paw rounded-full 
+                bg-grass text-pale_yellow 
+                transition-all group-hover:bg-raisin_black 
+                ${activePage === 'PetTracker' ? "bg-raisin_black" : ""}
+                `}/>
+              <p className={`
+                text-grass text-2xl
+                font-shining font-semibold 
+                transition-all  group-hover:text-raisin_black 
+                ${activePage === 'PetTracker' ? "text-raisin_black" : ""}`}>
+                  Pet Tracker</p>
             </button>
 
-            <button onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-              <i className={`transition-all fa-solid fa-earth-asia w-[30px] h-[30px] rounded-full bg-grass flex items-center justify-center text-xl text-pale_yellow group-hover:bg-raisin_black ${activePage === 'Foundations' ? "bg-raisin_black" : ""}`}></i>
-              <p className={`transition-all text-grass text-xl font-shining font-semibold group-hover:text-raisin_black ${activePage === 'Foundations' ? "text-raisin_black" : ""}`}>Foundations</p>
+            <button 
+              onClick={() => router.push('/Foundations')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+              <i 
+                className={`
+                text-md w-[35px] h-[35px]
+                flex items-center justify-center
+                fa-solid fa-earth-asia rounded-full 
+                bg-grass text-pale_yellow 
+                transition-all group-hover:bg-raisin_black 
+                ${activePage === 'Foundations' ? "bg-raisin_black" : ""}
+                `}/>
+              <p className={`
+                text-grass text-2xl
+                font-shining font-semibold 
+                transition-all  group-hover:text-raisin_black 
+                ${activePage === 'Foundations' ? "text-raisin_black" : ""}`}>
+                  Foundations</p>
             </button>
 
-            <button onClick={() => router.push(`/user/${username}`)} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-              <i className={`transition-all fa-solid fa-user w-[30px] h-[30px] rounded-full bg-grass flex items-center justify-center text-md text-pale_yellow group-hover:bg-raisin_black ${activePage === 'Foundations' ? "bg-raisin_black" : ""}`}></i>
-              <p className={`transition-all text-grass text-xl font-shining font-semibold group-hover:text-raisin_black ${activePage === 'Profile' ? "text-raisin_black" : ""}`}>Profile</p>
+            <button 
+              onClick={() => router.push(`/user/${username}`)} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+              <i 
+                className={`
+                text-md w-[35px] h-[35px]
+                flex items-center justify-center
+                fa-solid fa-user rounded-full 
+                bg-grass text-pale_yellow 
+                transition-all group-hover:bg-raisin_black 
+                ${activePage === 'Profile' ? "bg-raisin_black" : ""}
+                `}/>
+              <p className={`
+                text-grass text-2xl
+                font-shining font-semibold 
+                transition-all  group-hover:text-raisin_black 
+                ${activePage === 'Profile' ? "text-raisin_black" : ""}`}>
+                  Profile</p>
             </button>
 
-            <button onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-              <i className={`transition-all fa-solid fa-bell w-[30px] h-[30px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black ${activePage === 'Notifications' ? "bg-raisin_black" : ""}`}></i>
-              <p className={`transition-all text-grass text-xl font-shining font-semibold group-hover:text-raisin_black ${activePage === 'Notifications' ? "text-raisin_black" : ""}`}>Notifications</p>
+            <button 
+              onClick={() => router.push('/Notifications')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+              <i 
+                className={`
+                text-md w-[35px] h-[35px]
+                flex items-center justify-center
+                fa-solid fa-bell rounded-full 
+                bg-grass text-pale_yellow 
+                transition-all group-hover:bg-raisin_black 
+                ${activePage === 'Notifications' ? "bg-raisin_black" : ""}
+                `}/>
+              <p className={`
+                text-grass text-2xl
+                font-shining font-semibold 
+                transition-all  group-hover:text-raisin_black 
+                ${activePage === 'Notifications' ? "text-raisin_black" : ""}`}>
+                  Notifications</p>
             </button>
 
-            <button onClick={() => router.push(`/Settings`)} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-              <i className={`transition-all fa-solid fa-gear w-[30px] h-[30px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black ${activePage === 'Settings' ? "bg-raisin_black" : ""}`}></i>
-              <p className={`transition-all text-grass text-xl font-shining font-semibold group-hover:text-raisin_black ${activePage === 'Settings' ? "text-raisin_black" : ""}`}>Settings</p>
+            <button
+              onClick={() => router.push('/Settings')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+              <i 
+                className={`
+                text-md w-[35px] h-[35px]
+                flex items-center justify-center
+                fa-solid fa-gear rounded-full 
+                bg-grass text-pale_yellow 
+                transition-all group-hover:bg-raisin_black 
+                ${activePage === 'Settings' ? "bg-raisin_black" : ""}
+                `}/>
+              <p className={`
+                text-grass text-2xl
+                font-shining font-semibold 
+                transition-all  group-hover:text-raisin_black 
+                ${activePage === 'Settings' ? "text-raisin_black" : ""}`}>
+                  Settings</p>
             </button>
           </div>
 
@@ -66,8 +148,8 @@ export default function ExpandedNavBar({ props }) {
             }} 
             className='group flex flex-row items-center gap-2 pl-10 h-10'
             >
-            <i className='transition-all fa-solid fa-right-from-bracket pl-[2px] w-[30px] h-[30px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black'></i>
-            <p className='transition-all text-grass text-xl font-shining font-semibold group-hover:text-raisin_black'>Log Out</p>
+            <i className='transition-all fa-solid fa-right-from-bracket pl-[2px] w-[35px] h-[35px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black'></i>
+            <p className='transition-all text-grass text-2xl font-shining font-semibold group-hover:text-raisin_black'>Log Out</p>
           </button>
         </div>
     </>

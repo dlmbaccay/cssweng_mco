@@ -50,63 +50,63 @@ function Home() {
       return () => unsubscribe(); // Cleanup subscription on unmount
   }, []);
 
-  // const [posts, setPosts] = useState([]);
-  // const [lastVisible, setLastVisible] = useState(null);
-  // const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [lastVisible, setLastVisible] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   setLoading(true);
+  useEffect(() => {
+    setLoading(true);
 
-  //   // indexed in query builder
-  //   const q = query(
-  //     collection(firestore, "posts"),
-  //     orderBy("postDate", "desc"),
-  //     limit(5)
-  //   )
+    // indexed in query builder
+    const q = query(
+      collection(firestore, "posts"),
+      orderBy("postDate", "desc"),
+      limit(5)
+    )
 
-  //   const unsubscribe = onSnapshot(q, 
-  //       (snapshot) => {
-  //           const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    const unsubscribe = onSnapshot(q, 
+        (snapshot) => {
+            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
             
-  //           setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-  //           setPosts(newPosts);
-  //           setLoading(false);
-  //       },
-  //       (error) => {
-  //           console.error("Error fetching posts:", error);
-  //           setLoading(false);
-  //       }
-  //   );
+            setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+            setPosts(newPosts);
+            setLoading(false);
+        },
+        (error) => {
+            console.error("Error fetching posts:", error);
+            setLoading(false);
+        }
+    );
 
-  //   return () => unsubscribe();
-  // }, []);
+    return () => unsubscribe();
+  }, []);
 
-  // const fetchMorePosts = async () => {
-  //   if (lastVisible && !loading) {
-  //       setLoading(true);
-  //       const nextQuery = query(
-  //         collection(firestore, "posts"),
-  //         orderBy("postDate", "desc"), 
-  //         startAfter(lastVisible), 
-  //         limit(5)
-  //       );
+  const fetchMorePosts = async () => {
+    if (lastVisible && !loading) {
+        setLoading(true);
+        const nextQuery = query(
+          collection(firestore, "posts"),
+          orderBy("postDate", "desc"), 
+          startAfter(lastVisible), 
+          limit(5)
+        );
 
-  //       const querySnapshot = await getDocs(nextQuery);
-  //       const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-  //       setLastVisible(newLastVisible);
+        const querySnapshot = await getDocs(nextQuery);
+        const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setLastVisible(newLastVisible);
 
-  //       const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
-  //       setPosts(prevPosts => [...prevPosts, ...newPosts]);
-  //       setLoading(false);
-  //   }
-  // };
+        setPosts(prevPosts => [...prevPosts, ...newPosts]);
+        setLoading(false);
+    }
+  };
 
   if (!pageLoading) {
     return (
       <div className='flex flex-row w-full h-screen overflow-hidden'>
 
-        <div className='w-1/5'>
+        <div className='w-[20%]'>
           {(userPhotoURL && username) && <ExpandedNavBar 
             props={{
               userPhotoURL: userPhotoURL,
@@ -116,7 +116,7 @@ function Home() {
         />}
         </div>
 
-        <div className='w-4/5 bg-dark_gray'>            
+        <div className='w-full bg-dark_gray'>            
           {/* search and logo bar */}
           <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
               
@@ -128,7 +128,7 @@ function Home() {
               <input 
                 type='text'
                 placeholder='Search'
-                className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm ${isSearchInputFocused ? 'bg-dark_gray' : 'bg_dark_gray'}`}
+                className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
                 onFocus={() => setIsSearchInputFocused(true)}
                 onBlur={() => setIsSearchInputFocused(false)}
               />
@@ -147,21 +147,28 @@ function Home() {
           <div className='h-full w-full overflow-y-scroll'>
 
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
+              
               {/* create post */}
-              <div className='flex flex-row w-[700px] min-h-[100px] bg-snow drop-shadow-lg p-4 gap-2 rounded-3xl items-center justify-between'>
-                  {userPhotoURL && 
-                    <div className='h-full w-[10%] flex justify-center items-center'>
-                      <Image src={userPhotoURL} alt={'profile picture'} width={55} height={55} className='h-[55px] w-[55px] rounded-full drop-shadow-lg'/>
-                    </div>
-                  }
-                  <button
-                      className='h-[60px] w-[80%] text-sm rounded-xl bg-dark_gray flex pl-4 items-center hover:opacity-90 drop-shadow-sm'
-                      onClick={() => setShowCreatePostForm(true)}
-                  >
-                      What`s on your mind, {displayName}?
+              <div 
+                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md'>
+
+                  {userPhotoURL && <Image
+                    src={userPhotoURL}
+                    alt="user photo"
+                    width={50}
+                    height={50}
+                    onClick={() => router.push(`/user/${username}`)}
+                    className='rounded-full h-[50px] w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                  />}
+
+                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left pl-4 text-sm text-raisin_black hover:opacity-60 transition-all'>
+                    <p>What&apos;s on your mind, {displayName}?</p>
                   </button>
 
-                  {/* create post modal */}
+                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:opacity-60 transition-all flex items-center justify-center'>
+                    <i className='fa-solid fa-image'/>
+                  </button>
+
                   <Modal
                       isOpen={showCreatePostForm}
                       onRequestClose={() => setShowCreatePostForm(false)}
@@ -169,17 +176,18 @@ function Home() {
                   >
                       <CreatePost 
                         props={{
-                            currentUserID: user.uid,
-                            displayName: displayName,
-                            username: username,
-                            userPhotoURL: userPhotoURL,
-                            setShowCreatePostForm: setShowCreatePostForm,
+                          createType: 'original',
+                          currentUserID: user.uid,
+                          displayName: displayName,
+                          username: username,
+                          userPhotoURL: userPhotoURL,
+                          setShowCreatePostForm: setShowCreatePostForm,
                         }}
                       />
                   </Modal>
               </div>
 
-              {/* <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
+              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
                 
                 {posts.map((post, index) => (
                     <div key={post.id}>
@@ -214,7 +222,7 @@ function Home() {
                     Load More
                   </button>
                 )}
-              </div> */}
+              </div>
             </div>
 
           </div>
