@@ -14,7 +14,7 @@ import laughReaction from '/public/images/post-reactions/laugh.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { confirmationModalStyle, editPostModalStyle, sharePostModalStyle } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle } from '../lib/modalstyle';
 
 export default function PostSnippet({ props }) {
 
@@ -518,9 +518,9 @@ export default function PostSnippet({ props }) {
                     onClick={() => setShowDeletePostModal(true)}
                     ></i>
 
-                    <Modal isOpen={showDeletePostModal} onRequestClose={() => setShowDeletePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={confirmationModalStyle}>
-                      <div className='flex flex-col items-center justify-center gap-4'>
-                        <p className='font-bold text-base'>Are you sure you want to delete this post?</p>
+                    <Modal isOpen={showDeletePostModal} onRequestClose={() => setShowDeletePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={postDeleteConfirmationModalStyle}>
+                      <div className='flex flex-col items-center justify-center h-full gap-4'>
+                        <p className='font-bold text-center'>Are you sure you want to delete this post?</p>
                         <div className='flex flex-row gap-4'>
                           <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={() => setShowDeletePostModal(false)}>Cancel</button>
                           <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={handleDeletePost}>Delete</button>
