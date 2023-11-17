@@ -252,8 +252,16 @@ export default function PostSnippet({ props }) {
                     <Link href={'/user/' + authorUsername} id='display-name' className='hover:text-grass hover:font-bold transition-all'><p>@{authorUsername}</p></Link>
                   </div>
   
-                  <div id='publish-date'> {/* YYYY-MM-DD at HH-MM */}
+                  <div id='publish-date' className='flex flex-row gap-2 items-center'> {/* YYYY-MM-DD at HH-MM */}
                     <p className='text-sm'>{formatDate(postDate)}</p>
+                    {isEdited ? 
+                      ( 
+                        <div className='relative flex flex-row items-center gap-2'>
+                          <i className='hover-tooltip fa-solid fa-clock-rotate-left text-xs'/> 
+                          <p className='edited-post-tooltip hidden text-xs'>Edited Post</p>
+                        </div>
+                      )
+                    : null}
                   </div>
               </div>
             </div>
@@ -400,9 +408,6 @@ export default function PostSnippet({ props }) {
             </div>
 
             <div id="right" className='flex flex-row gap-4 items-center'>
-              
-              <p className='italic text-sm font-semibold'>{isEdited ? "edited" : ""}</p>
-
               {currentUserID !== authorID && 
                 <div id='report-control'>
                   <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"></i>
