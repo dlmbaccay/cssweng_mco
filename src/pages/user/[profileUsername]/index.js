@@ -463,13 +463,13 @@ function UserProfilePage() {
     return (
         <div id="root" className='flex flex-row h-screen'>
 
-            <div className='w-[20%]'>
+            <div className='w-fit'>
                 {(userPhotoURL && username) && <ExpandedNavBar 
                     props={{
                     userPhotoURL: userPhotoURL,
                     username: username,
                     activePage: "Profile",
-                    expanded: true
+                    expanded: false
                     }}
                 />}
             </div>
