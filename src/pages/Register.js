@@ -131,7 +131,7 @@ export default function Register() {
                             <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
                             <li className='text-sm text-slate-600'><span className={`bullet ${/[A-Z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one uppercase letter.</li>
                             <li className='text-sm text-slate-600'><span className={`bullet ${/[a-z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one lowercase letter.</li>
-                            <li className='text-sm text-slate-600'><span className={`bullet ${/[0-9]$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>
+                            <li className='text-sm text-slate-600'><span className={`bullet ${/[0-9]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>
                             <li className='text-sm text-slate-600'><span className={`bullet ${/\W/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one special character.</li>
                         </ul>
                     </div>
