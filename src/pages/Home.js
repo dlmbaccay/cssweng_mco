@@ -132,7 +132,6 @@ function Home() {
           <div className='h-full w-full overflow-y-scroll'>
 
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
-              
               {/* create post */}
               <div 
                 className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md'>
