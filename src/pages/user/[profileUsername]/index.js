@@ -38,8 +38,6 @@ function UserProfilePage() {
     const [currentUser, setCurrentUser] = useState(null); // Current user data
     const [profileUser, setProfileUser] = useState(null); // Profile user data
     const [pets, setPets] = useState([]); // pets of the profile user
-    const [petIDs, setPetIDs] = useState([]); // pet IDs of the profile user
-    const [postIDs, setPostIDs] = useState([]); // post IDs of the profile user
 
     // variables for user profile
     const [username, setUsername] = useState(null);
@@ -60,6 +58,7 @@ function UserProfilePage() {
     const [editedDisplayName, setEditedDisplayName] = useState(null);
     const [editedAbout, setEditedAbout] = useState(null);
     const [editedLocation, setEditedLocation] = useState(null);
+    const [editedPhoneNumber, setEditedPhoneNumber] = useState(null);
 
     // variables for pet profile and pet deletion
     const [showCreatePetForm, setShowCreatePetForm] = useState(false);
@@ -100,7 +99,6 @@ function UserProfilePage() {
         let unsubscribe;
 
         if (profileUserID) { // info of the user whose profile is being viewed
-
             const userRef = firestore.collection('users').doc(profileUserID);
             unsubscribe = userRef.onSnapshot((doc) => {
                 setProfileUser({
@@ -110,19 +108,19 @@ function UserProfilePage() {
                 setUsername(doc.data()?.username);
                 setAbout(doc.data()?.about);
                 setDisplayName(doc.data()?.displayName);
-                setEmail(doc.data()?.email);
-                setPhoneNumber(doc.data()?.phoneNumber);
                 setUserPhotoURL(doc.data()?.photoURL);
                 setCoverPhotoURL(doc.data()?.coverPhotoURL);
-                setGender(doc.data()?.gender);
-                setBirthdate(doc.data()?.birthdate);
-                setLocation(doc.data()?.location);
                 setHidden(doc.data()?.hidden);
-                setPetIDs(doc.data()?.pets);
-
+                
                 setFollowers(doc.data()?.followers);
                 setFollowing(doc.data()?.following);
-
+                
+                setBirthdate(doc.data()?.birthdate);
+                setGender(doc.data()?.gender);
+                setEmail(doc.data()?.email);
+                setPhoneNumber(doc.data()?.phoneNumber);
+                setLocation(doc.data()?.location);
+                
                 setEditedDisplayName(doc.data()?.displayName);
                 setEditedAbout(doc.data()?.about);
                 setEditedLocation(doc.data()?.location);
@@ -554,95 +552,114 @@ function UserProfilePage() {
                                             </div>
                                         </div>
 
-                                        <div className='flex flex-row w-full gap-16 bg-snow p-4'>
-                                            {/* Display Name */}
-                                            <div className="w-full">
-                                                <label
-                                                    htmlFor="display-name"
-                                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                                >
-                                                    <span>Display Name</span>
-                                                    <span className="text-red-500"> *</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    id='display-name'
-                                                    className="p-2 border rounded-md w-full"
-                                                    placeholder="Enter your username"
-                                                    maxLength={30}
-                                                    minLength={1}
-                                                    value={editedDisplayName}
-                                                    onChange={(e) => { handleDisplayNameVal(e.target.value) }}
-                                                    required
-                                                />
+                                        <div className='flex flex-row w-full h-fit gap-4 justify-center items-cet'>
+                                            <div className='flex flex-col w-[50%] gap-4 rounded-lg bg-snow p-4'>
+                                                {/* Display Name */}
+                                                <div className="w-full">
+                                                    <label
+                                                        htmlFor="display-name"
+                                                        className="block text-sm font-medium text-gray-700 mb-1"
+                                                    >
+                                                        <span>Display Name</span>
+                                                        <span className="text-red-500"> *</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id='display-name'
+                                                        className="p-2 border rounded-md w-full"
+                                                        placeholder="Enter your username"
+                                                        maxLength={30}
+                                                        minLength={1}
+                                                        value={editedDisplayName}
+                                                        onChange={(e) => { handleDisplayNameVal(e.target.value) }}
+                                                        required
+                                                    />
 
-                                                <DisplayNameMessage editedDisplayName={editedDisplayName} editedDisplayNameValid={editedDisplayNameValid} />
+                                                    <DisplayNameMessage editedDisplayName={editedDisplayName} editedDisplayNameValid={editedDisplayNameValid} />
+                                                </div>
+
+                                                {/* Location */}
+                                                <div className="w-full">
+                                                    <label
+                                                        htmlFor="location"
+                                                        className="block text-sm font-medium text-gray-700 mb-1"
+                                                    >
+                                                        Location
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id='location'
+                                                        name="location"
+                                                        className="p-2 border rounded-md w-full"
+                                                        placeholder="Enter your Location"
+                                                        value={editedLocation}
+                                                        onChange={(e) => setEditedLocation(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                {/* About */}
+                                                <div className="w-full">
+                                                    <label
+                                                        htmlFor="about"
+                                                        className="block text-sm font-medium text-gray-700"
+                                                    >
+                                                        About
+                                                    </label>
+                                                    <textarea
+                                                        id='about'
+                                                        className="mt-1 p-2 border rounded-lg w-full resize-none"
+                                                        rows="3"
+                                                        placeholder="Tell us about yourself..."
+                                                        value={editedAbout}
+                                                        onChange={e => setEditedAbout(e.target.value)}
+                                                    />
+                                                </div>
                                             </div>
 
-                                            {/* location */}
-                                            <div className="w-full">
-                                                <label
-                                                    htmlFor="location"
-                                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                                >
-                                                    Location
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    id='location'
-                                                    name="location"
-                                                    className="p-2 border rounded-md w-full"
-                                                    placeholder="Enter your Location"
-                                                    value={editedLocation}
-                                                    onChange={(e) => setEditedLocation(e.target.value)}
-                                                />
+                                            <div className='flex flex-col w-fit h-fit gap-4 rounded-lg bg-snow p-4 '>
+                                                <div className='flex flex-row gap-2 items-center'>
+                                                    <i className="fa-solid fa-calendar"></i>
+                                                    <p>{birthdate}</p>
+                                                </div>
+
+                                                <div className='flex flex-row gap-2 items-center'>
+                                                    <i className="fa-solid fa-location-dot"></i>
+                                                    <p>{location}</p>
+                                                </div>
+
+                                                <div className='flex flex-row gap-2 items-center'>
+                                                    <i className="fa-solid fa-venus-mars"></i>
+                                                    <p>{gender}</p>
+                                                </div>
+
+                                                <div className='flex flex-row gap-2 items-center'>
+                                                    <i className="fa-solid fa-phone"></i>
+                                                    <p>{phoneNumber}</p>
+                                                </div>
+
+                                                <div className='flex flex-row gap-2 items-center'>
+                                                    <i className="fa-solid fa-envelope"></i>
+                                                    <p>{email}</p>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* about */}
-                                        <div className="bg-snow p-4">
-                                            <label
-                                                htmlFor="about"
-                                                className="block text-sm font-medium text-gray-700"
+
+                                        <div className="flex justify-end gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditProfile(false)}
+                                                className="bg-red-500 text-white py-2 px-3 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
                                             >
-                                                About
-                                            </label>
-                                            <textarea
-                                                id='about'
-                                                className="mt-1 p-2 border rounded-lg w-full resize-none"
-                                                rows="3"
-                                                placeholder="Tell us about yourself..."
-                                                value={editedAbout}
-                                                onChange={e => setEditedAbout(e.target.value)}
-                                            />
-                                        </div>
+                                                Cancel
+                                            </button>
 
-                                        <div className='flex flex-row w-full justify-evenly'>
-                                            <div className='font-medium'>
-                                                <p>Gender: {gender}</p>
-                                            </div>
-
-                                            <div className="font-medium">
-                                                <p>Birthdate: {birthdate}</p>
-                                            </div>
-                                        </div>
-
-
-                                        <div className="flex justify-end">
                                             <button
                                                 onClick={handleEditProfileSave} disabled={!editedDisplayNameValid}
                                                 type="submit"
                                                 className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${(!isUploadingCoverPhoto && editedDisplayNameValid) ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}
                                             >
                                                 Save
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowEditProfile(false)}
-                                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                            >
-                                                Cancel
                                             </button>
                                         </div>
                                     </div>
