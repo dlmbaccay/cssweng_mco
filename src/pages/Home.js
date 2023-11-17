@@ -97,7 +97,8 @@ function Home() {
             props={{
               userPhotoURL: userPhotoURL,
               username: username,
-              activePage: "Home"
+              activePage: "Home",
+              expanded: true
             }}
         />}
         </div>

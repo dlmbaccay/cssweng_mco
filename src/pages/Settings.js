@@ -208,10 +208,11 @@ function Settings() {
                 {/* home navbar */}
                 <div className='w-[20%]'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
-                        props={{
-                        userPhotoURL: userPhotoURL,
-                        username: username,
-                        activePage: "Settings"
+                            props={{
+                            userPhotoURL: userPhotoURL,
+                            username: username,
+                            activePage: "Settings",
+                            expanded: true
                         }}
                     />}
                 </div>

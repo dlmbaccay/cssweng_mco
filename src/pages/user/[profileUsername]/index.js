@@ -11,6 +11,7 @@ import { useUserData, usePetData, useUserIDfromUsername, useAllUserPosts } from 
 import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
 
 import NavBar from '@/src/components/NavBar';
+import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import RoundIcon from '@/src/components/RoundIcon';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import PostSnippet from '@/src/components/PostSnippet';
@@ -143,31 +144,6 @@ function UserProfilePage() {
 
         return unsubscribe;
     }, [profileUserID]);
-       
-    // // fetch all posts of the profile user
-    // useEffect(() => {
-    //     let unsubscribe;
-
-    //     if (profileUserID) {
-    //         const postsCollectionRef = firestore.collection('posts').where("authorID", "==", profileUserID);
-    //         unsubscribe = postsCollectionRef.onSnapshot((querySnapshot) => {
-    //             const postsData = [];
-
-    //             querySnapshot.forEach((doc) => {
-    //                 postsData.push({
-    //                     id: doc.id,
-    //                     ...doc.data()
-    //                 });
-    //             });
-
-    //             setPosts(postsData);
-    //         });
-    //     } else {
-    //         setPosts([]);
-    //     }
-        
-    //     return unsubscribe;
-    // }, [profileUserID]);
 
     // fetch all pets of the profile user
     useEffect(() => {
@@ -485,12 +461,22 @@ function UserProfilePage() {
     };
 
     return (
-        <div id="root" className='flex h-screen'>
-            <NavBar />
+        <div id="root" className='flex flex-row h-screen'>
+
+            <div className='w-[20%]'>
+                {(userPhotoURL && username) && <ExpandedNavBar 
+                    props={{
+                    userPhotoURL: userPhotoURL,
+                    username: username,
+                    activePage: "Profile",
+                    expanded: true
+                    }}
+                />}
+            </div>
 
             {profileUser &&
 
-                <div className="flex-1 h-screen">
+                <div className="h-screen w-full">
                     <div id='header-container' className='h-1/5 border-l border-neutral-300'>
                         <CoverPhoto src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} />
                     </div>
