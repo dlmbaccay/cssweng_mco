@@ -16,7 +16,7 @@ import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
 import { confirmationModalStyle, editPostModalStyle, sharePostModalStyle } from '../lib/modalstyle';
 
-export default function Post({ props }) {
+export default function PostSnippet({ props }) {
 
     useEffect(() => {
       if (document.getElementById('root')) {
@@ -25,13 +25,11 @@ export default function Post({ props }) {
     }, []);
 
     const {
-        currentUserID, postID, postBody, postCategory,
+        currentUserID, postID, postBody, postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername,
         authorPhotoURL, likes, comments
     } = props 
-
-    const [error, setError] = useState(null);
 
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -39,6 +37,8 @@ export default function Post({ props }) {
     const [taggedPets, setTaggedPets] = useState([]);
 
     const [editedCategory, setEditedCategory] = useState({ value: postCategory, label: postCategory });
+
+    const [editedPostTrackerLocation, setEditedPostTrackerLocation] = useState(postTrackerLocation);
 
     const handleSelectEditedCategory = (editedCategory) => {
       setEditedCategory(editedCategory);
@@ -115,19 +115,20 @@ export default function Post({ props }) {
 
     const [showSharePostModal, setShowSharePostModal] = useState(false);
     const [showEditPostModal, setShowEditPostModal] = useState(false);
-    const [newPostBody, setNewPostBody] = useState(postBody);
+    const [editedPostBody, setEditedPostBody] = useState(postBody);
 
     const handleEditPost = async () => {
 
-      if (!newPostBody) {
+      if (!editedPostBody || !editedPostTrackerLocation) {
         toast.error('Bark up some words for your post!');
         return;
       }
 
       const postRef = firestore.collection('posts').doc(postID);
       await postRef.update({
-        postBody: newPostBody,
+        postBody: editedPostBody,
         postCategory: editedCategory.value,
+        postTrackerLocation: editedPostTrackerLocation,
       });
 
       // reload page
@@ -263,7 +264,7 @@ export default function Post({ props }) {
 
           {/* Body */}
           <div id='post-body' className='mt-3 flex flex-col'>
-            <div id='post-pets' className='mr-auto mb-1'>
+            <div id='post-pets' className='mr-auto mb-2'>
               {/* display their names */}
               {postPets.length > 0 && (
                 <div className='flex flex-row items-center justify-center gap-2'>
@@ -273,6 +274,13 @@ export default function Post({ props }) {
                 </div>
               )}
             </div>
+
+            { (postCategory === 'Lost Pets' || postCategory === 'Found Pets') && 
+              <div className='flex flex-row items-center gap-2 mb-2'>
+                <i className='fa-solid fa-location-crosshairs'/>
+                <p className='line-clamp-1 overflow-hidden text-md'>{postTrackerLocation}</p>
+              </div>
+            }
 
             <div id='post-text'>
               <p className='whitespace-pre-line line-clamp-4 overflow-hidden'>{postBody}</p>
@@ -342,8 +350,8 @@ export default function Post({ props }) {
                           <div className='h-full mt-2 mb-3'>
                               <textarea 
                                   id="post-body" 
-                                  value={newPostBody}
-                                  onChange={(event) => setNewPostBody(event.target.value)}
+                                  value={editedPostBody}
+                                  onChange={(event) => setEditedPostBody(event.target.value)}
                                   placeholder='Say something about this...' 
                                   className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-full p-4' 
                               />
@@ -406,31 +414,60 @@ export default function Post({ props }) {
                           <p className='font-semibold'>Edit Post</p>
                         </div>
 
-                        <div className='h-full'>
+                        <div className='h-full mt-2 mb-4 w-full flex flex-col justify-start gap-4'>
 
-                          <Select 
-                              options={[
-                                  {value: 'Default', label: 'Default'},
-                                  {value: 'Q&A', label: 'Q&A'},
-                                  {value: 'Tips', label: 'Tips'},
-                                  {value: 'Pet Needs', label: 'Pet Needs'},
-                                  {value: 'Lost Pets', label: 'Lost Pets'},
-                                  {value: 'Found Pets', label: 'Found Pets'},
-                                  {value: 'Milestones', label: 'Milestones'},
-                              ]}
-                              value={editedCategory}
-                              defaultValue={{value: 'Default', label: 'Default'}}
-                              onChange={handleSelectEditedCategory}
-                              placeholder='Category'
-                              className='w-full'
-                          />
+                          {
+                            (postCategory === 'Lost Pets' || postCategory === 'Found Pets') && 
+                              <Select 
+                                options={[
+                                    {value: 'Lost Pets', label: 'Lost Pets'},
+                                    {value: 'Found Pets', label: 'Found Pets'},
+                                ]}
+                                value={editedCategory}
+                                defaultValue={{value: 'Default', label: 'Default'}}
+                                onChange={handleSelectEditedCategory}
+                                placeholder='Category'
+                                className='w-full'
+                              />
+                          }
+
+                          {
+                            (postCategory !== 'Lost Pets' && postCategory !== 'Found Pets') && 
+                              <Select 
+                                  options={[
+                                      {value: 'Default', label: 'Default'},
+                                      {value: 'Q&A', label: 'Q&A'},
+                                      {value: 'Tips', label: 'Tips'},
+                                      {value: 'Pet Needs', label: 'Pet Needs'},
+                                      {value: 'Milestones', label: 'Milestones'},
+                                  ]}
+                                  value={editedCategory}
+                                  defaultValue={{value: 'Default', label: 'Default'}}
+                                  onChange={handleSelectEditedCategory}
+                                  placeholder='Category'
+                                  className='w-full'
+                                />
+                          }
+
+                          {
+                            (postCategory === 'Lost Pets' || postCategory === 'Found Pets') &&
+                              <input 
+                                  id='tracker-location'
+                                  type='text'
+                                  maxLength={50}
+                                  value={editedPostTrackerLocation}
+                                  onChange={(event) => setEditedPostTrackerLocation(event.target.value)}
+                                  placeholder='Tracker Location'
+                                  className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4'
+                                />
+                          }
 
                           <textarea 
                               id="post-body" 
-                              value={newPostBody}
-                              onChange={(event) => setNewPostBody(event.target.value)}
+                              value={editedPostBody}
+                              onChange={(event) => setEditedPostBody(event.target.value)}
                               placeholder='What`s on your mind?' 
-                              className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[60%] p-4 mt-4' 
+                              className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full p-4 h-full' 
                           />
                         </div>
                         

@@ -536,6 +536,7 @@ function PetProfilePage() {
                                                         postID: post.id,
                                                         postBody: post.postBody,
                                                         postCategory: post.postCategory,
+                                                          postTrackerLocation: post.postTrackerLocation,
                                                         postPets: post.postPets,
                                                         postDate: post.postDate,
                                                         imageUrls: post.imageUrls,

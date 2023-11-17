@@ -17,9 +17,16 @@ export default function CreatePost({ props }) {
     const currentUserPets = useCurrentUserPets();
 
     const [postBody, setPostBody] = useState('')
+    const [postTrackerLocation, setPostTrackerLocation] = useState('')
 
     const [selectedPets, setSelectedPets] = useState([])
-    const [selectedCategory, setSelectedCategory] = useState({value: 'Default', label: 'Default'})
+    
+    const [selectedCategory, setSelectedCategory] = useState(
+        createType === 'original' 
+        ? {value: 'Default', label: 'Default'} 
+        : {value: 'Lost Pets', label: 'Lost Pets'}
+    );
+
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
 
@@ -102,6 +109,7 @@ export default function CreatePost({ props }) {
             id: postID,
             postBody,
             postCategory,
+            postTrackerLocation,
             postPets,
             postDate,
             imageUrls,
@@ -154,21 +162,37 @@ export default function CreatePost({ props }) {
         {/* category and pets selection */}
         <div className='flex flex-row justify-center items-center mt-4'>
             <div className='w-full flex flex-row gap-4'>
-                <Select
-                    options={[
-                        {value: 'Default', label: 'Default'},
-                        {value: 'Q&A', label: 'Q&A'},
-                        {value: 'Tips', label: 'Tips'},
-                        {value: 'Pet Needs', label: 'Pet Needs'},
-                        {value: 'Lost Pets', label: 'Lost Pets'},
-                        {value: 'Found Pets', label: 'Found Pets'},
-                        {value: 'Milestones', label: 'Milestones'},
-                    ]}
-                    value={selectedCategory}
-                    onChange={handleSelectCategory}
-                    placeholder='Category'
-                    className='w-1/3'
-                />
+                
+                {createType === 'original' && 
+                    <Select
+                        options={[
+                            {value: 'Default', label: 'Default'},
+                            {value: 'Q&A', label: 'Q&A'},
+                            {value: 'Tips', label: 'Tips'},
+                            {value: 'Pet Needs', label: 'Pet Needs'},
+                            {value: 'Lost Pets', label: 'Lost Pets'},
+                            {value: 'Found Pets', label: 'Found Pets'},
+                            {value: 'Milestones', label: 'Milestones'},
+                        ]}
+                        value={selectedCategory}
+                        onChange={handleSelectCategory}
+                        placeholder='Category'
+                        className='w-1/3'
+                    />
+                }
+
+                {createType === 'tracker' && 
+                    <Select
+                        options={[
+                            {value: 'Lost Pets', label: 'Lost Pets'},
+                            {value: 'Found Pets', label: 'Found Pets'},
+                        ]}
+                        value={selectedCategory}
+                        onChange={handleSelectCategory}
+                        placeholder='Category'
+                        className='w-1/3'
+                    />
+                }
 
                 {currentUserPets && (
                     <Select 
@@ -184,13 +208,28 @@ export default function CreatePost({ props }) {
         </div>  
 
         {/* post body */}
-        <div className='h-full mt-6'>
+        <div className='h-full mt-4'>
+
+            {selectedCategory && 
+                ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Found Pets')) &&
+                        <input 
+                            id='tracker-location'
+                            type='text'
+                            maxLength={50}
+                            value={postTrackerLocation}
+                            onChange={(event) => setPostTrackerLocation(event.target.value)}
+                            placeholder='Tracker Location'
+                            className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
+                        />
+                )    
+            }
+
             <textarea 
                 id="post-body" 
                 value={postBody}
                 onChange={(event) => setPostBody(event.target.value)}
                 placeholder='What`s on your mind?' 
-                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-full p-4' 
+                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full p-4 h-[80%]' 
             />
         </div>
 
@@ -239,7 +278,7 @@ export default function CreatePost({ props }) {
             <button 
                 type='submit'
                 className='flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-[10px]
-                hover:bg-pistachio †ransition duration-200 ease-in-out'
+                hover:bg-pistachio transition duration-200 ease-in-out'
             >
                 <p className='font-bold'>Post</p> 
             </button>
