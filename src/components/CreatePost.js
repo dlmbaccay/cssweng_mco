@@ -117,6 +117,7 @@ export default function CreatePost({ props }) {
             authorDisplayName: displayName,
             authorUsername: username,
             authorPhotoURL: userPhotoURL,
+            isEdited: false,
             likes: [],
             comments: [],
         }
@@ -170,9 +171,9 @@ export default function CreatePost({ props }) {
                             {value: 'Q&A', label: 'Q&A'},
                             {value: 'Tips', label: 'Tips'},
                             {value: 'Pet Needs', label: 'Pet Needs'},
-                            {value: 'Lost Pets', label: 'Lost Pets'},
-                            {value: 'Found Pets', label: 'Found Pets'},
                             {value: 'Milestones', label: 'Milestones'},
+                            {value: 'Lost Pets', label: 'Lost Pets'},
+                            {value: 'Unknown Owner', label: 'Unknown Owner'},
                         ]}
                         value={selectedCategory}
                         onChange={handleSelectCategory}
@@ -185,7 +186,7 @@ export default function CreatePost({ props }) {
                     <Select
                         options={[
                             {value: 'Lost Pets', label: 'Lost Pets'},
-                            {value: 'Found Pets', label: 'Found Pets'},
+                            {value: 'Unknown Owner', label: 'Unknown Owner'},
                         ]}
                         value={selectedCategory}
                         onChange={handleSelectCategory}
@@ -211,7 +212,7 @@ export default function CreatePost({ props }) {
         <div className='h-full mt-4'>
 
             {selectedCategory && 
-                ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Found Pets')) &&
+                ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Unknown Owner')) &&
                         <input 
                             id='tracker-location'
                             type='text'

@@ -25,10 +25,12 @@ export default function PostSnippet({ props }) {
     }, []);
 
     const {
-        currentUserID, postID, postBody, postCategory, postTrackerLocation,
+        currentUserID, postID, postBody, 
+        postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername,
-        authorPhotoURL, likes, comments
+        authorPhotoURL, likes, comments,
+        isEdited
     } = props 
 
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
@@ -119,9 +121,16 @@ export default function PostSnippet({ props }) {
 
     const handleEditPost = async () => {
 
-      if (!editedPostBody || !editedPostTrackerLocation) {
+      if (!editedPostBody) {
         toast.error('Bark up some words for your post!');
         return;
+      }
+
+      if (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') {
+        if (!editedPostTrackerLocation) {
+          toast.error('Please enter a tracker location!');
+          return;
+        }
       }
 
       const postRef = firestore.collection('posts').doc(postID);
@@ -129,6 +138,7 @@ export default function PostSnippet({ props }) {
         postBody: editedPostBody,
         postCategory: editedCategory.value,
         postTrackerLocation: editedPostTrackerLocation,
+        isEdited: true
       });
 
       // reload page
@@ -228,7 +238,7 @@ export default function PostSnippet({ props }) {
       ) : (
         <div className='drop-shadow-sm hover:drop-shadow-md bg-snow w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
           {/* Header */}
-          <div id="post-header" className='flex flex-row'>
+          <div id="post-header" className='flex flex-row justify-between'>
 
             <div className='flex flex-row justify-start items-start '>
               <div id="user-image">
@@ -248,16 +258,13 @@ export default function PostSnippet({ props }) {
               </div>
             </div>
 
-            <div className='flex flex-col justify-start items-start ml-auto w-fit'>
-              {/* Category */}
-              <div id='post-category'>
-                {postCategory !== 'Default' && (
-                  <div className='flex flex-row items-center justify-center gap-2'>
-                    <div className='w-3 h-3 rounded-full bg-grass'></div>
-                    <p>{postCategory}</p>
-                  </div>
-                )}
-              </div>
+            <div className='flex flex-col w-fit items-end'>
+              {postCategory !== 'Default' && (
+                <div className='flex flex-row items-center justify-center gap-2'>
+                  <div className='w-3 h-3 rounded-full bg-grass'></div>
+                  <p>{postCategory}</p>
+                </div>
+              )}
             </div>
 
           </div>
@@ -275,7 +282,7 @@ export default function PostSnippet({ props }) {
               )}
             </div>
 
-            { (postCategory === 'Lost Pets' || postCategory === 'Found Pets') && 
+            { (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') && 
               <div className='flex flex-row items-center gap-2 mb-2'>
                 <i className='fa-solid fa-location-crosshairs'/>
                 <p className='line-clamp-1 overflow-hidden text-md'>{postTrackerLocation}</p>
@@ -392,9 +399,11 @@ export default function PostSnippet({ props }) {
               </div>
             </div>
 
-            <div id="right" className='flex flex-row gap-4'>
+            <div id="right" className='flex flex-row gap-4 items-center'>
               
-              {!currentUserID && 
+              <p className='italic text-sm font-semibold'>{isEdited ? "edited" : ""}</p>
+
+              {currentUserID !== authorID && 
                 <div id='report-control'>
                   <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"></i>
                 </div>
@@ -417,14 +426,12 @@ export default function PostSnippet({ props }) {
                         <div className='h-full mt-2 mb-4 w-full flex flex-col justify-start gap-4'>
 
                           {
-                            (postCategory === 'Lost Pets' || postCategory === 'Found Pets') && 
+                            (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') && 
                               <Select 
                                 options={[
-                                    {value: 'Lost Pets', label: 'Lost Pets'},
-                                    {value: 'Found Pets', label: 'Found Pets'},
+                                    {value: 'Retrieved Pets', label: 'Retrieved Pets'},
                                 ]}
                                 value={editedCategory}
-                                defaultValue={{value: 'Default', label: 'Default'}}
                                 onChange={handleSelectEditedCategory}
                                 placeholder='Category'
                                 className='w-full'
@@ -432,7 +439,21 @@ export default function PostSnippet({ props }) {
                           }
 
                           {
-                            (postCategory !== 'Lost Pets' && postCategory !== 'Found Pets') && 
+                            (postCategory === 'Retrieved Pets') && 
+                              <Select 
+                                options={[
+                                    {value: 'Lost Pets', label: 'Lost Pets'},
+                                    {value: 'Unknown Owner', label: 'Unknown Owner'},
+                                ]}
+                                value={editedCategory}
+                                onChange={handleSelectEditedCategory}
+                                placeholder='Category'
+                                className='w-full'
+                              />
+                          }
+
+                          {
+                            (postCategory !== 'Lost Pets' && postCategory !== 'Unknown Owner' && postCategory !== 'Retrieved Pets') && 
                               <Select 
                                   options={[
                                       {value: 'Default', label: 'Default'},
@@ -442,7 +463,6 @@ export default function PostSnippet({ props }) {
                                       {value: 'Milestones', label: 'Milestones'},
                                   ]}
                                   value={editedCategory}
-                                  defaultValue={{value: 'Default', label: 'Default'}}
                                   onChange={handleSelectEditedCategory}
                                   placeholder='Category'
                                   className='w-full'
@@ -450,7 +470,7 @@ export default function PostSnippet({ props }) {
                           }
 
                           {
-                            (postCategory === 'Lost Pets' || postCategory === 'Found Pets') &&
+                            (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') &&
                               <input 
                                   id='tracker-location'
                                   type='text'
@@ -473,13 +493,13 @@ export default function PostSnippet({ props }) {
                         
                         <div className='flex flex-row gap-2'>
                           <button 
-                            className='px-4 py-2 bg-black text-white font-semibold hover:bg-red-600 rounded-lg text-sm cursor-pointer w-1/2 transition-all'
+                            className='px-4 py-2 font-semibold hover:bg-black hover:text-snow rounded-lg text-sm cursor-pointer w-1/2 transition-all'
                             onClick={() => setShowEditPostModal(false)}>
                               Cancel
                           </button>
 
                           <button 
-                            className='bg-xanthous hover:bg-pistachio text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all' 
+                            className='bg-black hover:bg-grass text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all' 
                             onClick={handleEditPost}>
                               Save
                           </button>
@@ -497,8 +517,8 @@ export default function PostSnippet({ props }) {
                       <div className='flex flex-col items-center justify-center gap-4'>
                         <p className='font-bold text-base'>Are you sure you want to delete this post?</p>
                         <div className='flex flex-row gap-4'>
-                          <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={handleDeletePost}>Delete</button>
                           <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={() => setShowDeletePostModal(false)}>Cancel</button>
+                          <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={handleDeletePost}>Delete</button>
                         </div>
                       </div>
                     </Modal>

@@ -49,14 +49,15 @@ export default function PetTracker() {
     const [lastVisibleFound, setLastVisibleFound] = useState(null);
     const [loadingFound, setLoadingFound] = useState(false);
 
-    // Initial fetch for Lost Pets
+    // Initial fetch for Lost Pets & Unknown Owner
     useEffect(() => {
         setLoadingLost(true);
 
         const q = query(
-        collection(firestore, "posts"), 
-        where("postCategory", "==", "Lost Pets"),
-        orderBy("postDate", "desc"), limit(3)
+            collection(firestore, "posts"), 
+            where("postCategory", "in", ["Lost Pets", "Unknown Owner"]),
+            orderBy("postDate", "desc"), 
+            limit(5)
         );
 
         const unsubscribe = onSnapshot(q, 
@@ -75,15 +76,15 @@ export default function PetTracker() {
         return () => unsubscribe();
     }, []);
 
-    // Initial fetch for Found Pets
+    // Initial fetch for Unknown Pets
     useEffect(() => {
         setLoadingFound(true);
 
         const q = query(
-        collection(firestore, "posts"), 
-        where("postCategory", "==", "Found Pets"),
-        orderBy("postDate", "desc"), 
-        limit(3)
+            collection(firestore, "posts"), 
+            where("postCategory", "==", "Retrieved Pets"),
+            orderBy("postDate", "desc"), 
+            limit(5)
         );
 
         const unsubscribe = onSnapshot(q, 
@@ -102,13 +103,13 @@ export default function PetTracker() {
         return () => unsubscribe();
     }, []);
 
-    // Fetch more Lost Pets
+    // Fetch more Lost Pets & Unknown Owner
     const fetchMoreLostPets = async () => {
         if (lastVisibleLost && !loadingLost) {
             setLoadingLost(true);
             const nextQuery = query(
             collection(firestore, "posts"), 
-            where("postCategory", "==", "Lost Pets"),
+            where("postCategory", "in", ["Lost Pets", "Unknown Owner"]),
             orderBy("postDate", "desc"), 
             startAfter(lastVisibleLost), 
             limit(3)
@@ -123,16 +124,16 @@ export default function PetTracker() {
         }
     };
 
-    // Fetch more Found Pets
+    // Fetch more Retrieved Pets
     const fetchMoreFoundPets = async () => {
         if (lastVisibleFound && !loadingFound) {
             setLoadingFound(true);
             const nextQuery = query(
             collection(firestore, "posts"), 
-            where("postCategory", "==", "Found Pets"),
+            where("postCategory", "==", "Retrieved Pets"),
             orderBy("postDate", "desc"), 
             startAfter(lastVisibleFound), 
-            limit(3)
+            limit(5)
             );
             const querySnapshot = await getDocs(nextQuery);
             const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -236,10 +237,10 @@ export default function PetTracker() {
                         </button>
 
                         <button
-                            onClick={() => setActiveContainer('Found Pets')}
-                            className={`transition-all w-1/2 h-full rounded-r-lg text-raisin_black font-bold font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'Found Pets' ? 'text-snow bg-grass' : ''}`}
+                            onClick={() => setActiveContainer('Retrieved Pets')}
+                            className={`transition-all w-1/2 h-full rounded-r-lg text-raisin_black font-bold font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'Retrieved Pets' ? 'text-snow bg-grass' : ''}`}
                         >
-                            Found Pets
+                            Retrieved Pets
                         </button>
                     </div>
 
@@ -264,6 +265,7 @@ export default function PetTracker() {
                                         authorPhotoURL: post.authorPhotoURL,
                                         likes: post.likes,
                                         comments: post.comments,
+                                        isEdited: post.isEdited,
                                     }}
                                     />
                                 ))}
@@ -279,7 +281,7 @@ export default function PetTracker() {
                                 )}
                                 </div>
                             )}
-                            {activeContainer === 'Found Pets' && (
+                            {activeContainer === 'Retrieved Pets' && (
                                 <div className='w-full flex flex-col justify-start gap-8 items-center'>
                                 {foundPets.map((post, index) => (
                                     <PostSnippet key={post.id}
@@ -298,6 +300,7 @@ export default function PetTracker() {
                                         authorPhotoURL: post.authorPhotoURL,
                                         likes: post.likes,
                                         comments: post.comments,
+                                        isEdited: post.isEdited,
                                     }}
                                     />
                                 ))}

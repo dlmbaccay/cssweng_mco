@@ -800,6 +800,7 @@ function UserProfilePage() {
                                                         authorPhotoURL: post.authorPhotoURL,
                                                         likes: post.likes,
                                                         comments: post.comments,
+                                                        isEdited: post.isEdited,
                                                     }}
                                                     />
                                                 </div>
