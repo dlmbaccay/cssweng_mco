@@ -42,8 +42,8 @@ function PetProfilePage() {
     // const [following, setFollowing] = useState(null);
     const [sex, setSex] = useState(null);
     const [breed, setBreed] = useState(null);
-    const [birthdate, setBirthdate] = useState(null);
-    const [birthplace, setBirthplace] = useState(null);
+    const [birthYear, setBirthYear] = useState(null);
+    const [birthPlace, setBirthPlace] = useState(null);
     const [favoriteFood, setFavoriteFood] = useState(null);
     const [hobbies, setHobbies] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
@@ -82,8 +82,8 @@ function PetProfilePage() {
                     setSex(doc.data().sex);
                     setBreed(doc.data().breed);
                     setPetPhotoURL(doc.data().photoURL);
-                    setBirthdate(doc.data()?.birthdate);
-                    setBirthplace(doc.data()?.birthplace);
+                    setBirthYear(doc.data()?.birthYear);
+                    setBirthPlace(doc.data()?.birthPlace);
                     setFavoriteFood(doc.data().favoriteFood);
                     setHobbies(doc.data().hobbies);
                     setHidden(doc.data()?.hidden);
@@ -339,35 +339,41 @@ function PetProfilePage() {
                     <div id='content-container' className='h-4/5 flex flex-row'>
 
                         {/* Profile Picture */}
-                        <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16 z-10">
-                            {petPhotoURL && <RoundIcon src={petPhotoURL} alt={petName + " profile picture"} />}
+                        <div className="flex absolute justify-center w-80 h-44">
+                            <div className='rounded-full w-44 h-44 -translate-y-24 z-10'>
+                                <Image 
+                                    src={petPhotoURL}
+                                    alt={petName + " profile picture"}
+                                    fill='fill'
+                                    objectFit='cover'
+                                    className='rounded-full shadow-lg'
+                                />
+                            </div>
                         </div>
 
                         {/* Left Panel */}
                         <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center overflow-y-auto overflow-x-hidden">
 
-                            {/* petName */}
-                            <div className="text-center mt-32 w-80">
-                                <div className="text-2xl font-bold text-raisin_black ">
+                            {/* petName & owner */}
+                            <div className="text-center mt-24 w-80">
+                                <div className="text-xl mb-1 font-bold text-raisin_black ">
                                     {petName}
                                 </div>
 
-                                <div className="text-sm text-raisin_black mt-2">
-                                    {breed} · <Link href={'/user/' + petOwnerUsername} className='hover:text-grass hover:font-semibold transition-all'>@{petOwnerUsername}</Link>
-                                </div>
+                                <Link href={'/user/' + petOwnerUsername} className='hover:text-grass text-md text-raisin_black hover:font-semibold transition-all'>@{petOwnerUsername}</Link>
                             </div>
 
                             {currentUserID === petOwnerID ? (
                                 // Edit pet profile button
                                 <button
                                     onClick={openEdit}
-                                    className="text-center mt-4 w-20 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-20 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                                 >Edit</button>
                             ) :
                                 // Follow button
                                 <button
                                     onClick={handleFollow}
-                                    className="text-center mt-4 w-32 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-32 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                                 >
                                     {followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                 </button>
@@ -388,35 +394,59 @@ function PetProfilePage() {
 
                                         <h1 className='font-bold text-xl'>Edit {petName}`s Profile</h1>
 
-                                        <div className='flex flex-row w-full h-full'>
-                                            <div className='flex flex-col justify-center items-center h-full w-1/2'>
-                                                <div>
-                                                    <div className="h-full w-full flex flex-col justify-center items-center">
-                                                        <h1 className='font-medium mb-2'>Change Profile Picture</h1>
+                                        <div className='flex flex-row w-full h-full justify-center items-center'>
+                                            <div className='flex flex-col justify-evenly items-center h-full w-[50%]'>
+                                                <div className="w-full flex flex-col justify-center items-center">
+                                                    <h1 className='font-medium mb-2'>Change Profile Picture</h1>
+                                                    <div>
+                                                        <label htmlFor='pet-profile-pic'>
+                                                            <div className='relative mx-auto w-full cursor-pointer' style={{height: '175px', width: '175px'}}>
+                                                                {previewProfileUrl ? (
+                                                                    <Image src={previewProfileUrl} alt="Preview" layout='fill' className='object-cover rounded-full'/>
+                                                                ): (petPhotoURL && <Image src={petPhotoURL} alt={petName + " cover photo"} layout='fill' className='object-cover rounded-full'/>)}
+                                                            </div>
+                                                        </label>
+                                                    </div>
 
-                                                        <div>
-                                                            <label htmlFor='pet-profile-pic'>
-                                                                <div className='relative mx-auto w-full cursor-pointer' style={{height: '200px', width: '200px'}}>
-                                                                    {previewProfileUrl ? (
-                                                                        <Image src={previewProfileUrl} alt="Preview" layout='fill' className='object-cover rounded-full'/>
-                                                                    ): (petPhotoURL && <Image src={petPhotoURL} alt={petName + " cover photo"} layout='fill' className='object-cover rounded-full'/>)}
-                                                                </div>
-                                                                {/* <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='rounded-full shadow-lg cursor-pointer hover:opacity-50' /> */}
-                                                            </label>
+                                                    <input
+                                                        type="file"
+                                                        id='pet-profile-pic'
+                                                        className="hidden"
+                                                        onChange={handleProfileFileSelect}
+                                                    />
+                                                </div>
+                                                
+                                                <div className='w-[65%] flex flex-col justify-evenly items-center p-4 mb-4 rounded-lg font-semibold bg-snow gap-2'>
+
+                                                    <div className='flex flex-row items-center justify-evenly w-full'>
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-venus-mars' />
+                                                            <p>{sex}</p>
                                                         </div>
 
-                                                        <input
-                                                            type="file"
-                                                            id='pet-profile-pic'
-                                                            className="hidden"
-                                                            onChange={handleProfileFileSelect}
-                                                        />
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-bread-slice' />
+                                                            <p>{breed}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='flex flex-row items-center justify-evenly w-full'>
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-cake-candles' />
+                                                            <p>{birthYear}</p>
+                                                        </div>
+
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-map-marker-alt' />
+                                                            <p>{birthPlace}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className='flex flex-col justify-center items-center h-full w-1/2'>
-                                                <div className='w-72'>
+                                            <div className='flex flex-col justify-center items-center h-full w-[50%]'>
+                                                <div className='w-full pr-8'>
+
                                                     <div className="mb-4 w-full">
                                                         <label
                                                             htmlFor="username"
@@ -452,6 +482,7 @@ function PetProfilePage() {
                                                             id="bio"
                                                             className="mt-1 p-2 border rounded-md w-full resize-none"
                                                             rows="4"
+                                                            maxLength={100}
                                                             value={editedAbout}
                                                             placeholder='Tell us about your pet!'
                                                             onChange={(e) => setEditedAbout(e.target.value)}
@@ -503,14 +534,7 @@ function PetProfilePage() {
                                             </div>
                                         </div>
 
-                                        <div className='w-full flex flex-row justify-evenly items-center p-4  mb-4 rounded-lg font-semibold bg-snow'>
-                                            <p>Gender: {sex}</p>
-                                            <p>Breed: {breed}</p>
-                                            <p>Birthdate: {formatDateWithWords(birthdate)}</p>
-                                            <p>Birthplace: {birthplace}</p>
-                                        </div>
-
-                                        <div className='flex justify-end'>
+                                        <div className='flex justify-end gap-4'>
                                             <button
                                                 type="button"
                                                 onClick={() => setModalIsOpen(false)}
@@ -531,15 +555,15 @@ function PetProfilePage() {
                             )}
 
                             {/* Followers and Following */}
-                            <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center">
+                            <div className="text-center mt-6 flex flex-row gap-10 w-80 items-center justify-center">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-raisin_black text-xl font-bold"> {pet.followers ? pet.followers.length : 0}</span>
+                                    <span className="text-raisin_black font-bold"> {pet.followers ? pet.followers.length : 0}</span>
                                     <span className="text-grass font-bold text-sm">Followers</span>
                                 </div>
                             </div>
 
                             {/* About */}
-                            <div className="text-center mt-10 flex flex-col gap-2 w-full max-w-full">
+                            <div className="text-center mt-6 flex flex-col gap-2 w-full max-w-full">
                                 <div className="text-lg font-bold text-raisin_black">About</div>
                                 <div className="text-base text-raisin_black pl-6 pr-6 whitespace-normal break-all w-full max-w-full">
                                     {about}
@@ -547,10 +571,10 @@ function PetProfilePage() {
                             </div>
 
                             {/* Details */}
-                            <div className="mt-6 flex flex-col items-center w-full gap-4">
+                            <div className="mt-4 mb-2 flex flex-col items-center w-full gap-2">
                                 {hidden && !hidden.includes('breed') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
-                                        <i className="fa-solid fa-dog"></i>
+                                        <i className="fa-solid fa-bread-slice"></i>
                                         <p>{breed}</p>
                                     </div>
                                 ) : ''}
@@ -564,15 +588,15 @@ function PetProfilePage() {
 
                                 {hidden && !hidden.includes('birthdate') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
-                                        <i className="fa-solid fa-calendar"></i>
-                                        <p>{birthdate}</p>  
+                                        <i className="fa-solid fa-cake-candles"></i>
+                                        <p>{birthYear}</p>  
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('birthplace') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-map-marker-alt"></i>
-                                        <p>{birthplace}</p> 
+                                        <p>{birthPlace}</p> 
                                     </div>
                                 ) : ''}
 

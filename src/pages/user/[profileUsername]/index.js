@@ -512,20 +512,28 @@ function UserProfilePage() {
                     <div id='content-container' className='h-4/5 flex flex-row'>
                         
                         {/* Profile Picture */}
-                        <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16 z-10">
-                            <RoundIcon src={userPhotoURL} alt={username + " profile picture"} />
+                        <div className="flex absolute justify-center w-80 h-44">
+                            <div className='rounded-full w-44 h-44 -translate-y-24 z-10'>
+                                <Image 
+                                    src={userPhotoURL}
+                                    alt={username + " profile picture"}
+                                    fill='fill'
+                                    objectFit='cover'
+                                    className='rounded-full shadow-lg'
+                                />
+                            </div>
                         </div>
 
                         {/* Left Panel */}
-                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center overflow-y-auto overflow-x-hidden">
+                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center">
 
                             {/* Display Name & Username */}
-                            <div className="text-center mt-32 w-80">
-                                <div className="text-2xl font-bold text-raisin_black ">
+                            <div className="text-center mt-24 w-80">
+                                <div className="text-xl font-bold text-raisin_black ">
                                     {displayName}
                                 </div>
 
-                                <div className='text-lg text-raisin_black'>
+                                <div className='text-md text-raisin_black'>
                                     @{username}
                                 </div>
                             </div>
@@ -534,7 +542,7 @@ function UserProfilePage() {
                             {currentUserID === profileUserID ? (
                                 <button
                                     onClick={handleEditProfile}
-                                    className="text-center mt-4 w-20 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-20 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                                 >
                                     Edit
                                 </button>
@@ -542,7 +550,7 @@ function UserProfilePage() {
                                 // Follow Button
                                 <button
                                     onClick={handleFollow}
-                                    className="text-center mt-4 w-32 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-32 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                                 >
                                     {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                 </button>
@@ -558,35 +566,35 @@ function UserProfilePage() {
                                     <div className='w-full h-full flex flex-col justify-between'>
                                         <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
 
-                                        <div className='flex flex-row items-start justify-evenly p-4 rounded-lg h-fit'>
-                                            {/* profile picture */}
-                                            <div className="items-center justify-center">
-                                                <h1 className='font-medium mb-2 text-center'>Change Profile Picture</h1>
-                                                <label htmlFor="userPhoto">
-                                                    <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full shadow-lg hover:opacity-50">
-                                                        {previewProfileUrl ? (<RoundIcon src={previewProfileUrl} alt={"Preview"} />): 
-                                                        (<RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />)}
-                                                    </div>
-                                                </label>
-                                                <input type="file" id="userPhoto" onChange={handleProfileFileSelect} className='hidden' />
+                                        <div className='flex flex-row w-full h-fit gap-6 justify-evenly items-cet'>
+                                            <div className='flex flex-col items-center justify-evenly p-4 gap-8 rounded-lg h-full'>
+                                                {/* profile picture */}
+                                                <div className="items-center justify-center">
+                                                    <h1 className='font-medium mb-2 text-center'>Change Profile Picture</h1>
+                                                    <label htmlFor="userPhoto">
+                                                        <div className="flex justify-center w-40 h-40 cursor-pointer rounded-full shadow-lg hover:opacity-50">
+                                                            {previewProfileUrl ? (<RoundIcon src={previewProfileUrl} alt={"Preview"} />): 
+                                                            (<RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />)}
+                                                        </div>
+                                                    </label>
+                                                    <input type="file" id="userPhoto" onChange={handleProfileFileSelect} className='hidden' />
+                                                </div>
+
+                                                {/* cover photo */}
+                                                <div>
+                                                    <h1 className='font-medium mb-2 text-center'>Change Cover Photo</h1>
+                                                    <label htmlFor="coverPhoto">
+                                                        <div className='relative mx-auto w-full' style={{height: '150px', width: '250px'}}>
+                                                            {previewCoverUrl ? (
+                                                                <Image src={previewCoverUrl} alt="Preview" layout='fill' className='object-cover rounded-lg'/>
+                                                            ): (profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} layout='fill' className='object-cover rounded-lg'/>)}
+                                                        </div>
+                                                    </label>
+                                                    <input type="file" id="coverPhoto" onChange={handleCoverFileSelect} className="hidden" />
+                                                </div>
                                             </div>
 
-                                            {/* cover photo */}
-                                            <div>
-                                                <h1 className='font-medium mb-2 text-center'>Change Cover Photo</h1>
-                                                <label htmlFor="coverPhoto">
-                                                    <div className='relative mx-auto w-full' style={{height: '200px', width: '350px'}}>
-                                                        {previewCoverUrl ? (
-                                                            <Image src={previewCoverUrl} alt="Preview" layout='fill' className='object-cover rounded-lg'/>
-                                                        ): (profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} layout='fill' className='object-cover rounded-lg'/>)}
-                                                    </div>
-                                                </label>
-                                                <input type="file" id="coverPhoto" onChange={handleCoverFileSelect} className="hidden" />
-                                            </div>
-                                        </div>
-
-                                        <div className='flex flex-row w-full h-fit gap-4 justify-center items-cet'>
-                                            <div className='flex flex-col w-[50%] gap-4 rounded-lg bg-snow p-4'>
+                                            <div className='flex flex-col w-[50%] gap-4 h-full rounded-lg justify-center items-center'>
                                                 {/* Display Name */}
                                                 <div className="w-full">
                                                     <label
@@ -644,45 +652,44 @@ function UserProfilePage() {
                                                         rows="3"
                                                         placeholder="Tell us about yourself..."
                                                         value={editedAbout}
+                                                        maxLength={100}
                                                         onChange={e => setEditedAbout(e.target.value)}
                                                     />
                                                 </div>
-                                            </div>
 
-                                            <div className='flex flex-col w-fit h-fit gap-4 rounded-lg bg-snow p-4 '>
-                                                <div className='flex flex-row gap-2 items-center'>
-                                                    <i className="fa-solid fa-calendar"></i>
-                                                    <p>{birthdate}</p>
-                                                </div>
+                                                 <div className='flex flex-col w-full h-fit gap-4 rounded-lg'>
+                                                    <div className='flex flex-row w-full justify-evenly'>
+                                                        <div className='flex flex-row gap-2 items-center'>
+                                                            <i className="fa-solid fa-calendar"></i>
+                                                            <p>{birthdate}</p>
+                                                        </div>
 
-                                                <div className='flex flex-row gap-2 items-center'>
-                                                    <i className="fa-solid fa-location-dot"></i>
-                                                    <p>{location}</p>
-                                                </div>
+                                                        <div className='flex flex-row gap-2 items-center'>
+                                                            <i className="fa-solid fa-venus-mars"></i>
+                                                            <p>{gender}</p>
+                                                        </div>
+                                                    </div>
 
-                                                <div className='flex flex-row gap-2 items-center'>
-                                                    <i className="fa-solid fa-venus-mars"></i>
-                                                    <p>{gender}</p>
-                                                </div>
+                                                    <div className='flex flex-row w-full justify-evenly'>
+                                                        <div className='flex flex-row gap-2 items-center'>
+                                                            <i className="fa-solid fa-phone"></i>
+                                                            <p>{phoneNumber}</p>
+                                                        </div>
 
-                                                <div className='flex flex-row gap-2 items-center'>
-                                                    <i className="fa-solid fa-phone"></i>
-                                                    <p>{phoneNumber}</p>
-                                                </div>
-
-                                                <div className='flex flex-row gap-2 items-center'>
-                                                    <i className="fa-solid fa-envelope"></i>
-                                                    <p>{email}</p>
+                                                        <div className='flex flex-row gap-2 items-center'>
+                                                            <i className="fa-solid fa-envelope"></i>
+                                                            <p>{email}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-
 
                                         <div className="flex justify-end gap-4">
                                             <button
                                                 type="button"
                                                 onClick={() => setShowEditProfile(false)}
-                                                className="bg-red-500 text-white py-2 px-3 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
                                             >
                                                 Cancel
                                             </button>
@@ -701,20 +708,20 @@ function UserProfilePage() {
 
                             {/* Followers and Following */}
                             {profileUser ? (
-                                <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center">
+                                <div className="text-center mt-6 flex flex-row gap-10 w-80 items-center justify-center">
                                     <div className="flex flex-col items-center">
-                                        <span className="text-raisin_black text-xl font-bold">{followers.length}</span>
+                                        <span className="text-raisin_black font-bold">{followers.length}</span>
                                         <span className="text-grass font-bold text-sm">Followers</span>
                                     </div>
                                     <div className="flex flex-col items-center">
-                                        <span className="text-raisin_black text-xl font-bold">{following.length}</span>
+                                        <span className="text-raisin_black font-bold">{following.length}</span>
                                         <span className="text-grass font-bold text-sm">Following</span>
                                     </div>
                                 </div>
                             ) : (null)}
 
                             {/* About */}
-                            <div className="text-center mt-10 flex flex-col gap-2 w-full max-w-full">
+                            <div className="text-center mt-6 flex flex-col gap-2 w-full max-w-full">
                                 <div className="text-lg font-bold text-raisin_black">About</div>
                                 <div className="text-base text-raisin_black pl-6 pr-6 whitespace-normal break-all w-full max-w-full">
                                     {about}
@@ -722,36 +729,37 @@ function UserProfilePage() {
                             </div>
 
                             {/* Details */}
-                            <div className="mt-6 flex flex-col items-center w-full gap-4">
-                                {hidden && !hidden.includes('birthdate') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center'>
-                                        <i className="fa-solid fa-calendar"></i>
-                                        <p>{birthdate}</p>
-                                    </div>
-                                ) : ''}
+                            <div className='mt-4 mb-2 flex flex-col w-full gap-2 items-center'>
                                 {hidden && !hidden.includes('location') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center'>
+                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-location-dot"></i>
                                         <p>{location}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('gender') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center'>
+                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-venus-mars"></i>
                                         <p>{gender}</p>
                                     </div>
                                 ) : ''}
 
+                                {hidden && !hidden.includes('birthdate') ? (
+                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
+                                        <i className="fa-solid fa-calendar"></i>
+                                        <p>{birthdate}</p>
+                                    </div>
+                                ) : ''}
+
                                 {hidden && !hidden.includes('contactNumber') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center'>
+                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-phone"></i>
                                         <p>{phoneNumber}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('email') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center'>
+                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-envelope"></i>
                                         <p>{email}</p>
                                     </div>
@@ -1019,9 +1027,6 @@ function DisplayNameMessage({ editedDisplayName, editedDisplayNameValid, loading
     } else if ((String(editedDisplayName).startsWith(' ') || String(editedDisplayName).endsWith(' ')) && !editedDisplayNameValid) {
         return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
     }
-    // else if (!displayNameValid) {
-    //     return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
-    // } 
 }
 
 function PetNameMessage({ petName, petNameValid, loading }) {
@@ -1053,8 +1058,8 @@ function PetAccountSetup({ props }) {
     const [petNameValid, setPetNameValid] = useState(false);
     const [petAbout, setPetAbout] = useState(null);
     const [petSex, setPetSex] = useState(null);
-    const [petBirthdate, setPetBirthdate] = useState(null);
-    const [petBirthplace, setPetBirthplace] = useState(location);
+    const [petBirthYear, setPetBirthYear] = useState(null);
+    const [petBirthPlace, setPetBirthPlace] = useState(location);
     const [petBreed, setPetBreed] = useState(null);
     const [petFaveFood, setPetFaveFood] = useState(null);
     const [petHobbies, setPetHobbies] = useState(null);
@@ -1105,8 +1110,8 @@ function PetAccountSetup({ props }) {
                 about: petAbout,
                 sex: petSex,
                 breed: petBreed,
-                birthdate: petBirthdate,
-                birthplace: petBirthplace,
+                birthYear: petBirthYear,
+                birthPlace: petBirthPlace,
                 followers: [],
                 following: [],
                 favoriteFood: petFaveFood,
@@ -1142,8 +1147,8 @@ function PetAccountSetup({ props }) {
             setPetAbout('');
             setPetSex('');
             setPetBreed('');
-            setPetBirthdate('');
-            setPetBirthplace('');
+            setPetBirthYear('');
+            setPetBirthPlace('');
             setPetPhotoURL('');
 
             // reload window
@@ -1339,8 +1344,8 @@ function PetAccountSetup({ props }) {
                             minLength={4}
                             maxLength={4}
                             className="mt-1 p-2 h-10 border rounded-md w-full"
-                            value={petBirthdate}
-                            onChange={(e) => setPetBirthdate(e.target.value)}
+                            value={petBirthYear}
+                            onChange={(e) => setPetBirthYear(e.target.value)}
                             required
                         />
                     </div>
@@ -1357,9 +1362,9 @@ function PetAccountSetup({ props }) {
                         <input
                             type="text"
                             className="mt-1 p-2 h-10 border rounded-md w-full"
-                            placeholder={petBirthplace}
-                            value={petBirthplace}
-                            onChange={(e) => setPetBirthplace(e.target.value)}
+                            placeholder={petBirthPlace}
+                            value={petBirthPlace}
+                            onChange={(e) => setPetBirthPlace(e.target.value)}
                             required
                         />
                     </div>
