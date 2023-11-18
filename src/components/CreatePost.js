@@ -30,6 +30,8 @@ export default function CreatePost({ props }) {
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
 
+    const [submitDisabled, setSubmitDisabled] = useState(false);
+
     const handleSelectPets = (selectedPets) => {
         setSelectedPets(selectedPets)
     }
@@ -71,6 +73,11 @@ export default function CreatePost({ props }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        // disable submit button
+        setSubmitDisabled(true);
+        toast.loading('Creating post...');
+        // how to get rid of this toast when the post is created?
 
         if (!postBody) {
             toast.error('Bark up some words for your post!');
@@ -146,7 +153,11 @@ export default function CreatePost({ props }) {
         setShowCreatePostForm(false);
 
         // show success toast
+        toast.dismiss();
         toast.success('Post created successfully!');
+
+        // enable submit button
+        setSubmitDisabled(false);
     };
 
     return (
@@ -278,8 +289,8 @@ export default function CreatePost({ props }) {
         <div className='flex justify-center items-center w-full'>
             <button 
                 type='submit'
-                className='flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-[10px]
-                hover:bg-pistachio transition duration-200 ease-in-out'
+                className={`flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-[10px]
+                hover:bg-pistachio transition duration-200 ease-in-out ${submitDisabled ? 'opacity-50 cursor-default' : 'cursor-pointer'}`}
             >
                 <p className='font-bold'>Post</p> 
             </button>

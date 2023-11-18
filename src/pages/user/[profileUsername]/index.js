@@ -1077,6 +1077,8 @@ function PetAccountSetup({ props }) {
     const [selectedPetProfile, setSelectedPetProfile] = useState(null);
     const [previewPetProfile, setPreviewPetProfile] = useState(null);
 
+    const [submitDisabled, setSubmitDisabled] = useState(true);
+
     const handlePetProfileSelect = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
@@ -1094,6 +1096,9 @@ function PetAccountSetup({ props }) {
 
     const handleCreatePetProfile = async (e) => {
         e.preventDefault();
+
+        setSubmitDisabled(true);
+        toast.loading('Creating pet profile...');
 
         try {
             if (profileUserID !== currentUserID) {
@@ -1148,7 +1153,6 @@ function PetAccountSetup({ props }) {
 
             await batch.commit();
 
-            toast.success("Pet profile created successfully!");
 
             setShowCreatePetForm(false);
             setPetName('');
@@ -1161,7 +1165,11 @@ function PetAccountSetup({ props }) {
 
             // reload window
             window.location.href = "/pet/" + newPetRef.id;
+
+            toast.dismiss();
+            toast.success(`Pet profile created successfully!`)
         } catch (error) {
+            toast.dismiss();
             toast.error('Error creating pet profile: ' + error.message);
         }
     };
@@ -1241,7 +1249,7 @@ function PetAccountSetup({ props }) {
                             Upload Photo
                             <span className="text-red-500"> *</span>
                         </label>
-                        <input type="file" id="photo" onChange={e => handlePetProfileSelect(e)} required className='mb-4' />
+                        <input type="file" id="photo" onChange={e => handlePetProfileSelect(e)} required className='mb-4 text-start w-full' />
                         <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full hover:opacity-50">
                             {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />): null}
                         </div>

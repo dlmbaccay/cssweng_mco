@@ -37,6 +37,19 @@ function AccountSetup() {
             if (user) {
                 // User is signed in.
                 setPageLoading(false);
+                
+                // check if user has a username, path users/uid/username
+                const userRef = firestore.doc(`users/${user.uid}`);
+                
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data.username) {
+                            toast.error("You've already set up your account!")
+                            router.push(`/Home`);
+                        }
+                    }
+                });
             } else {
                 // No user is signed in.
                 setPageLoading(true);
@@ -85,7 +98,6 @@ function AccountSetup() {
     useEffect(() => {
         checkUsername(usernameFormValue);
     }, [usernameFormValue]);
-
 
     // Hit the database for username match after each debounced change, useCallback is required for debounce to work
     const checkUsername = useCallback (
@@ -258,105 +270,121 @@ function AccountSetup() {
                         className="bg-snow rounded-md p-8 pb-5 w-full">
                         <h1 className="font-bold">Welcome to Account Setup!</h1>
 
-                        {/* username */}
-                        <div className="mb-2">
-                            <label htmlFor="username" className="block text-sm font-medium text-gray-700 pt-5">
-                                <span>Username</span>
-                                <span className="text-red-500"> *</span>
-                            </label>
-                            <input type="text" id="username" value={usernameFormValue} className={`outline-none mt-1 p-2 border rounded-md w-full ${usernameValid ? 'border-green-300':''}`} placeholder="Enter your username" required 
-                                maxLength={15}
-                                minLength={3}
-                                onChange={(e) => {handleUsernameVal(e.target.value)}}/>
-                            <UsernameMessage username={usernameFormValue} usernameValid={usernameValid} availableUsername={availableUsername} loading={loading} />
-                        </div>
-
-                        {/* display name */}
-                        <div className="mb-4">
-                            <label htmlFor="display-name" className="block text-sm font-medium text-gray-700 pt-2">
-                                <span>Display Name</span>
-                                <span className="text-red-500"> *</span>
-                            </label>
-                            <input type="text" id='display-name' value={displayName} className={`outline-none mt-1 p-2 border rounded-md w-full ${displayNameValid ? 'border-green-300':''}`} placeholder="What would you like us to call you?" required
-                                maxLength={30}
-                                minLength={1}
-                                onChange={(e) => {handleDisplayNameVal(e.target.value)}}/>
-                        </div>
-                            <DisplayNameMessage displayName={displayName} displayNameValid={displayNameValid} loading={loading} />
-
-                        {/* profile picture */}
-                        <div className="mt-4 mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
-                            <div className="mt-1 p-2 border rounded-md w-full">
-                                <input type="file"  onChange={handleFileSelect} accept="image/x-png,image/gif,image/jpeg" />
-                                {previewUrl && (
-                                    <div className='relative mx-auto w-3/12 aspect-square'>
-                                        <Image src={previewUrl} alt="Preview" layout="fill" style={{objectFit: 'cover'}}/>
-                                    </div>
-                                )}
+                        <div className='flex flex-row w-full gap-6 mt-4'>
+                            {/* username */}
+                            <div className="w-full">
+                                <label htmlFor="username" className="block text-sm font-medium text-raisin_black">
+                                    <span>Username</span>
+                                    <span className="text-red-500"> *</span>
+                                </label>
+                                <input type="text" id="username" value={usernameFormValue} className={`outline-none mt-2 p-2 border rounded-md w-full`} placeholder="Enter your username" required 
+                                    maxLength={15}
+                                    minLength={3}
+                                    onChange={(e) => {handleUsernameVal(e.target.value)}}/>
+                                <UsernameMessage username={usernameFormValue} usernameValid={usernameValid} availableUsername={availableUsername} loading={loading} />
                             </div>
-                            <p className="text-sm text-gray-500 mt-1">Upload a profile picture (JPG, PNG, or GIF).</p>
+
+                            {/* display name */}
+                            <div className="w-full">
+                                <label htmlFor="display-name" className="block text-sm font-medium text-raisin_black">
+                                    <span>Display Name</span>
+                                    <span className="text-red-500"> *</span>
+                                </label>
+                                <input type="text" id='display-name' value={displayName} className={`outline-none mt-2 p-2 border rounded-md w-full`} placeholder="What would you like us to call you?" required
+                                    maxLength={30}
+                                    minLength={1}
+                                    onChange={(e) => {handleDisplayNameVal(e.target.value)}}/>
+                                <DisplayNameMessage displayName={displayName} displayNameValid={displayNameValid} />
+                            </div>
                         </div>
 
-                        {/* about */}
-                        <div className="mb-4">
-                            <label htmlFor="about" className="block text-sm font-medium text-gray-700">About</label>
-                            <textarea id='about' className="mt-1 p-2 border rounded-md w-full resize-none" rows="4" maxLength="100" placeholder="Tell us about yourself..." />
-                        </div>
+                        <div className='flex flex-row w-full h-fit gap-6 mt-4'>
+                            {/* profile picture */}
+                            <div className="w-full">
+                                <label className="flex gap-2 items-center text-sm font-medium text-gray-700">
+                                    Profile Picture
+                                    <span className="text-raisin_black text-xs">(JPG, PNG, or GIF).</span>
+                                </label>
+                                <div className="mt-2 w-full">
+                                    <input type="file"  onChange={handleFileSelect} accept="image/x-png,image/gif,image/jpeg" className='text-sm mb-4'/>
+                                    {!previewUrl && (
+                                        <div className='relative mx-auto w-52 h-52 drop-shadow-md rounded-full aspect-square'>
+                                            <Image src={'/images/profilePictureHolder.jpg'} alt="Profile Picture" layout="fill" style={{objectFit: 'cover'}} className='rounded-full'/>
+                                        </div>
+                                    )}
 
-                        {/* gender */}
-                        <div className="mb-4">
-                            <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
-                                <span>Gender</span>
-                                <span className="text-red-500"> *</span>
-                            </label>
-                            <select id="genderSelect" name="gender" className="mt-1 p-2 border rounded-md w-full" required>
-                                <option value="None">Prefer Not to Say</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
+                                    {previewUrl && (
+                                        <div className='relative mx-auto w-52 h-52 drop-shadow-md rounded-full aspect-square'>
+                                            <Image src={previewUrl} alt="Preview" layout="fill" style={{objectFit: 'cover'}} className='rounded-full'/>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
 
-                        {/* birthdate */}
-                        <div className="mb-4">
-                            <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">
-                                <span>Birthdate</span>
-                                <span className="text-red-500"> *</span>
-                            </label>
-                            <input type="date" id="birthdate" name="birthdate" className="mt-1 p-2 border rounded-md w-full" max="9999-12-31" required/>
-                        </div>
+                            <div className='flex flex-col w-full'>
+                                {/* about */}
+                                <div className="w-full mb-1">
+                                    <label htmlFor="about" className="block text-sm font-medium text-gray-700">About</label>
+                                    <textarea id='about' className="mt-2 p-2 border rounded-md w-full resize-none" rows="3" maxLength="100" placeholder="Tell us about yourself..." />
+                                </div>
 
-                        {/* location */}
-                        <div className="mb-4">
-                            <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                                <span>Location</span>
-                                <span className="text-red-500"> *</span>
-                            </label>
-                            <input type="text" id="location" name="location" className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your Location" required />
-                        </div>
+                                {/* gender */}
+                                <div className="w-full mb-4">
+                                    <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+                                        <span>Gender</span>
+                                        <span className="text-red-500"> *</span>
+                                    </label>
+                                    <select id="genderSelect" name="gender" className="mt-1 p-2 text-md border rounded-md w-full" required>
+                                        <option value="None">Prefer Not to Say</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
 
-                        {/* phone number */}
-                        <div className="mb-4">
-                            <label htmlFor="phone-number" className="block text-sm font-medium text-gray-700">
-                                <span>Phone Number</span>
-                                <span className="text-red-500"> *</span>
-                            </label>
-                            <input type="number" maxLength={11} id="phone-number" name="phone-number" className="mt-1 p-2 border rounded-md w-full" placeholder="ex. 09123456789" onInput={(e) => {
-                                    if (e.target.value.length > 11) {
-                                        e.target.value = e.target.value.slice(0, 11);
-                                    }
-                                }}required />
+                                {/* birthdate */}
+                                <div className="w-full mb-4">
+                                    <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">
+                                        <span>Birthdate</span>
+                                        <span className="text-red-500"> *</span>
+                                    </label>
+                                    <input type="date" id="birthdate" name="birthdate" className="mt-1 p-2 border text-md rounded-md w-full" max="9999-12-31" required/>
+                                </div>
+                            </div>
+                        </div>                        
+
+                        <div className='flex flex-row w-full gap-6'>
+                            {/* location */}
+                            <div className="w-full">
+                                <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                                    <span>Location</span>
+                                    <span className="text-red-500"> *</span>
+                                </label>
+                                <input type="text" id="location" name="location" className="mt-1 p-2 border rounded-md w-full" placeholder="Enter your Location" required />
+                            </div>
+
+                            {/* phone number */}
+                            <div className="w-full">
+                                <label htmlFor="phone-number" className="block text-sm font-medium text-gray-700">
+                                    <span>Phone Number</span>
+                                    <span className="text-red-500"> *</span>
+                                </label>
+                                <input type="number" maxLength={11} id="phone-number" name="phone-number" className="mt-1 p-2 border rounded-md w-full" placeholder="ex. 09123456789" onInput={(e) => {
+                                        if (e.target.value.length > 11) {
+                                            e.target.value = e.target.value.slice(0, 11);
+                                        }
+                                    }}required />
+                            </div>
                         </div>
                         
                         {/* buttons */}
-                        <div className="flex justify-end">
-                            <button type='submit' className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${(usernameValid && displayNameValid) ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`} disabled={!(usernameValid && displayNameValid)}>
-                            Submit
-                            </button>
-
+                        <div className="flex justify-end gap-4 mt-4">
                             <button onClick={handleSignOut} className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100">
                                 Sign Out
+                            </button>
+
+                            <button type='submit' className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${(usernameValid && displayNameValid) ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`} disabled={!(usernameValid && displayNameValid)}>
+                            Submit
                             </button>
                         </div>
                     </form>
@@ -369,38 +397,44 @@ function AccountSetup() {
 }
 
 function UsernameMessage({ username, usernameValid, availableUsername, loading }) {
-  if (loading) {
-    return <p className='mt-4 ml-2'>Checking...</p>;
-  } else if (username === '') {
-    return null;
-  } else if (username.length < 3 || username.length > 15 && !usernameValid) {
-    return <p className="mt-4 ml-2">Username should have 3-15 characters!</p>;
-  } else if (availableUsername && usernameValid) {
-    return <p className="mt-4 ml-2">{username} is available!</p>;
-  } else if (!availableUsername && username) {
-    return <p className="mt-4 ml-2">That username is taken!</p>;
-  } else if (String(username).startsWith('_') || String(username).startsWith('.') || String(username).startsWith(' ') 
-                || String(username).endsWith('_') || String(username).endsWith('.') || String(username).endsWith(' ')) {
-    return <p className="mt-4 ml-2">No spaces, periods, or underscores allowed at either end.</p>;
-  } else if (String(username).includes('__') || String(username).includes('..') || String(username).includes('._') || String(username).includes('_.')) {
-    return <p className="mt-4 ml-2">Only one period or underscore allowed next to each other.</p>;
-} else if (!usernameValid){
-    return <p className="mt-4 ml-2">Only periods and underscores allowed for special characters.</p>;
-  }
+    let message = '';
+
+    if (loading) 
+        message = 'Checking...';
+    else if (username === '')
+        message = '';
+    else if (username.length < 3 || username.length > 15 && !usernameValid) 
+        message = 'Username should have 3-15 characters!';
+    else if (availableUsername && usernameValid) 
+        message = `${username} is available!`;
+    else if (!availableUsername && username) 
+        message = 'That username is taken!';
+    else if (String(username).startsWith('_') || String(username).startsWith('.') || String(username).startsWith(' ') 
+                || String(username).endsWith('_') || String(username).endsWith('.') || String(username).endsWith(' ')) 
+        message = 'No spaces, periods, or underscores allowed at either end.';
+    else if (String(username).includes('__') || String(username).includes('..') || String(username).includes('._') || String(username).includes('_.'))
+        message = 'Only one period or underscore allowed next to each other.';
+    else if (!usernameValid)
+        message = 'Only periods and underscores allowed for special characters.';
+
+    return <p className='mt-2 ml-2 text-sm'>{message}</p>;
 }
 
-function DisplayNameMessage({ displayName, displayNameValid, loading }) {
-    if (loading) {
-      return <p className='mt-2 ml-2'>Checking...</p>;
-    } else if (displayName === '') {
-      return null;
-    } else if (displayName.length < 1 || displayName.length > 30 && !displayNameValid) {
-      return <p className="mt-2 ml-2">Display name should have 1-30 characters!</p>;
-    } else if (String(displayName).includes('  ')) {
-        return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
-    } else if ((String(displayName).startsWith(' ') || String(displayName).endsWith(' ')) && !displayNameValid) {
-        return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
-    } 
+function DisplayNameMessage({ displayName, displayNameValid }) {
+    let message;
+
+    if (displayName === '')
+        message = '';
+    else if (displayNameValid) 
+        message = 'Display name is valid!';
+    else if (displayName.length < 1 || displayName.length > 30 && !displayNameValid)
+        message = 'Display name should have 1-30 characters!';
+    else if (String(displayName).includes('  ')) 
+        message = 'Please have only one space in-between.';
+    else if ((String(displayName).startsWith(' ') || String(displayName).endsWith(' ')) && !displayNameValid) 
+        message = 'No spaces allowed at either end.';
+
+    return <p className='mt-2 ml-2 text-sm'>{message}</p>
 }
 
 export default withAuth(AccountSetup);
