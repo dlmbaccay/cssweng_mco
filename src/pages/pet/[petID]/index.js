@@ -351,7 +351,9 @@ function PetProfilePage() {
 
                         {/* Profile Picture */}
                         <div className="flex absolute justify-center w-80 h-44">
-                            <div className='rounded-full w-44 h-44 -translate-y-24 z-10'>
+                            <div className='rounded-full z-10
+                                -translate-y-40 w-32 h-32 -translate-x-14
+                                lg:w-44 lg:h-44 lg:-translate-y-24 lg:translate-x-0'>
                                 <Image 
                                     src={petPhotoURL}
                                     alt={petName + " profile picture"}
@@ -363,7 +365,7 @@ function PetProfilePage() {
                         </div>
 
                         {/* Left Panel */}
-                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center overflow-y-auto overflow-x-hidden">
+                        <div className="fixed hidden lg:flex flex-col lg:w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center">
 
                             {/* petName & owner */}
                             <div className="text-center mt-24 w-80">
@@ -628,9 +630,46 @@ function PetProfilePage() {
 
                         </div>
 
-                        <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
+                        <div id='main-content-container' className='overflow-hidden flex flex-col lg:translate-x-80 lg:w-[calc(100%-20rem)] w-full'>
+                            
+                            <div id='flex-profile-details' className='lg:hidden w-full h-12 bg-snow flex flex-row items-center pl-10 gap-8'>
+                                <div className='flex flex-row gap-2'>
+                                    <p className='font-bold'>
+                                        {petName}
+                                    </p>
+                                    <p className='font-bold'>·</p>
+                                        @{petOwnerUsername}
+                                    <p className='font'>
+                                    </p>
+                                </div>
 
-                            <div id="tab-actions" className='flex flex-row font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300'>
+                                <div className='flex flex-row gap-2'>
+                                    {/* followers */}
+                                    <div className='flex flex-row gap-2 items-center'>
+                                        <p className='font-semibold text-sm'>{pet.followers.length}</p>
+                                        <p className='text-grass font-bold text-sm'>Followers</p>
+                                    </div>
+                                </div>
+
+                                { currentUserID === petOwnerID ? 
+                                    (<button 
+                                        onClick={() => setShowEditProfile(true)}
+                                        className='text-sm font-semibold text-white bg-citron w-12 h-6 rounded-md'
+                                    >
+                                        Edit
+                                    </button>) : 
+                                    (
+                                        <button 
+                                            onClick={handleFollow}
+                                            className='text-sm font-semibold text-white bg-citron w-16 h-6 rounded-md'
+                                        >
+                                            {followers.includes(currentUserID) ? 'Following' : 'Follow'}
+                                        </button>
+                                    )
+                                }
+                            </div>
+
+                            <div id="tab-actions" className='flex flex-row font-shining h-10 text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300'>
                                 <button
                                     className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Tagged Posts' ? 'bg-citron text-white' : ''
                                         }`}
