@@ -277,7 +277,7 @@ function AccountSetup() {
                     sm:space-x-10 sm:py-10">
                     <form  
                         onSubmit={onSubmit}
-                        className="bg-snow rounded-md p-8 pb-5 w-full">
+                        className="bg-snow rounded-md p-8 pb-5 w-[800px]">
                         <h1 className="font-bold">Welcome to Account Setup!</h1>
 
                         <div className='flex flex-row w-full gap-6 mt-4'>
@@ -388,13 +388,13 @@ function AccountSetup() {
                         </div>
                         
                         {/* buttons */}
-                        <div className="flex justify-end gap-4 mt-4">
-                            <button onClick={handleSignOut} className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100">
+                        <div className="flex justify-end gap-4 mt-6">
+                            <button onClick={handleSignOut} className="bg-black text-white font-semibold py-2 px-4 rounded-md ml-5 transition-all hover:bg-red-600">
                                 Sign Out
                             </button>
 
-                            <button type='submit' className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${(usernameValid && displayNameValid) ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`} disabled={!(usernameValid && displayNameValid)}>
-                            Submit
+                            <button type='submit' className={`py-2 px-4 rounded-md bg-xanthous text-white font-semibold transition-all ${(usernameValid && displayNameValid) ? 'hover:bg-pistachio' : 'opacity-50'}`} disabled={!(usernameValid && displayNameValid)}>
+                                Submit
                             </button>
                         </div>
                     </form>

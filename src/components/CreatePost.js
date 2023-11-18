@@ -74,15 +74,14 @@ export default function CreatePost({ props }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // disable submit button
-        setSubmitDisabled(true);
-        toast.loading('Creating post...');
-        // how to get rid of this toast when the post is created?
-
         if (!postBody) {
             toast.error('Bark up some words for your post!');
             return;
         }
+
+         // disable submit button
+        setSubmitDisabled(true);
+        toast.loading('Creating post...');
 
         // create reference for post
         const postRef = firestore.collection('posts').doc();
@@ -245,56 +244,62 @@ export default function CreatePost({ props }) {
             />
         </div>
 
-        {/* media */}
-        <div className="image-previews flex flex-row w-full mt-6 mb-6">
-            <div>
-                <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
-                    <i className="fa-regular fa-image text-3xl"></i>
-                </label>
+        <div className='flex flex-row justify-between'>
+            {/* media */}
+            <div className="image-previews flex flex-row w-full mt-6 mb-6">
+                <div>
+                    <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
+                        <i className="fa-regular fa-image text-3xl"></i>
+                    </label>
 
-                <input
-                    id="post-images"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    disabled={isUploadDisabled}
-                    className="hidden"
-                />
+                    <input
+                        id="post-images"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageUpload}
+                        disabled={isUploadDisabled}
+                        className="hidden"
+                    />
+                </div>
+                
+                <div className='flex flex-row gap-4 w-full ml-4'>
+                    {previewImages.map((imageUrl, index) => (
+                        <div key={index} className="preview-image-container">
+                            <button
+                                type='button'
+                                onClick={() => handleDeleteImage(index)}
+                                className="delete-image-button"
+                            >
+                                <i className='fa-solid fa-xmark' />
+                            </button>
+                            <Image
+                                src={imageUrl}
+                                alt={`Image ${index + 1}`}
+                                width={100}
+                                height={100}
+                                className="preview-image"
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
-            
-            <div className='flex flex-row gap-4 w-full ml-4'>
-                {previewImages.map((imageUrl, index) => (
-                    <div key={index} className="preview-image-container">
-                        <button
-                            type='button'
-                            onClick={() => handleDeleteImage(index)}
-                            className="delete-image-button"
-                        >
-                            <i className='fa-solid fa-xmark' />
-                        </button>
-                        <Image
-                            src={imageUrl}
-                            alt={`Image ${index + 1}`}
-                            width={100}
-                            height={100}
-                            className="preview-image"
-                        />
-                    </div>
-                ))}
+
+            {/* post button */}
+            <div className='flex items-end w-36'>
+                <button 
+                    type='submit'
+                    className={`
+                        flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-md
+                        transition-all 
+                        ${submitDisabled ? 'bg-pistachio opacity-50 cursor-default' : 'cursor-pointer hover:bg-pistachio'}`}
+                >
+                    <p className='font-bold'>Post</p> 
+                </button>
             </div>
         </div>
 
-        {/* post button */}
-        <div className='flex justify-center items-center w-full'>
-            <button 
-                type='submit'
-                className={`flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-[10px]
-                hover:bg-pistachio transition duration-200 ease-in-out ${submitDisabled ? 'bg-pistachio opacity-50 cursor-default' : 'cursor-pointer'}`}
-            >
-                <p className='font-bold'>Post</p> 
-            </button>
-        </div>
+        
     </form>
     )
 }

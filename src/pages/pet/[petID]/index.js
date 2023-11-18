@@ -406,7 +406,7 @@ function PetProfilePage() {
                                         <h1 className='font-bold text-xl'>Edit {petName}`s Profile</h1>
 
                                         <div className='flex flex-row w-full h-full justify-center items-center'>
-                                            <div className='flex flex-col justify-evenly items-center h-full w-[50%]'>
+                                            <div className='flex flex-col justify-evenly items-center w-[50%]'>
                                                 <div className="w-full flex flex-col justify-center items-center">
                                                     <h1 className='font-medium mb-2'>Change Profile Picture</h1>
                                                     <div>
@@ -427,7 +427,7 @@ function PetProfilePage() {
                                                     />
                                                 </div>
                                                 
-                                                <div className='w-[65%] flex flex-col justify-evenly items-center p-4 mb-4 rounded-lg font-semibold bg-snow gap-2'>
+                                                <div className='mt-7 w-[65%] flex flex-col justify-evenly items-center p-4 mb-4 rounded-lg font-semibold bg-snow gap-2'>
 
                                                     <div className='flex flex-row items-center justify-evenly w-full'>
                                                         <div className='flex flex-row gap-2 items-center justify-center'>
@@ -545,11 +545,11 @@ function PetProfilePage() {
                                             </div>
                                         </div>
 
-                                        <div className='flex justify-end gap-4'>
+                                        <div className='mt-4 flex justify-end gap-4'>
                                             <button
                                                 type="button"
                                                 onClick={handleCancelEditProfile}
-                                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                                className="w-20 h-10 font-semibold rounded-md ml-5 transition-all transform hover:bg-raisin_black hover:text-white"
                                             >
                                                 Cancel
                                             </button>
@@ -557,7 +557,7 @@ function PetProfilePage() {
                                             <button
                                                 type="submit"
                                                 disabled={!editPetNameValid}
-                                                className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${editPetNameValid ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}>
+                                                className={`w-20 h-10 font-semibold rounded-md bg-xanthous text-white transition-all ${editPetNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
                                                 Save
                                             </button>
                                         </div>

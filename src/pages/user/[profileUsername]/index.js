@@ -474,25 +474,25 @@ function UserProfilePage() {
     }, [profileUserID]);
 
     const fetchMorePosts = async () => {
-        if (lastVisible && !loading) {
-            setLoading(true);
-            
-            const nextQuery = query(
-                collection(firestore, "posts"), 
-                where("authorID", "==", profileUserID), 
-                orderBy("postDate", "desc"), 
-                startAfter(lastVisible), 
-                limit(5)
-            );
+        if (!lastVisible || loading) return;
 
-            const querySnapshot = await getDocs(nextQuery);
-            const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-            setLastVisible(newLastVisible);
-            const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        setLoading(true);
+        
+        const nextQuery = query(
+            collection(firestore, "posts"), 
+            where("authorID", "==", profileUserID), 
+            orderBy("postDate", "desc"), 
+            startAfter(lastVisible), 
+            limit(5)
+        );
 
-            setPosts(prevPosts => [...prevPosts, ...newPosts]);
-            setLoading(false);
-        }
+        const querySnapshot = await getDocs(nextQuery);
+        const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setLastVisible(newLastVisible);
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+        setPosts(prevPosts => [...prevPosts, ...newPosts]);
+        setLoading(false);
     };
 
     return (
@@ -549,7 +549,7 @@ function UserProfilePage() {
                             {currentUserID === profileUserID ? (
                                 <button
                                     onClick={handleEditProfile}
-                                    className="text-center mt-4 w-20 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-20 px-2 py-1 bg-citron hover:bg-xanthous transition-all shadow-lg text-snow font-bold rounded-lg border-none"
                                 >
                                     Edit
                                 </button>
@@ -557,7 +557,7 @@ function UserProfilePage() {
                                 // Follow Button
                                 <button
                                     onClick={handleFollow}
-                                    className="text-center mt-4 w-32 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-32 px-2 py-1 bg-citron hover:bg-xanthous transition-all shadow-lg text-snow font-bold rounded-lg border-none"
                                 >
                                     {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                 </button>
@@ -664,19 +664,7 @@ function UserProfilePage() {
                                                     />
                                                 </div>
 
-                                                 <div className='flex flex-col w-full h-fit gap-4 rounded-lg'>
-                                                    <div className='flex flex-row w-full justify-evenly'>
-                                                        <div className='flex flex-row gap-2 items-center'>
-                                                            <i className="fa-solid fa-calendar"></i>
-                                                            <p>{birthdate}</p>
-                                                        </div>
-
-                                                        <div className='flex flex-row gap-2 items-center'>
-                                                            <i className="fa-solid fa-venus-mars"></i>
-                                                            <p>{gender}</p>
-                                                        </div>
-                                                    </div>
-
+                                                 <div className='flex flex-col w-full h-full gap-4 rounded-lg'>
                                                     <div className='flex flex-row w-full justify-evenly'>
                                                         <div className='flex flex-row gap-2 items-center'>
                                                             <i className="fa-solid fa-phone"></i>
@@ -688,6 +676,18 @@ function UserProfilePage() {
                                                             <p>{email}</p>
                                                         </div>
                                                     </div>
+
+                                                    <div className='flex flex-row w-full justify-evenly'>
+                                                        <div className='flex flex-row gap-2 items-center'>
+                                                            <i className="fa-solid fa-calendar"></i>
+                                                            <p>{birthdate}</p>
+                                                        </div>
+
+                                                        <div className='flex flex-row gap-2 items-center'>
+                                                            <i className="fa-solid fa-venus-mars"></i>
+                                                            <p>{gender}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -696,7 +696,7 @@ function UserProfilePage() {
                                             <button
                                                 type="button"
                                                 onClick={handleCancelEditProfile}
-                                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                                className="w-20  h-10 rounded-md ml-5 transition-all hover:bg-raisin_black hover:text-white font-semibold"
                                             >
                                                 Cancel
                                             </button>
@@ -704,7 +704,7 @@ function UserProfilePage() {
                                             <button
                                                 onClick={handleEditProfileSave} disabled={!editedDisplayNameValid}
                                                 type="submit"
-                                                className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${(!isUploadingCoverPhoto && editedDisplayNameValid) ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}
+                                                className={`w-20 h-10 rounded-md bg-xanthous font-semibold text-white transition-all ${(!isUploadingCoverPhoto && editedDisplayNameValid) ? 'hover:bg-pistachio' : 'opacity-50'}`}
                                             >
                                                 Save
                                             </button>
@@ -775,8 +775,9 @@ function UserProfilePage() {
 
                         </div>
 
+                        {/* Main Container */}
                         <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
-                            <div id="tab-actions" className="flex flex-row font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300">
+                            <div id="tab-actions" className="flex flex-row font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm">
                                 <button
                                     className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
                                         }`}
@@ -797,52 +798,64 @@ function UserProfilePage() {
                                 </button>
                             </div>
 
-                            <div id="tab-container" className='overflow-y-scroll h-full'>
+                            <div id="tab-container" className='overflow-y-scroll h-full bg-[#FAFAFA]'>
                                 {/* Posts */}
                                 {activeTab === 'Posts' && (
                                     <div
                                         id="showcase"
-                                        className="flex flex-col items-center justify-center w-full bg-[#FAFAFA]"
+                                        className="flex flex-col items-center justify-start w-full "
                                     >
+                                        {/* if no posts yets */}
+                                        {posts.length === 0 && (
+                                            <div className="w-full p-20 pl-24 pr-24 flex justify-center">
+
+                                                {/* if no media... */}
+                                                <div className='flex flex-col items-center justify-center h-full w-full'>
+                                                    <i className="fa-solid fa-hippo text-8xl text-grass"></i>
+                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                                </div>
+
+                                            </div>
+                                        )}
+
                                         {currentUserID === profileUserID ? (
-                                            
-                                        <div 
-                                            className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center mt-8 hover:drop-shadow-md'>
+                                            <div 
+                                                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center mt-8 hover:drop-shadow-md'>
 
-                                            {userPhotoURL && <Image
-                                                src={userPhotoURL}
-                                                alt="user photo"
-                                                width={50}
-                                                height={50}
-                                                onClick={() => router.push(`/user/${username}`)}
-                                                className='rounded-full h-[50px] w-[50px] hover:opacity-95 transition-all cursor-pointer'
-                                            />}
+                                                {userPhotoURL && <Image
+                                                    src={userPhotoURL}
+                                                    alt="user photo"
+                                                    width={50}
+                                                    height={50}
+                                                    onClick={() => router.push(`/user/${username}`)}
+                                                    className='rounded-full h-[50px] w-[50px] hover:opacity-95 transition-all cursor-pointer'
+                                                />}
 
-                                            <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left pl-4 text-sm text-raisin_black hover:bg-gray transition-all'>
-                                                <p>What&apos;s on your mind, {displayName}?</p>
-                                            </button>
+                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left pl-4 text-sm text-raisin_black hover:bg-gray transition-all'>
+                                                    <p>What&apos;s on your mind, {displayName}?</p>
+                                                </button>
 
-                                            <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
-                                                <i className='fa-solid fa-image'/>
-                                            </button>
+                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
+                                                    <i className='fa-solid fa-image'/>
+                                                </button>
 
-                                            <Modal
-                                                isOpen={showCreatePostForm}
-                                                onRequestClose={() => setShowCreatePostForm(false)}
-                                                style={createPostModalStyle}
-                                            >
-                                                <CreatePost 
-                                                    props={{
-                                                    createType: 'original',
-                                                    currentUserID: currentUserID,
-                                                    displayName: displayName,
-                                                    username: username,
-                                                    userPhotoURL: userPhotoURL,
-                                                    setShowCreatePostForm: setShowCreatePostForm,
-                                                    }}
-                                                />
-                                            </Modal>
-                                        </div>
+                                                <Modal
+                                                    isOpen={showCreatePostForm}
+                                                    onRequestClose={() => setShowCreatePostForm(false)}
+                                                    style={createPostModalStyle}
+                                                >
+                                                    <CreatePost 
+                                                        props={{
+                                                        createType: 'original',
+                                                        currentUserID: currentUserID,
+                                                        displayName: displayName,
+                                                        username: username,
+                                                        userPhotoURL: userPhotoURL,
+                                                        setShowCreatePostForm: setShowCreatePostForm,
+                                                        }}
+                                                    />
+                                                </Modal>
+                                            </div>
                                         ) : null}
 
                                         <div className="flex mt-8 mb-8 flex-col gap-8 justify-start items-center">
@@ -885,23 +898,27 @@ function UserProfilePage() {
 
                                 {/* Pets */}
                                 {activeTab === 'Pets' && (
-                                    <div className="w-full h-full p-14 pl-16">
+                                    <div className="w-full flex justify-center">
                                         {
                                             (profileUserID !== currentUserID && pets.length === 0) ? (
-                                                <div className='flex flex-col items-center justify-center h-full p-0'>
+                                                <div className='flex flex-col items-center justify-center h-full w-full'>
                                                     <i className="fa-solid fa-hippo text-8xl text-grass"></i>
                                                     <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
                                                 </div>
                                             ) : (
-                                                <div className="grid grid-cols-4 gap-12">
+                                                <div className="w-full flex flex-col gap-12 items-center lg:flex-row justify-start 
+                                                    pt-10 pl-10 pr-10 pb-10  
+                                                    lg:pl-20 lg:pt-16 lg:pr-20 lg:pb-16  
+                                                ">
                                                     {pets.map((pet) => (
-                                                        <div key={pet.id} className="w-36 h-36 rounded-xl">
-                                                            <Link href={`/pet/${pet.id}`} className='rounded-lg hover:opacity-80 flex flex-col'>
-                                                                <RoundIcon
+                                                        <div key={pet.id} className="rounded-xl">
+                                                            <Link href={`/pet/${pet.id}`} className='rounded-full hover:opacity-80 flex flex-col'>
+                                                                <Image 
                                                                     src={pet.photoURL}
-                                                                    alt='pet profile picture'
-                                                                    height={144}
+                                                                    alt={pet.petName + " profile picture"}
                                                                     width={144}
+                                                                    height={144}
+                                                                    className='rounded-full shadow-lg'
                                                                 />
                                                             </Link>
 
@@ -920,7 +937,22 @@ function UserProfilePage() {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    )).reverse()}
+                                                    ))}
+
+                                                    { profileUserID === currentUserID && (
+                                                        <div className="flex flex-col ">
+                                                                <button onClick={() => setShowCreatePetForm(true)}
+                                                                className=''>
+                                                                    <i className="
+                                                                            fa-solid fa-paw text-white rounded-full 
+                                                                            w-36 h-36 responsive bg-pale_yellow flex items-center
+                                                                            justify-center transition-all
+                                                                            text-7xl hover:bg-grass hover:text-pale_yellow" />
+                                                                </button>
+                                                                <p className='text-center mt-2 text-lg font-bold flex flex-row items-center justify-center'
+                                                                >Add Pet</p>
+                                                            </div>
+                                                    )}
 
                                                     {/* delete pet profile confirmation modal */}
                                                     {getCurrentUser && currentUserID === profileUserID ? (
@@ -956,7 +988,7 @@ function UserProfilePage() {
                                                     ) : null}
 
                                                     {/* create pet profile modal */}
-                                                    {showCreatePetForm ? (
+                                                    {showCreatePetForm && (
                                                         <Modal
                                                             isOpen={showCreatePetForm}
                                                             onRequestClose={() => setShowCreatePetForm(false)}
@@ -976,18 +1008,6 @@ function UserProfilePage() {
                                                                 }}
                                                             />
                                                         </Modal>
-                                                    ) : (
-                                                        profileUserID === currentUserID ? (
-                                                            <div className="flex flex-col w-36">
-                                                                <button onClick={() => setShowCreatePetForm(true)}>
-                                                                    <i
-                                                                        className="fa-solid fa-paw text-white rounded-full 
-                                                  w-36 h-36 bg-pale_yellow flex items-center justify-center text-7xl hover:bg-pistachio hover:text-pale_yellow" ></i></button>
-                                                                <p
-                                                                    className='text-center text-lg font-bold mt-2 flex flex-row items-center justify-center'
-                                                                >Add New Pet</p>
-                                                            </div>
-                                                        ) : null
                                                     )}
                                                 </div>
                                             )
@@ -997,20 +1017,11 @@ function UserProfilePage() {
 
                                 {/* Media */}
                                 {activeTab === 'Media' && (
-                                    <div className="w-full p-14 pl-16">
-
-                                        {/* if no media... */}
+                                    <div className="w-full p-20 pl-24 pr-24 flex justify-center">
                                         <div className='flex flex-col items-center justify-center h-full w-full'>
                                             <i className="fa-solid fa-hippo text-8xl text-grass"></i>
                                             <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
                                         </div>
-
-                                        {/* if w/ media */}
-                                        {/* <div className="grid grid-cols-8">
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                        </div> */}
                                     </div>
                                 )}
                             </div>
@@ -1397,7 +1408,7 @@ function PetAccountSetup({ props }) {
                 <div className='flex flex-row gap-4'>
                     <button
                         type="button"
-                        className="bg-red-500 text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                        className="font-semibold py-2 px-4 rounded-md transition-all hover:bg-raisin_black hover:text-white"
                         onClick={() => setShowCreatePetForm(false)}
                     >
                         Cancel
@@ -1405,7 +1416,7 @@ function PetAccountSetup({ props }) {
                     <button
                         type="submit"
                         disabled={!petNameValid}
-                        className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${petNameValid ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}>
+                        className={`font-semibold py-2 px-4 rounded-md bg-xanthous text-white transition-all ${petNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
                         Create Pet Profile
                     </button>       
                 </div>
