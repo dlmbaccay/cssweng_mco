@@ -249,6 +249,15 @@ function UserProfilePage() {
         }
     }
 
+    const handleCancelEditProfile = () => {
+        setShowEditProfile(false);
+
+        // Reset the edited values to the current values
+        setEditedDisplayName(displayName);
+        setEditedAbout(about);
+        setEditedLocation(location);
+    }
+
     const handleEditProfileSave = async () => {
         const userRef = firestore.collection('users').doc(profileUserID);
         const batch = firestore.batch();
@@ -688,7 +697,7 @@ function UserProfilePage() {
                                         <div className="flex justify-end gap-4">
                                             <button
                                                 type="button"
-                                                onClick={() => setShowEditProfile(false)}
+                                                onClick={handleCancelEditProfile}
                                                 className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
                                             >
                                                 Cancel
@@ -1082,7 +1091,6 @@ function PetAccountSetup({ props }) {
             toast.error('Invalid file type. Only PNG, JPEG, and GIF allowed.')
         }
     };
-
 
     const handleCreatePetProfile = async (e) => {
         e.preventDefault();

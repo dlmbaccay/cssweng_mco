@@ -115,6 +115,16 @@ function PetProfilePage() {
         }
     };
 
+    const handleCancelEditProfile = () => {
+        setModalIsOpen(false);
+
+        // reset all edited values
+        setEditedPetName(petName);
+        setEditedAbout(about);
+        setEditedPetFavoriteFood(favoriteFood);
+        setEditedPetHobbies(hobbies);
+    };
+
     const handleSave = async (e) => {
         e.preventDefault();
         const petRef = firestore.collection('pets').doc(petID);
@@ -537,7 +547,7 @@ function PetProfilePage() {
                                         <div className='flex justify-end gap-4'>
                                             <button
                                                 type="button"
-                                                onClick={() => setModalIsOpen(false)}
+                                                onClick={handleCancelEditProfile}
                                                 className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
                                             >
                                                 Cancel
