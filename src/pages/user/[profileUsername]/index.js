@@ -1031,17 +1031,17 @@ function DisplayNameMessage({ editedDisplayName, editedDisplayNameValid, loading
 
 function PetNameMessage({ petName, petNameValid, loading }) {
     if (loading) {
-        return <p className='mt-2 ml-2'>Checking...</p>;
+        return <p className='mt-2 ml-2 text-xs'>Checking...</p>;
     } else if (petName === '') {
         return null;
     } else if (String(petName).length < 3 && String(petName).length > 15 && !petNameValid) {
-        return <p className='mt-2 ml-2'>Pet name should have 3-15 characters!</p>;
+        return <p className='mt-2 ml-2 text-xs'>Pet name should have 3-15 characters!</p>;
     } else if (String(petName).includes('  ')) {
-        return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
+        return <p className="mt-2 ml-2 text-xs">Please have only one space in-between.</p>;
     } else if ((String(petName).startsWith(' ') || String(petName).endsWith(' ')) && !petNameValid) {
-        return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
+        return <p className="mt-2 ml-2 text-xs">No spaces allowed at either end.</p>;
     } else if (!petNameValid) {
-        return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
+        return <p className="mt-2 ml-2 text-xs">Only periods and underscores allowed for special characters.</p>;
     }
 }
 
@@ -1178,128 +1178,129 @@ function PetAccountSetup({ props }) {
     };
 
     return (
-        <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
-            <h2 className="font-bold text-xl gap-2 flex flex-row items-center">
-                <i className='fa-solid fa-paw'></i>
-                Add a New Pet
-            </h2>
-
+        <form onSubmit={handleCreatePetProfile} className='flex flex-col h-full justify-between'>
             <div className='h-full flex flex-col justify-start'>
-                {/* Display Name */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="displayname"
-                        className="block text-sm font-medium text-gray-700 pt-5"
-                    >
-                        <span>Display Name</span>
-                        <span className="text-red-500"> *</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="display-name"
-                        className="mt-1 p-2 border rounded-md w-full"
-                        placeholder="Enter your pet's name"
-                        minLength={3}
-                        maxLength={15}
-                        value={petName}
-                        onChange={(e) => { handlePetDisplayNameVal(e.target.value) }}
-                        required
-                    />
+                <div className='flex flex-row w-full justify-evenly items-start gap-4 mb-4'>
+                    {/* Display Name */}
+                    <div className="w-full">
+                        <label
+                            htmlFor="displayname"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            <span>Display Name</span>
+                            <span className="text-red-500"> *</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="display-name"
+                            className="mt-1 p-2 border rounded-md w-full"
+                            placeholder="Enter your pet's name"
+                            minLength={3}
+                            maxLength={15}
+                            value={petName}
+                            onChange={(e) => { handlePetDisplayNameVal(e.target.value) }}
+                            required
+                        />
 
-                    <PetNameMessage petName={petName} petNameValid={petNameValid} />
-                </div>
+                        <PetNameMessage petName={petName} petNameValid={petNameValid} />
+                    </div>
 
-                {/* Breed */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="breed"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Breed
-                        <span className="text-red-500"> *</span>
-                    </label>
-                    <input
-                        type="text"
-                        className="mt-1 p-2 border rounded-md w-full"
-                        placeholder="Enter your pet's breed"
-                        value={petBreed}
-                        maxLength={50}
-                        onChange={(e) => setPetBreed(e.target.value)}
-                        required
-                    />
-                </div>
-
-                {/* Favorite Food */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="favoriteFood"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Favorite Food
-                        <span className="text-red-500"> *</span>
-                    </label>
-                    <input
-                        type="text"
-                        className="mt-1 p-2 border rounded-md w-full"
-                        placeholder="Enter your pet's favorite food"
-                        value={petFaveFood}
-                        maxLength={30}
-                        onChange={(e) => setPetFaveFood(e.target.value)}
-                        required
-                    />
-                </div>
-
-                {/* Hobbies */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="hobbies"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Hobbies
-                        <span className="text-red-500"> *</span>
-                    </label>
-                    <input
-                        type="text"
-                        className="mt-1 p-2 border rounded-md w-full"
-                        placeholder="Enter your pet's hobbies"
-                        value={petHobbies}
-                        maxLength={50}
-                        onChange={(e) => setPetHobbies(e.target.value)}
-                        required
-                    />
-                </div>
-
-                {/* Photo */}
-                <div className='mb-4'>
-                    <label htmlFor="photo" className='block text-sm font-medium text-gray-700 mb-1'>
-                        Upload Photo
-                        <span className="text-red-500"> *</span>
-                    </label>
-                    <input type="file" id="photo" onChange={e => handlePetProfileSelect(e)} required />
-                    <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full hover:opacity-50">
-                        {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />): null}
+                    {/* Breed */}
+                    <div className="w-full">
+                        <label
+                            htmlFor="breed"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Breed
+                            <span className="text-red-500"> *</span>
+                        </label>
+                        <input
+                            type="text"
+                            className="mt-1 p-2 border rounded-md w-full"
+                            placeholder="Enter your pet's breed"
+                            value={petBreed}
+                            maxLength={50}
+                            onChange={(e) => setPetBreed(e.target.value)}
+                            required
+                        />
                     </div>
                 </div>
 
-                {/* About */}
-                <div className="mb-3">
-                    <label
-                        htmlFor="bio"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        About
-                        <span className="text-red-500"> *</span>
-                    </label>
-                    <textarea
-                        id="bio"
-                        className="mt-1 p-2 border rounded-md w-full resize-none"
-                        rows="4"
-                        placeholder="Tell us about your pet..."
-                        value={petAbout}
-                        maxLength={100}
-                        onChange={(e) => setPetAbout(e.target.value)}
-                        required
-                    />
+                <div className='flex flex-row w-full h-fit justify-evenly items-start gap-4 mb-4'>
+                    {/* Photo */}
+                    <div className='w-full h-full flex flex-col justify-center items-center'>
+                        <label htmlFor="photo" className='text-start w-full text-sm font-medium text-gray-700 mb-2'>
+                            Upload Photo
+                            <span className="text-red-500"> *</span>
+                        </label>
+                        <input type="file" id="photo" onChange={e => handlePetProfileSelect(e)} required className='mb-4' />
+                        <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full hover:opacity-50">
+                            {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />): null}
+                        </div>
+                    </div>
+
+                    <div className='flex flex-col w-full h-full'>
+                        {/* About */}
+                        <div className='w-full h-full mb-1'>
+                            <label
+                                htmlFor="bio"
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                About
+                                <span className="text-red-500"> *</span>
+                            </label>
+                            <textarea
+                                id="bio"
+                                className="mt-1 p-2 border rounded-md w-full resize-none"
+                                placeholder="Tell us about your pet..."
+                                rows={3}
+                                value={petAbout}
+                                maxLength={100}
+                                onChange={(e) => setPetAbout(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        {/* Favorite Food */}
+                        <div className="w-full mb-2">
+                            <label
+                                htmlFor="favoriteFood"
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                Favorite Food
+                                <span className="text-red-500"> *</span>
+                            </label>
+                            <input
+                                type="text"
+                                className="mt-1 p-2 border rounded-md w-full"
+                                placeholder="Enter your pet's favorite food"
+                                value={petFaveFood}
+                                maxLength={30}
+                                onChange={(e) => setPetFaveFood(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        {/* Hobbies */}
+                        <div className="w-full">
+                            <label
+                                htmlFor="hobbies"
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                Hobbies
+                                <span className="text-red-500"> *</span>
+                            </label>
+                            <input
+                                type="text"
+                                className="mt-1 p-2 border rounded-md w-full"
+                                placeholder="Enter your pet's hobbies"
+                                value={petHobbies}
+                                maxLength={50}
+                                onChange={(e) => setPetHobbies(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 {/* sex, birthdate, birthplace */}
@@ -1372,21 +1373,28 @@ function PetAccountSetup({ props }) {
             </div>
 
             {/* form button controls */}
-            <div className="flex justify-end">
-                <button
-                    type="submit"
-                    disabled={!petNameValid}
-                    className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${petNameValid ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}>
-                    Create Pet Profile
-                </button>
+            <div className="flex justify-between items-center">
 
-                <button
-                    type="button"
-                    className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                    onClick={() => setShowCreatePetForm(false)}
-                >
-                    Cancel
-                </button>
+                <h2 className="font-bold text-xl gap-2 flex flex-row items-center mb-2">
+                    <i className='fa-solid fa-paw'></i>
+                    Add a New Pet
+                </h2>
+
+                <div className='flex flex-row gap-4'>
+                    <button
+                        type="button"
+                        className="bg-red-500 text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                        onClick={() => setShowCreatePetForm(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={!petNameValid}
+                        className={`py-2 px-4 rounded-md bg-pistachio text-white transition-all ${petNameValid ? 'hover:scale-105 active:scale-100' : 'opacity-50'}`}>
+                        Create Pet Profile
+                    </button>       
+                </div>
             </div>
         </form>
     )
