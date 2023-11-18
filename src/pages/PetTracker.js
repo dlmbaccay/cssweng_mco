@@ -148,13 +148,24 @@ export default function PetTracker() {
     if (!pageLoading) {
         return (
         <div className='flex flex-row w-full h-screen overflow-hidden'>
-            <div className='w-[300px]'>
+            <div className='hidden lg:flex lg:w-[300px]'>
                 {(userPhotoURL && username) && <ExpandedNavBar 
                     props={{
                         userPhotoURL: userPhotoURL,
                         username: username,
-                        activePage: "PetTracker",
+                        activePage: "Home",
                         expanded: true
+                    }}
+                />}
+            </div>
+
+            <div className='w-fit lg:hidden'>
+                {(userPhotoURL && username) && <ExpandedNavBar 
+                    props={{
+                        userPhotoURL: userPhotoURL,
+                        username: username,
+                        activePage: "Home",
+                        expanded: false
                     }}
                 />}
             </div>

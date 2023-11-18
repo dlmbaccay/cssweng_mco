@@ -205,14 +205,24 @@ function Settings() {
     return (
         <div>
             <div id="root" className='flex flex-row h-screen paw-background'>
-                {/* home navbar */}
-                <div className='w-[300px]'>
+                <div className='hidden lg:flex lg:w-[300px]'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
-                            props={{
+                        props={{
                             userPhotoURL: userPhotoURL,
                             username: username,
-                            activePage: "Settings",
+                            activePage: "Home",
                             expanded: true
+                        }}
+                    />}
+                </div>
+
+                <div className='w-fit lg:hidden'>
+                    {(userPhotoURL && username) && <ExpandedNavBar 
+                        props={{
+                            userPhotoURL: userPhotoURL,
+                            username: username,
+                            activePage: "Home",
+                            expanded: false
                         }}
                     />}
                 </div>

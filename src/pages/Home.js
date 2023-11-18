@@ -92,15 +92,26 @@ function Home() {
     return (
       <div className='flex flex-row w-full h-screen overflow-hidden'>
 
-        <div className='w-[300px]'>
+        <div className='hidden lg:flex lg:w-[300px]'>
           {(userPhotoURL && username) && <ExpandedNavBar 
-            props={{
-              userPhotoURL: userPhotoURL,
-              username: username,
-              activePage: "Home",
-              expanded: true
-            }}
-        />}
+              props={{
+                userPhotoURL: userPhotoURL,
+                username: username,
+                activePage: "Home",
+                expanded: true
+              }}
+          />}
+        </div>
+
+        <div className='w-fit lg:hidden'>
+          {(userPhotoURL && username) && <ExpandedNavBar 
+              props={{
+                userPhotoURL: userPhotoURL,
+                username: username,
+                activePage: "Home",
+                expanded: false
+              }}
+          />}
         </div>
 
         <div className='w-full bg-dark_gray'>            
