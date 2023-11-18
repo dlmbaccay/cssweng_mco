@@ -290,7 +290,7 @@ export default function CreatePost({ props }) {
             <button 
                 type='submit'
                 className={`flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-[10px]
-                hover:bg-pistachio transition duration-200 ease-in-out ${submitDisabled ? 'opacity-50 cursor-default' : 'cursor-pointer'}`}
+                hover:bg-pistachio transition duration-200 ease-in-out ${submitDisabled ? 'bg-pistachio opacity-50 cursor-default' : 'cursor-pointer'}`}
             >
                 <p className='font-bold'>Post</p> 
             </button>

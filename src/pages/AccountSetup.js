@@ -154,11 +154,16 @@ function AccountSetup() {
         }
     };
 
+    const [submitDisabled, setSubmitDisabled] = useState(true);
+
     const onSubmit = async (e) => {
         e.preventDefault();
         let URL;
 
         if (selectedFile) {
+            setSubmitDisabled(true);
+            toast.loading('Setting up your account...');
+
             const storagePath = `profilePictures/${user.uid}/profilePic`;
             const storageRef = storage.ref().child(storagePath);
             const uploadTask = storageRef.put(selectedFile);
@@ -212,6 +217,7 @@ function AccountSetup() {
 
                     await batch.commit();
                                 
+                    toast.dismiss();
                     toast.success(`Welcome to BantayBuddy, ${usernameFormValue}!`)
 
                     // push to Profile
@@ -219,6 +225,9 @@ function AccountSetup() {
                 }
             );
         } else {
+            setSubmitDisabled(true);
+            toast.loading('Setting up your account...');
+
             // Create refs for both documents
             const userDoc = firestore.doc(`users/${user.uid}`);
             const usernameDoc = firestore.doc(`usernames/${usernameFormValue}`);
@@ -250,8 +259,9 @@ function AccountSetup() {
 
             await batch.commit();
                 
+            toast.dismiss();
             toast.success(`Welcome to BantayBuddy, ${usernameFormValue}!`)
-
+            
             // push to Profile
             router.push(`/user/${usernameFormValue}`);
         }

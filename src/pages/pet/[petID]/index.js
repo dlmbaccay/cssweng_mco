@@ -273,6 +273,7 @@ function PetProfilePage() {
         const q = query(
             collection(firestore, "posts"),
             where("postPets", "array-contains", petID),
+            orderBy("postDate", "desc"),
             limit(5)
         );
 
@@ -629,7 +630,7 @@ function PetProfilePage() {
 
                         <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
 
-                            <div id="tab-actions" className='flex flex-row bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300'>
+                            <div id="tab-actions" className='flex flex-row font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300'>
                                 <button
                                     className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Tagged Posts' ? 'bg-citron text-white' : ''
                                         }`}
@@ -652,7 +653,7 @@ function PetProfilePage() {
                                 </button>
                             </div>
 
-                            <div id="tab-container" className='overflow-y-scroll'>
+                            <div id="tab-container" className='overflow-y-scroll h-full bg-[#FAFAFA]'>
 
                                 {/* Tagged Posts */}
                                 {activeTab === 'Tagged Posts' && (
@@ -664,23 +665,23 @@ function PetProfilePage() {
                                             {taggedPosts.map((post, index) => (
                                                 <div key={post.id}>
                                                     <PostSnippet
-                                                    props={{
-                                                        currentUserID: currentUserID,
-                                                        postID: post.id,
-                                                        postBody: post.postBody,
-                                                        postCategory: post.postCategory,
-                                                          postTrackerLocation: post.postTrackerLocation,
-                                                        postPets: post.postPets,
-                                                        postDate: post.postDate,
-                                                        imageUrls: post.imageUrls,
-                                                        authorID: post.authorID,
-                                                        authorDisplayName: post.authorDisplayName,
-                                                        authorUsername: post.authorUsername,
-                                                        authorPhotoURL: post.authorPhotoURL,
-                                                        likes: post.likes,
-                                                        comments: post.comments,
-                                                        isEdited: post.isEdited,
-                                                    }}
+                                                        props={{
+                                                            currentUserID: currentUserID,
+                                                            postID: post.id,
+                                                            postBody: post.postBody,
+                                                            postCategory: post.postCategory,
+                                                            postTrackerLocation: post.postTrackerLocation,
+                                                            postPets: post.postPets,
+                                                            postDate: post.postDate,
+                                                            imageUrls: post.imageUrls,
+                                                            authorID: post.authorID,
+                                                            authorDisplayName: post.authorDisplayName,
+                                                            authorUsername: post.authorUsername,
+                                                            authorPhotoURL: post.authorPhotoURL,
+                                                            likes: post.likes,
+                                                            comments: post.comments,
+                                                            isEdited: post.isEdited,
+                                                        }}
                                                     />
                                                 </div>
                                             ))}

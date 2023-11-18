@@ -313,8 +313,7 @@ function UserProfilePage() {
             toast.error('Error saving profile:'+ error);
         }
     }
-     
-
+    
     const [selectedProfileFile, setSelectedProfileFile] = useState(null);
     const [previewProfileUrl, setPreviewProfileUrl] = useState(null);
     const [selectedCoverFile, setSelectedCoverFile] = useState(null);
@@ -450,7 +449,6 @@ function UserProfilePage() {
     useEffect(() => {
         setLoading(true);
 
-        // indexed in query builder
         const q = query(
             collection(firestore, "posts"),
             where("authorID", "==", profileUserID),
@@ -778,7 +776,7 @@ function UserProfilePage() {
                         </div>
 
                         <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
-                            <div id="tab-actions" className="flex flex-row bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300">
+                            <div id="tab-actions" className="flex flex-row font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300">
                                 <button
                                     className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
                                         }`}
@@ -799,12 +797,12 @@ function UserProfilePage() {
                                 </button>
                             </div>
 
-                            <div id="tab-container" className='overflow-y-scroll'>
+                            <div id="tab-container" className='overflow-y-scroll h-full'>
                                 {/* Posts */}
                                 {activeTab === 'Posts' && (
                                     <div
                                         id="showcase"
-                                        className="flex flex-col items-center justify-center w-full"
+                                        className="flex flex-col items-center justify-center w-full bg-[#FAFAFA]"
                                     >
                                         {currentUserID === profileUserID ? (
                                             
@@ -851,23 +849,23 @@ function UserProfilePage() {
                                             {posts.map((post, index) => (
                                                 <div key={post.id}>
                                                     <PostSnippet
-                                                    props={{
-                                                        currentUserID: currentUserID,
-                                                        postID: post.id,
-                                                        postBody: post.postBody,
-                                                        postCategory: post.postCategory,
-                                                        postTrackerLocation: post.postTrackerLocation,
-                                                        postPets: post.postPets,
-                                                        postDate: post.postDate,
-                                                        imageUrls: post.imageUrls,
-                                                        authorID: post.authorID,
-                                                        authorDisplayName: post.authorDisplayName,
-                                                        authorUsername: post.authorUsername,
-                                                        authorPhotoURL: post.authorPhotoURL,
-                                                        likes: post.likes,
-                                                        comments: post.comments,
-                                                        isEdited: post.isEdited,
-                                                    }}
+                                                        props={{
+                                                            currentUserID: currentUserID,
+                                                            postID: post.id,
+                                                            postBody: post.postBody,
+                                                            postCategory: post.postCategory,
+                                                            postTrackerLocation: post.postTrackerLocation,
+                                                            postPets: post.postPets,
+                                                            postDate: post.postDate,
+                                                            imageUrls: post.imageUrls,
+                                                            authorID: post.authorID,
+                                                            authorDisplayName: post.authorDisplayName,
+                                                            authorUsername: post.authorUsername,
+                                                            authorPhotoURL: post.authorPhotoURL,
+                                                            likes: post.likes,
+                                                            comments: post.comments,
+                                                            isEdited: post.isEdited,
+                                                        }}
                                                     />
                                                 </div>
                                             ))}
@@ -1194,7 +1192,7 @@ function PetAccountSetup({ props }) {
     };
 
     return (
-        <form onSubmit={handleCreatePetProfile} className='flex flex-col h-full justify-between'>
+        <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
             <div className='h-full flex flex-col justify-start'>
                 <div className='flex flex-row w-full justify-evenly items-start gap-4 mb-4'>
                     {/* Display Name */}
