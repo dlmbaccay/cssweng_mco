@@ -511,7 +511,7 @@ function UserProfilePage() {
 
             {profileUser &&
 
-                <div className="h-screen w-full">
+                <div className="h-screen w-full overflow-hidden">
                     <div id='header-container' className='h-1/5 border-l border-neutral-300'>
                         <CoverPhoto src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} />
                     </div>
@@ -520,7 +520,9 @@ function UserProfilePage() {
                         
                         {/* Profile Picture */}
                         <div className="flex absolute justify-center w-80 h-44">
-                            <div className='rounded-full w-44 h-44 -translate-y-24 z-10'>
+                            <div className='rounded-full z-10
+                                -translate-y-40 w-32 h-32 -translate-x-14
+                                lg:w-44 lg:h-44 lg:-translate-y-24 lg:translate-x-0'>
                                 <Image 
                                     src={userPhotoURL}
                                     alt={username + " profile picture"}
@@ -532,7 +534,7 @@ function UserProfilePage() {
                         </div>
 
                         {/* Left Panel */}
-                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center">
+                        <div className="fixed hidden lg:flex flex-col lg:w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center">
 
                             {/* Display Name & Username */}
                             <div className="text-center mt-24 w-80">
@@ -570,7 +572,7 @@ function UserProfilePage() {
                                     onRequestClose={() => setShowEditProfile(false)}
                                     style={editUserProfileStyle}
                                 >
-                                    <div className='w-full h-full flex flex-col justify-between'>
+                                    <div className='w-full h-full flex flex-col justify-between pr-2'>
                                         <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
 
                                         <div className='flex flex-row w-full h-fit gap-6 justify-evenly items-cet'>
@@ -664,17 +666,15 @@ function UserProfilePage() {
                                                     />
                                                 </div>
 
-                                                 <div className='flex flex-col w-full h-full gap-4 rounded-lg'>
-                                                    <div className='flex flex-row w-full justify-evenly'>
-                                                        <div className='flex flex-row gap-2 items-center'>
-                                                            <i className="fa-solid fa-phone"></i>
-                                                            <p>{phoneNumber}</p>
-                                                        </div>
+                                                 <div className='flex flex-col w-full items-center h-full gap-4 rounded-lg'>
+                                                    <div className='flex flex-row gap-2 items-center'>
+                                                        <i className="fa-solid fa-phone"></i>
+                                                        <p>{phoneNumber}</p>
+                                                    </div>
 
-                                                        <div className='flex flex-row gap-2 items-center'>
-                                                            <i className="fa-solid fa-envelope"></i>
-                                                            <p>{email}</p>
-                                                        </div>
+                                                    <div className='flex flex-row gap-2 items-center'>
+                                                        <i className="fa-solid fa-envelope"></i>
+                                                        <p>{email}</p>
                                                     </div>
 
                                                     <div className='flex flex-row w-full justify-evenly'>
@@ -776,16 +776,58 @@ function UserProfilePage() {
                         </div>
 
                         {/* Main Container */}
-                        <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
-                            <div id="tab-actions" className="flex flex-row font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm">
+                        <div id='main-content-container' className='overflow-hidden flex flex-col lg:translate-x-80 lg:w-[calc(100%-20rem)] w-full'>
+                            <div id='flex-profile-details' className='lg:hidden w-full h-12 bg-snow flex flex-row items-center pl-10 gap-8'>
+                                <div className='flex flex-row gap-2'>
+                                    <p className='font-bold'>
+                                    {profileUser.displayName}
+                                    </p>
+                                    <p className='font-bold'>·</p>
+                                    <p className='font'>
+                                        @{profileUser.username}
+                                    </p>
+                                </div>
+
+                                <div className='flex flex-row gap-2'>
+                                    {/* followers */}
+                                    <div className='flex flex-row gap-2 items-center'>
+                                        <p className='font-semibold text-sm'>{profileUser.followers.length}</p>
+                                        <p className='text-grass font-bold text-sm'>Followers</p>
+                                    </div>
+
+                                    <div className='flex flex-row gap-2 items-center'>
+                                        <p className='font-semibold text-sm'>{profileUser.following.length}</p>
+                                        <p className='text-grass font-bold text-sm'>Following</p>
+                                    </div>
+                                </div>
+
+                                { profileUserID === currentUserID ? 
+                                    (<button 
+                                        onClick={() => setShowEditProfile(true)}
+                                        className='text-sm font-semibold text-white bg-citron w-12 h-6 rounded-md'
+                                    >
+                                        Edit
+                                    </button>) : 
+                                    (
+                                        <button 
+                                            onClick={handleFollow}
+                                            className='text-sm font-semibold text-white bg-citron w-16 h-6 rounded-md'
+                                        >
+                                            {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
+                                        </button>
+                                    )
+                                }
+                            </div>
+
+                            <div id="tab-actions" className="flex flex-row h-12 font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm">
                                 <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
+                                    className={`px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Posts')}>
                                     Posts
                                 </button>
                                 <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
+                                    className={`px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Pets')}>
                                     Pets
@@ -906,7 +948,7 @@ function UserProfilePage() {
                                                     <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
                                                 </div>
                                             ) : (
-                                                <div className="w-full flex flex-col gap-12 items-center lg:flex-row justify-start 
+                                                <div className="w-full flex flex-row gap-12 items-center justify-start 
                                                     pt-10 pl-10 pr-10 pb-10  
                                                     lg:pl-20 lg:pt-16 lg:pr-20 lg:pb-16  
                                                 ">
