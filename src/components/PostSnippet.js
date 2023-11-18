@@ -71,7 +71,7 @@ export default function PostSnippet({ props }) {
       const taggedPets = await Promise.all(postPets.map(async (petID) => {
         const petRef = firestore.collection('pets').doc(petID);
         const petDoc = await petRef.get();
-        const pet = petDoc.data();
+        const pet = { id: petDoc.id, ...petDoc.data() };
         return pet;
       }));
 
@@ -285,7 +285,17 @@ export default function PostSnippet({ props }) {
                 <div className='flex flex-row items-center justify-center gap-2'>
                   {taggedPets.length === 1 && <i class="fa-solid fa-tag text-md"></i>}
                   {taggedPets.length > 1 && <i class="fa-solid fa-tags text-md"></i>}
-                  <p className='line-clamp-1 overflow-hidden text-md'>{taggedPets.map(pet => pet.petName).join(', ')}</p>
+                  {/* <p className='line-clamp-1 overflow-hidden text-md'>{taggedPets.map(pet => pet.petName).join(', ')}</p> */}
+                  <p className='line-clamp-1 overflow-hidden text-md'>
+                    {taggedPets.map((pet, index) => (
+                        <span key={pet.id}>
+                            <Link href={`/pet/${pet.id}`} title={pet.petName} className='hover:text-grass hover:font-bold transition-all'>
+                                {pet.petName}
+                            </Link>
+                            {index < taggedPets.length - 1 ? ', ' : ''}
+                        </span>
+                    ))}
+                </p>
                 </div>
               )}
             </div>
