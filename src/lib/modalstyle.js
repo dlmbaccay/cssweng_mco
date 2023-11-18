@@ -168,3 +168,22 @@ export const changePasswordStyle = {
     backgroundColor: '#FFF',
   },
 }
+
+export const expandedPostStyle = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+  },
+  content: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '650px', 
+    height: '95%',
+    backgroundColor: '#FAFAFA',
+    padding: '0px',
+    border: 'none',
+    borderRadius: '8px',
+  },
+}
