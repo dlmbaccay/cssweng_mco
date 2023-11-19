@@ -181,7 +181,7 @@ export const expandedPostStyle = {
     transform: 'translate(-50%, -50%)',
     width: '650px', 
     height: '95%',
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#F5F0F0',
     padding: '0px',
     border: 'none',
     borderRadius: '8px',

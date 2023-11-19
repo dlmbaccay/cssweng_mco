@@ -117,10 +117,15 @@ export default function PostExpanded({ props }) {
       setShowEditPostModal(false);
     }
 
+    const [commentBody, setCommentBody] = useState('');
+
+    const handleComment = async () => {
+    }
+
     return (
         <div className='w-full h-full flex flex-col'>
             {/* expanded controls */}
-            <div className='w-full h-8 pt-4 rounded-t-lg bg-snow flex flex-row justify-between items-center pr-4 pl-4'>
+            <div className='w-full h-10 pt-4 rounded-t-lg flex flex-row justify-between items-center pr-4 pl-4'>
                 <h1 className='w-full text-center font-bold'>
                     {authorDisplayName}&apos;s Post
                 </h1>
@@ -133,7 +138,7 @@ export default function PostExpanded({ props }) {
         
             {/* expanded post */}
             <div
-                className='bg-snow w-full h-full rounded-lg p-6 flex flex-col overflow-y-auto'>
+                className='w-full h-full rounded-lg mt-2 pr-6 pl-6 flex flex-col overflow-y-auto'>
 
                 {/* Header */}
                 <div id="post-header" className='flex flex-row justify-between'>
@@ -442,7 +447,7 @@ export default function PostExpanded({ props }) {
                 </div>
 
                 {/* Comments */}
-                <div id='post-comments' className='mt-3 flex flex-col w-full justify-between relative'>
+                <div id='post-comments' className='mt-3 flex h-full bg-gray flex-col w-full justify-between relative'>
                     
                     {/* 
                         - comments is a subcollection under posts
@@ -451,13 +456,27 @@ export default function PostExpanded({ props }) {
                         replies has replyID, replyBody, replyDate, authorID, authorDisplayName, authorUsername, authorPhotoURL
                     */}
 
-                    {/* sample comment */}
-                    <div className=''>
-
-                    </div>
-
                 </div>
             </div>
+
+            <div id='write-comment' className='bg-black mt-2 mb-4 ml-6 mr-6'>
+                <form className='flex flex-row'>
+                    <div className='flex aspect-square h-full '>
+                        <Image src={authorPhotoURL} alt="user image" width={45} height={45} className='rounded-full drop-shadow-sm'/>
+                    </div>
+
+                    <textarea
+                        id='comment-body'
+                        type='text'
+                        maxLength={100}
+                        value={commentBody}
+                        rows={1}
+                        onChange={(event) => setCommentBody(event.target.value)}
+                        placeholder='Write a comment...'
+                        className='outline-none resize-none border border-[#d1d1d1] rounded-lg text-md text-raisin_black w-full p-4 overflow-y-auto'
+                    />
+                </form>
+            </div>  
         </div>
       
     )
