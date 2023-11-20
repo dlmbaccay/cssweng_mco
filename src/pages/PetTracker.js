@@ -153,7 +153,7 @@ export default function PetTracker() {
                     props={{
                         userPhotoURL: userPhotoURL,
                         username: username,
-                        activePage: "Home",
+                        activePage: "PetTracker",
                         expanded: true
                     }}
                 />}
@@ -164,7 +164,7 @@ export default function PetTracker() {
                     props={{
                         userPhotoURL: userPhotoURL,
                         username: username,
-                        activePage: "Home",
+                        activePage: "PetTracker",
                         expanded: false
                     }}
                 />}

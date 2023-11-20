@@ -210,7 +210,7 @@ function Settings() {
                         props={{
                             userPhotoURL: userPhotoURL,
                             username: username,
-                            activePage: "Home",
+                            activePage: "Settings",
                             expanded: true
                         }}
                     />}
@@ -221,7 +221,7 @@ function Settings() {
                         props={{
                             userPhotoURL: userPhotoURL,
                             username: username,
-                            activePage: "Home",
+                            activePage: "Settings",
                             expanded: false
                         }}
                     />}

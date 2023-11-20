@@ -148,7 +148,7 @@ export default function Comment( {props} ) {
         />
 
         <div className='flex flex-col w-full'>
-            <div className='flex flex-col gap-1 w-full bg-dark_gray items-start break-all py-2 px-3 text-sm rounded-xl border border-[#d1d1d1] drop-shadow-sm'>
+            <div className='flex flex-col gap-1 w-full bg-[#f5f5f5] items-start break-all py-2 px-3 text-sm rounded-xl border border-[#d1d1d1] drop-shadow-sm'>
                 
                 <div>
                     <span className='font-bold'>{authorDisplayName}</span>
@@ -164,7 +164,7 @@ export default function Comment( {props} ) {
                             handleEditComment(event);
                         }}
 
-                        className='flex flex-row w-full items-start justify-center h-full]'
+                        className='flex flex-row w-full items-start justify-center h-full mb-1'
                     >
                         <textarea
                             value={editedCommentBody}

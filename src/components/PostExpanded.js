@@ -589,7 +589,7 @@ export default function PostExpanded({ props }) {
                             }
                         })}
                         placeholder='Write a comment...' 
-                        className={`outline-none resize-none border border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
+                        className={`outline-none resize-none border bg-[#f5f5f5] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
                     />
 
                     <button

@@ -87,7 +87,7 @@ export default function Reply({props}) {
             <Image src={authorPhotoURL} alt={authorDisplayName} width={40} height={40} className='rounded-full' />
 
             <div className='flex flex-col w-full'>
-                <div className='flex flex-col gap-1 w-full bg-dark_gray items-start break-all py-2 px-3 text-sm rounded-xl border border-[#d1d1d1] drop-shadow-sm'>
+                <div className='flex flex-col gap-1 w-full bg-[#F5F5F5] items-start break-all py-2 px-3 text-sm rounded-xl border border-[#d1d1d1] drop-shadow-sm'>
                     <div>
                         <span className='font-bold'>{authorDisplayName}</span>
                         <span className='font-bold'> · </span>
@@ -102,7 +102,7 @@ export default function Reply({props}) {
                                 handleEditReply(event);
                             }}
 
-                            className='flex flex-row w-full items-start justify-center h-full]'
+                            className='flex flex-row w-full items-start justify-center h-full mb-1'
                         >
                             <textarea
                                 value={editedReplyBody}
