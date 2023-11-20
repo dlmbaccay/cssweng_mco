@@ -11,7 +11,7 @@ import { collection, doc, getDocs, onSnapshot, query, arrayRemove, arrayUnion} f
 
 import likeReaction from '/public/images/post-reactions/like.png'
 import heartReaction from '/public/images/post-reactions/heart.png'
-import laughReaction from '/public/images/post-reactions/laugh.png'
+import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
@@ -66,37 +66,46 @@ export default function PostSnippet({ props }) {
 
     const [commentsLength, setCommentsLength] = useState(0);
     const [reactionsLength, setReactionsLength] = useState(0);
+    const [currentUserReaction, setCurrentUserReaction] = useState('');
 
     useEffect(() => {
       const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
       const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
 
       const unsubscribeComments = onSnapshot(commentsRef, async (snapshot) => {
-        let totalComments = snapshot.size;
+          let totalComments = snapshot.size;
 
-        for (let doc of snapshot.docs) {
-          const repliesSnapshot = await getDocs(collection(doc.ref, 'replies'));
-          totalComments += repliesSnapshot.size;
-        }
+          for (let doc of snapshot.docs) {
+              const repliesSnapshot = await getDocs(collection(doc.ref, 'replies'));
+              totalComments += repliesSnapshot.size;
+          }
 
-        setCommentsLength(totalComments);
+          setCommentsLength(totalComments);
       });
 
       const unsubscribeReactions = onSnapshot(reactionsRef, async (snapshot) => {
-        let totalReactions = 0;
+          let totalReactions = 0;
+          let currentUserReaction = null;
 
-        for (let doc of snapshot.docs) {
-          const reactionData = doc.data();
-          totalReactions += reactionData.userIDs.length;
-        }
+          const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
 
-        setReactionsLength(totalReactions);
+          for (let doc of snapshot.docs) {
+              const reactionData = doc.data();
+              totalReactions += reactionData.userIDs.length;
+
+              if (reactionData.userIDs.includes(currentUserID)) {
+                  currentUserReaction = reactionTypes.find(type => type === doc.id);
+              }
+          }
+
+          setReactionsLength(totalReactions);
+          setCurrentUserReaction(currentUserReaction);
       });
 
       // Clean up the subscriptions on unmount
       return () => {
-        unsubscribeComments();
-        unsubscribeReactions();
+          unsubscribeComments();
+          unsubscribeReactions();
       };
     }, [postID]);
 
@@ -117,6 +126,7 @@ export default function PostSnippet({ props }) {
               // User has reacted with the same type again, remove user from userIDs array
               const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
               await reactionRef.update({ userIDs: updatedUserIDs });
+              setCurrentUserReaction('');
             } else {
               // User has reacted with a different type, remove user from current userIDs array
               const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
@@ -131,8 +141,6 @@ export default function PostSnippet({ props }) {
           await reactionRef.set({ userIDs: [currentUserID] });
         }
       }
-
-      toast.success('Reaction updated!');
     }
 
     useEffect(() => {
@@ -265,12 +273,75 @@ export default function PostSnippet({ props }) {
           {/* Footer */}
           <div id='post-footer' className='mt-3 flex flex-row w-full justify-between relative'>
             <div id="left" className='flex flex-row gap-4'>
-              <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                <i 
-                  className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)}
-                />
+              <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2 w-fit h-6'>
+                {!currentUserReaction && 
+                  <i 
+                    className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)}
+                  />
+                }
+                
+                {currentUserReaction === 'like' &&
+                  <Image
+                    src={likeReaction}
+                    alt="like reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)} 
+                  />
+                }
+
+                {currentUserReaction === 'heart' &&
+                  <Image
+                    src={heartReaction}
+                    alt="heart reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)} 
+                  />
+                }
+
+                {currentUserReaction === 'haha' &&
+                  <Image
+                    src={laughReaction}
+                    alt="haha reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)} 
+                  />
+                }
+
+                {currentUserReaction === 'wow' &&
+                  <Image
+                    src={wowReaction}
+                    alt="wow reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)} 
+                  />
+                }
+
+                {currentUserReaction === 'sad' &&
+                  <Image
+                    src={sadReaction}
+                    alt="sad reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)} 
+                  />
+                }
+
+                {currentUserReaction === 'angry' &&
+                  <Image
+                    src={angryReaction}
+                    alt="angry reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)} 
+                  />
+                }
+
                 <p>
                   {reactionsLength}
                 </p>
@@ -280,7 +351,7 @@ export default function PostSnippet({ props }) {
                     onMouseEnter={() => setIsOverlayVisible(true)}
                     onMouseLeave={() => setIsOverlayVisible(false)}
                     id='overlay' 
-                    className='absolute bottom-1 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                    className='absolute -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
                   >
                     <Image 
                       src={likeReaction} 

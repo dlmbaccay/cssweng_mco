@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 import likeReaction from '/public/images/post-reactions/like.png'
 import heartReaction from '/public/images/post-reactions/heart.png'
-import laughReaction from '/public/images/post-reactions/laugh.png'
+import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
@@ -12,8 +12,6 @@ import angryReaction from '/public/images/post-reactions/angry.png'
 export default function Reactions({props}) {
 
     const { postID, setShowReactionsModal } = props
-
-    const [activeContainer, setActiveContainer] = useState('')
 
     const [likeCount, setLikeCount] = useState(0)
     const [heartCount, setHeartCount] = useState(0)
@@ -25,44 +23,35 @@ export default function Reactions({props}) {
     // get the number of reactions for each type by counting the number of userIDs in each type
     useEffect(() => {
         const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
-        const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Your actual reaction types
 
-        const unsubscribes = reactionTypes.map((reaction) => {
-            const reactionRef = reactionsRef.doc(reaction);
+        const unsubscribe = reactionsRef.onSnapshot((snapshot) => {
+            const reactionCounts = {
+                like: 0,
+                heart: 0,
+                haha: 0,
+                wow: 0,
+                sad: 0,
+                angry: 0,
+            };
 
-            return reactionRef.onSnapshot((snapshot) => {
-                const reactionData = snapshot.data();
-
-                if (reactionData) {
-                    const userIDsCount = reactionData.userIDs.length;
-
-                    switch (reaction) {
-                        case 'like':
-                            setLikeCount(userIDsCount);
-                            break;
-                        case 'heart':
-                            setHeartCount(userIDsCount);
-                            break;
-                        case 'haha':
-                            setHahaCount(userIDsCount);
-                            break;
-                        case 'wow':
-                            setWowCount(userIDsCount);
-                            break;
-                        case 'sad':
-                            setSadCount(userIDsCount);
-                            break;
-                        case 'angry':
-                            setAngryCount(userIDsCount);
-                            break;
-                        default:
-                            break;
-                    }
+            snapshot.docs.forEach((doc) => {
+                const reactionData = doc.data();
+                if (reactionCounts.hasOwnProperty(doc.id)) {
+                    reactionCounts[doc.id] = reactionData.userIDs.length;
                 }
             });
+
+            setLikeCount(reactionCounts.like);
+            setHeartCount(reactionCounts.heart);
+            setHahaCount(reactionCounts.haha);
+            setWowCount(reactionCounts.wow);
+            setSadCount(reactionCounts.sad);
+            setAngryCount(reactionCounts.angry);
         });
 
-        return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+        return () => {
+            unsubscribe();
+        };
     }, []);
 
     return (
@@ -77,29 +66,30 @@ export default function Reactions({props}) {
             </div>
 
             <div className='mt-2 flex flex-col h-fit gap-2'>
-                <div className='flex flex-row items-center gap-1'>
-                    <Image src={likeReaction} alt='like reaction' width={30} height={30} />
-                    <p className='text-sm font-bold'>{likeCount}</p>
+                <div className='flex flex-row items-center gap-2'>
+                    <Image src={likeReaction} alt='like reaction' width={25} height={25} 
+                    />
+                    <p className='font-bold'>{likeCount}</p>
                 </div>
-                <div className='flex flex-row items-center gap-1'>
-                    <Image src={heartReaction} alt='like reaction' width={30} height={30} />
-                    <p className='text-sm font-bold'>{heartCount}</p>
+                <div className='flex flex-row items-center gap-2'>
+                    <Image src={heartReaction} alt='heart reaction' width={25} height={25} />
+                    <p className='font-bold'>{heartCount}</p>
                 </div>
-                <div className='flex flex-row items-center gap-1'>
-                    <Image src={laughReaction} alt='like reaction' width={30} height={30} />
-                    <p className='text-sm font-bold'>{hahaCount}</p>
+                <div className='flex flex-row items-center gap-2'>
+                    <Image src={laughReaction} alt='laugh reaction' width={25} height={25} />
+                    <p className='font-bold'>{hahaCount}</p>
                 </div>
-                <div className='flex flex-row items-center gap-1'>
-                    <Image src={wowReaction} alt='like reaction' width={30} height={30} />
-                    <p className='text-sm font-bold'>{wowCount}</p>
+                <div className='flex flex-row items-center gap-2'>
+                    <Image src={wowReaction} alt='wow reaction' width={25} height={25}/>
+                    <p className='font-bold'>{wowCount}</p>
                 </div>
-                <div className='flex flex-row items-center gap-1'>
-                    <Image src={sadReaction} alt='like reaction' width={30} height={30} />
-                    <p className='text-sm font-bold'>{sadCount}</p>
+                <div className='flex flex-row items-center gap-2'>
+                    <Image src={sadReaction} alt='sad reaction' width={25} height={25} />
+                    <p className='font-bold'>{sadCount}</p>
                 </div>
-                <div className='flex flex-row items-center gap-1'>
-                    <Image src={angryReaction} alt='like reaction' width={30} height={30} />
-                    <p className='text-sm font-bold'>{angryCount}</p>
+                <div className='flex flex-row items-center gap-2'>
+                    <Image src={angryReaction} alt='angry reaction' width={25} height={25} />
+                    <p className='font-bold'>{angryCount}</p>
                 </div>
             </div>
 

@@ -3,16 +3,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
 import { firestore, storage, firebase } from '../lib/firebase';
-import { arrayRemove } from 'firebase/firestore';
+import { arrayRemove, onSnapshot } from 'firebase/firestore';
 import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
 
 
-
 import likeReaction from '/public/images/post-reactions/like.png'
 import heartReaction from '/public/images/post-reactions/heart.png'
-import laughReaction from '/public/images/post-reactions/laugh.png'
+import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
@@ -97,6 +96,20 @@ export default function PostExpanded({ props }) {
         posts: arrayRemove(postID)
       });
 
+      // delete all comments
+        const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
+        const commentsSnapshot = await commentsRef.get();
+        commentsSnapshot.forEach(async (doc) => {
+            await doc.ref.delete();
+        });
+
+        // delete all reactions
+        const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+        const reactionsSnapshot = await reactionsRef.get();
+        reactionsSnapshot.forEach(async (doc) => {
+            await doc.ref.delete();
+        });
+
       // reload page
       // window.location.reload();
 
@@ -153,6 +166,7 @@ export default function PostExpanded({ props }) {
               // User has reacted with the same type again, remove user from userIDs array
               const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
               await reactionRef.update({ userIDs: updatedUserIDs });
+              setCurrentUserReaction('');
             } else {
               // User has reacted with a different type, remove user from current userIDs array
               const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
@@ -170,6 +184,33 @@ export default function PostExpanded({ props }) {
 
       toast.success('Reaction updated!');
     }
+
+    const [currentUserReaction, setCurrentUserReaction] = useState('');
+
+    useEffect(() => {
+        const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+        const unsubscribe = reactionsRef.onSnapshot((snapshot) => {
+            const newReactions = snapshot.docs.map((doc) => ({
+                reactionType: doc.id,
+                userIDs: doc.data().userIDs,
+            }));
+            setReactions(newReactions);
+
+            // find out if current user has reacted to this post
+            const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+            for (let reaction of reactionTypes) {
+                const reactionData = newReactions.find(r => r.reactionType === reaction);
+                if (reactionData && reactionData.userIDs.includes(currentUserID)) {
+                    setCurrentUserReaction(reaction);
+                    break;
+                }
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        }
+    }, []);
 
     // get comments
     const [comments, setComments] = useState([]);
@@ -346,11 +387,73 @@ export default function PostExpanded({ props }) {
                 <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative border-b border-dark_gray'>
                     <div id="left" className='flex flex-row gap-4'>
                     <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                    <i 
-                        className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
-                        onMouseEnter={() => setIsOverlayVisible(true)}
-                        onMouseLeave={() => setIsOverlayVisible(false)}
-                    />
+                        {currentUserReaction === '' && 
+                        <i 
+                            className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)}
+                        />
+                        }
+                        
+                        {currentUserReaction === 'like' &&
+                        <Image
+                            src={likeReaction}
+                            alt="like reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'heart' &&
+                        <Image
+                            src={heartReaction}
+                            alt="heart reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'haha' &&
+                        <Image
+                            src={laughReaction}
+                            alt="haha reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'wow' &&
+                        <Image
+                            src={wowReaction}
+                            alt="wow reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'sad' &&
+                        <Image
+                            src={sadReaction}
+                            alt="sad reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'angry' &&
+                        <Image
+                            src={angryReaction}
+                            alt="angry reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
                     <p>{reactionsLength}</p>
 
                     {isOverlayVisible && (
@@ -358,7 +461,7 @@ export default function PostExpanded({ props }) {
                         onMouseEnter={() => setIsOverlayVisible(true)}
                         onMouseLeave={() => setIsOverlayVisible(false)}
                         id='overlay' 
-                        className='absolute bottom-4 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                        className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
                         >
                         <Image 
                         src={likeReaction} 
@@ -592,22 +695,22 @@ export default function PostExpanded({ props }) {
                 </div>
 
                 {/* Reactions */}
-
                 <div className='w-fit text-sm mt-3 hover:underline cursor-pointer' onClick={() => setShowReactionsModal(true)}>
-                    Reactions
+                    View Reactions...
 
                     <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
 
                         <Reactions props={{
                             postID: postID,
                             setShowReactionsModal: setShowReactionsModal,
-                            }} />
+                            }} 
+                        />
 
                     </Modal>
                 </div>
 
                 {/* Comments */}
-                <div id='post-comments' className='mt-3 flex h-full flex-col w-full justify-between relative'>
+                <div id='post-comments' className='mt-3 mb-4 flex h-full flex-col w-full justify-between relative'>
                     
                     {comments.length === 0 ? (
                         <div className='flex text-sm'>
