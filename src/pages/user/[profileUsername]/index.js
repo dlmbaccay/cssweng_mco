@@ -10,7 +10,6 @@ import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, whe
 import { useUserData, usePetData, useUserIDfromUsername, useAllUserPosts } from '@/src/lib/hooks'
 import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
 
-import NavBar from '@/src/components/NavBar';
 import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import RoundIcon from '@/src/components/RoundIcon';
 import CoverPhoto from '@/src/components/CoverPhoto';
