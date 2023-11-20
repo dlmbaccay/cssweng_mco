@@ -11,7 +11,7 @@ export default function Reply({props}) {
 
     const {
         currentUserID, currentUserUsername, currentUserPhotoURL, currentUserDisplayName,
-        postID, commentID, replyID, replyBody, replyDate,
+        postID, commentID, replyID, replyBody, replyDate, isEdited,
         authorID, authorDisplayName, authorUsername, authorPhotoURL
     } = props;
 
@@ -56,6 +56,32 @@ export default function Reply({props}) {
         toast.success('Reply deleted successfully!');
     }
 
+    const [editedReplyBody, setEditedReplyBody] = useState(replyBody);
+    const [isEditingReply, setIsEditingReply] = useState(false);
+
+    const handleEditReply = (event) => {
+        event.preventDefault();
+
+        if (editedReplyBody.trim() === '') {
+            toast.error('Reply cannot be empty!');
+            return;
+        }
+
+        // Update reply in firestore
+        firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').doc(replyID).update({
+            replyBody: editedReplyBody,
+            isEdited: true,
+            replyDate: new Date().toISOString()
+        })
+        .then(() => {
+            toast.success('Reply edited successfully!');
+            setIsEditingReply(false);
+        })
+        .catch((error) => {
+            toast.error(error.message);
+        })
+    }
+
     return (
         <div className='flex flex-row w-full items-start min-h-[60px] max-h-fit gap-2'>
             <Image src={authorPhotoURL} alt={authorDisplayName} width={40} height={40} className='rounded-full' />
@@ -68,7 +94,44 @@ export default function Reply({props}) {
                         <Link href={`/user/${authorUsername}`} className='hover:font-bold hover:text-grass transition-all'> @{authorUsername}</Link>
                     </div>
                     
-                    {replyBody}
+                    {!isEditingReply && <div>{replyBody}</div>}
+
+                    {isEditingReply && (
+                        <form
+                            onSubmit={(event) => {
+                                handleEditReply(event);
+                            }}
+
+                            className='flex flex-row w-full items-start justify-center h-full]'
+                        >
+                            <textarea
+                                value={editedReplyBody}
+                                onChange={(event) => setEditedReplyBody(event.target.value)}
+                                maxLength={100}
+                                onKeyDown={(event => {
+                                    if (event.key === 'Enter') {
+                                        handleEditReply(event);
+                                    }
+                                })}
+                                placeholder='Write a reply...'
+                                className={`outline-none resize-none border-t border-l border-b border-[#d1d1d1] text-sm rounded-l-md text-raisin_black w-full p-3 transition-all h-[80px]`}
+                            />
+
+                            <div className='flex flex-col h-[80px] w-[40px] bg-white border-t border-r border-b border-[#d1d1d1] items-center justify-center text-xs rounded-r-md'>
+                                <button type='submit' className='flex items-center h-1/2 w-full justify-center rounded-rt-md hover:bg-grass hover:text-snow rounded-tr-md'>
+                                    <i className='fa-solid fa-check h-1/2 flex items-center' />
+                                </button>
+                                <button type='button' 
+                                    onClick={() => {
+                                        setIsEditingReply(false);
+                                        setEditedReplyBody(editedReplyBody);
+                                    }} 
+                                    className='flex items-center h-1/2 w-full justify-center hover:bg-grass hover:text-snow rounded-br-md'>
+                                    <i className='fa-solid fa-xmark h-1/2 flex items-center' />
+                                </button>
+                            </div>
+                        </form>
+                    )}
                 </div>
 
                 <div className='flex flex-row w-full text-xs gap-2 pl-3 mt-1'>
@@ -77,32 +140,44 @@ export default function Reply({props}) {
                     </div>
 
                     {currentUserID === authorID && (
-                        <div id='delete-control' className='hover:underline cursor-pointer' onClick={() => setShowDeleteReplyModal(true)}>
-                            Delete
+                        <div className='flex gap-2'>
+                            <div id='edit-control' className='hover:underline cursor-pointer' onClick={() => setIsEditingReply(true)}>
+                                Edit
+                            </div>
 
-                            <Modal isOpen={showDeleteReplyModal} onRequestClose={() => setShowDeleteReplyModal(false)} className='flex flex-col items-center justify-center' style={postDeleteConfirmationModalStyle}>
-                                <div className='flex flex-col items-center justify-center h-full gap-4'>
-                                    <p className='font-bold text-center text-sm'>Are you sure you want to delete this reply?</p>
-                                    <div className='flex flex-row gap-4'>
-                                        <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' 
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                setShowDeleteReplyModal(false)
-                                            }}>Cancel</button>
-                                        <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' 
-                                            onClick={
-                                                (event) => {
-                                                    handleDeleteReply(event);
-                                                }
-                                            }>Delete</button>
+                             <div id='delete-control' className='hover:underline cursor-pointer' onClick={() => setShowDeleteReplyModal(true)}>
+                                Delete
+
+                                <Modal isOpen={showDeleteReplyModal} onRequestClose={() => setShowDeleteReplyModal(false)} className='flex flex-col items-center justify-center' style={postDeleteConfirmationModalStyle}>
+                                    <div className='flex flex-col items-center justify-center h-full gap-4'>
+                                        <p className='font-bold text-center text-sm'>Are you sure you want to delete this reply?</p>
+                                        <div className='flex flex-row gap-4'>
+                                            <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' 
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    setShowDeleteReplyModal(false)
+                                                }}>Cancel</button>
+                                            <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' 
+                                                onClick={
+                                                    (event) => {
+                                                        handleDeleteReply(event);
+                                                    }
+                                                }>Delete</button>
+                                        </div>
                                     </div>
-                                </div>
-                            </Modal>
+                                </Modal>
+                            </div>
                         </div>
                     )}
 
-                    <div id='date-control'>
+                    <div id='date-control' className='flex gap-2 items-center'>
                         {formatReplyDate()}
+
+                        {isEdited ? 
+                        <div className='italic text-xs'>
+                            Edited
+                        </div>
+                    : null}
                     </div>
                 </div>
 

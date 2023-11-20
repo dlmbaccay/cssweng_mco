@@ -536,7 +536,7 @@ export default function PostExpanded({ props }) {
                     ) : (
                         <div className='flex flex-col w-full h-fit gap-3 justify-start items-start'>
                             {comments.map((comment, index) => (
-                                <div key={comment.id} className='w-full h-fit'>
+                                <div key={comment.commentID} className='w-full h-fit'>
                                     <Comment 
                                         props = {{
                                             currentUserID: currentUserID,

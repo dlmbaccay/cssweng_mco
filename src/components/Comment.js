@@ -106,22 +106,17 @@ export default function Comment( {props} ) {
             return;
         }
 
-        toast.loading('Editing comment...');
 
         firestore.collection('posts').doc(postID).collection('comments').doc(commentID).update({
-            commentBody: editedCommentBody
+            commentBody: editedCommentBody,
+            isEdited: true,
+            commentDate: new Date().toISOString()
         })
         .then(() => {
-            toast.dismiss();
             toast.success('Comment edited successfully!');
             setIsEditingComment(false);
-            // isEdited of comment set to true
-            firestore.collection('posts').doc(postID).collection('comments').doc(commentID).update({
-                isEdited: true
-            })
         })
         .catch((error) => {
-            toast.dismiss();
             toast.error(error.message);
         })
     }
@@ -264,7 +259,7 @@ export default function Comment( {props} ) {
             {replies.length > 0 && (
                 <div className='mt-3 flex flex-col w-full h-fit gap-2 justify-start items-start'>
                     {replies.map((reply, index) => (
-                        <div key={reply.id} className='w-full h-fit'>
+                        <div key={reply.replyID} className='w-full h-fit'>
                             <Reply 
                                 props = {{
                                     currentUserID: currentUserID,
