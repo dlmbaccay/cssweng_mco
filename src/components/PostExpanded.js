@@ -7,6 +7,7 @@ import { arrayRemove, onSnapshot } from 'firebase/firestore';
 import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
+import Share from './Share';
 
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -386,187 +387,159 @@ export default function PostExpanded({ props }) {
                 {/* Footer */}
                 <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative border-b border-dark_gray'>
                     <div id="left" className='flex flex-row gap-4'>
-                    <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                        {currentUserReaction === '' && 
-                        <i 
-                            className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                        <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
+                            {currentUserReaction === '' && 
+                            <i 
+                                className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)}
+                            />
+                            }
+                            
+                            {currentUserReaction === 'like' &&
+                            <Image
+                                src={likeReaction}
+                                alt="like reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'heart' &&
+                            <Image
+                                src={heartReaction}
+                                alt="heart reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'haha' &&
+                            <Image
+                                src={laughReaction}
+                                alt="haha reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'wow' &&
+                            <Image
+                                src={wowReaction}
+                                alt="wow reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'sad' &&
+                            <Image
+                                src={sadReaction}
+                                alt="sad reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'angry' &&
+                            <Image
+                                src={angryReaction}
+                                alt="angry reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+                        <p>{reactionsLength}</p>
+
+                        {isOverlayVisible && (
+                            <div 
                             onMouseEnter={() => setIsOverlayVisible(true)}
                             onMouseLeave={() => setIsOverlayVisible(false)}
-                        />
-                        }
-                        
-                        {currentUserReaction === 'like' &&
-                        <Image
-                            src={likeReaction}
-                            alt="like reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'heart' &&
-                        <Image
-                            src={heartReaction}
-                            alt="heart reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'haha' &&
-                        <Image
-                            src={laughReaction}
-                            alt="haha reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'wow' &&
-                        <Image
-                            src={wowReaction}
-                            alt="wow reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'sad' &&
-                        <Image
-                            src={sadReaction}
-                            alt="sad reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'angry' &&
-                        <Image
-                            src={angryReaction}
-                            alt="angry reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-                    <p>{reactionsLength}</p>
-
-                    {isOverlayVisible && (
-                        <div 
-                        onMouseEnter={() => setIsOverlayVisible(true)}
-                        onMouseLeave={() => setIsOverlayVisible(false)}
-                        id='overlay' 
-                        className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
-                        >
-                        <Image 
-                        src={likeReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('like')}
-                        />
-                        <Image 
-                        src={heartReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('heart')}
-                        />
-                        <Image 
-                        src={laughReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('haha')}
-                        />
-                        <Image 
-                        src={wowReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('wow')}
-                        />
-                        <Image 
-                        src={sadReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('sad')}
-                        />
-                        <Image 
-                        src={angryReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('angry')}
-                        />
-                        </div>
-                    )}
-                    </div>
-                    
-                    <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
-                    <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all" 
-                        onClick={() => {
-                            document.getElementById('comment-body').focus();
-                        }}
-                        />
-                    <p>{commentsLength}</p>
-                    </div>
-
-                    <div id="share-control">
-                    <i 
-                        onClick={() => setShowSharePostModal(true)} 
-                        className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
-
-                        <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
-                            <div className='flex flex-col w-full h-full'>
-                                <div className='flex flex-row justify-center items-center'>
-                                    <p className='font-semibold'>Share Post</p>
-                                </div>
-
-                                <div className='h-full mt-2 mb-3'>
-                                    <textarea 
-                                        id="post-body" 
-                                        value={editedPostBody}
-                                        onChange={(event) => setEditedPostBody(event.target.value)}
-                                        placeholder='Say something about this...' 
-                                        className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-full p-4' 
-                                    />
-                                </div>
-                                
-                                <div className='flex flex-row gap-2 mb-4'>
-                                    <button 
-                                    className='px-4 py-2 bg-black text-white font-semibold hover:bg-red-600 rounded-lg text-sm cursor-pointer w-1/2 transition-all'
-                                    onClick={() => setShowSharePostModal(false)}>
-                                        Cancel
-                                    </button>
-
-                                    <button 
-                                    className='bg-xanthous hover:bg-pistachio text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all'>
-                                        Share now
-                                    </button>
-                                </div>
-                                <hr className=''></hr>
-                                <div className='mt-2'>
-                                    Share to
-                                    <div className='flex justify-between mt-2'>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-link hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-brands fa-facebook hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-brands fa-x-twitter hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-ellipsis hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    </div>
-                                </div>
+                            id='overlay' 
+                            className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                            >
+                            <Image 
+                            src={likeReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('like')}
+                            />
+                            <Image 
+                            src={heartReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('heart')}
+                            />
+                            <Image 
+                            src={laughReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('haha')}
+                            />
+                            <Image 
+                            src={wowReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('wow')}
+                            />
+                            <Image 
+                            src={sadReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('sad')}
+                            />
+                            <Image 
+                            src={angryReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('angry')}
+                            />
                             </div>
-                        </Modal>
+                        )}
+                        </div>
+                        
+                        <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
+                        <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all" 
+                            onClick={() => {
+                                document.getElementById('comment-body').focus();
+                            }}
+                            />
+                        <p>{commentsLength}</p>
+                        </div>
+
+                        <div id="share-control">
+                        <i 
+                            onClick={() => setShowSharePostModal(true)} 
+                            className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
+
+                            <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
+                                <Share 
+                                    props={{
+                                        currentUserID: currentUserID,
+                                        postID: postID,
+                                        postBody: postBody,
+                                        postCategory: postCategory,
+                                        postTrackerLocation: postTrackerLocation,
+                                        postPets: postPets,
+                                        postDate: postDate,
+                                        imageUrls: imageUrls,
+                                        authorID: authorID,
+                                        authorDisplayName: authorDisplayName,
+                                        authorUsername: authorUsername,
+                                        authorPhotoURL: authorPhotoURL,
+                                        taggedPets: taggedPets,
+                                        setShowSharePostModal: setShowSharePostModal,
+                                    }}
+                                />
+                            </Modal>
+                        </div>
                     </div>
-                </div>
 
                 <div id="right" className='flex flex-row gap-4 items-center'>
                     {currentUserID !== authorID && 
