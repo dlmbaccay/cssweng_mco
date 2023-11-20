@@ -81,7 +81,7 @@ export default function Comment( {props} ) {
                     Like
                 </div>
 
-                <div id='reply-control'>
+                <div id='reply-control' className='hover:underline cursor-pointer'>
                     Reply
                 </div>
 

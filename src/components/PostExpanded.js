@@ -565,7 +565,7 @@ export default function PostExpanded({ props }) {
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
                         maxLength={100}
-                        onKeyPress={(event => {
+                        onKeyDown={(event => {
                             if (event.key === 'Enter') {
                                 handleComment(event);
                             }
