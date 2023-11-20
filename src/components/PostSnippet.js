@@ -68,8 +68,7 @@ export default function PostSnippet({ props }) {
     const [likesLength, setLikesLength] = useState(0);
 
     useEffect(() => {
-      const commentsRef = collection(doc(firestore, 'posts', postID), 'comments');
-      const likesRef = collection(doc(firestore, 'posts', postID), 'likes');
+      const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
 
       const unsubscribeComments = onSnapshot(commentsRef, async (snapshot) => {
         let totalComments = snapshot.size;
@@ -82,14 +81,9 @@ export default function PostSnippet({ props }) {
         setCommentsLength(totalComments);
       });
 
-      const unsubscribeLikes = onSnapshot(likesRef, (snapshot) => {
-        setLikesLength(snapshot.size);
-      });
-
       // Clean up the subscriptions on unmount
       return () => {
         unsubscribeComments();
-        unsubscribeLikes();
       };
     }, [postID]);
 
@@ -108,7 +102,7 @@ export default function PostSnippet({ props }) {
                 currentUserID, postID, postBody, postCategory, postTrackerLocation,
                 postPets, postDate, imageUrls, authorID, authorDisplayName, authorUsername,
                 authorPhotoURL, isEdited, taggedPets, formatDate,
-                setShowPostExpanded, postAction
+                setShowPostExpanded, postAction, commentsLength
               }}
             />
           </Modal>

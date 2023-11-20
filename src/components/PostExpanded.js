@@ -40,7 +40,7 @@ export default function PostExpanded({ props }) {
         authorID, authorDisplayName, authorUsername, 
         authorPhotoURL, formatDate,
         isEdited, taggedPets, 
-        setShowPostExpanded, postAction
+        setShowPostExpanded, postAction, commentsLength
     } = props 
 
     // get currentUser data
@@ -157,7 +157,6 @@ export default function PostExpanded({ props }) {
             unsubscribe();
         }
     }, []);
-
 
     const [commentBody, setCommentBody] = useState('');
     // TODO: edit comment functionality
@@ -340,7 +339,7 @@ export default function PostExpanded({ props }) {
                             document.getElementById('comment-body').focus();
                         }}
                         />
-                    <p>{comments.length}</p>
+                    <p>{commentsLength}</p>
                     </div>
 
                     <div id="share-control">
