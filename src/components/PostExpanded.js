@@ -28,7 +28,7 @@ export default function PostExpanded({ props }) {
 
     // if postAction is comment, direct cursor to comment box
     useEffect(() => {
-        if (props.postAction === 'comment') {
+        if (postAction === 'comment') {
             document.getElementById('comment-body').focus();
         }
     }, []);
@@ -306,7 +306,7 @@ export default function PostExpanded({ props }) {
                 </div>
 
                 {/* Footer */}
-                <div id='post-footer' className='mt-3 flex flex-row w-full justify-between relative'>
+                <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative border-b border-dark_gray'>
                     <div id="left" className='flex flex-row gap-4'>
                     <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
                     <i 
@@ -525,10 +525,12 @@ export default function PostExpanded({ props }) {
                 </div>
 
                 {/* Comments */}
-                <div id='post-comments' className='mt-6 flex h-full flex-col w-full justify-between relative'>
+                <div id='post-comments' className='mt-4 flex h-full flex-col w-full justify-between relative'>
                     
                     {comments.length === 0 ? (
-                        <p>No comments yet...</p>    
+                        <div className='flex text-sm'>
+                            No comments yet...
+                        </div>    
                     ) : (
                         <div className='flex flex-col w-full h-fit gap-3 justify-start items-start'>
                             {comments.map((comment, index) => (
@@ -536,6 +538,9 @@ export default function PostExpanded({ props }) {
                                     <Comment 
                                         props = {{
                                             currentUserID: currentUserID,
+                                            currentUserPhotoURL: currentUser.photoURL,
+                                            currentUserUsername: currentUser.username,
+                                            currentUserDisplayName: currentUser.displayName,
                                             postID: postID,
                                             commentID: comment.commentID,
                                             commentBody: comment.commentBody,

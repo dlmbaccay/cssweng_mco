@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast';
-import { firestore, storage, firebase } from '../lib/firebase';
+import { firestore } from '../lib/firebase';
 import Modal from 'react-modal';
 import { postDeleteConfirmationModalStyle } from '../lib/modalstyle';
+import Reply from './Reply';
 
 
 export default function Comment( {props} ) {
@@ -17,13 +18,16 @@ export default function Comment( {props} ) {
 
     const {
         currentUserID,
+        currentUserUsername,
+        currentUserPhotoURL,
+        currentUserDisplayName,
         postID, commentID,
         commentBody, commentDate,
         authorID, authorDisplayName, 
         authorUsername, authorPhotoURL
     } = props;
 
-    const formatDate = () => {
+    const formatCommentDate = () => {
         const date = new Date(commentDate);
         const now = new Date();
         const diff = now - date;
@@ -73,9 +77,9 @@ export default function Comment( {props} ) {
 
         firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').add({
             replyBody: replyBody,
-            replyDate: firebase.firestore.FieldValue.serverTimestamp(),
+            replyDate: new Date().toISOString(),
             authorID: currentUserID,
-            authorDisplayName: props.currentUserName,
+            authorDisplayName: props.currentUserDisplayName,
             authorUsername: props.currentUserUsername,
             authorPhotoURL: props.currentUserPhotoURL
         })
@@ -83,13 +87,31 @@ export default function Comment( {props} ) {
             toast.dismiss();
             toast.success('Reply added successfully!');
             setReplyBody('');
-            setIsReplying(false);
         })
         .catch((error) => {
             toast.dismiss();
             toast.error(error.message);
         })
     }
+
+    // get replies
+    const [replies, setReplies] = useState([]);
+
+    useEffect(() => {
+        const unsubscribe = firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').orderBy('replyDate', 'desc').onSnapshot((snapshot) => {
+            setReplies(snapshot.docs.map((doc) => ({
+                replyID: doc.id,
+                replyBody: doc.data().replyBody,
+                replyDate: doc.data().replyDate,
+                authorID: doc.data().authorID,
+                authorDisplayName: doc.data().authorDisplayName,
+                authorUsername: doc.data().authorUsername,
+                authorPhotoURL: doc.data().authorPhotoURL
+            })))
+        })
+
+        return unsubscribe;
+    }, [postID, commentID]);
 
     return (
     <div className='flex flex-row w-full items-start min-h-[60px] max-h-fit gap-2'>
@@ -114,7 +136,16 @@ export default function Comment( {props} ) {
                     Like
                 </div>
 
-                <div id='reply-control' className='hover:underline cursor-pointer' onClick={() => setIsReplying(true)}>
+                <div id='reply-control' 
+                    className='hover:underline cursor-pointer' 
+                    onClick={() => {
+                        setIsReplying(true);
+                        setTimeout(() => {
+                            const replyBody = document.getElementById(`reply-${commentID}`);
+                            if (replyBody) replyBody.focus();
+                        }, 0);
+                    }}
+                >
                     Reply
                 </div>
 
@@ -144,13 +175,69 @@ export default function Comment( {props} ) {
                 )}
 
                 <div id='date-control'>
-                    {formatDate()}
+                    {formatCommentDate()}
                 </div>
             </div>
 
-            <div className='w-full bg-gray'>
-                
-            </div>
+            {isReplying && 
+                <div className='flex flex-row w-full mt-2 '>
+                    <form 
+                        onSubmit={(event) => {
+                            handleReply(event);
+                        }}
+                        className='flex flex-row w-full items-start justify-center h-full'>
+                        <div className='flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
+                            <Image src={currentUserPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>
+                        </div>
+
+                        <textarea 
+                            id={`reply-${commentID}`}
+                            value={replyBody}
+                            onChange={(event) => setReplyBody(event.target.value)}
+                            maxLength={100}
+                            onKeyDown={(event => {
+                                if (event.key === 'Enter') {
+                                    handleReply(event);
+                                }
+                            })}
+                            placeholder='Write a reply...' 
+                            className={`outline-none resize-none border border-[#d1d1d1] text-sm rounded-xl text-raisin_black w-full p-3 transition-all h-[80px]`}
+                        />
+
+                        <button
+                            type='submit'
+                            className='flex rounded-full aspect-square w-[40px] h-[40px] mt-1 bg-dark_gray items-center justify-center ml-2 hover:bg-grass hover:text-snow '>
+                            <i className='fa-solid fa-paper-plane text-sm'></i>
+                        </button>
+                    </form>
+                </div>
+            }
+
+            {replies.length > 0 && (
+                <div className='mt-3 flex flex-col w-full h-fit gap-2 justify-start items-start'>
+                    {replies.map((reply, index) => (
+                        <div key={reply.id} className='w-full h-fit'>
+                            <Reply 
+                                props = {{
+                                    currentUserID: currentUserID,
+                                    currentUserUsername: currentUserUsername,
+                                    currentUserPhotoURL: currentUserPhotoURL,
+                                    currentUserDisplayName: currentUserDisplayName,
+                                    postID: postID,
+                                    commentID: commentID,
+                                    replyID: reply.replyID,
+                                    replyBody: reply.replyBody,
+                                    replyDate: reply.replyDate,
+                                    authorID: reply.authorID,
+                                    authorDisplayName: reply.authorDisplayName,
+                                    authorUsername: reply.authorUsername,
+                                    authorPhotoURL: reply.authorPhotoURL
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
 
         
