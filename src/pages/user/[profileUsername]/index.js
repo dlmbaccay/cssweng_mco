@@ -957,7 +957,7 @@ function UserProfilePage() {
                                                                     alt={pet.petName + " profile picture"}
                                                                     width={144}
                                                                     height={144}
-                                                                    className='rounded-full shadow-lg'
+                                                                    className='rounded-full shadow-lg aspect-square'
                                                                 />
                                                             </Link>
 

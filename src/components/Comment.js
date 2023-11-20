@@ -4,8 +4,15 @@ import Image from 'next/image'
 import toast from 'react-hot-toast';
 import { firestore } from '../lib/firebase';
 import Modal from 'react-modal';
-import { postDeleteConfirmationModalStyle, editCommentReplyModalStyle} from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle } from '../lib/modalstyle';
 import Reply from './Reply';
+
+import likeReaction from '/public/images/post-reactions/like.png'
+import heartReaction from '/public/images/post-reactions/heart.png'
+import laughReaction from '/public/images/post-reactions/haha.png'
+import wowReaction from '/public/images/post-reactions/wow.png'
+import sadReaction from '/public/images/post-reactions/sad.png'
+import angryReaction from '/public/images/post-reactions/angry.png'
 
 
 export default function Comment( {props} ) {
@@ -141,6 +148,86 @@ export default function Comment( {props} ) {
         return unsubscribe;
     }, [postID, commentID]);
 
+    // handle comment react
+
+    const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
+    const handleCommentReaction = async (newReaction) => {
+        const reactionsRef = firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('reactions');
+        const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+
+        for (let reaction of reactionTypes) {
+            const reactionRef = reactionsRef.doc(reaction);
+            const reactionDoc = await reactionRef.get();
+
+            if (reactionDoc.exists) {
+                const reactionData = reactionDoc.data();
+                const userIDs = reactionData.userIDs;
+
+                if (userIDs.includes(currentUserID)) {
+                    if (reaction === newReaction) {
+                        // User has reacted with the same type again, remove user from userIDs array
+                        const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+                        await reactionRef.update({ userIDs: updatedUserIDs });
+                        setCurrentUserReaction('');
+                    } else {
+                        // User has reacted with a different type, remove user from current userIDs array
+                        const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+                        await reactionRef.update({ userIDs: updatedUserIDs });
+                    }
+                } else if (reaction === newReaction) {
+                    // User has not reacted with this type, add user to userIDs array
+                    await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+                }
+            } else if (reaction === newReaction) {
+                // Reaction does not exist, create reaction and add user to userIDs array
+                await reactionRef.set({ userIDs: [currentUserID] });
+            }
+        }
+    }
+
+    const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+
+    // get current user reaction
+    const [currentUserReaction, setCurrentUserReaction] = useState('');
+
+    // read all reactions of a comment
+    const [allReactions, setAllReactions] = useState([]);
+
+    useEffect(() => {
+        const reactionsRef = firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('reactions');
+        const unsubscribe = reactionsRef.onSnapshot((snapshot) => {
+            let currentUserReaction = '';
+            let allReactions = [];
+
+            snapshot.docs.forEach(doc => {
+                const reaction = doc.id;
+                const userIDs = doc.data().userIDs;
+
+                if (reactionTypes.includes(reaction)) {
+                    if (userIDs.includes(currentUserID)) {
+                        currentUserReaction = reaction;
+                    }
+                    allReactions.push({ reaction: reaction, userIDs: userIDs });
+                }
+            });
+
+            setCurrentUserReaction(currentUserReaction);
+            setAllReactions(allReactions);
+        })
+
+        return unsubscribe;
+    }, []);
+
+    const reactionImages = {
+        like: { src: likeReaction, alt: 'like reaction' },
+        heart: { src: heartReaction, alt: 'heart reaction' },
+        haha: { src: laughReaction, alt: 'haha reaction' },
+        wow: { src: wowReaction, alt: 'wow reaction' },
+        sad: { src: sadReaction, alt: 'sad reaction' },
+        angry: { src: angryReaction, alt: 'angry reaction' },
+    };
+
     return (
     <div className='flex flex-row w-full items-start min-h-[60px] max-h-fit gap-2'>
         <Image src={authorPhotoURL} alt={authorUsername} 
@@ -148,7 +235,7 @@ export default function Comment( {props} ) {
         />
 
         <div className='flex flex-col w-full'>
-            <div className='flex flex-col gap-1 w-full bg-dark_gray items-start break-all py-2 px-3 text-sm rounded-xl border border-[#d1d1d1] drop-shadow-sm'>
+            <div className='flex flex-col gap-1 w-full bg-[#f5f5f5] items-start break-all py-2 px-3 text-sm rounded-xl border border-[#d1d1d1] drop-shadow-sm'>
                 
                 <div>
                     <span className='font-bold'>{authorDisplayName}</span>
@@ -156,7 +243,27 @@ export default function Comment( {props} ) {
                     <Link href={`/user/${authorUsername}`} className='hover:font-bold hover:text-grass transition-all'> @{authorUsername}</Link>
                 </div>
                 
-                {!isEditingComment && <div>{commentBody}</div>}
+                {!isEditingComment && (
+                    <div>
+                        <p>{commentBody}</p>
+
+                        {/* if each reaction's userIDs are not 0 */}
+                        {allReactions.filter((reaction) => reaction.userIDs.length > 0).length > 0 && (
+                            <div className='flex flex-row gap-2 items-center mt-2'>
+                                {allReactions.filter((reaction) => reaction.userIDs.length > 0).map((reaction, index) => (
+                                    <div key={index} className='flex flex-row gap-1 items-center'>
+                                        <Image 
+                                            src={reactionImages[reaction.reaction].src} 
+                                            alt={reactionImages[reaction.reaction].alt} 
+                                            className='w-[15px] h-[15px] rounded-full' 
+                                        />
+                                        <p className='text=xs'>{reaction.userIDs.length}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {isEditingComment && 
                     <form
@@ -164,7 +271,7 @@ export default function Comment( {props} ) {
                             handleEditComment(event);
                         }}
 
-                        className='flex flex-row w-full items-start justify-center h-full]'
+                        className='flex flex-row w-full items-start justify-center h-full mb-1'
                     >
                         <textarea
                             value={editedCommentBody}
@@ -197,12 +304,85 @@ export default function Comment( {props} ) {
             </div>
 
             <div className='flex flex-row w-full text-xs gap-2 pl-3 mt-1'>
-                <div id='like-control'>
-                    Like
+
+                <div id='like-control'
+                    className='flex items-center justify-center'
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)}
+                >
+                    {currentUserReaction === '' && 
+                        <i 
+                            className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)}
+                        />
+                    }
+
+                    {currentUserReaction !== '' &&(
+                        <div className='flex flex-row gap-1'>
+                            <Image
+                                src={reactionImages[currentUserReaction].src}
+                                alt={reactionImages[currentUserReaction].alt}
+                                className={`mt-[1px] w-fit h-[15px] flex items-center justify-center hover:transform transition-all `}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+
+                            <p className='capitalize font-semibold text-[12px] flex items-center'>
+                                {currentUserReaction}
+                            </p>
+                        </div>
+                    )}
+
+                    {isOverlayVisible && (
+                        <div 
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)}
+                            id='overlay' 
+                            className='absolute top-13 left-12 flex flex-row gap-2 w-[240px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                        >
+                            <Image 
+                            src={likeReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[30px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleCommentReaction('like')}
+                            />
+                            <Image 
+                            src={heartReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[30px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleCommentReaction('heart')}
+                            />
+                            <Image 
+                            src={laughReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[30px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleCommentReaction('haha')}
+                            />
+                            <Image 
+                            src={wowReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[30px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleCommentReaction('wow')}
+                            />
+                            <Image 
+                            src={sadReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[30px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleCommentReaction('sad')}
+                            />
+                            <Image 
+                            src={angryReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[30px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleCommentReaction('angry')}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div id='reply-control' 
-                    className='hover:underline cursor-pointer' 
+                    className='hover:underline cursor-pointer flex items-center justify-center' 
                     onClick={() => {
                         setIsReplying(true);
                         setTimeout(() => {
@@ -284,7 +464,7 @@ export default function Comment( {props} ) {
             )}
 
             {isReplying && 
-                <div className='flex flex-row w-full mt-2 '>
+                <div className='flex flex-row w-full mt-2 mb-2'>
                     <form 
                         onSubmit={(event) => {
                             handleReply(event);
@@ -317,8 +497,6 @@ export default function Comment( {props} ) {
                 </div>
             }
         </div>
-
-        
     </div>
     )
 }

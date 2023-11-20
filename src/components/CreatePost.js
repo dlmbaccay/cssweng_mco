@@ -255,7 +255,7 @@ export default function CreatePost({ props }) {
                     <input
                         id="post-images"
                         type="file"
-                        accept="image/*"
+                        accept="image/*" // TODO: restrict to images only
                         multiple
                         onChange={handleImageUpload}
                         disabled={isUploadDisabled}

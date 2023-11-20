@@ -44,6 +44,8 @@
   font-style: italic;
 }
 
+
+
 .bullet {
   display: inline-block;
   width: 8px;
@@ -54,9 +56,7 @@
 
 .paw-background {
   background-image: url('/images/paw-background.png'); /* Replace 'your-image-url.png' with the path to your image */
-  background-repeat: repeat;
-  background-size: 500px 500px;
-  /* You can also use other properties like background-size and background-position to control the image appearance */
+  background-size: cover;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

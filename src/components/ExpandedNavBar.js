@@ -53,7 +53,7 @@ export default function ExpandedNavBar({ props }) {
               onClick={() => {router.push(`/user/${username}`)}}
               className='group flex flex-col justify-center items-center mt-10 gap-4'>
                   {<Image src={userPhotoURL} alt={'profile picture'} width={100} height={100} className='rounded-full group-hover:scale-105 transition-all aspect-square object-cover'/>}
-                <p className='text-raisin_black text-xl font-shining font-semibold group-hover:scale-105 group-hover:text-grass transition-all'>{username} </p>
+                <p className='text-raisin_black text-2xl font-shining group-hover:scale-105 group-hover:text-grass transition-all'>@{username} </p>
             </button>
 
             <hr className='border border-xanthous opacity-30 ml-6 mr-6 mt-6 mb-6'/>
@@ -72,7 +72,7 @@ export default function ExpandedNavBar({ props }) {
                   `}/>
                 <p className={`
                 text-grass text-2xl
-                  font-shining font-semibold 
+                  font-shining  
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'Home' ? "text-raisin_black" : ""}`}>
                     Home</p>
@@ -91,7 +91,7 @@ export default function ExpandedNavBar({ props }) {
                   `}/>
                 <p className={`
                   text-grass text-2xl
-                  font-shining font-semibold 
+                  font-shining 
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'PetTracker' ? "text-raisin_black" : ""}`}>
                     Pet Tracker</p>
@@ -110,7 +110,7 @@ export default function ExpandedNavBar({ props }) {
                   `}/>
                 <p className={`
                   text-grass text-2xl
-                  font-shining font-semibold 
+                  font-shining  
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'Foundations' ? "text-raisin_black" : ""}`}>
                     Foundations</p>
@@ -129,7 +129,7 @@ export default function ExpandedNavBar({ props }) {
                   `}/>
                 <p className={`
                   text-grass text-2xl
-                  font-shining font-semibold 
+                  font-shining  
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'Profile' ? "text-raisin_black" : ""}`}>
                     Profile</p>
@@ -148,7 +148,7 @@ export default function ExpandedNavBar({ props }) {
                   `}/>
                 <p className={`
                   text-grass text-2xl
-                  font-shining font-semibold 
+                  font-shining  
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'Notifications' ? "text-raisin_black" : ""}`}>
                     Notifications</p>
@@ -167,7 +167,7 @@ export default function ExpandedNavBar({ props }) {
                   `}/>
                 <p className={`
                   text-grass text-2xl
-                  font-shining font-semibold 
+                  font-shining 
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'Settings' ? "text-raisin_black" : ""}`}>
                     Settings</p>
@@ -185,7 +185,7 @@ export default function ExpandedNavBar({ props }) {
               className='group flex flex-row items-center gap-2 pl-10 h-10'
               >
               <i className='transition-all fa-solid fa-right-from-bracket pl-[2px] w-[35px] h-[35px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black'></i>
-              <p className='transition-all text-grass text-2xl font-shining font-semibold group-hover:text-raisin_black'>Log Out</p>
+              <p className='transition-all text-grass text-2xl font-shining group-hover:text-raisin_black'>Log Out</p>
             </button>
           </div>
         }

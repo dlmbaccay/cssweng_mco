@@ -188,7 +188,7 @@ export const expandedPostStyle = {
   },
 }
 
-export const editCommentReplyModalStyle = {
+export const reactionsCountModal = {
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     zIndex: 1000,
@@ -198,8 +198,8 @@ export const editCommentReplyModalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '30%', 
-    height: '30%',
+    width: '20%', 
+    height: 'h-fit',
     overflow: 'auto',
     padding: '20px',
     borderRadius: '8px',

@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
 import { firestore, storage, firebase } from '../lib/firebase';
-import { arrayRemove } from 'firebase/firestore';
+import { arrayRemove, onSnapshot } from 'firebase/firestore';
 import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
@@ -11,12 +11,13 @@ import toast from 'react-hot-toast';
 
 import likeReaction from '/public/images/post-reactions/like.png'
 import heartReaction from '/public/images/post-reactions/heart.png'
-import laughReaction from '/public/images/post-reactions/laugh.png'
+import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../lib/modalstyle';
 import Comment from './Comment';
+import Reactions from './Reactions';
 
 export default function PostExpanded({ props }) {
 
@@ -40,7 +41,7 @@ export default function PostExpanded({ props }) {
         authorID, authorDisplayName, authorUsername, 
         authorPhotoURL, formatDate,
         isEdited, taggedPets, 
-        setShowPostExpanded, postAction, commentsLength
+        setShowPostExpanded, postAction, commentsLength, reactionsLength
     } = props 
 
     // get currentUser data
@@ -95,6 +96,20 @@ export default function PostExpanded({ props }) {
         posts: arrayRemove(postID)
       });
 
+      // delete all comments
+        const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
+        const commentsSnapshot = await commentsRef.get();
+        commentsSnapshot.forEach(async (doc) => {
+            await doc.ref.delete();
+        });
+
+        // delete all reactions
+        const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+        const reactionsSnapshot = await reactionsRef.get();
+        reactionsSnapshot.forEach(async (doc) => {
+            await doc.ref.delete();
+        });
+
       // reload page
       // window.location.reload();
 
@@ -133,7 +148,69 @@ export default function PostExpanded({ props }) {
 
     // get likes
     const [reactions, setReactions] = useState([]);
-    // TODO: reactions functionality
+    
+    const handleReaction = async (newReaction) => {
+      const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+      const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+
+      for (let reaction of reactionTypes) {
+        const reactionRef = reactionsRef.doc(reaction);
+        const reactionDoc = await reactionRef.get();
+
+        if (reactionDoc.exists) {
+          const reactionData = reactionDoc.data();
+          const userIDs = reactionData.userIDs;
+
+          if (userIDs.includes(currentUserID)) {
+            if (reaction === newReaction) {
+              // User has reacted with the same type again, remove user from userIDs array
+              const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+              await reactionRef.update({ userIDs: updatedUserIDs });
+              setCurrentUserReaction('');
+            } else {
+              // User has reacted with a different type, remove user from current userIDs array
+              const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+              await reactionRef.update({ userIDs: updatedUserIDs });
+            }
+          } else if (reaction === newReaction) {
+            // User has not reacted with this type, add user to userIDs array
+            await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+          }
+        } else if (reaction === newReaction) {
+          // Reaction does not exist, create reaction and add user to userIDs array
+          await reactionRef.set({ userIDs: [currentUserID] });
+        }
+      }
+
+      toast.success('Reaction updated!');
+    }
+
+    const [currentUserReaction, setCurrentUserReaction] = useState('');
+
+    useEffect(() => {
+        const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+        const unsubscribe = reactionsRef.onSnapshot((snapshot) => {
+            const newReactions = snapshot.docs.map((doc) => ({
+                reactionType: doc.id,
+                userIDs: doc.data().userIDs,
+            }));
+            setReactions(newReactions);
+
+            // find out if current user has reacted to this post
+            const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+            for (let reaction of reactionTypes) {
+                const reactionData = newReactions.find(r => r.reactionType === reaction);
+                if (reactionData && reactionData.userIDs.includes(currentUserID)) {
+                    setCurrentUserReaction(reaction);
+                    break;
+                }
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        }
+    }, []);
 
     // get comments
     const [comments, setComments] = useState([]);
@@ -159,7 +236,6 @@ export default function PostExpanded({ props }) {
     }, []);
 
     const [commentBody, setCommentBody] = useState('');
-    // TODO: edit comment functionality
 
     const handleComment = async (event) => {
         event.preventDefault();
@@ -189,6 +265,8 @@ export default function PostExpanded({ props }) {
         toast.success('Comment posted successfully!');
     }
 
+    const [showReactionsModal, setShowReactionsModal] = useState(false);
+
     return (
         <div className='w-full h-full flex flex-col'>
             {/* expanded controls */}
@@ -212,7 +290,7 @@ export default function PostExpanded({ props }) {
 
                     <div className='flex flex-row justify-start items-start '>
                         <div id="user-image">
-                        <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm'/>
+                        <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm aspect-square'/>
                         </div>
 
                         <div id='post-meta' className='ml-4 items-center justify-center'>
@@ -309,26 +387,118 @@ export default function PostExpanded({ props }) {
                 <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative border-b border-dark_gray'>
                     <div id="left" className='flex flex-row gap-4'>
                     <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                    <i 
-                        className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
-                        onMouseEnter={() => setIsOverlayVisible(true)}
-                        onMouseLeave={() => setIsOverlayVisible(false)}
-                    />
-                    <p>0</p>
+                        {currentUserReaction === '' && 
+                        <i 
+                            className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)}
+                        />
+                        }
+                        
+                        {currentUserReaction === 'like' &&
+                        <Image
+                            src={likeReaction}
+                            alt="like reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'heart' &&
+                        <Image
+                            src={heartReaction}
+                            alt="heart reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'haha' &&
+                        <Image
+                            src={laughReaction}
+                            alt="haha reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'wow' &&
+                        <Image
+                            src={wowReaction}
+                            alt="wow reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'sad' &&
+                        <Image
+                            src={sadReaction}
+                            alt="sad reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+
+                        {currentUserReaction === 'angry' &&
+                        <Image
+                            src={angryReaction}
+                            alt="angry reaction"
+                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                            onMouseEnter={() => setIsOverlayVisible(true)}
+                            onMouseLeave={() => setIsOverlayVisible(false)} 
+                        />
+                        }
+                    <p>{reactionsLength}</p>
 
                     {isOverlayVisible && (
                         <div 
                         onMouseEnter={() => setIsOverlayVisible(true)}
                         onMouseLeave={() => setIsOverlayVisible(false)}
                         id='overlay' 
-                        className='absolute bottom-4 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                        className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
                         >
-                        <Image src={likeReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={heartReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={laughReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={wowReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={sadReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={angryReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
+                        <Image 
+                        src={likeReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('like')}
+                        />
+                        <Image 
+                        src={heartReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('heart')}
+                        />
+                        <Image 
+                        src={laughReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('haha')}
+                        />
+                        <Image 
+                        src={wowReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('wow')}
+                        />
+                        <Image 
+                        src={sadReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('sad')}
+                        />
+                        <Image 
+                        src={angryReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('angry')}
+                        />
                         </div>
                     )}
                     </div>
@@ -524,8 +694,23 @@ export default function PostExpanded({ props }) {
                 </div>
                 </div>
 
+                {/* Reactions */}
+                <div className='w-fit text-sm mt-3 hover:underline cursor-pointer' onClick={() => setShowReactionsModal(true)}>
+                    View Reactions...
+
+                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+
+                        <Reactions props={{
+                            postID: postID,
+                            setShowReactionsModal: setShowReactionsModal,
+                            }} 
+                        />
+
+                    </Modal>
+                </div>
+
                 {/* Comments */}
-                <div id='post-comments' className='mt-4 flex h-full flex-col w-full justify-between relative'>
+                <div id='post-comments' className='mt-3 mb-4 flex h-full flex-col w-full justify-between relative'>
                     
                     {comments.length === 0 ? (
                         <div className='flex text-sm'>
@@ -589,7 +774,7 @@ export default function PostExpanded({ props }) {
                             }
                         })}
                         placeholder='Write a comment...' 
-                        className={`outline-none resize-none border border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
+                        className={`outline-none resize-none border bg-[#f5f5f5] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
                     />
 
                     <button
