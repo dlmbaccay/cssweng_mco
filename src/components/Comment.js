@@ -4,7 +4,7 @@ import Image from 'next/image'
 import toast from 'react-hot-toast';
 import { firestore } from '../lib/firebase';
 import Modal from 'react-modal';
-import { postDeleteConfirmationModalStyle } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editCommentReplyModalStyle} from '../lib/modalstyle';
 import Reply from './Reply';
 
 
@@ -22,7 +22,7 @@ export default function Comment( {props} ) {
         currentUserPhotoURL,
         currentUserDisplayName,
         postID, commentID,
-        commentBody, commentDate,
+        commentBody, commentDate, isEdited,
         authorID, authorDisplayName, 
         authorUsername, authorPhotoURL
     } = props;
@@ -81,12 +81,44 @@ export default function Comment( {props} ) {
             authorID: currentUserID,
             authorDisplayName: props.currentUserDisplayName,
             authorUsername: props.currentUserUsername,
-            authorPhotoURL: props.currentUserPhotoURL
+            authorPhotoURL: props.currentUserPhotoURL,
+            isEdited: false,
         })
         .then(() => {
             toast.dismiss();
             toast.success('Reply added successfully!');
             setReplyBody('');
+        })
+        .catch((error) => {
+            toast.dismiss();
+            toast.error(error.message);
+        })
+    }
+
+    const [editedCommentBody, setEditedCommentBody] = useState(commentBody);
+    const [isEditingComment, setIsEditingComment] = useState(false);
+    
+    const handleEditComment = (event) => {
+        event.preventDefault();
+
+        if (editedCommentBody.trim() === '') {
+            toast.error('Comment cannot be empty!');
+            return;
+        }
+
+        toast.loading('Editing comment...');
+
+        firestore.collection('posts').doc(postID).collection('comments').doc(commentID).update({
+            commentBody: editedCommentBody
+        })
+        .then(() => {
+            toast.dismiss();
+            toast.success('Comment edited successfully!');
+            setIsEditingComment(false);
+            // isEdited of comment set to true
+            firestore.collection('posts').doc(postID).collection('comments').doc(commentID).update({
+                isEdited: true
+            })
         })
         .catch((error) => {
             toast.dismiss();
@@ -106,7 +138,8 @@ export default function Comment( {props} ) {
                 authorID: doc.data().authorID,
                 authorDisplayName: doc.data().authorDisplayName,
                 authorUsername: doc.data().authorUsername,
-                authorPhotoURL: doc.data().authorPhotoURL
+                authorPhotoURL: doc.data().authorPhotoURL,
+                isEdited: doc.data().isEdited
             })))
         })
 
@@ -128,7 +161,44 @@ export default function Comment( {props} ) {
                     <Link href={`/user/${authorUsername}`} className='hover:font-bold hover:text-grass transition-all'> @{authorUsername}</Link>
                 </div>
                 
-                {commentBody}
+                {!isEditingComment && <div>{commentBody}</div>}
+
+                {isEditingComment && 
+                    <form
+                        onSubmit={(event) => {
+                            handleEditComment(event);
+                        }}
+
+                        className='flex flex-row w-full items-start justify-center h-full]'
+                    >
+                        <textarea
+                            value={editedCommentBody}
+                            onChange={(event) => setEditedCommentBody(event.target.value)}
+                            maxLength={100}
+                            onKeyDown={(event => {
+                                if (event.key === 'Enter') {
+                                    handleEditComment(event);
+                                }
+                            })}
+                            placeholder='Write a comment...'
+                            className={`outline-none resize-none border-t border-l border-b border-[#d1d1d1] text-sm rounded-l-md text-raisin_black w-full p-3 transition-all h-[80px]`}
+                        />
+
+                        <div className='flex flex-col h-[80px] w-[40px] bg-white border-t border-r border-b border-[#d1d1d1] items-center justify-center text-xs rounded-r-md'>
+                            <button type='submit' className='flex items-center h-1/2 w-full justify-center rounded-rt-md hover:bg-grass hover:text-snow rounded-tr-md'>
+                                <i className='fa-solid fa-check h-1/2 flex items-center' />
+                            </button>
+                            <button type='button' 
+                                onClick={() => {
+                                    setIsEditingComment(false);
+                                    setEditedCommentBody(commentBody);
+                                }} 
+                                className='flex items-center h-1/2 w-full justify-center hover:bg-grass hover:text-snow rounded-br-md'>
+                                <i className='fa-solid fa-xmark h-1/2 flex items-center' />
+                            </button>
+                        </div>
+                    </form>
+                }
             </div>
 
             <div className='flex flex-row w-full text-xs gap-2 pl-3 mt-1'>
@@ -150,34 +220,73 @@ export default function Comment( {props} ) {
                 </div>
 
                 {currentUserID === authorID && (
-                    <div id='delete-control' className='hover:underline cursor-pointer' onClick={() => setShowDeleteCommentModal(true)}>
-                        Delete
+                    <div className='flex gap-2'>
+                        <div id='edit-control' className='hover:underline cursor-pointer' onClick={() => setIsEditingComment(true)}>
+                            Edit
+                        </div>
 
-                        <Modal isOpen={showDeleteCommentModal} onRequestClose={() => setShowDeleteCommentModal(false)} className='flex flex-col items-center justify-center' style={postDeleteConfirmationModalStyle}>
-                            <div className='flex flex-col items-center justify-center h-full gap-4'>
-                                <p className='font-bold text-center text-sm'>Are you sure you want to delete this comment?</p>
-                                <div className='flex flex-row gap-4'>
-                                    <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' 
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            setShowDeleteCommentModal(false)
-                                        }}>Cancel</button>
-                                    <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' 
-                                        onClick={
-                                            (event) => {
-                                                handleDeleteComment(event);
-                                            }
-                                        }>Delete</button>
+                        <div id='delete-control' className='hover:underline cursor-pointer' onClick={() => setShowDeleteCommentModal(true)}>
+                            Delete
+
+                            <Modal isOpen={showDeleteCommentModal} onRequestClose={() => setShowDeleteCommentModal(false)} className='flex flex-col items-center justify-center' style={postDeleteConfirmationModalStyle}>
+                                <div className='flex flex-col items-center justify-center h-full gap-4'>
+                                    <p className='font-bold text-center text-sm'>Are you sure you want to delete this comment?</p>
+                                    <div className='flex flex-row gap-4'>
+                                        <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' 
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                setShowDeleteCommentModal(false)
+                                            }}>Cancel</button>
+                                        <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' 
+                                            onClick={
+                                                (event) => {
+                                                    handleDeleteComment(event);
+                                                }
+                                            }>Delete</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Modal>
+                            </Modal>
+                        </div>
                     </div>
                 )}
 
-                <div id='date-control'>
+                <div id='date-control' className='flex gap-2 items-center'>
                     {formatCommentDate()}
+                    
+                    {isEdited ? 
+                        <div className='italic text-xs'>
+                            Edited
+                        </div>
+                    : null}
                 </div>
             </div>
+
+            {replies.length > 0 && (
+                <div className='mt-3 flex flex-col w-full h-fit gap-2 justify-start items-start'>
+                    {replies.map((reply, index) => (
+                        <div key={reply.id} className='w-full h-fit'>
+                            <Reply 
+                                props = {{
+                                    currentUserID: currentUserID,
+                                    currentUserUsername: currentUserUsername,
+                                    currentUserPhotoURL: currentUserPhotoURL,
+                                    currentUserDisplayName: currentUserDisplayName,
+                                    postID: postID,
+                                    commentID: commentID,
+                                    isEdited: reply.isEdited,
+                                    replyID: reply.replyID,
+                                    replyBody: reply.replyBody,
+                                    replyDate: reply.replyDate,
+                                    authorID: reply.authorID,
+                                    authorDisplayName: reply.authorDisplayName,
+                                    authorUsername: reply.authorUsername,
+                                    authorPhotoURL: reply.authorPhotoURL
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {isReplying && 
                 <div className='flex flex-row w-full mt-2 '>
@@ -212,32 +321,6 @@ export default function Comment( {props} ) {
                     </form>
                 </div>
             }
-
-            {replies.length > 0 && (
-                <div className='mt-3 flex flex-col w-full h-fit gap-2 justify-start items-start'>
-                    {replies.map((reply, index) => (
-                        <div key={reply.id} className='w-full h-fit'>
-                            <Reply 
-                                props = {{
-                                    currentUserID: currentUserID,
-                                    currentUserUsername: currentUserUsername,
-                                    currentUserPhotoURL: currentUserPhotoURL,
-                                    currentUserDisplayName: currentUserDisplayName,
-                                    postID: postID,
-                                    commentID: commentID,
-                                    replyID: reply.replyID,
-                                    replyBody: reply.replyBody,
-                                    replyDate: reply.replyDate,
-                                    authorID: reply.authorID,
-                                    authorDisplayName: reply.authorDisplayName,
-                                    authorUsername: reply.authorUsername,
-                                    authorPhotoURL: reply.authorPhotoURL
-                                }}
-                            />
-                        </div>
-                    ))}
-                </div>
-            )}
         </div>
 
         

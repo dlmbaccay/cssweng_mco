@@ -156,7 +156,8 @@ export default function PostExpanded({ props }) {
                 authorID: doc.data().authorID,
                 authorDisplayName: doc.data().authorDisplayName,
                 authorUsername: doc.data().authorUsername,
-                authorPhotoURL: doc.data().authorPhotoURL
+                authorPhotoURL: doc.data().authorPhotoURL,
+                isEdited: doc.data().isEdited,
             })));
         });
 
@@ -187,7 +188,8 @@ export default function PostExpanded({ props }) {
             authorID: currentUserID,
             authorDisplayName: currentUser.displayName,
             authorUsername: currentUser.username,
-            authorPhotoURL: currentUser.photoURL
+            authorPhotoURL: currentUser.photoURL,
+            isEdited: false,
         });
 
         setCommentBody('');
@@ -542,6 +544,7 @@ export default function PostExpanded({ props }) {
                                             currentUserUsername: currentUser.username,
                                             currentUserDisplayName: currentUser.displayName,
                                             postID: postID,
+                                            isEdited: comment.isEdited,
                                             commentID: comment.commentID,
                                             commentBody: comment.commentBody,
                                             commentDate: comment.commentDate,
