@@ -6,7 +6,7 @@ import { firestore, storage, firebase } from '../lib/firebase';
 import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
-import { collection, doc, getDocs, onSnapshot, query } from 'firebase/firestore';
+import { collection, doc, getDocs, onSnapshot, query, arrayRemove, arrayUnion} from 'firebase/firestore';
 
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -65,10 +65,11 @@ export default function PostSnippet({ props }) {
     };
 
     const [commentsLength, setCommentsLength] = useState(0);
-    const [likesLength, setLikesLength] = useState(0);
+    const [reactionsLength, setReactionsLength] = useState(0);
 
     useEffect(() => {
       const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
+      const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
 
       const unsubscribeComments = onSnapshot(commentsRef, async (snapshot) => {
         let totalComments = snapshot.size;
@@ -81,11 +82,58 @@ export default function PostSnippet({ props }) {
         setCommentsLength(totalComments);
       });
 
+      const unsubscribeReactions = onSnapshot(reactionsRef, async (snapshot) => {
+        let totalReactions = 0;
+
+        for (let doc of snapshot.docs) {
+          const reactionData = doc.data();
+          totalReactions += reactionData.userIDs.length;
+        }
+
+        setReactionsLength(totalReactions);
+      });
+
       // Clean up the subscriptions on unmount
       return () => {
         unsubscribeComments();
+        unsubscribeReactions();
       };
     }, [postID]);
+
+    const handleReaction = async (newReaction) => {
+      const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+      const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+
+      for (let reaction of reactionTypes) {
+        const reactionRef = reactionsRef.doc(reaction);
+        const reactionDoc = await reactionRef.get();
+
+        if (reactionDoc.exists) {
+          const reactionData = reactionDoc.data();
+          const userIDs = reactionData.userIDs;
+
+          if (userIDs.includes(currentUserID)) {
+            if (reaction === newReaction) {
+              // User has reacted with the same type again, remove user from userIDs array
+              const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+              await reactionRef.update({ userIDs: updatedUserIDs });
+            } else {
+              // User has reacted with a different type, remove user from current userIDs array
+              const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+              await reactionRef.update({ userIDs: updatedUserIDs });
+            }
+          } else if (reaction === newReaction) {
+            // User has not reacted with this type, add user to userIDs array
+            await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+          }
+        } else if (reaction === newReaction) {
+          // Reaction does not exist, create reaction and add user to userIDs array
+          await reactionRef.set({ userIDs: [currentUserID] });
+        }
+      }
+
+      toast.success('Reaction updated!');
+    }
 
     useEffect(() => {
       getTaggedPets();
@@ -102,7 +150,7 @@ export default function PostSnippet({ props }) {
                 currentUserID, postID, postBody, postCategory, postTrackerLocation,
                 postPets, postDate, imageUrls, authorID, authorDisplayName, authorUsername,
                 authorPhotoURL, isEdited, taggedPets, formatDate,
-                setShowPostExpanded, postAction, commentsLength
+                setShowPostExpanded, postAction, commentsLength, reactionsLength
               }}
             />
           </Modal>
@@ -224,7 +272,7 @@ export default function PostSnippet({ props }) {
                   onMouseLeave={() => setIsOverlayVisible(false)}
                 />
                 <p>
-                  {likesLength}
+                  {reactionsLength}
                 </p>
 
                 {isOverlayVisible && (
@@ -232,14 +280,44 @@ export default function PostSnippet({ props }) {
                     onMouseEnter={() => setIsOverlayVisible(true)}
                     onMouseLeave={() => setIsOverlayVisible(false)}
                     id='overlay' 
-                    className='absolute bottom-4 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                    className='absolute bottom-1 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
                   >
-                    <Image src={likeReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                    <Image src={heartReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                    <Image src={laughReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                    <Image src={wowReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                    <Image src={sadReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                    <Image src={angryReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
+                    <Image 
+                      src={likeReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('like')}
+                      />
+                    <Image 
+                      src={heartReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('heart')}
+                      />
+                    <Image 
+                      src={laughReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('haha')}
+                      />
+                    <Image 
+                      src={wowReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('wow')}
+                      />
+                    <Image 
+                      src={sadReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('sad')}
+                      />
+                    <Image 
+                      src={angryReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('angry')}
+                      />
                   </div>
                 )}
               </div>

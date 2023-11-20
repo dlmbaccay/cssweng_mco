@@ -9,14 +9,16 @@ import Router from 'next/router';
 import toast from 'react-hot-toast';
 
 
+
 import likeReaction from '/public/images/post-reactions/like.png'
 import heartReaction from '/public/images/post-reactions/heart.png'
 import laughReaction from '/public/images/post-reactions/laugh.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../lib/modalstyle';
 import Comment from './Comment';
+import Reactions from './Reactions';
 
 export default function PostExpanded({ props }) {
 
@@ -40,7 +42,7 @@ export default function PostExpanded({ props }) {
         authorID, authorDisplayName, authorUsername, 
         authorPhotoURL, formatDate,
         isEdited, taggedPets, 
-        setShowPostExpanded, postAction, commentsLength
+        setShowPostExpanded, postAction, commentsLength, reactionsLength
     } = props 
 
     // get currentUser data
@@ -133,7 +135,41 @@ export default function PostExpanded({ props }) {
 
     // get likes
     const [reactions, setReactions] = useState([]);
-    // TODO: reactions functionality
+    
+    const handleReaction = async (newReaction) => {
+      const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+      const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+
+      for (let reaction of reactionTypes) {
+        const reactionRef = reactionsRef.doc(reaction);
+        const reactionDoc = await reactionRef.get();
+
+        if (reactionDoc.exists) {
+          const reactionData = reactionDoc.data();
+          const userIDs = reactionData.userIDs;
+
+          if (userIDs.includes(currentUserID)) {
+            if (reaction === newReaction) {
+              // User has reacted with the same type again, remove user from userIDs array
+              const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+              await reactionRef.update({ userIDs: updatedUserIDs });
+            } else {
+              // User has reacted with a different type, remove user from current userIDs array
+              const updatedUserIDs = userIDs.filter((userID) => userID !== currentUserID);
+              await reactionRef.update({ userIDs: updatedUserIDs });
+            }
+          } else if (reaction === newReaction) {
+            // User has not reacted with this type, add user to userIDs array
+            await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+          }
+        } else if (reaction === newReaction) {
+          // Reaction does not exist, create reaction and add user to userIDs array
+          await reactionRef.set({ userIDs: [currentUserID] });
+        }
+      }
+
+      toast.success('Reaction updated!');
+    }
 
     // get comments
     const [comments, setComments] = useState([]);
@@ -159,7 +195,6 @@ export default function PostExpanded({ props }) {
     }, []);
 
     const [commentBody, setCommentBody] = useState('');
-    // TODO: edit comment functionality
 
     const handleComment = async (event) => {
         event.preventDefault();
@@ -188,6 +223,8 @@ export default function PostExpanded({ props }) {
         toast.dismiss();
         toast.success('Comment posted successfully!');
     }
+
+    const [showReactionsModal, setShowReactionsModal] = useState(false);
 
     return (
         <div className='w-full h-full flex flex-col'>
@@ -314,7 +351,7 @@ export default function PostExpanded({ props }) {
                         onMouseEnter={() => setIsOverlayVisible(true)}
                         onMouseLeave={() => setIsOverlayVisible(false)}
                     />
-                    <p>0</p>
+                    <p>{reactionsLength}</p>
 
                     {isOverlayVisible && (
                         <div 
@@ -323,12 +360,42 @@ export default function PostExpanded({ props }) {
                         id='overlay' 
                         className='absolute bottom-4 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
                         >
-                        <Image src={likeReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={heartReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={laughReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={wowReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={sadReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
-                        <Image src={angryReaction} alt="like reaction" className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'/>
+                        <Image 
+                        src={likeReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('like')}
+                        />
+                        <Image 
+                        src={heartReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('heart')}
+                        />
+                        <Image 
+                        src={laughReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('haha')}
+                        />
+                        <Image 
+                        src={wowReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('wow')}
+                        />
+                        <Image 
+                        src={sadReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('sad')}
+                        />
+                        <Image 
+                        src={angryReaction} 
+                        alt="like reaction" 
+                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                        onClick={() => handleReaction('angry')}
+                        />
                         </div>
                     )}
                     </div>
@@ -524,8 +591,23 @@ export default function PostExpanded({ props }) {
                 </div>
                 </div>
 
+                {/* Reactions */}
+
+                <div className='w-fit text-sm mt-3 hover:underline cursor-pointer' onClick={() => setShowReactionsModal(true)}>
+                    Reactions
+
+                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+
+                        <Reactions props={{
+                            postID: postID,
+                            setShowReactionsModal: setShowReactionsModal,
+                            }} />
+
+                    </Modal>
+                </div>
+
                 {/* Comments */}
-                <div id='post-comments' className='mt-4 flex h-full flex-col w-full justify-between relative'>
+                <div id='post-comments' className='mt-3 flex h-full flex-col w-full justify-between relative'>
                     
                     {comments.length === 0 ? (
                         <div className='flex text-sm'>

@@ -4,7 +4,7 @@ import Image from 'next/image'
 import toast from 'react-hot-toast';
 import { firestore } from '../lib/firebase';
 import Modal from 'react-modal';
-import { postDeleteConfirmationModalStyle, editCommentReplyModalStyle} from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle } from '../lib/modalstyle';
 import Reply from './Reply';
 
 
