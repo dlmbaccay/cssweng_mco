@@ -160,7 +160,7 @@ export default function PostSnippet({ props }) {
 
             <div className='flex flex-row justify-start items-start '>
               <div id="user-image">
-                <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm'/>
+                <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm aspect-square'/>
               </div>
 
               <div id='post-meta' className='ml-4 items-center justify-center'>
@@ -252,7 +252,7 @@ export default function PostSnippet({ props }) {
                 <Image src={imageUrls[currentImageIndex]} alt="post image" 
                   layout='fill'
                   objectFit='contain'
-                  className='rounded-lg cursor-pointer'
+                  className='rounded-lg cursor-pointer '
                   onClick={() => {
                     setShowPostExpanded(true)
                     setPostAction('view')

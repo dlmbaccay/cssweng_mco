@@ -249,7 +249,7 @@ export default function PostExpanded({ props }) {
 
                     <div className='flex flex-row justify-start items-start '>
                         <div id="user-image">
-                        <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm'/>
+                        <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm aspect-square'/>
                         </div>
 
                         <div id='post-meta' className='ml-4 items-center justify-center'>
