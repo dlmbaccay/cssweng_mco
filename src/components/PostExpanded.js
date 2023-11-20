@@ -43,6 +43,18 @@ export default function PostExpanded({ props }) {
         setShowPostExpanded, postAction
     } = props 
 
+    // get currentUser data
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+        if (currentUserID) {
+            firestore.collection('users').doc(currentUserID).get()
+            .then((doc) => {
+                setCurrentUser(doc.data());
+            })
+        }
+    }, []);
+
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
         
@@ -173,9 +185,9 @@ export default function PostExpanded({ props }) {
             commentBody: commentBody,
             commentDate: new Date().toISOString(),
             authorID: currentUserID,
-            authorDisplayName: authorDisplayName,
-            authorUsername: authorUsername,
-            authorPhotoURL: authorPhotoURL
+            authorDisplayName: currentUser.displayName,
+            authorUsername: currentUser.username,
+            authorPhotoURL: currentUser.photoURL
         });
 
         setCommentBody('');
@@ -555,7 +567,7 @@ export default function PostExpanded({ props }) {
                     onSubmit={handleComment}
                     className='flex flex-row items-start justify-center h-full'>
                     <div className='flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
-                        <Image src={authorPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>
+                        {currentUser && <Image src={currentUser.photoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>}
                     </div>
 
                     <textarea 

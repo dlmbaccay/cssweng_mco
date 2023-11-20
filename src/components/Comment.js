@@ -58,6 +58,39 @@ export default function Comment( {props} ) {
         setShowDeleteCommentModal(false);
     }
 
+    const [isReplying, setIsReplying] = useState(false);
+    const [replyBody, setReplyBody] = useState('');
+
+    const handleReply = (event) => {
+        event.preventDefault();
+
+        if (replyBody.trim() === '') {
+            toast.error('Reply cannot be empty!');
+            return;
+        }
+
+        toast.loading('Adding reply...');
+
+        firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').add({
+            replyBody: replyBody,
+            replyDate: firebase.firestore.FieldValue.serverTimestamp(),
+            authorID: currentUserID,
+            authorDisplayName: props.currentUserName,
+            authorUsername: props.currentUserUsername,
+            authorPhotoURL: props.currentUserPhotoURL
+        })
+        .then(() => {
+            toast.dismiss();
+            toast.success('Reply added successfully!');
+            setReplyBody('');
+            setIsReplying(false);
+        })
+        .catch((error) => {
+            toast.dismiss();
+            toast.error(error.message);
+        })
+    }
+
     return (
     <div className='flex flex-row w-full items-start min-h-[60px] max-h-fit gap-2'>
         <Image src={authorPhotoURL} alt={authorUsername} 
@@ -81,7 +114,7 @@ export default function Comment( {props} ) {
                     Like
                 </div>
 
-                <div id='reply-control' className='hover:underline cursor-pointer'>
+                <div id='reply-control' className='hover:underline cursor-pointer' onClick={() => setIsReplying(true)}>
                     Reply
                 </div>
 
@@ -113,6 +146,10 @@ export default function Comment( {props} ) {
                 <div id='date-control'>
                     {formatDate()}
                 </div>
+            </div>
+
+            <div className='w-full bg-gray'>
+                
             </div>
         </div>
 
