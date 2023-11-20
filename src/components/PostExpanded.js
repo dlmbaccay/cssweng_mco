@@ -16,6 +16,7 @@ import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
 import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle } from '../lib/modalstyle';
+import { comment } from 'postcss';
 
 export default function PostExpanded({ props }) {
 
@@ -119,7 +120,31 @@ export default function PostExpanded({ props }) {
 
     const [commentBody, setCommentBody] = useState('');
 
-    const handleComment = async () => {
+    const handleComment = async (event) => {
+        event.preventDefault();
+
+        if(!commentBody) {
+            toast.error('Comments cannot be empty!');
+            return;
+        }
+
+        toast.loading('Posting comment...');
+
+        const commentRef = firestore.collection('posts').doc(postID).collection('comments');
+
+        await commentRef.add({
+            commentBody: commentBody,
+            commentDate: new Date().toISOString(),
+            authorID: currentUserID,
+            authorDisplayName: authorDisplayName,
+            authorUsername: authorUsername,
+            authorPhotoURL: authorPhotoURL
+        });
+
+        setCommentBody('');
+
+        toast.dismiss();
+        toast.success('Comment posted successfully!');
     }
 
     return (
@@ -459,22 +484,29 @@ export default function PostExpanded({ props }) {
                 </div>
             </div>
 
-            <div id='write-comment' className='bg-black mt-2 mb-4 ml-6 mr-6'>
-                <form className='flex flex-row'>
-                    <div className='flex aspect-square h-full '>
-                        <Image src={authorPhotoURL} alt="user image" width={45} height={45} className='rounded-full drop-shadow-sm'/>
+            {/* write comment */}
+            <div id='write-comment' className='mt-2 mb-4 ml-6 mr-6'>
+                <form 
+                    onSubmit={handleComment}
+                    className='flex flex-row items-start justify-center h-full'>
+                    <div className='flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
+                        <Image src={authorPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>
                     </div>
 
-                    <textarea
-                        id='comment-body'
-                        type='text'
-                        maxLength={100}
+                    <textarea 
+                        id="comment-body" 
                         value={commentBody}
-                        rows={1}
                         onChange={(event) => setCommentBody(event.target.value)}
-                        placeholder='Write a comment...'
-                        className='outline-none resize-none border border-[#d1d1d1] rounded-lg text-md text-raisin_black w-full p-4 overflow-y-auto'
+                        maxLength={100}
+                        placeholder='Write a comment...' 
+                        className={`outline-none resize-none border border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${commentBody ? 'h-[80px]' : 'h-[50px]'}`}
                     />
+
+                    <button
+                        type='submit'
+                        className='flex rounded-full aspect-square w-[40px] h-[40px] mt-1 bg-gray items-center justify-center ml-2 hover:bg-grass hover:text-snow '>
+                        <i className='fa-solid fa-paper-plane text-sm'></i>
+                    </button>
                 </form>
             </div>  
         </div>

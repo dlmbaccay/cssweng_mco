@@ -203,7 +203,9 @@ export default function PostSnippet({ props }) {
                   onMouseEnter={() => setIsOverlayVisible(true)}
                   onMouseLeave={() => setIsOverlayVisible(false)}
                 />
-                <p>0</p>
+                <p>
+                  {likes && likes.length > 0 ? likes.length : 0}
+                </p>
 
                 {isOverlayVisible && (
                   <div 
@@ -224,7 +226,9 @@ export default function PostSnippet({ props }) {
               
               <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
                 <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all"></i>
-                <p>0</p>
+                <p>
+                  {comments && comments.length > 0 ? comments.length : 0}
+                </p>
               </div>
 
               <div>

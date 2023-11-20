@@ -124,8 +124,10 @@ export default function CreatePost({ props }) {
             authorUsername: username,
             authorPhotoURL: userPhotoURL,
             isEdited: false,
-            likes: [],
+            // commments subcollection
             comments: [],
+            // likes subcollection
+            likes: [],            
         }
 
         // add post to firestore

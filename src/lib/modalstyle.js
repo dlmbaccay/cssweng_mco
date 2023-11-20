@@ -179,7 +179,7 @@ export const expandedPostStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '650px', 
+    width: '750px', 
     height: '95%',
     backgroundColor: '#F5F0F0',
     padding: '0px',

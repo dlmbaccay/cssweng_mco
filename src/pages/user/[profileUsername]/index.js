@@ -848,7 +848,7 @@ function UserProfilePage() {
                                         className="flex flex-col items-center justify-start w-full "
                                     >
                                         {/* if no posts yets */}
-                                        {posts.length === 0 && (
+                                        {((currentUserID !== profileUserID) && (posts.length === 0)) && (
                                             <div className="w-full p-20 pl-24 pr-24 flex justify-center">
 
                                                 {/* if no media... */}
