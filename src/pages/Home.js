@@ -116,8 +116,8 @@ function Home() {
 
         <div className='w-full bg-dark_gray'>            
           {/* search and logo bar */}
-          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
-            <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
+          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between gap-7 p-2 '>
+            <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm sm:w-[200px] md:w-[300px] lg:w-[400px] max-sm:w-[200px]'>
               <i
                 className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
                 // onClick={}
@@ -132,9 +132,9 @@ function Home() {
             </div>
 
             <div className='flex flex-row justify-center items-center gap-2 mr-8'>
-              <h1 className='font-bold font-shining text-3xl text-grass'>BantayBuddy</h1>
+              <h1 className='font-bold font-shining text-3xl text-grass sm:text-xl md:text-2xl max-sm:text-base'>BantayBuddy</h1>
 
-              <div className='bg-grass w-[40px] h-[40px] rounded-full shadow-lg'>
+              <div className='bg-grass w-[40px] h-[40px] rounded-full shadow-lg max-sm:w-[25px] max-sm:h-[25px] sm:w-[25px] sm:h-[25px] sm:mr-[20px] max-sm:mr-[30px] md:xl:w-[40px] md:xl:h-[40px] md:xl:mr-[10px]'>
                 <Image src='/images/logo.png' alt='logo' width={100} height={100} className='rounded-full'/>
               </div>
             </div>
@@ -146,7 +146,7 @@ function Home() {
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
               {/* create post */}
               <div 
-                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md'>
+                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md sm:w-[450px] md:w-[550px] lg:w-[650px] max-sm:w-[350px] max-sm:mr-[50px] p-2 gap-2'>
 
                   {userPhotoURL && <Image
                     src={userPhotoURL}
@@ -183,7 +183,7 @@ function Home() {
                   </Modal>
               </div>
 
-              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
+              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8 space-y-4 sm:scale-75 sm:h-[98px] max-sm:scale-50 max-sm:h-[30px] max-sm:-translate-x-6 md:xl:scale-100'>
                 
                 {posts.map((post, index) => (
                     <div key={post.id}>
