@@ -9,6 +9,7 @@ import { useCurrentUserPets } from '../lib/hooks';
 export default function CreatePost({ props }) {
 
     const { 
+        createType,
         currentUserID, displayName,
         username, userPhotoURL, setShowCreatePostForm 
     } = props
@@ -16,11 +17,20 @@ export default function CreatePost({ props }) {
     const currentUserPets = useCurrentUserPets();
 
     const [postBody, setPostBody] = useState('')
+    const [postTrackerLocation, setPostTrackerLocation] = useState('')
 
     const [selectedPets, setSelectedPets] = useState([])
-    const [selectedCategory, setSelectedCategory] = useState({value: 'Default', label: 'Default'})
+    
+    const [selectedCategory, setSelectedCategory] = useState(
+        createType === 'original' 
+        ? {value: 'Default', label: 'Default'} 
+        : {value: 'Lost Pets', label: 'Lost Pets'}
+    );
+
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
+
+    const [submitDisabled, setSubmitDisabled] = useState(false);
 
     const handleSelectPets = (selectedPets) => {
         setSelectedPets(selectedPets)
@@ -69,6 +79,10 @@ export default function CreatePost({ props }) {
             return;
         }
 
+         // disable submit button
+        setSubmitDisabled(true);
+        toast.loading('Creating post...');
+
         // create reference for post
         const postRef = firestore.collection('posts').doc();
         const postID = postRef.id;
@@ -101,6 +115,7 @@ export default function CreatePost({ props }) {
             id: postID,
             postBody,
             postCategory,
+            postTrackerLocation,
             postPets,
             postDate,
             imageUrls,
@@ -108,8 +123,9 @@ export default function CreatePost({ props }) {
             authorDisplayName: displayName,
             authorUsername: username,
             authorPhotoURL: userPhotoURL,
-            likes: [],
+            isEdited: false,
             comments: [],
+            likes: [],            
         }
 
         // add post to firestore
@@ -136,7 +152,11 @@ export default function CreatePost({ props }) {
         setShowCreatePostForm(false);
 
         // show success toast
+        toast.dismiss();
         toast.success('Post created successfully!');
+
+        // enable submit button
+        setSubmitDisabled(false);
     };
 
     return (
@@ -153,21 +173,37 @@ export default function CreatePost({ props }) {
         {/* category and pets selection */}
         <div className='flex flex-row justify-center items-center mt-4'>
             <div className='w-full flex flex-row gap-4'>
-                <Select
-                    options={[
-                        {value: 'Default', label: 'Default'},
-                        {value: 'Q&A', label: 'Q&A'},
-                        {value: 'Tips', label: 'Tips'},
-                        {value: 'Pet Needs', label: 'Pet Needs'},
-                        {value: 'Lost Pets', label: 'Lost Pets'},
-                        {value: 'Found Pets', label: 'Found Pets'},
-                        {value: 'Milestones', label: 'Milestones'},
-                    ]}
-                    value={selectedCategory}
-                    onChange={handleSelectCategory}
-                    placeholder='Category'
-                    className='w-1/3'
-                />
+                
+                {createType === 'original' && 
+                    <Select
+                        options={[
+                            {value: 'Default', label: 'Default'},
+                            {value: 'Q&A', label: 'Q&A'},
+                            {value: 'Tips', label: 'Tips'},
+                            {value: 'Pet Needs', label: 'Pet Needs'},
+                            {value: 'Milestones', label: 'Milestones'},
+                            {value: 'Lost Pets', label: 'Lost Pets'},
+                            {value: 'Unknown Owner', label: 'Unknown Owner'},
+                        ]}
+                        value={selectedCategory}
+                        onChange={handleSelectCategory}
+                        placeholder='Category'
+                        className='w-1/3'
+                    />
+                }
+
+                {createType === 'tracker' && 
+                    <Select
+                        options={[
+                            {value: 'Lost Pets', label: 'Lost Pets'},
+                            {value: 'Unknown Owner', label: 'Unknown Owner'},
+                        ]}
+                        value={selectedCategory}
+                        onChange={handleSelectCategory}
+                        placeholder='Category'
+                        className='w-1/3'
+                    />
+                }
 
                 {currentUserPets && (
                     <Select 
@@ -183,66 +219,87 @@ export default function CreatePost({ props }) {
         </div>  
 
         {/* post body */}
-        <div className='h-full mt-6'>
+        <div className='h-full mt-4'>
+
+            {selectedCategory && 
+                ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Unknown Owner')) &&
+                        <input 
+                            id='tracker-location'
+                            type='text'
+                            maxLength={50}
+                            value={postTrackerLocation}
+                            onChange={(event) => setPostTrackerLocation(event.target.value)}
+                            placeholder='Last Seen At'
+                            className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
+                        />
+                )    
+            }
+
             <textarea 
                 id="post-body" 
                 value={postBody}
                 onChange={(event) => setPostBody(event.target.value)}
                 placeholder='What`s on your mind?' 
-                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-full p-4' 
+                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full p-4 h-[80%]' 
             />
         </div>
 
-        {/* media */}
-        <div className="image-previews flex flex-row w-full mt-6 mb-6">
-            <div>
-                <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
-                    <i className="fa-regular fa-image text-3xl"></i>
-                </label>
+        <div className='flex flex-row justify-between'>
+            {/* media */}
+            <div className="image-previews flex flex-row w-full mt-6 mb-6">
+                <div>
+                    <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
+                        <i className="fa-regular fa-image text-3xl"></i>
+                    </label>
 
-                <input
-                    id="post-images"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    disabled={isUploadDisabled}
-                    className="hidden"
-                />
+                    <input
+                        id="post-images"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageUpload}
+                        disabled={isUploadDisabled}
+                        className="hidden"
+                    />
+                </div>
+                
+                <div className='flex flex-row gap-4 w-full ml-4'>
+                    {previewImages.map((imageUrl, index) => (
+                        <div key={index} className="preview-image-container">
+                            <button
+                                type='button'
+                                onClick={() => handleDeleteImage(index)}
+                                className="delete-image-button"
+                            >
+                                <i className='fa-solid fa-xmark' />
+                            </button>
+                            <Image
+                                src={imageUrl}
+                                alt={`Image ${index + 1}`}
+                                width={100}
+                                height={100}
+                                className="preview-image"
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
-            
-            <div className='flex flex-row gap-4 w-full ml-4'>
-                {previewImages.map((imageUrl, index) => (
-                    <div key={index} className="preview-image-container">
-                        <button
-                            type='button'
-                            onClick={() => handleDeleteImage(index)}
-                            className="delete-image-button"
-                        >
-                            <i className='fa-solid fa-xmark' />
-                        </button>
-                        <Image
-                            src={imageUrl}
-                            alt={`Image ${index + 1}`}
-                            width={100}
-                            height={100}
-                            className="preview-image"
-                        />
-                    </div>
-                ))}
+
+            {/* post button */}
+            <div className='flex items-end w-36'>
+                <button 
+                    type='submit'
+                    className={`
+                        flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-md
+                        transition-all 
+                        ${submitDisabled ? 'bg-pistachio opacity-50 cursor-default' : 'cursor-pointer hover:bg-pistachio'}`}
+                >
+                    <p className='font-bold'>Post</p> 
+                </button>
             </div>
         </div>
 
-        {/* post button */}
-        <div className='flex justify-center items-center w-full'>
-            <button 
-                type='submit'
-                className='flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-[10px]
-                hover:bg-pistachio †ransition duration-200 ease-in-out'
-            >
-                <p className='font-bold'>Post</p> 
-            </button>
-        </div>
+        
     </form>
     )
 }

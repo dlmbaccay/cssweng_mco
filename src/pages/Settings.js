@@ -28,10 +28,10 @@ function Settings() {
     
     const [petSwitches, setPetSwitches] = useState([
     { id: 'Pet Breed', value: 'breed', enabled: true },
-    { id: 'Pet Sex', value: 'sex', enabled: true },
+    { id: 'Pet Gender', value: 'sex', enabled: true },
     { id: 'Pet Birthday', value: 'birthdate', enabled: true },
     { id: 'Pet Location', value: 'birthplace', enabled: true },
-    { id: 'Favorite Food', value: 'favoritefood', enabled: true },
+    { id: 'Favorite Food', value: 'favoriteFood', enabled: true },
     { id: 'Hobby', value: 'hobbies', enabled: true },
     ]);
 
@@ -140,7 +140,7 @@ function Settings() {
     //     setSwitches(newSwitches);
     //   }, []); // Dependency array. Update switches whenever this array changes.
 
-    const petSwitchIDs = ['Pet Sex', 'Pet Breed', 'Pet Birthday', 'Pet Location', 'Favorite Food', 'Hobbby'];
+    const petSwitchIDs = ['Pet Gender', 'Pet Breed', 'Pet Birthday', 'Pet Location', 'Favorite Food', 'Hobby'];
     const userSwitchIDs = ['Gender', 'Birthday', 'Location', 'Contact Number', 'E-mail'];
     const [disabledPetSwitches, setDisabledPetSwitches] = useState([]);
     const [disabledUserSwitches, setDisabledUserSwitches] = useState([]);
@@ -205,21 +205,32 @@ function Settings() {
     return (
         <div>
             <div id="root" className='flex flex-row h-screen paw-background'>
-                {/* home navbar */}
-                <div className='w-1/6'>
+                <div className='hidden lg:flex lg:w-[300px]'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
                         props={{
-                        userPhotoURL: userPhotoURL,
-                        username: username,
-                        activePage: "Settings"
+                            userPhotoURL: userPhotoURL,
+                            username: username,
+                            activePage: "Home",
+                            expanded: true
                         }}
                     />}
                 </div>
 
-                <div className="w-5/6 flex justify-center items-center h-full">
+                <div className='w-fit lg:hidden'>
+                    {(userPhotoURL && username) && <ExpandedNavBar 
+                        props={{
+                            userPhotoURL: userPhotoURL,
+                            username: username,
+                            activePage: "Home",
+                            expanded: false
+                        }}
+                    />}
+                </div>
+
+                <div className="w-full flex justify-center items-center h-full">
                     <form
                         onSubmit={handleSubmit}
-                        className="rounded-lg drop-shadow-lg p-10 w-3/4 h-[90%] overflow-auto flex flex-col justify-start items-center">
+                        className="rounded-lg drop-shadow-lg p-10 w-full h-full overflow-auto flex flex-col justify-start items-center">
 
                         <div className='mt-2 flex flex-col justify-center items-center w-[750px] h-[150px] p-4 bg-pale_yellow rounded-lg drop-shadow-md mb-8'>
                             <label htmlFor="user-visibility" className="block font-bold text-grass font-shining text-3xl mb-4">Security</label>

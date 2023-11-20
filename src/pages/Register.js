@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import PostSnippet from '../components/PostSnippet'
 import Router from 'next/router'
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
 import toast from 'react-hot-toast'
@@ -20,42 +19,43 @@ export default function Register() {
             return
         } else if (!checkPassword(password)){
             toast.error('Password is not secure.')
+            return
         } else if (password !== confirm_password) {
             toast.error('Passwords do not match')
             return
         } else {
             auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Signed in 
-                    const user = userCredential.user
-                    console.log(user)
-                    
-                    // clear fields
-                    setEmail('')
-                    setPassword('')
-                    setConfirmPassword('')
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user
+                console.log(user)
+                
+                // clear fields
+                setEmail('')
+                setPassword('')
+                setConfirmPassword('')
 
-                    // send email verification 
-                    auth.currentUser.sendEmailVerification().then(() => {
-                        toast.success('Check your email to verify your account')
-                    }).catch((error) => {
-                        console.log(error)
-                    });
+                // send email verification 
+                auth.currentUser.sendEmailVerification().then(() => {
+                    toast.success('Check your email to verify your account')
+                }).catch((error) => {
+                    console.log(error)
+                });
 
-                    // sign out the user
-                    auth.signOut()
-                    .then(() => {
-                    // redirect to Login page
-                    router.push('/Login');
-                    })
-                    .catch((error) => {
-                    console.log(error);
-                    });
+                // sign out the user
+                auth.signOut()
+                .then(() => {
+                // redirect to Login page
+                router.push('/Login');
                 })
                 .catch((error) => {
-                    const errorMessage = error.message
-                    toast.error(errorMessage)
-                })
+                console.log(error);
+                });
+            })
+            .catch((error) => {
+                const errorMessage = error.message
+                toast.error(errorMessage)
+            })
         }
     }
 
@@ -106,7 +106,11 @@ export default function Register() {
     }
 
     return (
-        <div className='bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen justify-evenly items-center flex flex-col lg:flex-row'>
+        <div className='
+            h-screen
+            bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] 
+            flex flex-col justify-center items-center 
+            lg:flex-row lg:gap-32'>
 
             <div id="login" className='bg-jasmine drop-shadow-md w-[500px] h-[500px] rounded-3xl pl-12 pr-12 flex flex-col justify-center items-center'>
                 <div>
@@ -125,14 +129,24 @@ export default function Register() {
                         onChange={(e) => setPassword(e.target.value.trim())}
                         className={`hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 text-lg font-semibold outline-none ${password === '' ? '': !checkPassword(password) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
                     
-                    <div className="z-10 tooltip hidden bg-gray-800 text-white text-sm rounded p-1 absolute top-0 left-full transform translate-x-4 -translate-y-5 tracking-wide">
-                        <p className='text-base text-slate-700'>Password must:</p>
+                    <div className="tooltip hidden bg-gray-800 drop-shadow-sm text-white text-xs rounded p-1 absolute top-0 right-full transform -translate-x-4 -translate-y-5 tracking-wide">
+                        <p className='text-sm text-slate-700'>Password must:</p>
                         <ul className="list-none pl-2">
-                            <li className='text-sm text-slate-600'><span className={`bullet ${/^.{8,16}$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>be 8-16 characters long.</li>
-                            <li className='text-sm text-slate-600'><span className={`bullet ${/[A-Z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one uppercase letter.</li>
-                            <li className='text-sm text-slate-600'><span className={`bullet ${/[a-z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one lowercase letter.</li>
-                            <li className='text-sm text-slate-600'><span className={`bullet ${/[0-9]$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one digit.</li>
-                            <li className='text-sm text-slate-600'><span className={`bullet ${/\W/.test(password) ? 'bg-green-500':'bg-slate-300'}`}></span>contain at least one special character.</li>
+                            <li className='text-xs text-slate-600'>
+                                <span className={`bullet ${/^.{8,16}$/.test(password) ? 'bg-green-500':'bg-slate-300'}`}>
+                                </span>be 8-16 characters long.</li>
+                            <li className='text-xs text-slate-600'>
+                                <span className={`bullet ${/[A-Z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}>
+                                </span>contain at least one uppercase letter.</li>
+                            <li className='text-xs text-slate-600'>
+                                <span className={`bullet ${/[a-z]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}>
+                                </span>contain at least one lowercase letter.</li>
+                            <li className='text-xs text-slate-600'>
+                                <span className={`bullet ${/[0-9]/.test(password) ? 'bg-green-500':'bg-slate-300'}`}>
+                                </span>contain at least one digit.</li>
+                            <li className='text-xs text-slate-600'>
+                                <span className={`bullet ${/\W/.test(password) ? 'bg-green-500':'bg-slate-300'}`}>
+                                </span>contain at least one special character.</li>
                         </ul>
                     </div>
                 </div>
@@ -164,28 +178,100 @@ export default function Register() {
                 </div>
             </div>            
 
-            <div 
-                id="showcase" 
-                className="flex justify-center w-fit h-fit rounded-lg drop-shadow-md" 
-            >
-                <div className="flex flex-col">
-                    <PostSnippet
-                        props={{
-                            currentUserID: '123',
-                            postID: '123',
-                            postBody: 'Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.',
-                            postDate: '23/9/6 at 16:30',
-                            imageUrls: ['/images/post1-image.png'],
-                            authorID: '123',
-                            authorDisplayName: 'Barker',
-                            authorUsername: 'barknplay',
-                            authorPhotoURL: '/images/user1-image.png',
-                            likes: [],
-                            comments: [],
-                        }} 
-                    />
+            <div id="showcase" className="hidden lg:flex justify-center w-fit h-fit rounded-lg drop-shadow-md">
+                <PostShowcase />
+            </div>
+        </div>
+    )
+}
+
+function PostShowcase() {
+
+    const authorDisplayName = 'Barker';
+    const authorUsername = 'barknplay';
+    const authorPhotoURL = '/images/user1-image.png';
+    const postDate = '23/9/6 at 16:30';
+    const postBody = 'Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.';
+    const imageUrls = ['/images/post1-image.png'];
+
+    return (
+        <div className='shadow-sm hover:shadow-lg bg-snow w-[650px] h-[500px] rounded-3xl p-6 flex flex-col'>
+            {/* Header */}
+            <div id="post-header" className='flex flex-row'>
+
+              <div className='flex flex-row'>
+                {/* User Image */}
+                <div id="user-image">
+                  <Image width={50} height={50} src={authorPhotoURL} alt="user image" className='rounded-full shadow-md'/>
+                </div>
+
+                <div id='post-meta' className='ml-4 h-full items-center justify-center'>
+                    <div id='user-meta' className='flex flex-row gap-2 '>
+                      {/* Display Name */}
+                      <div id='display-name' className='font-bold'>
+                        <p>{authorDisplayName}</p>
+                      </div>
+
+                      <div className='font-bold'>
+                        ·
+                      </div>
+
+                      {/* Username */}
+                      <Link href={'/user/' + authorUsername} id='display-name' className='hover:text-grass hover:font-semibold transition-all'>
+                        <p>@{authorUsername}</p>
+                      </Link>
+                    </div>
+      
+                    {/* Publish Date */}
+                    <div id='publish-date'>
+                      <p>{postDate}</p>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div id='post-body' className='mt-4 flex flex-col'>
+              <div id='post-text'>
+                <p className='whitespace-pre-line line-clamp-1 overflow-hidden'>{postBody}</p>
+              </div>
+              
+              {/* Image Carousel */}
+              <div id="post-image" className='mt-4 h-[310px] w-auto flex items-center justify-center relative'>
+                <Image src={imageUrls[0]} alt="post image" 
+                  layout='fill'
+                  objectFit='contain'
+                  className='rounded-lg'
+                  />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div id='post-footer' className='mt-4 flex flex-row w-full justify-between relative'>
+              
+              <div id="left" className='flex flex-row gap-4'>
+                <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
+                  <i className="fa-solid fa-heart hover:text-grass hover:scale- hover:cursor-pointer" 
+                  ></i>
+                  <p>0</p>
+                </div>
+                
+                <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
+                  <i className="fa-solid fa-comment hover:text-grass hover:scale- hover:cursor-pointer"></i>
+                  <p>0</p>
+                </div>
+
+                <div id="share-control">
+                  <i className="fa-solid fa-share-nodes hover:text-grass hover:scale- hover:cursor-pointer"></i>
+                </div>
+              </div>
+
+              <div id="right" className='flex flex-row gap-4'>
+                <div id='bookmark-control'>
+                  <i className="fa-solid fa-bookmark hover:text-grass hover:scale- hover:cursor-pointer"></i>
                 </div>
             </div>
+          </div>
         </div>
     )
 }

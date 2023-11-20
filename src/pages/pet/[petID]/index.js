@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { STATE_CHANGED, firestore, storage } from '@/src/lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
+
 import { useRouter } from 'next/router';
 import { useUserData, useUserIDfromUsername } from '@/src/lib/hooks'; // Import the useUser hook
 import { formatDateWithWords } from '../../../lib/formats';
@@ -12,6 +13,7 @@ import toast from 'react-hot-toast'
 import Modal from 'react-modal'; // Import the Modal component  
 
 import NavBar from '@/src/components/NavBar';
+import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import Loader from '@/src/components/Loader';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import RoundIcon from '@/src/components/RoundIcon';
@@ -40,8 +42,8 @@ function PetProfilePage() {
     // const [following, setFollowing] = useState(null);
     const [sex, setSex] = useState(null);
     const [breed, setBreed] = useState(null);
-    const [birthdate, setBirthdate] = useState(null);
-    const [birthplace, setBirthplace] = useState(null);
+    const [birthYear, setBirthYear] = useState(null);
+    const [birthPlace, setBirthPlace] = useState(null);
     const [favoriteFood, setFavoriteFood] = useState(null);
     const [hobbies, setHobbies] = useState(null);
     const [petPhotoURL, setPetPhotoURL] = useState(null);
@@ -58,8 +60,9 @@ function PetProfilePage() {
     const [petOwnerCoverPhotoURL, setPetOwnerCoverPhotoURL] = useState(null);
 
     // editing variables
-    const [editedPetName, setEditedPetName] = useState(petName);
-    const [editedAbout, setEditedAbout] = useState(about);
+    const [editedAbout, setEditedAbout] = useState(null);
+    const [editedPetFavoriteFood, setEditedPetFavoriteFood] = useState(null);
+    const [editedPetHobbies, setEditedPetHobbies] = useState(null);
 
     useEffect(() => {
         let unsubscribe;
@@ -76,12 +79,11 @@ function PetProfilePage() {
                     setPetName(doc.data().petName);
                     setAbout(doc.data().about);
                     setFollowers(doc.data().followers);
-                    // setFollowing(doc.data().following);
                     setSex(doc.data().sex);
                     setBreed(doc.data().breed);
                     setPetPhotoURL(doc.data().photoURL);
-                    setBirthdate(doc.data()?.birthdate);
-                    setBirthplace(doc.data()?.birthplace);
+                    setBirthYear(doc.data()?.birthYear);
+                    setBirthPlace(doc.data()?.birthPlace);
                     setFavoriteFood(doc.data().favoriteFood);
                     setHobbies(doc.data().hobbies);
                     setHidden(doc.data()?.hidden);
@@ -94,6 +96,8 @@ function PetProfilePage() {
 
                     setEditedPetName(doc.data().petName);
                     setEditedAbout(doc.data().about);
+                    setEditedPetFavoriteFood(doc.data().favoriteFood);
+                    setEditedPetHobbies(doc.data().hobbies);
                 } else {
                     setPet(null);
                 }
@@ -105,32 +109,20 @@ function PetProfilePage() {
         return unsubscribe;
     }, [petID]);
 
-    // // fetch all posts where pet is tagged
-    // useEffect(() => {
-    //     let unsubscribe;
-
-    //     if (petID) {
-    //         // check if pet is tagged in any post
-    //         const petRef = firestore.collection('posts').where('postPets', 'array-contains', petID);
-    //         unsubscribe = petRef.onSnapshot((querySnapshot) => {
-    //             if (querySnapshot.size > 0) {
-    //                 const taggedPosts = querySnapshot.docs.map((doc) => ({
-    //                     id: doc.id,
-    //                     ...doc.data()
-    //                 }));
-
-    //                 setTaggedPosts(taggedPosts);
-    //             } else {
-    //                 setTaggedPosts(null);
-    //             }
-    //         });
-    //     }
-    // }, [petID])
-
     const openEdit = () => {
         if (currentUser && currentUserID === petOwnerID) { // Check if the logged-in user is the owner of the pet
             setModalIsOpen(true); // Open the modal when editing starts
         }
+    };
+
+    const handleCancelEditProfile = () => {
+        setModalIsOpen(false);
+
+        // reset all edited values
+        setEditedPetName(petName);
+        setEditedAbout(about);
+        setEditedPetFavoriteFood(favoriteFood);
+        setEditedPetHobbies(hobbies);
     };
 
     const handleSave = async (e) => {
@@ -139,21 +131,66 @@ function PetProfilePage() {
         const batch = firestore.batch();
 
         try {
+            const uploadFile = async (ref, file, field) => {
+                const task = ref.put(file);
+                task.on(
+                    'state_changed',
+                    (snapshot) => {
+                       const progress = Math.round(
+                           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                       );
+                    },
+                    (error) => {
+                       toast.error('Error uploading file.');
+                    },
+                    async () => {
+                       toast.success('Photo uploaded successfully!');
+                       let url = await task.snapshot.ref.getDownloadURL(); 
+                       const petRef = firestore.doc(`pets/${petID}`);
+                       petRef.update({ [field]: url });
+                    }
+                );
+            };
+
+            if (selectedProfileFile) {
+                await uploadFile(storage.ref(`petProfilePictures/${petID}/profilePic`), selectedProfileFile, 'photoURL');
+            }
+
             const updateData = {
                 petName: editedPetName,
                 about: editedAbout,
-                favoriteFood: favoriteFood,
-                hobbies: hobbies,
-                photoURL: petPhotoURL
+                favoriteFood: editedPetFavoriteFood,
+                hobbies: editedPetHobbies,
+                // photoURL: petPhotoURL
             };
 
             batch.update(petRef, updateData);
 
             await batch.commit();
             setModalIsOpen(false);
+            setSelectedProfileFile(null);
+            setPreviewProfileUrl(null);
             toast.success(petName + '`s profile updated successfully!');
         } catch (error) {
             console.error('Error saving pet:', error);
+        }
+    };
+
+    const [selectedProfileFile, setSelectedProfileFile] = useState(null);
+    const [previewProfileUrl, setPreviewProfileUrl] = useState(null);
+
+    const handleProfileFileSelect = (event) => {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
+      
+        if (file !== undefined && allowedTypes.includes(file.type)) {
+            setSelectedProfileFile(file);
+            setPreviewProfileUrl(URL.createObjectURL(file));
+        } else {
+            event.target.value = null;
+            setSelectedProfileFile(null);
+            setPreviewProfileUrl(null);
+            toast.error('Invalid file type. Only PNG, JPEG, and GIF allowed.')
         }
     };
 
@@ -189,7 +226,12 @@ function PetProfilePage() {
                     ...prevPet,
                     followers: updatedFollowers
                 }));
-                toast.success('Followed successfully!');
+                // Show toast notification based on whether the user was followed or unfollowed
+                if (isFollowing) {
+                    toast.success('Unfollowed successfully!');
+                } else {
+                    toast.success('Followed successfully!');
+                }
             })
             .catch(error => {
                 console.error('Error updating followers:', error);
@@ -198,6 +240,24 @@ function PetProfilePage() {
 
     const handleTabEvent = (tabName) => {
         setActiveTab(tabName);
+    };
+
+    const [editedPetName, setEditedPetName] = useState(null);
+    const [editPetNameValid, setEditPetNameValid] = useState(true);
+
+    const handlePetNameVal = (val) => {
+        const checkPetNameValue = val;
+
+        if (checkPetNameValue.startsWith(' ') || checkPetNameValue.endsWith(' ') || checkPetNameValue.includes('  ')) {
+            setEditedPetName(checkPetNameValue);
+            setEditPetNameValid(false);
+        } else if ((checkPetNameValue.length >= 3 && checkPetNameValue.length <= 15)) {
+            setEditedPetName(checkPetNameValue);
+            setEditPetNameValid(true);
+        } else if (checkPetNameValue.length < 3 || checkPetNameValue.length > 15) {
+            setEditedPetName(checkPetNameValue);
+            setEditPetNameValid(false);
+        }
     };
 
     const [taggedPosts, setTaggedPosts] = useState([]);
@@ -213,6 +273,7 @@ function PetProfilePage() {
         const q = query(
             collection(firestore, "posts"),
             where("postPets", "array-contains", petID),
+            orderBy("postDate", "desc"),
             limit(5)
         );
 
@@ -269,10 +330,19 @@ function PetProfilePage() {
 
     return (
         <div id="root" className='flex'>
-            <NavBar />
+            <div className='w-fit'>
+                {(petOwnerPhotoURL && petOwnerUsername) && <ExpandedNavBar 
+                    props={{
+                    userPhotoURL: petOwnerPhotoURL,
+                    username: petOwnerUsername,
+                    activePage: "Profile",
+                    expanded: false
+                    }}
+                />}
+            </div>
 
             {pet && currentUser &&
-                <div className="flex-1 h-screen">
+                <div className="h-screen w-full">
                     <div id='header-container' className='h-1/5 border-l border-neutral-300'>
                         <CoverPhoto src={petOwnerCoverPhotoURL} alt={petOwnerUsername + " cover photo"} />
                     </div>
@@ -280,35 +350,43 @@ function PetProfilePage() {
                     <div id='content-container' className='h-4/5 flex flex-row'>
 
                         {/* Profile Picture */}
-                        <div className="flex justify-center w-48 h-48 absolute -translate-y-24 shadow-lg rounded-full ml-16 z-10">
-                            {petPhotoURL && <RoundIcon src={petPhotoURL} alt={petName + " profile picture"} />}
+                        <div className="flex absolute justify-center w-80 h-44">
+                            <div className='rounded-full z-10
+                                -translate-y-40 w-32 h-32 -translate-x-14
+                                lg:w-44 lg:h-44 lg:-translate-y-24 lg:translate-x-0'>
+                                <Image 
+                                    src={petPhotoURL}
+                                    alt={petName + " profile picture"}
+                                    fill='fill'
+                                    objectFit='cover'
+                                    className='rounded-full shadow-lg'
+                                />
+                            </div>
                         </div>
 
                         {/* Left Panel */}
-                        <div className="fixed flex flex-col w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center overflow-y-auto overflow-x-hidden">
+                        <div className="fixed hidden lg:flex flex-col lg:w-80 h-4/5 bg-snow border border-neutral-300 justify-start items-center">
 
-                            {/* petName */}
-                            <div className="text-center mt-32 w-80">
-                                <div className="text-2xl font-bold text-raisin_black ">
+                            {/* petName & owner */}
+                            <div className="text-center mt-24 w-80">
+                                <div className="text-xl mb-1 font-bold text-raisin_black ">
                                     {petName}
                                 </div>
 
-                                <div className="text-sm text-raisin_black mt-2">
-                                    {breed} · <Link href={'/user/' + petOwnerUsername} className='hover:text-grass hover:font-semibold transition-all'>@{petOwnerUsername}</Link>
-                                </div>
+                                <Link href={'/user/' + petOwnerUsername} className='hover:text-grass text-md text-raisin_black hover:font-semibold transition-all'>@{petOwnerUsername}</Link>
                             </div>
 
                             {currentUserID === petOwnerID ? (
                                 // Edit pet profile button
                                 <button
                                     onClick={openEdit}
-                                    className="text-center mt-4 w-20 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-20 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                                 >Edit</button>
                             ) :
                                 // Follow button
                                 <button
                                     onClick={handleFollow}
-                                    className="text-center mt-4 w-32 h-8 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
+                                    className="text-center mt-4 w-32 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                                 >
                                     {followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                 </button>
@@ -329,30 +407,59 @@ function PetProfilePage() {
 
                                         <h1 className='font-bold text-xl'>Edit {petName}`s Profile</h1>
 
-                                        <div className='flex flex-row w-full h-full'>
-                                            <div className='flex flex-col justify-center items-center h-full w-1/2'>
-                                                <div>
-                                                    <div className="h-full w-full flex flex-col justify-center items-center">
-                                                        <h1 className='font-medium mb-2'>Change Profile Picture</h1>
+                                        <div className='flex flex-row w-full h-full justify-center items-center'>
+                                            <div className='flex flex-col justify-evenly items-center w-[50%]'>
+                                                <div className="w-full flex flex-col justify-center items-center">
+                                                    <h1 className='font-medium mb-2'>Change Profile Picture</h1>
+                                                    <div>
+                                                        <label htmlFor='pet-profile-pic'>
+                                                            <div className='relative mx-auto w-full cursor-pointer' style={{height: '175px', width: '175px'}}>
+                                                                {previewProfileUrl ? (
+                                                                    <Image src={previewProfileUrl} alt="Preview" layout='fill' className='object-cover rounded-full'/>
+                                                                ): (petPhotoURL && <Image src={petPhotoURL} alt={petName + " cover photo"} layout='fill' className='object-cover rounded-full'/>)}
+                                                            </div>
+                                                        </label>
+                                                    </div>
 
-                                                        <div>
-                                                            <label htmlFor='pet-profile-pic' className="block text-sm font-medium text-gray-700">
-                                                                <Image src={pet.photoURL} alt='pet profile picture' height={200} width={200} className='rounded-full shadow-lg cursor-pointer hover:opacity-50' />
-                                                            </label>
+                                                    <input
+                                                        type="file"
+                                                        id='pet-profile-pic'
+                                                        className="hidden"
+                                                        onChange={handleProfileFileSelect}
+                                                    />
+                                                </div>
+                                                
+                                                <div className='mt-7 w-[65%] flex flex-col justify-evenly items-center p-4 mb-4 rounded-lg font-semibold bg-snow gap-2'>
+
+                                                    <div className='flex flex-row items-center justify-evenly w-full'>
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-venus-mars' />
+                                                            <p>{sex}</p>
                                                         </div>
 
-                                                        <input
-                                                            type="file"
-                                                            id='pet-profile-pic'
-                                                            className="hidden"
-                                                            onChange={uploadPetProfilePictureFile}
-                                                        />
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-bread-slice' />
+                                                            <p>{breed}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='flex flex-row items-center justify-evenly w-full'>
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-cake-candles' />
+                                                            <p>{birthYear}</p>
+                                                        </div>
+
+                                                        <div className='flex flex-row gap-2 items-center justify-center'>
+                                                            <i className='fa-solid fa-map-marker-alt' />
+                                                            <p>{birthPlace}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className='flex flex-col justify-center items-center h-full w-1/2'>
-                                                <div className='w-72'>
+                                            <div className='flex flex-col justify-center items-center h-full w-[50%]'>
+                                                <div className='w-full pr-8'>
+
                                                     <div className="mb-4 w-full">
                                                         <label
                                                             htmlFor="username"
@@ -365,12 +472,15 @@ function PetProfilePage() {
                                                             type="text"
                                                             id="pet-name"
                                                             className="mt-1 p-2 border rounded-md w-full"
-                                                            maxLength="20"
+                                                            minLength={3}
+                                                            maxLength={15}
                                                             value={editedPetName}
                                                             placeholder='What`s your pet`s name?'
-                                                            onChange={(e) => setEditedPetName(e.target.value)}
+                                                            onChange={(e) => handlePetNameVal(e.target.value)}
                                                             required
                                                         />
+
+                                                        <PetNameMessage petName={editedPetName} petNameValid={editPetNameValid} loading={false} />
                                                     </div>
 
                                                     {/* About */}
@@ -385,57 +495,88 @@ function PetProfilePage() {
                                                             id="bio"
                                                             className="mt-1 p-2 border rounded-md w-full resize-none"
                                                             rows="4"
+                                                            maxLength={100}
                                                             value={editedAbout}
                                                             placeholder='Tell us about your pet!'
                                                             onChange={(e) => setEditedAbout(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {/* Hobbies */}
+                                                    <div className="mb-4 w-full">
+                                                        <label
+                                                            htmlFor="hobbies"
+                                                            className="block text-sm font-medium text-gray-700"
+                                                        >
+                                                            <span>Hobbies</span>
+                                                        </label>
+
+                                                        <input
+                                                            type="text"
+                                                            id="hobbies"
+                                                            className="mt-1 p-2 border rounded-md w-full"
+                                                            maxLength="50"
+                                                            value={editedPetHobbies}
+                                                            placeholder='What`s your pet`s hobbies?'
+                                                            onChange={(e) => setEditedPetHobbies(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    {/* Favorite Food */}
+                                                    <div className="mb-4 w-full">
+                                                        <label
+                                                            htmlFor="faveFood"
+                                                            className="block text-sm font-medium text-gray-700"
+                                                        >
+                                                            <span>Favorite Food</span>
+                                                        </label>
+
+                                                        <input
+                                                            type="text"
+                                                            id="faveFood"
+                                                            className="mt-1 p-2 border rounded-md w-full"
+                                                            maxLength="30"
+                                                            value={editedPetFavoriteFood}
+                                                            placeholder='What`s your pet`s favorite food?'
+                                                            onChange={(e) => setEditedPetFavoriteFood(e.target.value)}
+                                                            required
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className='w-full flex flex-row justify-evenly items-center p-4  mb-4 rounded-lg font-semibold bg-snow'>
-                                            <p>Gender: {sex}</p>
-                                            <p>Breed: {breed}</p>
-                                            <p>Birthdate: {formatDateWithWords(birthdate)}</p>
-                                            <p>Birthplace: {birthplace}</p>
-                                        </div>
-
-                                        <div className='flex justify-end'>
-                                            <button
-                                                type="submit"
-                                                className="bg-pistachio text-white py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
-                                            >
-                                                Save
-                                            </button>
-
+                                        <div className='mt-4 flex justify-end gap-4'>
                                             <button
                                                 type="button"
-                                                onClick={() => setModalIsOpen(false)}
-                                                className="bg-red-500 text-white py-2 px-4 rounded-md ml-5 transition duration-300 ease-in-out transform hover:scale-105 active:scale-100"
+                                                onClick={handleCancelEditProfile}
+                                                className="w-20 h-10 font-semibold rounded-md ml-5 transition-all transform hover:bg-raisin_black hover:text-white"
                                             >
                                                 Cancel
                                             </button>
+
+                                            <button
+                                                type="submit"
+                                                disabled={!editPetNameValid}
+                                                className={`w-20 h-10 font-semibold rounded-md bg-xanthous text-white transition-all ${editPetNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
+                                                Save
+                                            </button>
                                         </div>
                                     </form>
-
                                 </Modal>
                             )}
 
                             {/* Followers and Following */}
-                            <div className="text-center mt-8 flex flex-row gap-10 w-80 items-center justify-center">
+                            <div className="text-center mt-6 flex flex-row gap-10 w-80 items-center justify-center">
                                 <div className="flex flex-col items-center">
-                                    <span className="text-raisin_black text-xl font-bold"> {pet.followers ? pet.followers.length : 0}</span>
+                                    <span className="text-raisin_black font-bold"> {pet.followers ? pet.followers.length : 0}</span>
                                     <span className="text-grass font-bold text-sm">Followers</span>
                                 </div>
-                                {/* <div className="flex flex-col items-center">
-                              <span className="text-raisin_black text-lg font-bold">69</span>
-                              <span className="text-gray-500 text-sm">Following</span>
-                          </div> */}
                             </div>
 
                             {/* About */}
-                            <div className="text-center mt-10 flex flex-col gap-2 w-full max-w-full">
+                            <div className="text-center mt-6 flex flex-col gap-2 w-full max-w-full">
                                 <div className="text-lg font-bold text-raisin_black">About</div>
                                 <div className="text-base text-raisin_black pl-6 pr-6 whitespace-normal break-all w-full max-w-full">
                                     {about}
@@ -443,10 +584,10 @@ function PetProfilePage() {
                             </div>
 
                             {/* Details */}
-                            <div className="mt-6 flex flex-col items-center w-full gap-4">
+                            <div className="mt-4 mb-2 flex flex-col items-center w-full gap-2">
                                 {hidden && !hidden.includes('breed') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
-                                        <i className="fa-solid fa-dog"></i>
+                                        <i className="fa-solid fa-bread-slice"></i>
                                         <p>{breed}</p>
                                     </div>
                                 ) : ''}
@@ -460,38 +601,75 @@ function PetProfilePage() {
 
                                 {hidden && !hidden.includes('birthdate') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
-                                        <i className="fa-solid fa-calendar"></i>
-                                        <p>{birthdate}</p>  {/* I just put a hardcoded value for now since di pa defined */}
+                                        <i className="fa-solid fa-cake-candles"></i>
+                                        <p>{birthYear}</p>  
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('birthplace') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-map-marker-alt"></i>
-                                        <p>{birthplace}</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{birthPlace}</p> 
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('favoriteFood') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-utensils"></i>
-                                        <p>chimken</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{favoriteFood}</p> 
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('hobbies') ? (
                                     <div id="icons" className='flex flex-row gap-2 items-center'>
                                         <i className="fa-solid fa-heart"></i>
-                                        <p>Barking</p> {/* I just put a hardcoded value for now since di pa defined */}
+                                        <p>{hobbies}</p> 
                                     </div>
                                 ) : ''}
                             </div>
 
                         </div>
 
-                        <div id='main-content-container' className='flex flex-col translate-x-80 w-[calc(100%-20rem)]'>
+                        <div id='main-content-container' className='overflow-hidden flex flex-col lg:translate-x-80 lg:w-[calc(100%-20rem)] w-full'>
+                            
+                            <div id='flex-profile-details' className='lg:hidden w-full h-12 bg-snow flex flex-row items-center pl-10 gap-8'>
+                                <div className='flex flex-row gap-2'>
+                                    <p className='font-bold'>
+                                        {petName}
+                                    </p>
+                                    <p className='font-bold'>·</p>
+                                        @{petOwnerUsername}
+                                    <p className='font'>
+                                    </p>
+                                </div>
 
-                            <div id="tab-actions" className='flex flex-row bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300'>
+                                <div className='flex flex-row gap-2'>
+                                    {/* followers */}
+                                    <div className='flex flex-row gap-2 items-center'>
+                                        <p className='font-semibold text-sm'>{pet.followers.length}</p>
+                                        <p className='text-grass font-bold text-sm'>Followers</p>
+                                    </div>
+                                </div>
+
+                                { currentUserID === petOwnerID ? 
+                                    (<button 
+                                        onClick={() => setShowEditProfile(true)}
+                                        className='text-sm font-semibold text-white bg-citron w-12 h-6 rounded-md'
+                                    >
+                                        Edit
+                                    </button>) : 
+                                    (
+                                        <button 
+                                            onClick={handleFollow}
+                                            className='text-sm font-semibold text-white bg-citron w-16 h-6 rounded-md'
+                                        >
+                                            {followers.includes(currentUserID) ? 'Following' : 'Follow'}
+                                        </button>
+                                    )
+                                }
+                            </div>
+
+                            <div id="tab-actions" className='flex flex-row font-shining h-10 text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300'>
                                 <button
                                     className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Tagged Posts' ? 'bg-citron text-white' : ''
                                         }`}
@@ -514,7 +692,7 @@ function PetProfilePage() {
                                 </button>
                             </div>
 
-                            <div id="tab-container" className='overflow-y-scroll'>
+                            <div id="tab-container" className='overflow-y-scroll h-full bg-[#FAFAFA]'>
 
                                 {/* Tagged Posts */}
                                 {activeTab === 'Tagged Posts' && (
@@ -526,25 +704,27 @@ function PetProfilePage() {
                                             {taggedPosts.map((post, index) => (
                                                 <div key={post.id}>
                                                     <PostSnippet
-                                                    props={{
-                                                        currentUserID: currentUserID,
-                                                        postID: post.id,
-                                                        postBody: post.postBody,
-                                                        postCategory: post.postCategory,
-                                                        postPets: post.postPets,
-                                                        postDate: post.postDate,
-                                                        imageUrls: post.imageUrls,
-                                                        authorID: post.authorID,
-                                                        authorDisplayName: post.authorDisplayName,
-                                                        authorUsername: post.authorUsername,
-                                                        authorPhotoURL: post.authorPhotoURL,
-                                                        likes: post.likes,
-                                                        comments: post.comments,
-                                                    }}
+                                                        props={{
+                                                            currentUserID: currentUserID,
+                                                            postID: post.id,
+                                                            postBody: post.postBody,
+                                                            postCategory: post.postCategory,
+                                                            postTrackerLocation: post.postTrackerLocation,
+                                                            postPets: post.postPets,
+                                                            postDate: post.postDate,
+                                                            imageUrls: post.imageUrls,
+                                                            authorID: post.authorID,
+                                                            authorDisplayName: post.authorDisplayName,
+                                                            authorUsername: post.authorUsername,
+                                                            authorPhotoURL: post.authorPhotoURL,
+                                                            isEdited: post.isEdited,
+                                                        }}
                                                     />
                                                 </div>
                                             ))}
+
                                             {loading && <div>Loading...</div>}
+
                                             {lastVisible && (
                                                 <button
                                                 className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
@@ -554,7 +734,6 @@ function PetProfilePage() {
                                                 Load More
                                                 </button>
                                             )}
-                                            
                                         </div>
                                     </div>
                                 )}
@@ -596,7 +775,6 @@ function PetProfilePage() {
                                         </div> */}
                                     </div>
                                 )}
-
                             </div>
                         </div>
                     </div>
@@ -604,6 +782,22 @@ function PetProfilePage() {
             }
         </div>
     )
+}
+
+function PetNameMessage({ petName, petNameValid, loading }) {
+    if (loading) {
+        return <p className='mt-2 ml-2'>Checking...</p>;
+    } else if (petName === '') {
+        return null;
+    } else if (String(petName).length < 3 && String(petName).length > 15 && !petNameValid) {
+        return <p className='mt-2 ml-2'>Pet name should have 3-15 characters!</p>;
+    } else if (String(petName).includes('  ')) {
+        return <p className="mt-2 ml-2">Please have only one space in-between.</p>;
+    } else if ((String(petName).startsWith(' ') || String(petName).endsWith(' ')) && !petNameValid) {
+        return <p className="mt-2 ml-2">No spaces allowed at either end.</p>;
+    } else if (!petNameValid) {
+        return <p className="mt-2 ml-2">Only periods and underscores allowed for special characters.</p>;
+    }
 }
 
 export default withAuth(PetProfilePage);
