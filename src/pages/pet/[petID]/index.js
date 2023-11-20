@@ -12,7 +12,6 @@ import Link from 'next/link';
 import toast from 'react-hot-toast'
 import Modal from 'react-modal'; // Import the Modal component  
 
-import NavBar from '@/src/components/NavBar';
 import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import Loader from '@/src/components/Loader';
 import CoverPhoto from '@/src/components/CoverPhoto';
