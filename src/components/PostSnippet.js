@@ -3,10 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
 import { firestore, storage, firebase } from '../lib/firebase';
-import { arrayRemove } from 'firebase/firestore';
 import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
+import { collection, doc, getDocs, onSnapshot, query } from 'firebase/firestore';
 
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -72,33 +72,38 @@ export default function PostSnippet({ props }) {
       setTaggedPets(taggedPets);
     };
 
-    // get how many comments are there in the post
     const [commentsLength, setCommentsLength] = useState(0);
-    const getCommentsLength = async () => {
-      const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
-      const commentsSnapshot = await commentsRef.get();
-      setCommentsLength(commentsSnapshot.size);
-    }
-
-    // get how many likes are there in the post
     const [likesLength, setLikesLength] = useState(0);
-    const getLikesLength = async () => {
-      const likesRef = firestore.collection('posts').doc(postID).collection('likes');
-      const likesSnapshot = await likesRef.get();
-      setLikesLength(likesSnapshot.size);
-    }
+
+    useEffect(() => {
+      const commentsRef = collection(doc(firestore, 'posts', postID), 'comments');
+      const likesRef = collection(doc(firestore, 'posts', postID), 'likes');
+
+      const unsubscribeComments = onSnapshot(commentsRef, async (snapshot) => {
+        let totalComments = snapshot.size;
+
+        for (let doc of snapshot.docs) {
+          const repliesSnapshot = await getDocs(collection(doc.ref, 'replies'));
+          totalComments += repliesSnapshot.size;
+        }
+
+        setCommentsLength(totalComments);
+      });
+
+      const unsubscribeLikes = onSnapshot(likesRef, (snapshot) => {
+        setLikesLength(snapshot.size);
+      });
+
+      // Clean up the subscriptions on unmount
+      return () => {
+        unsubscribeComments();
+        unsubscribeLikes();
+      };
+    }, [postID]);
 
     useEffect(() => {
       getTaggedPets();
     }, []);
-
-    useEffect(() => {
-      getCommentsLength();
-    }, [postID]);
-
-    useEffect(() => {
-      getLikesLength();
-    }, [postID]);
 
     return (
       <div 
