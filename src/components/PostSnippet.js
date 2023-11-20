@@ -40,14 +40,6 @@ export default function PostSnippet({ props }) {
     const [showPostExpanded, setShowPostExpanded] = useState(false);
     const [postAction, setPostAction] = useState('');
 
-    const nextImage = () => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageUrls.length);
-    };
-
-    const prevImage = () => {
-      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageUrls.length) % imageUrls.length);
-    };
-
     // Function to format the date
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -204,8 +196,15 @@ export default function PostSnippet({ props }) {
               <div id="post-image" className='mt-4 h-[300px] w-auto flex items-center justify-center relative'>
                 {imageUrls.length > 1 && (
                   <>
-                    <i className="fa-solid fa-circle-chevron-left absolute left-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" onClick={prevImage}></i>
-                    <i className="fa-solid fa-circle-chevron-right absolute right-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" onClick={nextImage}></i>
+                    <i className="fa-solid fa-circle-chevron-left absolute left-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" 
+                      onClick={() => {
+                        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageUrls.length) % imageUrls.length);
+                      }}
+                    ></i>
+                    <i className="fa-solid fa-circle-chevron-right absolute right-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" 
+                      onClick={() => {
+                        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageUrls.length);
+                      }}></i>
                   </>
                 )}
                 <Image src={imageUrls[currentImageIndex]} alt="post image" 
