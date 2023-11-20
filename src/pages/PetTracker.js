@@ -274,8 +274,6 @@ export default function PetTracker() {
                                         authorDisplayName: post.authorDisplayName,
                                         authorUsername: post.authorUsername,
                                         authorPhotoURL: post.authorPhotoURL,
-                                        likes: post.likes,
-                                        comments: post.comments,
                                         isEdited: post.isEdited,
                                     }}
                                     />
@@ -309,8 +307,6 @@ export default function PetTracker() {
                                         authorDisplayName: post.authorDisplayName,
                                         authorUsername: post.authorUsername,
                                         authorPhotoURL: post.authorPhotoURL,
-                                        likes: post.likes,
-                                        comments: post.comments,
                                         isEdited: post.isEdited,
                                     }}
                                     />

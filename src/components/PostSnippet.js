@@ -15,7 +15,7 @@ import laughReaction from '/public/images/post-reactions/laugh.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, expandedPostStyle } from '../lib/modalstyle';
+import { expandedPostStyle } from '../lib/modalstyle';
 import PostExpanded from './PostExpanded';
 
 export default function PostSnippet({ props }) {
@@ -31,8 +31,7 @@ export default function PostSnippet({ props }) {
         postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername,
-        authorPhotoURL, likes, comments,
-        isEdited
+        authorPhotoURL, isEdited
     } = props 
 
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
@@ -73,10 +72,33 @@ export default function PostSnippet({ props }) {
       setTaggedPets(taggedPets);
     };
 
+    // get how many comments are there in the post
+    const [commentsLength, setCommentsLength] = useState(0);
+    const getCommentsLength = async () => {
+      const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
+      const commentsSnapshot = await commentsRef.get();
+      setCommentsLength(commentsSnapshot.size);
+    }
+
+    // get how many likes are there in the post
+    const [likesLength, setLikesLength] = useState(0);
+    const getLikesLength = async () => {
+      const likesRef = firestore.collection('posts').doc(postID).collection('likes');
+      const likesSnapshot = await likesRef.get();
+      setLikesLength(likesSnapshot.size);
+    }
+
     useEffect(() => {
       getTaggedPets();
     }, []);
 
+    useEffect(() => {
+      getCommentsLength();
+    }, [postID]);
+
+    useEffect(() => {
+      getLikesLength();
+    }, [postID]);
 
     return (
       <div 
@@ -88,7 +110,7 @@ export default function PostSnippet({ props }) {
               props = {{
                 currentUserID, postID, postBody, postCategory, postTrackerLocation,
                 postPets, postDate, imageUrls, authorID, authorDisplayName, authorUsername,
-                authorPhotoURL, likes, comments, isEdited, taggedPets, formatDate,
+                authorPhotoURL, isEdited, taggedPets, formatDate,
                 setShowPostExpanded, postAction
               }}
             />
@@ -204,7 +226,7 @@ export default function PostSnippet({ props }) {
                   onMouseLeave={() => setIsOverlayVisible(false)}
                 />
                 <p>
-                  {likes && likes.length > 0 ? likes.length : 0}
+                  {likesLength}
                 </p>
 
                 {isOverlayVisible && (
@@ -225,9 +247,14 @@ export default function PostSnippet({ props }) {
               </div>
               
               <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
-                <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all"></i>
+                <i 
+                  onClick={() => {
+                    setShowPostExpanded(true)
+                    setPostAction('comment')
+                  }}
+                  className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all"></i>
                 <p>
-                  {comments && comments.length > 0 ? comments.length : 0}
+                  {commentsLength}
                 </p>
               </div>
 

@@ -124,9 +124,7 @@ export default function CreatePost({ props }) {
             authorUsername: username,
             authorPhotoURL: userPhotoURL,
             isEdited: false,
-            // commments subcollection
             comments: [],
-            // likes subcollection
             likes: [],            
         }
 

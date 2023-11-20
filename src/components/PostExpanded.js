@@ -16,7 +16,7 @@ import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
 import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle } from '../lib/modalstyle';
-import { comment } from 'postcss';
+import Comment from './Comment';
 
 export default function PostExpanded({ props }) {
 
@@ -26,12 +26,19 @@ export default function PostExpanded({ props }) {
       }
     }, []);
 
+    // if postAction is comment, direct cursor to comment box
+    useEffect(() => {
+        if (props.postAction === 'comment') {
+            document.getElementById('comment-body').focus();
+        }
+    }, []);
+
     const {
         currentUserID, postID, postBody, 
         postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername, 
-        authorPhotoURL, likes, comments, formatDate,
+        authorPhotoURL, formatDate,
         isEdited, taggedPets, 
         setShowPostExpanded, postAction
     } = props 
@@ -46,6 +53,8 @@ export default function PostExpanded({ props }) {
     const [editedPostBody, setEditedPostBody] = useState(postBody);
     const [editedCategory, setEditedCategory] = useState({ value: postCategory, label: postCategory });
     const [editedPostTrackerLocation, setEditedPostTrackerLocation] = useState(postTrackerLocation);
+
+    const [isFocused, setIsFocused] = useState(false);
 
     const handleSelectEditedCategory = (editedCategory) => {
       setEditedCategory(editedCategory);
@@ -118,7 +127,35 @@ export default function PostExpanded({ props }) {
       setShowEditPostModal(false);
     }
 
+    // get likes
+    const [reactions, setReactions] = useState([]);
+    // TODO: reactions functionality
+
+    // get comments
+    const [comments, setComments] = useState([]);
+    
+    // useffect to get comments, new comments
+    useEffect(() => {
+        const unsubscribe = firestore.collection('posts').doc(postID).collection('comments').orderBy('commentDate', 'desc').onSnapshot((snapshot) => {
+            setComments(snapshot.docs.map((doc) => ({
+                commentID: doc.id,
+                commentBody: doc.data().commentBody,
+                commentDate: doc.data().commentDate,
+                authorID: doc.data().authorID,
+                authorDisplayName: doc.data().authorDisplayName,
+                authorUsername: doc.data().authorUsername,
+                authorPhotoURL: doc.data().authorPhotoURL
+            })));
+        });
+
+        return () => {
+            unsubscribe();
+        }
+    }, []);
+
+
     const [commentBody, setCommentBody] = useState('');
+    // TODO: edit comment functionality
 
     const handleComment = async (event) => {
         event.preventDefault();
@@ -285,8 +322,12 @@ export default function PostExpanded({ props }) {
                     </div>
                     
                     <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
-                    <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all"></i>
-                    <p>0</p>
+                    <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all" 
+                        onClick={() => {
+                            document.getElementById('comment-body').focus();
+                        }}
+                        />
+                    <p>{comments.length}</p>
                     </div>
 
                     <div id="share-control">
@@ -472,8 +513,32 @@ export default function PostExpanded({ props }) {
                 </div>
 
                 {/* Comments */}
-                <div id='post-comments' className='mt-3 flex h-full bg-gray flex-col w-full justify-between relative'>
+                <div id='post-comments' className='mt-6 flex h-full flex-col w-full justify-between relative'>
                     
+                    {comments.length === 0 ? (
+                        <p>No comments yet...</p>    
+                    ) : (
+                        <div className='flex flex-col w-full h-fit gap-3 justify-start items-start'>
+                            {comments.map((comment, index) => (
+                                <div key={comment.id} className='w-full h-fit'>
+                                    <Comment 
+                                        props = {{
+                                            currentUserID: currentUserID,
+                                            postID: postID,
+                                            commentID: comment.commentID,
+                                            commentBody: comment.commentBody,
+                                            commentDate: comment.commentDate,
+                                            authorID: comment.authorID,
+                                            authorDisplayName: comment.authorDisplayName,
+                                            authorUsername: comment.authorUsername,
+                                            authorPhotoURL: comment.authorPhotoURL,
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     {/* 
                         - comments is a subcollection under posts
                         has commentID, commentBody, commentDate, authorID, authorDisplayName, authorUsername, authorPhotoURL
@@ -485,7 +550,7 @@ export default function PostExpanded({ props }) {
             </div>
 
             {/* write comment */}
-            <div id='write-comment' className='mt-2 mb-4 ml-6 mr-6'>
+            <div id='write-comment' className='mt-3 pb-3 pl-6 pr-6'>
                 <form 
                     onSubmit={handleComment}
                     className='flex flex-row items-start justify-center h-full'>
@@ -497,14 +562,21 @@ export default function PostExpanded({ props }) {
                         id="comment-body" 
                         value={commentBody}
                         onChange={(event) => setCommentBody(event.target.value)}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
                         maxLength={100}
+                        onKeyPress={(event => {
+                            if (event.key === 'Enter') {
+                                handleComment(event);
+                            }
+                        })}
                         placeholder='Write a comment...' 
-                        className={`outline-none resize-none border border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${commentBody ? 'h-[80px]' : 'h-[50px]'}`}
+                        className={`outline-none resize-none border border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
                     />
 
                     <button
                         type='submit'
-                        className='flex rounded-full aspect-square w-[40px] h-[40px] mt-1 bg-gray items-center justify-center ml-2 hover:bg-grass hover:text-snow '>
+                        className='flex rounded-full aspect-square w-[40px] h-[40px] mt-1 bg-dark_gray items-center justify-center ml-2 hover:bg-grass hover:text-snow '>
                         <i className='fa-solid fa-paper-plane text-sm'></i>
                     </button>
                 </form>

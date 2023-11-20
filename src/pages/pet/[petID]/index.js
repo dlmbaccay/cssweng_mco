@@ -717,8 +717,6 @@ function PetProfilePage() {
                                                             authorDisplayName: post.authorDisplayName,
                                                             authorUsername: post.authorUsername,
                                                             authorPhotoURL: post.authorPhotoURL,
-                                                            likes: post.likes,
-                                                            comments: post.comments,
                                                             isEdited: post.isEdited,
                                                         }}
                                                     />

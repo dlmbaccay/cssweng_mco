@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import PostSnippet from '../components/PostSnippet'
 import Router from 'next/router'
 import { auth, firestore, googleAuthProvider } from '../lib/firebase'
 import toast from 'react-hot-toast'
