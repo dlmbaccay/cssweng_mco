@@ -612,6 +612,9 @@ function Post() {
                                         <Share 
                                             props={{
                                                 currentUserID: currentUserID,
+                                                currentUserPhotoURL: userPhotoURL,
+                                                currentUserUsername: username,
+                                                currentUserDisplayName: displayName,
                                                 postID: postID,
                                                 postBody: post?.postBody,
                                                 postCategory: post?.postCategory,

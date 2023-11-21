@@ -532,9 +532,12 @@ export default function PostExpanded({ props }) {
                             className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
 
                             <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
-                                <Share 
+                                {currentUser && <Share 
                                     props={{
                                         currentUserID: currentUserID,
+                                        currentUserPhotoURL: currentUser.photoURL,
+                                        currentUserUsername: currentUser.username,
+                                        currentUserDisplayName: currentUser.displayName,
                                         postID: postID,
                                         postBody: postBody,
                                         postCategory: postCategory,
@@ -549,7 +552,7 @@ export default function PostExpanded({ props }) {
                                         taggedPets: taggedPets,
                                         setShowSharePostModal: setShowSharePostModal,
                                     }}
-                                />
+                                />}
                             </Modal>
                         </div>
                     </div>

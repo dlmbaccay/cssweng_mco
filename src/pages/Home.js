@@ -10,6 +10,7 @@ import Image from 'next/image';
 
 import CreatePost from '../components/Post/CreatePost';
 import PostSnippet from '../components/Post/PostSnippet';
+import Repost from '../components/Post/Repost';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 import { createPostModalStyle } from '../lib/modalstyle';
 
@@ -42,31 +43,27 @@ function Home() {
   const [allPostsLoaded, setAllPostsLoaded] = useState(false);
   
   useEffect(() => {
-    setLoading(true);
+      setLoading(true);
 
-    // indexed in query builder
-    const q = query(
-      collection(firestore, "posts"),
-      orderBy("postDate", "desc"),
-      limit(5)
-    )
+      const q = query(
+        collection(firestore, "posts"),
+        orderBy("postDate", "desc"),
+        limit(5)
+      );
 
-    const unsubscribe = onSnapshot(q, 
-        (snapshot) => {
-            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-            
-            setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-            setPosts(newPosts);
-            setLoading(false);
-        },
-        (error) => {
-            console.error("Error fetching posts:", error);
-            setLoading(false);
-        }
-    );
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+          const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+          setPosts(newPosts);
+          setLoading(false);
+      }, (error) => {
+          console.error("Error fetching posts:", error);
+          setLoading(false);
+      });
 
-    return () => unsubscribe();
-  }, []);
+      // Return the cleanup function to unsubscribe from the listener
+      return () => unsubscribe();
+  }, []); // Ensure this effect only runs once on component mount
 
   const fetchMorePosts = async () => {
     if (lastVisible && !loading) {
@@ -110,7 +107,6 @@ function Home() {
     setAllPostsLoaded(false);
     setLoading(false);
   };
-
 
   if (!pageLoading) {
     return (
@@ -195,42 +191,77 @@ function Home() {
                       style={createPostModalStyle}
                   >
                       <CreatePost 
-                        props={{
-                          createType: 'original',
-                          currentUserID: user.uid,
-                          displayName: displayName,
-                          username: username,
-                          userPhotoURL: userPhotoURL,
-                          setShowCreatePostForm: setShowCreatePostForm,
-                        }}
+                          props={{
+                            createType: 'original',
+                            currentUserID: user.uid,
+                            displayName: displayName,
+                            username: username,
+                            userPhotoURL: userPhotoURL,
+                            setShowCreatePostForm: setShowCreatePostForm,
+                          }}
                       />
                   </Modal>
               </div>
 
               <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
                 
-                {posts.map((post, index) => (
-                    <div key={post.id}>
-                      <PostSnippet
-                        props={{
-                          currentUserID: user.uid,
-                          postID: post.id,
-                          postBody: post.postBody,
-                          postCategory: post.postCategory,
-                          postTrackerLocation: post.postTrackerLocation,
-                          postPets: post.postPets,
-                          postDate: post.postDate,
-                          imageUrls: post.imageUrls,
-                          authorID: post.authorID,
-                          authorDisplayName: post.authorDisplayName,
-                          authorUsername: post.authorUsername,
-                          authorPhotoURL: post.authorPhotoURL,
-                          isEdited: post.isEdited,
-                          postType: post.postType,
-                        }}
-                      />
-                    </div>
-                ))}
+                {posts.map((post, index) => {
+                  console.log(`Processing post ${index} with postType: ${post.postType}`);
+
+                  if (post.postType === "original") {
+                      return (
+                        <div key={post.id}>
+                            <PostSnippet
+                                props={{
+                                    currentUserID: user.uid,
+                                    postID: post.id,
+                                    postBody: post.postBody,
+                                    postCategory: post.postCategory,
+                                    postTrackerLocation: post.postTrackerLocation,
+                                    postPets: post.postPets,
+                                    postDate: post.postDate,
+                                    imageUrls: post.imageUrls,
+                                    authorID: post.authorID,
+                                    authorDisplayName: post.authorDisplayName,
+                                    authorUsername: post.authorUsername,
+                                    authorPhotoURL: post.authorPhotoURL,
+                                    isEdited: post.isEdited,
+                                    postType: post.postType,
+                                }}
+                            />
+                        </div>
+                      );
+                  } else if (post.postType === 'repost') {
+                      return (
+                        <div key={post.id}>
+                            <Repost
+                                props={{
+                                  currentUserID: user.uid,
+                                    authorID: post.authorID,
+                                    authorDisplayName: post.authorDisplayName,
+                                    authorUsername: post.authorUsername,
+                                    authorPhotoURL: post.authorPhotoURL,
+                                    id: post.id,
+                                    postDate: post.postDate,
+                                    postType: 'repost',
+                                    postBody: post.postBody,
+                                    isEdited: post.isEdited,
+                                    repostID: post.repostID,
+                                    repostBody: post.repostBody,
+                                    repostCategory: post.repostCategory,
+                                    repostPets: post.repostPets,
+                                    repostDate: post.repostDate,
+                                    repostImageUrls: post.repostImageUrls,
+                                    repostAuthorID: post.repostAuthorID,
+                                    repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                    repostAuthorUsername: post.repostAuthorUsername,
+                                    repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                }}
+                            />
+                        </div>
+                      );
+                  } 
+                })}
 
                 {loading && <div>Loading...</div>}
 
