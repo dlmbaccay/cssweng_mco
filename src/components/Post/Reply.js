@@ -53,10 +53,23 @@ export default function Reply({props}) {
 
     const [showDeleteReplyModal, setShowDeleteReplyModal] = useState(false);
 
-    const handleDeleteReply = (event) => {
+    const handleDeleteReply = async (event) => {
 
-        // Delete reply from firestore
-        firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').doc(replyID).delete();
+        try {
+        // Delete reactions to the reply
+            const reactionsSnapshot = await firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').doc(replyID).collection('reactions').get();
+            for (const reactionDoc of reactionsSnapshot.docs) {
+                await reactionDoc.ref.delete();
+            }
+
+            // Delete the reply itself
+            await firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').doc(replyID).delete();
+
+            toast.success('Reply deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting reply:', error);
+            toast.error('Error occurred while deleting the reply.');
+        }
 
         event.stopPropagation();
         setShowDeleteReplyModal(false);

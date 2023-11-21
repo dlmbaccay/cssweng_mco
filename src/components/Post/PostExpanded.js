@@ -75,47 +75,61 @@ export default function PostExpanded({ props }) {
     };
 
     const handleDeletePost = async () => {
-      
-      // recap: every path created
-      // posts/postID (firestore)
-      // users/userID/posts/postID (firestore)
-      // posts/postID/imageURL (storage)
-      
-      // deleting post from firestore
-      const postRef = firestore.collection('posts').doc(postID);
-      await postRef.delete();
+        try {
+            // Deleting comments, replies, and their reactions associated with the post
+            const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
+            const commentsSnapshot = await commentsRef.get();
+            for (const commentDoc of commentsSnapshot.docs) {
+                // Deleting reactions to each reply of a comment
+                const repliesRef = commentDoc.ref.collection('replies');
+                const repliesSnapshot = await repliesRef.get();
+                for (const replyDoc of repliesSnapshot.docs) {
+                    const replyReactionsSnapshot = await replyDoc.ref.collection('reactions').get();
+                    for (const reactionDoc of replyReactionsSnapshot.docs) {
+                        await reactionDoc.ref.delete();
+                    }
+                    // Delete the reply
+                    await replyDoc.ref.delete();
+                }
 
-      // delete image urls from storage
-      imageUrls.forEach(async (url) => {
-        const imageRef = storage.refFromURL(url);
-        await imageRef.delete();
-      });
-  
-      // delete postID from user posts
-      const userRef = firestore.collection('users').doc(authorID);
-      await userRef.update({
-        posts: arrayRemove(postID)
-      });
+                // Deleting reactions to the comment
+                const commentReactionsSnapshot = await commentDoc.ref.collection('reactions').get();
+                for (const reactionDoc of commentReactionsSnapshot.docs) {
+                    await reactionDoc.ref.delete();
+                }
+                // Delete the comment itself
+                await commentDoc.ref.delete();
+            }
 
-      // delete all comments
-        const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
-        const commentsSnapshot = await commentsRef.get();
-        commentsSnapshot.forEach(async (doc) => {
-            await doc.ref.delete();
-        });
+            // Delete reactions to the post
+            const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+            const reactionsSnapshot = await reactionsRef.get();
+            for (const reactionDoc of reactionsSnapshot.docs) {
+                await reactionDoc.ref.delete();
+            }
 
-        // delete all reactions
-        const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
-        const reactionsSnapshot = await reactionsRef.get();
-        reactionsSnapshot.forEach(async (doc) => {
-            await doc.ref.delete();
-        });
+            // Delete the post from Firestore
+            const postRef = firestore.collection('posts').doc(postID);
+            await postRef.delete();
 
-      // reload page
-      // window.location.reload();
+            // Delete images associated with the post from storage
+            for (const url of imageUrls) {
+                const imageRef = storage.refFromURL(url);
+                await imageRef.delete();
+            }
 
-      toast.success('Post deleted successfully!');
-    }
+            // Remove the post reference from the user's posts
+            const userRef = firestore.collection('users').doc(authorID);
+            await userRef.update({
+                posts: arrayRemove(postID)
+            });
+
+            toast.success('Post deleted successfully!');
+        } catch (error) {
+            
+        }
+    };
+
 
     const handleEditPost = async () => {
 

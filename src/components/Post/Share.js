@@ -62,7 +62,7 @@ export default function Share({props}) {
                         toast.success('Link copied to clipboard!');
                     }}
                 >
-                    <i className='fa-solid fa-link'/>
+                    <i className='fa-solid fa-link pt-1'/>
                     <p>Link</p>
                 </button>
                 
@@ -70,7 +70,7 @@ export default function Share({props}) {
                     className='flex flex-col items-center gap-1 py-3 w-[70px] rounded-md hover:bg-grass hover:text-snow transition-all'
                     onClick={(e) => handleRepost(e)}
                 >
-                    <i className='fa-solid fa-retweet'/>
+                    <i className='fa-solid fa-retweet pt-1'/>
                     <p>Repost</p>
                 </button>
 
@@ -78,7 +78,7 @@ export default function Share({props}) {
                     className='flex flex-col items-center gap- py-3 w-[70px] rounded-md hover:bg-grass hover:text-snow transition-all'
                     onClick={(e) => handleQuote(e)}
                 >
-                    <i className='fa-solid fa-quote-left'/>
+                    <i className='fa-solid fa-quote-left pt-1'/>
                     <p>Quote</p>
                 </button>
             </div>

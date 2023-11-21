@@ -113,6 +113,7 @@ export default function CreatePost({ props }) {
         // create post object
         const post = {
             id: postID,
+            postType: "original",
             postBody,
             postCategory,
             postTrackerLocation,
@@ -160,146 +161,146 @@ export default function CreatePost({ props }) {
     };
 
     return (
-    <form onSubmit={handleSubmit} id='create-post' className='flex flex-col w-full h-full justify-between'>
+        <form onSubmit={handleSubmit} id='create-post' className='flex flex-col w-full h-full justify-between'>
 
-        {/* header */}
-        <div className='flex flex-row'>
-            <h1 className='w-full text-center font-bold'>Create Post</h1>
-            <button onClick={() => setShowCreatePostForm(false)}>
-                <i className='fa-solid fa-xmark'></i>
-            </button>
-        </div>
-
-        {/* category and pets selection */}
-        <div className='flex flex-row justify-center items-center mt-4'>
-            <div className='w-full flex flex-row gap-4'>
-                
-                {createType === 'original' && 
-                    <Select
-                        options={[
-                            {value: 'Default', label: 'Default'},
-                            {value: 'Q&A', label: 'Q&A'},
-                            {value: 'Tips', label: 'Tips'},
-                            {value: 'Pet Needs', label: 'Pet Needs'},
-                            {value: 'Milestones', label: 'Milestones'},
-                            {value: 'Lost Pets', label: 'Lost Pets'},
-                            {value: 'Unknown Owner', label: 'Unknown Owner'},
-                        ]}
-                        value={selectedCategory}
-                        onChange={handleSelectCategory}
-                        placeholder='Category'
-                        className='w-1/3'
-                    />
-                }
-
-                {createType === 'tracker' && 
-                    <Select
-                        options={[
-                            {value: 'Lost Pets', label: 'Lost Pets'},
-                            {value: 'Unknown Owner', label: 'Unknown Owner'},
-                        ]}
-                        value={selectedCategory}
-                        onChange={handleSelectCategory}
-                        placeholder='Category'
-                        className='w-1/3'
-                    />
-                }
-
-                {currentUserPets && (
-                    <Select 
-                        options={currentUserPets.map(pet => ({ value: pet.id, label: pet.petName }))}
-                        value={selectedPets}
-                        onChange={handleSelectPets}
-                        isMulti
-                        placeholder='Pet(s)'
-                        className='w-2/3'
-                    />
-                )}
-            </div>
-        </div>  
-
-        {/* post body */}
-        <div className='h-full mt-4'>
-
-            {selectedCategory && 
-                ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Unknown Owner')) &&
-                        <input 
-                            id='tracker-location'
-                            type='text'
-                            maxLength={50}
-                            value={postTrackerLocation}
-                            onChange={(event) => setPostTrackerLocation(event.target.value)}
-                            placeholder='Last Seen At'
-                            className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
-                        />
-                )    
-            }
-
-            <textarea 
-                id="post-body" 
-                value={postBody}
-                onChange={(event) => setPostBody(event.target.value)}
-                placeholder='What`s on your mind?' 
-                className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full p-4 h-[80%]' 
-            />
-        </div>
-
-        <div className='flex flex-row justify-between'>
-            {/* media */}
-            <div className="image-previews flex flex-row w-full mt-6 mb-6">
-                <div>
-                    <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
-                        <i className="fa-regular fa-image text-3xl"></i>
-                    </label>
-
-                    <input
-                        id="post-images"
-                        type="file"
-                        accept="image/*" // TODO: restrict to images only
-                        multiple
-                        onChange={handleImageUpload}
-                        disabled={isUploadDisabled}
-                        className="hidden"
-                    />
-                </div>
-                
-                <div className='flex flex-row gap-4 w-full ml-4'>
-                    {previewImages.map((imageUrl, index) => (
-                        <div key={index} className="preview-image-container">
-                            <button
-                                type='button'
-                                onClick={() => handleDeleteImage(index)}
-                                className="delete-image-button"
-                            >
-                                <i className='fa-solid fa-xmark' />
-                            </button>
-                            <Image
-                                src={imageUrl}
-                                alt={`Image ${index + 1}`}
-                                width={100}
-                                height={100}
-                                className="preview-image"
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* post button */}
-            <div className='flex items-end w-36'>
-                <button 
-                    type='submit'
-                    className={`
-                        flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-md
-                        transition-all 
-                        ${submitDisabled ? 'bg-pistachio opacity-50 cursor-default' : 'cursor-pointer hover:bg-pistachio'}`}
-                >
-                    <p className='font-bold'>Post</p> 
+            {/* header */}
+            <div className='flex flex-row'>
+                <h1 className='w-full text-center font-bold'>Create Post</h1>
+                <button onClick={() => setShowCreatePostForm(false)}>
+                    <i className='fa-solid fa-xmark'></i>
                 </button>
             </div>
-        </div>
 
-        
-    </form>
+            {/* category and pets selection */}
+            <div className='flex flex-row justify-center items-center mt-4'>
+                <div className='w-full flex flex-row gap-4'>
+                    
+                    {createType === 'original' && 
+                        <Select
+                            options={[
+                                {value: 'Default', label: 'Default'},
+                                {value: 'Q&A', label: 'Q&A'},
+                                {value: 'Tips', label: 'Tips'},
+                                {value: 'Pet Needs', label: 'Pet Needs'},
+                                {value: 'Milestones', label: 'Milestones'},
+                                {value: 'Lost Pets', label: 'Lost Pets'},
+                                {value: 'Unknown Owner', label: 'Unknown Owner'},
+                            ]}
+                            value={selectedCategory}
+                            onChange={handleSelectCategory}
+                            placeholder='Category'
+                            className='w-1/3'
+                        />
+                    }
+
+                    {createType === 'tracker' && 
+                        <Select
+                            options={[
+                                {value: 'Lost Pets', label: 'Lost Pets'},
+                                {value: 'Unknown Owner', label: 'Unknown Owner'},
+                            ]}
+                            value={selectedCategory}
+                            onChange={handleSelectCategory}
+                            placeholder='Category'
+                            className='w-1/3'
+                        />
+                    }
+
+                    {currentUserPets && (
+                        <Select 
+                            options={currentUserPets.map(pet => ({ value: pet.id, label: pet.petName }))}
+                            value={selectedPets}
+                            onChange={handleSelectPets}
+                            isMulti
+                            placeholder='Pet(s)'
+                            className='w-2/3'
+                        />
+                    )}
+                </div>
+            </div>  
+
+            {/* post body */}
+            <div className='h-full mt-4'>
+
+                {selectedCategory && 
+                    ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Unknown Owner')) &&
+                            <input 
+                                id='tracker-location'
+                                type='text'
+                                maxLength={50}
+                                value={postTrackerLocation}
+                                onChange={(event) => setPostTrackerLocation(event.target.value)}
+                                placeholder='Last Seen At'
+                                className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
+                            />
+                    )    
+                }
+
+                <textarea 
+                    id="post-body" 
+                    value={postBody}
+                    onChange={(event) => setPostBody(event.target.value)}
+                    placeholder='What`s on your mind?' 
+                    className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full p-4 h-[80%]' 
+                />
+            </div>
+
+            <div className='flex flex-row justify-between'>
+                {/* media */}
+                <div className="image-previews flex flex-row w-full mt-6 mb-6">
+                    <div>
+                        <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
+                            <i className="fa-regular fa-image text-3xl"></i>
+                        </label>
+
+                        <input
+                            id="post-images"
+                            type="file"
+                            accept="image/*" // TODO: restrict to images only
+                            multiple
+                            onChange={handleImageUpload}
+                            disabled={isUploadDisabled}
+                            className="hidden"
+                        />
+                    </div>
+                    
+                    <div className='flex flex-row gap-4 w-full ml-4'>
+                        {previewImages.map((imageUrl, index) => (
+                            <div key={index} className="preview-image-container">
+                                <button
+                                    type='button'
+                                    onClick={() => handleDeleteImage(index)}
+                                    className="delete-image-button"
+                                >
+                                    <i className='fa-solid fa-xmark' />
+                                </button>
+                                <Image
+                                    src={imageUrl}
+                                    alt={`Image ${index + 1}`}
+                                    width={100}
+                                    height={100}
+                                    className="preview-image"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* post button */}
+                <div className='flex items-end w-36'>
+                    <button 
+                        type='submit'
+                        className={`
+                            flex items-center justify-center bg-xanthous text-snow w-full h-[39px] rounded-md
+                            transition-all 
+                            ${submitDisabled ? 'bg-pistachio opacity-50 cursor-default' : 'cursor-pointer hover:bg-pistachio'}`}
+                    >
+                        <p className='font-bold'>Post</p> 
+                    </button>
+                </div>
+            </div>
+
+            
+        </form>
     )
 }
