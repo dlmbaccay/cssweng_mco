@@ -184,10 +184,12 @@ function Post() {
 
     const handleEditPost = async () => {
 
-      if (!editedPostBody) {
-        toast.error('Bark up some words for your post!');
-        return;
-      }
+        if (post?.postType === 'original') {
+            if (!editedPostBody) {
+            toast.error('Bark up some words for your post!');
+            return;
+            }
+        }
 
       if (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') {
         if (!editedPostTrackerLocation) {
