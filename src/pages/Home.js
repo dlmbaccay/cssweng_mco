@@ -39,7 +39,8 @@ function Home() {
   const [posts, setPosts] = useState([]);
   const [lastVisible, setLastVisible] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [allPostsLoaded, setAllPostsLoaded] = useState(false);
+  
   useEffect(() => {
     setLoading(true);
 
@@ -78,15 +79,38 @@ function Home() {
         );
 
         const querySnapshot = await getDocs(nextQuery);
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        setLastVisible(newLastVisible);
 
-        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        // Update state based on whether new posts are fetched
+        if (newPosts.length === 0) {
+          setAllPostsLoaded(true);
+        } else {
+          setLastVisible(newLastVisible);
+          setPosts(prevPosts => [...prevPosts, ...newPosts]);
+          setAllPostsLoaded(false);
+        }
 
-        setPosts(prevPosts => [...prevPosts, ...newPosts]);
         setLoading(false);
     }
   };
+
+  const refreshPosts = async () => {
+    setLoading(true);
+    const refreshQuery = query(
+      collection(firestore, "posts"),
+      orderBy("postDate", "desc"),
+      limit(5)
+    );
+
+    const querySnapshot = await getDocs(refreshQuery);
+    const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setPosts(refreshedPosts);
+    setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    setAllPostsLoaded(false);
+    setLoading(false);
+  };
+
 
   if (!pageLoading) {
     return (
@@ -146,7 +170,7 @@ function Home() {
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
               {/* create post */}
               <div 
-                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md sm:w-[450px] md:w-[550px] lg:w-[650px] max-sm:w-[350px] max-sm:mr-[50px] p-2 gap-2'>
+                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md  p-2 gap-2'>
 
                   {userPhotoURL && <Image
                     src={userPhotoURL}
@@ -183,7 +207,7 @@ function Home() {
                   </Modal>
               </div>
 
-              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8 space-y-4 sm:scale-75 sm:h-[98px] max-sm:scale-50 max-sm:h-[30px] max-sm:-translate-x-6 md:xl:scale-100'>
+              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
                 
                 {posts.map((post, index) => (
                     <div key={post.id}>
@@ -210,9 +234,16 @@ function Home() {
 
                 {loading && <div>Loading...</div>}
 
-                {lastVisible && (
+                {allPostsLoaded ? (
                   <button
-                    className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
+                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                    onClick={refreshPosts}
+                  >
+                    Refresh Posts
+                  </button>
+                ) : (
+                  <button
+                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
                     onClick={fetchMorePosts}
                     disabled={loading}
                   >

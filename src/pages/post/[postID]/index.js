@@ -371,7 +371,7 @@ function Post() {
            <div className='h-full w-full flex flex-col items-center justify-start overflow-y-scroll'>
                 {/* post */}
                 <div className='w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
-                    <div className='w-full h-fit rounded-lg mt-2 pr-6 pl-6 flex flex-col'>
+                    <div className='w-full rounded-lg mt-2 pr-6 pl-6 flex flex-col'>
                         {/* Header */}
                         <div id="post-header" className='flex flex-row justify-between'>
 

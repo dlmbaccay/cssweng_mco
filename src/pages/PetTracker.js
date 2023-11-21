@@ -43,11 +43,13 @@ export default function PetTracker() {
     const [lostPets, setLostPets] = useState([]);
     const [lastVisibleLost, setLastVisibleLost] = useState(null);
     const [loadingLost, setLoadingLost] = useState(false);
+    const [allLostPostsLoaded, setAllLostPostsLoaded] = useState(false);
 
     // States for Found Pets
     const [foundPets, setFoundPets] = useState([]);
     const [lastVisibleFound, setLastVisibleFound] = useState(null);
     const [loadingFound, setLoadingFound] = useState(false);
+    const [allFoundPostsLoaded, setAllFoundPostsLoaded] = useState(false);
 
     // Initial fetch for Lost Pets & Unknown Owner
     useEffect(() => {
@@ -108,18 +110,24 @@ export default function PetTracker() {
         if (lastVisibleLost && !loadingLost) {
             setLoadingLost(true);
             const nextQuery = query(
-            collection(firestore, "posts"), 
-            where("postCategory", "in", ["Lost Pets", "Unknown Owner"]),
-            orderBy("postDate", "desc"), 
-            startAfter(lastVisibleLost), 
-            limit(3)
+                collection(firestore, "posts"), 
+                where("postCategory", "in", ["Lost Pets", "Unknown Owner"]),
+                orderBy("postDate", "desc"), 
+                startAfter(lastVisibleLost), 
+                limit(5)
             );
             const querySnapshot = await getDocs(nextQuery);
             const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
             setLastVisibleLost(newLastVisible);
             const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            setLostPets(prevPosts => [...prevPosts, ...newPosts]);
+            if (newPosts.length === 0) {
+                setAllLostPostsLoaded(true);
+            } else {
+                setLostPets(prevPosts => [...prevPosts, ...newPosts]);
+                setAllLostPostsLoaded(false);
+            }
+
             setLoadingLost(false);
         }
     };
@@ -129,20 +137,62 @@ export default function PetTracker() {
         if (lastVisibleFound && !loadingFound) {
             setLoadingFound(true);
             const nextQuery = query(
-            collection(firestore, "posts"), 
-            where("postCategory", "==", "Retrieved Pets"),
-            orderBy("postDate", "desc"), 
-            startAfter(lastVisibleFound), 
-            limit(5)
+                collection(firestore, "posts"), 
+                where("postCategory", "==", "Retrieved Pets"),
+                orderBy("postDate", "desc"), 
+                startAfter(lastVisibleFound), 
+                limit(5)
             );
             const querySnapshot = await getDocs(nextQuery);
             const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
             setLastVisibleFound(newLastVisible);
             const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(post => post.postCategory === "Found Pets");
 
-            setFoundPets(prevPosts => [...prevPosts, ...newPosts]);
+            if (newPosts.length === 0) {
+                setAllFoundPostsLoaded(true);
+            } else {
+                setFoundPets(prevPosts => [...prevPosts, ...newPosts]);
+                setAllFoundPostsLoaded(false);
+            }
+
             setLoadingFound(false);
         }
+    };
+
+    // Function to refresh Lost Pets
+    const refreshLostPets = async () => {
+        setLoadingLost(true);
+        const refreshQuery = query(
+            collection(firestore, "posts"), 
+            where("postCategory", "in", ["Lost Pets", "Unknown Owner"]),
+            orderBy("postDate", "desc"), 
+            limit(5)
+        );
+
+        const querySnapshot = await getDocs(refreshQuery);
+        const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setLostPets(refreshedPosts);
+        setLastVisibleLost(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setAllLostPostsLoaded(false);
+        setLoadingLost(false);
+    };
+
+    // Function to refresh Found Pets
+    const refreshFoundPets = async () => {
+        setLoadingFound(true);
+        const refreshQuery = query(
+            collection(firestore, "posts"), 
+            where("postCategory", "==", "Retrieved Pets"),
+            orderBy("postDate", "desc"), 
+            limit(5)
+        );
+
+        const querySnapshot = await getDocs(refreshQuery);
+        const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setFoundPets(refreshedPosts);
+        setLastVisibleFound(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setAllFoundPostsLoaded(false);
+        setLoadingFound(false);
     };
 
     if (!pageLoading) {
@@ -259,69 +309,82 @@ export default function PetTracker() {
                         <div className='w-full h-full justify-start items-center flex flex-col mb-16 gap-8'>
                             {activeContainer === 'Lost Pets' && (
                                 <div className='w-full flex flex-col justify-start gap-8 items-center'>
-                                {lostPets.map((post, index) => (
-                                    <PostSnippet key={post.id}
-                                    props={{
-                                        currentUserID: user.uid,
-                                        postID: post.id,
-                                        postBody: post.postBody,
-                                        postCategory: post.postCategory,
-                                        postTrackerLocation: post.postTrackerLocation,
-                                        postPets: post.postPets,
-                                        postDate: post.postDate,
-                                        imageUrls: post.imageUrls,
-                                        authorID: post.authorID,
-                                        authorDisplayName: post.authorDisplayName,
-                                        authorUsername: post.authorUsername,
-                                        authorPhotoURL: post.authorPhotoURL,
-                                        isEdited: post.isEdited,
-                                        postType: post.postType,
-                                    }}
-                                    />
-                                ))}
-                                {loadingLost && <div>Loading...</div>}
-                                {lastVisibleLost && (
-                                    <button 
-                                    onClick={fetchMoreLostPets} 
-                                    disabled={loadingLost} 
-                                    className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'>
-                                        Load More
-                                    </button>
-                            
-                                )}
+                                    {lostPets.map((post, index) => (
+                                        <PostSnippet key={post.id}
+                                        props={{
+                                            currentUserID: user.uid,
+                                            postID: post.id,
+                                            postBody: post.postBody,
+                                            postCategory: post.postCategory,
+                                            postTrackerLocation: post.postTrackerLocation,
+                                            postPets: post.postPets,
+                                            postDate: post.postDate,
+                                            imageUrls: post.imageUrls,
+                                            authorID: post.authorID,
+                                            authorDisplayName: post.authorDisplayName,
+                                            authorUsername: post.authorUsername,
+                                            authorPhotoURL: post.authorPhotoURL,
+                                            isEdited: post.isEdited,
+                                            postType: post.postType,
+                                        }}
+                                        />
+                                    ))}
+                                    {loadingLost && <div>Loading...</div>}
+                                    {!allLostPostsLoaded && lastVisibleLost && (
+                                        <button 
+                                        onClick={fetchMoreLostPets} 
+                                        disabled={loadingLost} 
+                                        className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'>
+                                            Load More
+                                        </button>
+                                    )}
+                                    {allLostPostsLoaded && (
+                                        <button 
+                                        onClick={refreshLostPets} 
+                                        className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'>
+                                            Refresh Posts
+                                        </button>
+                                    )}
                                 </div>
                             )}
                             {activeContainer === 'Retrieved Pets' && (
                                 <div className='w-full flex flex-col justify-start gap-8 items-center'>
-                                {foundPets.map((post, index) => (
-                                    <PostSnippet key={post.id}
-                                    props={{
-                                        currentUserID: user.uid,
-                                        postID: post.id,
-                                        postBody: post.postBody,
-                                        postCategory: post.postCategory,
-                                        postTrackerLocation: post.postTrackerLocation,
-                                        postPets: post.postPets,
-                                        postDate: post.postDate,
-                                        imageUrls: post.imageUrls,
-                                        authorID: post.authorID,
-                                        authorDisplayName: post.authorDisplayName,
-                                        authorUsername: post.authorUsername,
-                                        authorPhotoURL: post.authorPhotoURL,
-                                        isEdited: post.isEdited,
-                                        postType: post.postType,
-                                    }}
-                                    />
-                                ))}
-                                {loadingFound && <div>Loading...</div>}
-                                {lastVisibleFound && (
-                                    <button 
-                                    onClick={fetchMoreFoundPets} 
-                                    disabled={loadingLost} 
-                                    className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'>
-                                        Load More
-                                    </button>
-                                )}
+                                    {foundPets.map((post, index) => (
+                                        <PostSnippet key={post.id}
+                                        props={{
+                                            currentUserID: user.uid,
+                                            postID: post.id,
+                                            postBody: post.postBody,
+                                            postCategory: post.postCategory,
+                                            postTrackerLocation: post.postTrackerLocation,
+                                            postPets: post.postPets,
+                                            postDate: post.postDate,
+                                            imageUrls: post.imageUrls,
+                                            authorID: post.authorID,
+                                            authorDisplayName: post.authorDisplayName,
+                                            authorUsername: post.authorUsername,
+                                            authorPhotoURL: post.authorPhotoURL,
+                                            isEdited: post.isEdited,
+                                            postType: post.postType,
+                                        }}
+                                        />
+                                    ))}
+                                    {loadingFound && <div>Loading...</div>}
+                                    {!allFoundPostsLoaded && lastVisibleFound && (
+                                        <button 
+                                        onClick={fetchMoreFoundPets} 
+                                        disabled={loadingFound} 
+                                        className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'>
+                                            Load More
+                                        </button>
+                                    )}
+                                    {allFoundPostsLoaded && (
+                                        <button 
+                                        onClick={refreshFoundPets} 
+                                        className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'>
+                                            Refresh Posts
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
