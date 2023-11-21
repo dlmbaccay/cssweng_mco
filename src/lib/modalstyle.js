@@ -206,3 +206,22 @@ export const reactionsCountModal = {
     backgroundColor: '#FAFAFA',
   },
 }
+
+export const viewImageModalStyle = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+  },
+  content: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '70%', // width values: 'fit-content', 'auto', '100%', '50%', '30px', '30%' 
+    height: '80%',
+    overflow: 'auto',
+    padding: '20px',
+    borderRadius: '8px',
+    backgroundColor: '#FAFAFA',
+  },
+}
