@@ -717,6 +717,7 @@ function PetProfilePage() {
                                                             authorUsername: post.authorUsername,
                                                             authorPhotoURL: post.authorPhotoURL,
                                                             isEdited: post.isEdited,
+                                                            postType: post.postType,
                                                         }}
                                                     />
                                                 </div>

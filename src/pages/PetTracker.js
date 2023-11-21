@@ -275,6 +275,7 @@ export default function PetTracker() {
                                         authorUsername: post.authorUsername,
                                         authorPhotoURL: post.authorPhotoURL,
                                         isEdited: post.isEdited,
+                                        postType: post.postType,
                                     }}
                                     />
                                 ))}
@@ -308,6 +309,7 @@ export default function PetTracker() {
                                         authorUsername: post.authorUsername,
                                         authorPhotoURL: post.authorPhotoURL,
                                         isEdited: post.isEdited,
+                                        postType: post.postType,
                                     }}
                                     />
                                 ))}

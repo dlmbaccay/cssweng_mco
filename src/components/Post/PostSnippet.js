@@ -31,7 +31,7 @@ export default function PostSnippet({ props }) {
         postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername,
-        authorPhotoURL, isEdited
+        authorPhotoURL, isEdited, postType
     } = props 
 
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
