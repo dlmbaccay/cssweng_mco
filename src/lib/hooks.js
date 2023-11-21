@@ -9,6 +9,7 @@ import { set } from 'react-hook-form';
 export function useUserData() {
   const [user] = useAuthState(auth);
 
+  const [currentUserID, setCurrentUserID] = useState(null);
   const [username, setUsername] = useState(null);
   const [description, setDescription] = useState(null);
   const [displayName, setDisplayName] = useState(null);
@@ -28,6 +29,7 @@ export function useUserData() {
   if (user) {
     const userRef = firestore.collection('users').doc(user.uid);
     unsubscribe = userRef.onSnapshot((doc) => {
+      setCurrentUserID(user.uid);
       setUsername(doc.data()?.username);
       setUserPhotoURL(doc.data()?.photoURL);
       setDescription(doc.data()?.description);
@@ -36,6 +38,7 @@ export function useUserData() {
     });
 
   } else {
+    setCurrentUserID(null);
     setUsername(null);
     setUserPhotoURL(null);
     setDescription(null);
@@ -46,7 +49,7 @@ export function useUserData() {
   return unsubscribe;
 }, [user]);
 
-  return { user, username, description, email, displayName, userPhotoURL };
+  return { user, username, description, email, displayName, userPhotoURL, currentUserID };
 }
 
 export function usePetData(userId) {

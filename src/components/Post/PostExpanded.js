@@ -130,7 +130,6 @@ export default function PostExpanded({ props }) {
         }
     };
 
-
     const handleEditPost = async () => {
 
       if (!editedPostBody) {
@@ -772,6 +771,5 @@ export default function PostExpanded({ props }) {
                 </form>
             </div>  
         </div>
-      
     )
 }
