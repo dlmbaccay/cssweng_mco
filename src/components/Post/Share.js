@@ -19,11 +19,6 @@ export default function Share({props}) {
     const handleRepost = async (e) => {
         e.preventDefault();
 
-        if (shareBody.trim() === '') {
-            toast.error('Caption is empty!');
-            return;
-        }
-
         setReposting(true);
         toast.loading('Reposting...');
 
@@ -95,7 +90,7 @@ export default function Share({props}) {
 
             <div className='flex flex-row w-full items-center mt-3 mb-2 text-lg gap-4'>
                 <button 
-                    className={`bg-black text-[#FAFAFA] flex flex-row gap-2 w-full items-center h-10 justify-center font-shining rounded-md transition-all ${(reposting || shareBody === '')? 'cursor-not-allowed opacity-60' : 'hover:bg-grass hover:text-pale_yellow'}`}
+                    className={`bg-black text-[#FAFAFA] flex flex-row gap-2 w-full items-center h-10 justify-center font-shining rounded-md transition-all ${(reposting)? 'cursor-not-allowed opacity-60' : 'hover:bg-grass hover:text-pale_yellow'}`}
                     onClick={(e) => handleRepost(e)}
                 >
                     <i className='fa-solid fa-retweet'/>

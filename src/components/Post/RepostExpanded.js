@@ -119,11 +119,6 @@ export default function RepostExpanded({props}) {
         e.preventDefault();
 
         toast.loading('Editing post...');
-        
-        if (editedPostBody.trim() === '') {
-            toast.error('Post body is empty!');
-            return;
-        }
 
         const postRef = firestore.collection('posts').doc(postID);
         await postRef.update({
