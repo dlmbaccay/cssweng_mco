@@ -385,7 +385,7 @@ export default function PostExpanded({ props }) {
                             <Image src={imageUrls[currentImageIndex]} alt="post image" 
                                 layout='fill'
                                 objectFit='contain'
-                                className='rounded-lg bg-black cursor-pointer'
+                                className='rounded-lg cursor-pointer'
                                 onClick={() => setViewImage(true)}
                             />
 
