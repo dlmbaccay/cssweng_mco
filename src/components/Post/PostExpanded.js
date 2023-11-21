@@ -16,7 +16,7 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal, viewImageModalStyle } from '../../lib/modalstyle';
 import Comment from './Comment';
 import Reactions from './Reactions';
 
@@ -273,6 +273,8 @@ export default function PostExpanded({ props }) {
 
     const [showReactionsModal, setShowReactionsModal] = useState(false);
 
+    const [viewImage, setViewImage] = useState(false);
+
     return (
         <div className='w-full h-full flex flex-col'>
             {/* expanded controls */}
@@ -383,8 +385,21 @@ export default function PostExpanded({ props }) {
                             <Image src={imageUrls[currentImageIndex]} alt="post image" 
                                 layout='fill'
                                 objectFit='contain'
-                                className='rounded-lg'
+                                className='rounded-lg bg-black cursor-pointer'
+                                onClick={() => setViewImage(true)}
                             />
+
+                            {viewImage && (
+                                <Modal isOpen={viewImage} onRequestClose={() => setViewImage(false)} className='flex flex-col items-center justify-center outline-none' style={viewImageModalStyle}>
+                                    <div className='flex flex-col items-center justify-center w-full h-full gap-4'>                                        
+                                        <Image src={imageUrls[currentImageIndex]} alt="post image"
+                                            layout='fill'
+                                            objectFit='contain'
+                                            className='rounded-lg bg-black'
+                                        />
+                                    </div>
+                                </Modal>
+                            )}
                         </div>
                     }
                 </div>

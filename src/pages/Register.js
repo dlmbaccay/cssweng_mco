@@ -187,15 +187,15 @@ export default function Register() {
 
 function PostShowcase() {
 
-    const authorDisplayName = 'Barker';
-    const authorUsername = 'barknplay';
+    const authorDisplayName = 'Pooch';
+    const authorUsername = 'pawsomepooch';
     const authorPhotoURL = '/images/user1-image.png';
-    const postDate = '23/9/6 at 16:30';
-    const postBody = 'Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.';
-    const imageUrls = ['/images/post1-image.png'];
+    const postDate = '31/11/6 at 21:00';
+    const postBody = 'Whisker Wonderland! 🐾🌿 Playtime in the park with our curious cats. Watching them explore and frolic is pure joy! #CatsofthePark #PurrfectDay';
+    const imageUrls = ['/images/sample-user2-post.png'];
 
     return (
-        <div className='shadow-sm hover:shadow-lg bg-snow w-[650px] h-[500px] rounded-3xl p-6 flex flex-col'>
+        <div className='shadow-sm bg-snow w-[650px] h-fit rounded-3xl p-6 flex flex-col'>
             {/* Header */}
             <div id="post-header" className='flex flex-row'>
 
@@ -217,9 +217,9 @@ function PostShowcase() {
                       </div>
 
                       {/* Username */}
-                      <Link href={'/user/' + authorUsername} id='display-name' className='hover:text-grass hover:font-semibold transition-all'>
+                      <div id='display-name'>
                         <p>@{authorUsername}</p>
-                      </Link>
+                      </div>
                     </div>
       
                     {/* Publish Date */}
@@ -233,45 +233,18 @@ function PostShowcase() {
             {/* Body */}
             <div id='post-body' className='mt-4 flex flex-col'>
               <div id='post-text'>
-                <p className='whitespace-pre-line line-clamp-1 overflow-hidden'>{postBody}</p>
+                <p className='whitespace-pre-line text-justify'>{postBody}</p>
               </div>
               
               {/* Image Carousel */}
               <div id="post-image" className='mt-4 h-[310px] w-auto flex items-center justify-center relative'>
                 <Image src={imageUrls[0]} alt="post image" 
                   layout='fill'
-                  objectFit='contain'
+                  objectFit='cover'
                   className='rounded-lg'
                   />
               </div>
             </div>
-
-            {/* Footer */}
-            <div id='post-footer' className='mt-4 flex flex-row w-full justify-between relative'>
-              
-              <div id="left" className='flex flex-row gap-4'>
-                <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                  <i className="fa-solid fa-heart hover:text-grass hover:scale- hover:cursor-pointer" 
-                  ></i>
-                  <p>0</p>
-                </div>
-                
-                <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
-                  <i className="fa-solid fa-comment hover:text-grass hover:scale- hover:cursor-pointer"></i>
-                  <p>0</p>
-                </div>
-
-                <div id="share-control">
-                  <i className="fa-solid fa-share-nodes hover:text-grass hover:scale- hover:cursor-pointer"></i>
-                </div>
-              </div>
-
-              <div id="right" className='flex flex-row gap-4'>
-                <div id='bookmark-control'>
-                  <i className="fa-solid fa-bookmark hover:text-grass hover:scale- hover:cursor-pointer"></i>
-                </div>
-            </div>
-          </div>
         </div>
     )
 }
