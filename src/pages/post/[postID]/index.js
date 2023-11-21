@@ -260,7 +260,7 @@ function Post() {
         return () => {
             unsubscribe();
         }
-    }, []);
+    }, [currentUserID]);
 
     // get comments
     const [comments, setComments] = useState([]);
@@ -284,6 +284,8 @@ function Post() {
             unsubscribe();
         }
     }, []);
+
+    
 
     const [commentBody, setCommentBody] = useState('');
 
@@ -340,7 +342,7 @@ function Post() {
           />}
         </div>
 
-        <div className='w-full bg-dark_gray'>            
+        <div className='w-full bg-dark_gray flex flex-col items-center justify-start'>            
             {/* search and logo bar */}
             <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
                 <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
@@ -366,12 +368,10 @@ function Post() {
                 </div>
             </div>  
 
-            {/* main container */}
-            <div className='h-full w-full overflow-y-scroll'>
-                <div className='w-full h-full flex flex-col'>
-                    <div
-                        className='w-full h-full rounded-lg mt-2 pr-6 pl-6 flex flex-col overflow-y-auto'>
-
+           <div className='h-full w-full flex flex-col items-center justify-start overflow-y-scroll'>
+                {/* post */}
+                <div className='w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
+                    <div className='w-full h-fit rounded-lg mt-2 pr-6 pl-6 flex flex-col'>
                         {/* Header */}
                         <div id="post-header" className='flex flex-row justify-between'>
 
@@ -471,7 +471,7 @@ function Post() {
                         </div>
 
                         {/* Footer */}
-                        <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative border-b border-dark_gray'>
+                        <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative'>
                             <div id="left" className='flex flex-row gap-4'>
                                 <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
                                     {currentUserReaction === '' && 
@@ -757,23 +757,61 @@ function Post() {
                         </div>
                         </div>
 
-                        {/* Reactions */}
-                        <div className='w-fit text-sm mt-3 hover:underline cursor-pointer' onClick={() => setShowReactionsModal(true)}>
-                            View Reactions...
+                        {/* Reactions Button */}
+                        <div className='flex flex-row text-sm justify-between'>
+                            <button className='hover:underline' onClick={() => setShowReactionsModal(true)}>
+                                View Reactions
+                                
+                                
+                                <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
 
-                            <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+                                    <Reactions props={{
+                                        postID: postID,
+                                        setShowReactionsModal: setShowReactionsModal,
+                                        }} 
+                                    />
 
-                                <Reactions props={{
-                                    postID: postID,
-                                    setShowReactionsModal: setShowReactionsModal,
-                                    }} 
-                                />
-
-                            </Modal>
+                                </Modal>
+                            </button>
                         </div>
 
+                        {/* write comment */}
+                        <div id='write-comment' className='w-full mt-3 mb-3'>
+                            <form 
+                                onSubmit={handleComment}
+                                className='flex flex-row items-start justify-center w-full h-full'>
+                                <div className='flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
+                                    {userPhotoURL && <Image src={userPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>}
+                                </div>
+
+                                <textarea 
+                                    id="comment-body" 
+                                    value={commentBody}
+                                    onChange={(event) => setCommentBody(event.target.value)}
+                                    onFocus={() => setIsFocused(true)}
+                                    onBlur={() => setIsFocused(false)}
+                                    maxLength={100}
+                                    onKeyDown={(event => {
+                                        if (event.key === 'Enter') {
+                                            handleComment(event);
+                                        }
+                                    })}
+                                    placeholder='Write a comment...' 
+                                    className={`outline-none resize-none border bg-[#f5f5f5] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
+                                />
+
+                                <button
+                                    type='submit'
+                                    className='flex rounded-full aspect-square w-[40px] h-[40px] mt-1 bg-dark_gray items-center justify-center ml-2 hover:bg-grass hover:text-snow '>
+                                    <i className='fa-solid fa-paper-plane text-sm'></i>
+                                </button>
+                            </form>
+                        </div>  
+
+                        
+
                         {/* Comments */}
-                        <div id='post-comments' className='mt-3 mb-4 flex h-full flex-col w-full justify-between relative'>
+                        <div id='post-comments' className='mt-3 mb-3 flex h-full flex-col w-full justify-between relative'>
                             
                             {comments.length === 0 ? (
                                 <div className='flex text-sm'>
@@ -786,9 +824,9 @@ function Post() {
                                             <Comment 
                                                 props = {{
                                                     currentUserID: currentUserID,
-                                                    currentUserPhotoURL: currentUser.photoURL,
-                                                    currentUserUsername: currentUser.username,
-                                                    currentUserDisplayName: currentUser.displayName,
+                                                    currentUserPhotoURL: userPhotoURL,
+                                                    currentUserUsername: username,
+                                                    currentUserDisplayName: displayName,
                                                     postID: postID,
                                                     isEdited: comment.isEdited,
                                                     commentID: comment.commentID,
@@ -814,41 +852,10 @@ function Post() {
 
                         </div>
                     </div>
-
-                    {/* write comment */}
-                    <div id='write-comment' className='mt-3 pb-3 pl-6 pr-6'>
-                        <form 
-                            onSubmit={handleComment}
-                            className='flex flex-row items-start justify-center h-full'>
-                            <div className='flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
-                                {userPhotoURL && <Image src={userPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>}
-                            </div>
-
-                            <textarea 
-                                id="comment-body" 
-                                value={commentBody}
-                                onChange={(event) => setCommentBody(event.target.value)}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setIsFocused(false)}
-                                maxLength={100}
-                                onKeyDown={(event => {
-                                    if (event.key === 'Enter') {
-                                        handleComment(event);
-                                    }
-                                })}
-                                placeholder='Write a comment...' 
-                                className={`outline-none resize-none border bg-[#f5f5f5] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
-                            />
-
-                            <button
-                                type='submit'
-                                className='flex rounded-full aspect-square w-[40px] h-[40px] mt-1 bg-dark_gray items-center justify-center ml-2 hover:bg-grass hover:text-snow '>
-                                <i className='fa-solid fa-paper-plane text-sm'></i>
-                            </button>
-                        </form>
-                    </div>  
                 </div>
-            </div>
+
+                
+            </div> 
         </div>
     </div>      
     )
