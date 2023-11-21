@@ -146,14 +146,14 @@ export default function Login() {
     }
             
     return (
-        <div className='h-screen
-            bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] 
-            flex flex-col justify-center items-center 
-            lg:flex-row lg:gap-32'>
+        <div className='h-screen bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] flex flex-col justify-center items-center 
+                    lg:flex-row lg:gap-32
+                    max-md:gap-20 
+                    max-sm:gap-5 max-sm:p-4'>
 
-            <div id="login" className='bg-jasmine drop-shadow-md w-[500px] h-[500px] rounded-3xl flex pl-12 pr-12 flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine drop-shadow-md max-w-[500px] h-[500px] rounded-3xl flex px-12 max-sm:px-8 flex-col justify-center items-center'>
 
-                <h1 className='text-6xl font-bold font-shining mb-4 text-grass'>BantayBuddy</h1>
+                <h1 className='text-6xl font-bold font-shining mb-3 text-grass max-sm:text-4xl'>BantayBuddy</h1>
                 
                 <input 
                     type="text" 
@@ -167,11 +167,11 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value.trim())}
                     placeholder='Password'
-                    className='bg-light_yellow rounded-xl mt-3 mb-3 p-4 w-full h-12 text-lg font-semibold outline-none' />
+                    className='bg-light_yellow rounded-xl mt-3 mb-3 p-4 w-full h-12 text-lg font-semibold outline-none ' />
                 
                 <p 
                     onClick={handleForgotPassword}
-                    className='text-sm font-semibold cursor-pointer text-gray-600 hover:text-black mb-3'>
+                    className='text-sm mt-3 font-semibold cursor-pointer text-gray-600 hover:text-black mb-3'>
                     Forgot Password?
                 </p>
 
@@ -197,7 +197,7 @@ export default function Login() {
                 </div>
             </div>            
 
-            <div id="showcase" className="hidden w-fit h-fit rounded-lg drop-shadow-md lg:flex" >
+            <div id="showcase" className=" hidden w-fit h-fit rounded-lg drop-shadow-md lg:flex md:space-x-5" >
                 <PostShowcase />
             </div>
         </div>
@@ -214,7 +214,7 @@ function PostShowcase() {
     const imageUrls = ['/images/post1-image.png'];
 
     return (
-        <div className='shadow-sm hover:shadow-lg bg-snow w-[650px] h-[500px] rounded-3xl p-6 flex flex-col'>
+        <div className='shadow-sm hover:shadow-lg bg-snow max-w-[650px] max-h-[500px] rounded-3xl p-6 flex flex-col'>
             {/* Header */}
             <div id="post-header" className='flex flex-row'>
 

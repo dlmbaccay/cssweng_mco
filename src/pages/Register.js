@@ -106,15 +106,14 @@ export default function Register() {
     }
 
     return (
-        <div className='
-            h-screen
-            bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] 
-            flex flex-col justify-center items-center 
-            lg:flex-row lg:gap-32'>
+        <div className='h-screen bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] flex flex-col justify-center items-center 
+            lg:flex-row lg:gap-32
+            max-md:gap-20 
+            max-sm:gap-5 max-sm:p-4'>
 
-            <div id="login" className='bg-jasmine drop-shadow-md w-[500px] h-[500px] rounded-3xl pl-12 pr-12 flex flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine drop-shadow-md max-w-[500px] h-[500px] rounded-3xl flex px-12 max-sm:px-8 flex-col justify-center items-center'>
                 <div>
-                    <h1 className='text-6xl font-bold font-shining mb-4 text-grass'>BantayBuddy</h1>
+                    <h1 className='text-6xl font-bold font-shining mb-4 text-grass max-sm:text-4xl'>BantayBuddy</h1>
                 </div>
 
                 <input 
