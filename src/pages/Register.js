@@ -189,7 +189,7 @@ function PostShowcase() {
 
     const authorDisplayName = 'Pooch';
     const authorUsername = 'pawsomepooch';
-    const authorPhotoURL = '/images/user1-image.png';
+    const authorPhotoURL = '/images/sample-user2-image.png';
     const postDate = '31/11/6 at 21:00';
     const postBody = 'Whisker Wonderland! 🐾🌿 Playtime in the park with our curious cats. Watching them explore and frolic is pure joy! #CatsofthePark #PurrfectDay';
     const imageUrls = ['/images/sample-user2-post.png'];
