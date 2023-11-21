@@ -103,12 +103,6 @@ export default function RepostExpanded({props}) {
             const postRef = firestore.collection('posts').doc(postID);
             await postRef.delete();
 
-            // Delete images associated with the post from storage
-            for (const url of imageUrls) {
-                const imageRef = storage.refFromURL(url);
-                await imageRef.delete();
-            }
-
             // Remove the post reference from the user's posts
             const userRef = firestore.collection('users').doc(authorID);
             await userRef.update({
