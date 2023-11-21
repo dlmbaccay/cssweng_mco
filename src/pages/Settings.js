@@ -204,7 +204,7 @@ function Settings() {
     
     return (
         <div>
-            <div id="root" className='flex flex-row h-screen paw-background'>
+            <div id="root" className='flex flex-row h-screen paw-background overflow-hidden'>
                 <div className='hidden lg:flex lg:w-[300px]'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
                         props={{
@@ -227,7 +227,7 @@ function Settings() {
                     />}
                 </div>
 
-                <div className="w-full flex justify-center items-center h-full">
+                <div className="w-full flex flex-col justify-center items-center h-full">
                     <form
                         onSubmit={handleSubmit}
                         className="rounded-lg drop-shadow-lg p-10 w-full h-full overflow-auto flex flex-col justify-start items-center">

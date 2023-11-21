@@ -13,8 +13,8 @@ import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, edit
 import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import RoundIcon from '@/src/components/RoundIcon';
 import CoverPhoto from '@/src/components/CoverPhoto';
-import PostSnippet from '@/src/components/PostSnippet';
-import CreatePost from '@/src/components/CreatePost';
+import PostSnippet from '@/src/components/Post/PostSnippet';
+import CreatePost from '@/src/components/Post/CreatePost';
 import withAuth from '@/src/components/withAuth';
 import { arrayUnion } from 'firebase/firestore';
 import { set } from 'react-hook-form';
@@ -75,6 +75,7 @@ function UserProfilePage() {
 
     // create post variables
     const [showCreatePostForm, setShowCreatePostForm] = useState(false);
+
 
     // fetch current and profile user data
     useEffect(() => {
@@ -444,6 +445,7 @@ function UserProfilePage() {
     const [posts, setPosts] = useState([]);   
     const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [allPostsLoaded, setAllPostsLoaded] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -476,21 +478,43 @@ function UserProfilePage() {
         if (!lastVisible || loading) return;
 
         setLoading(true);
-        
         const nextQuery = query(
-            collection(firestore, "posts"), 
-            where("authorID", "==", profileUserID), 
-            orderBy("postDate", "desc"), 
-            startAfter(lastVisible), 
+            collection(firestore, "posts"),
+            where("authorID", "==", profileUserID),
+            orderBy("postDate", "desc"),
+            startAfter(lastVisible),
             limit(5)
         );
 
         const querySnapshot = await getDocs(nextQuery);
         const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        setLastVisible(newLastVisible);
-        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        setPosts(prevPosts => [...prevPosts, ...newPosts]);
+        if (newPosts.length === 0) {
+            setAllPostsLoaded(true);
+        } else {
+            setLastVisible(newLastVisible);
+            setPosts(prevPosts => [...prevPosts, ...newPosts]);
+            setAllPostsLoaded(false);
+        }
+
+        setLoading(false);
+    };
+
+    const refreshPosts = async () => {
+        setLoading(true);
+        const refreshQuery = query(
+            collection(firestore, "posts"),
+            where("authorID", "==", profileUserID),
+            orderBy("postDate", "desc"),
+            limit(5)
+        );
+
+        const querySnapshot = await getDocs(refreshQuery);
+        const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setPosts(refreshedPosts);
+        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setAllPostsLoaded(false);
         setLoading(false);
     };
 
@@ -917,18 +941,26 @@ function UserProfilePage() {
                                                             authorUsername: post.authorUsername,
                                                             authorPhotoURL: post.authorPhotoURL,
                                                             isEdited: post.isEdited,
+                                                            postType: post.postType,
                                                         }}
                                                     />
                                                 </div>
                                             ))}
                                             {loading && <div>Loading...</div>}
-                                            {lastVisible && (
+                                            {allPostsLoaded ? (
                                                 <button
-                                                className='px-4 py-2 text-white w-fit bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
-                                                onClick={fetchMorePosts}
-                                                disabled={loading}
+                                                    className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
+                                                    onClick={refreshPosts}
                                                 >
-                                                Load More
+                                                    Refresh Posts
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
+                                                    onClick={fetchMorePosts}
+                                                    disabled={loading}
+                                                >
+                                                    Load More
                                                 </button>
                                             )}
                                         </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
-import { firestore, storage, firebase } from '../lib/firebase';
+import { firestore, storage, firebase } from '../../lib/firebase';
 import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
@@ -15,7 +15,7 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { expandedPostStyle } from '../lib/modalstyle';
+import { expandedPostStyle } from '../../lib/modalstyle';
 import PostExpanded from './PostExpanded';
 
 export default function PostSnippet({ props }) {
@@ -31,7 +31,7 @@ export default function PostSnippet({ props }) {
         postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername,
-        authorPhotoURL, isEdited
+        authorPhotoURL, isEdited, postType
     } = props 
 
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);

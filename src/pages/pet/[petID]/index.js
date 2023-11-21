@@ -16,7 +16,7 @@ import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import Loader from '@/src/components/Loader';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import RoundIcon from '@/src/components/RoundIcon';
-import PostSnippet from '@/src/components/PostSnippet';
+import PostSnippet from '@/src/components/Post/PostSnippet';
 import withAuth from '@/src/components/withAuth';
 
 function PetProfilePage() {
@@ -262,6 +262,7 @@ function PetProfilePage() {
     const [taggedPosts, setTaggedPosts] = useState([]);
     const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [allTaggedPostsLoaded, setAllTaggedPostsLoaded] = useState(false);
 
     // Initial fetch
     useEffect(() => {
@@ -293,7 +294,6 @@ function PetProfilePage() {
         return () => unsubscribe();
     }, [petID]);
 
-    // Function to fetch more posts
     const fetchMorePosts = async () => {
         if (!lastVisible || loading) return;
 
@@ -302,22 +302,39 @@ function PetProfilePage() {
         const nextQuery = query(
             collection(firestore, "posts"),
             where("postPets", "array-contains", petID),
+            orderBy("postDate", "desc"),
             startAfter(lastVisible),
             limit(5)
         );
 
         const querySnapshot = await getDocs(nextQuery);
-        if (!querySnapshot.empty) {
-            const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-            const newPosts = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })).sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            setLastVisible(newLastVisible);
+        if (newPosts.length === 0) {
+            setAllTaggedPostsLoaded(true);
+        } else {
+            setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
             setTaggedPosts(prevPosts => [...prevPosts, ...newPosts]);
+            setAllTaggedPostsLoaded(false);
         }
 
+        setLoading(false);
+    };
+
+    const refreshPosts = async () => {
+        setLoading(true);
+        const refreshQuery = query(
+            collection(firestore, "posts"),
+            where("postPets", "array-contains", petID),
+            orderBy("postDate", "desc"),
+            limit(5)
+        );
+
+        const querySnapshot = await getDocs(refreshQuery);
+        const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTaggedPosts(refreshedPosts);
+        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setAllTaggedPostsLoaded(false);
         setLoading(false);
     };
     
@@ -717,6 +734,7 @@ function PetProfilePage() {
                                                             authorUsername: post.authorUsername,
                                                             authorPhotoURL: post.authorPhotoURL,
                                                             isEdited: post.isEdited,
+                                                            postType: post.postType,
                                                         }}
                                                     />
                                                 </div>
@@ -724,13 +742,20 @@ function PetProfilePage() {
 
                                             {loading && <div>Loading...</div>}
 
-                                            {lastVisible && (
+                                            {allTaggedPostsLoaded ? (
                                                 <button
-                                                className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
-                                                onClick={fetchMorePosts}
-                                                disabled={loading}
+                                                    className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
+                                                    onClick={refreshPosts}
                                                 >
-                                                Load More
+                                                    Refresh Posts
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
+                                                    onClick={fetchMorePosts}
+                                                    disabled={loading}
+                                                >
+                                                    Load More
                                                 </button>
                                             )}
                                         </div>

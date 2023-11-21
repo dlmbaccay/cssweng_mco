@@ -8,8 +8,9 @@ import Router from 'next/router';
 import Modal from 'react-modal';
 import Image from 'next/image';
 
-import CreatePost from '../components/CreatePost';
-import PostSnippet from '../components/PostSnippet';
+import CreatePost from '../components/Post/CreatePost';
+import PostSnippet from '../components/Post/PostSnippet';
+import Repost from '../components/Post/RepostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 import { createPostModalStyle } from '../lib/modalstyle';
 
@@ -39,33 +40,30 @@ function Home() {
   const [posts, setPosts] = useState([]);
   const [lastVisible, setLastVisible] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [allPostsLoaded, setAllPostsLoaded] = useState(false);
+  
   useEffect(() => {
-    setLoading(true);
+      setLoading(true);
 
-    // indexed in query builder
-    const q = query(
-      collection(firestore, "posts"),
-      orderBy("postDate", "desc"),
-      limit(5)
-    )
+      const q = query(
+        collection(firestore, "posts"),
+        orderBy("postDate", "desc"),
+        limit(5)
+      );
 
-    const unsubscribe = onSnapshot(q, 
-        (snapshot) => {
-            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-            
-            setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-            setPosts(newPosts);
-            setLoading(false);
-        },
-        (error) => {
-            console.error("Error fetching posts:", error);
-            setLoading(false);
-        }
-    );
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+          const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+          setPosts(newPosts);
+          setLoading(false);
+      }, (error) => {
+          console.error("Error fetching posts:", error);
+          setLoading(false);
+      });
 
-    return () => unsubscribe();
-  }, []);
+      // Return the cleanup function to unsubscribe from the listener
+      return () => unsubscribe();
+  }, []); // Ensure this effect only runs once on component mount
 
   const fetchMorePosts = async () => {
     if (lastVisible && !loading) {
@@ -78,14 +76,36 @@ function Home() {
         );
 
         const querySnapshot = await getDocs(nextQuery);
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        setLastVisible(newLastVisible);
 
-        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        // Update state based on whether new posts are fetched
+        if (newPosts.length === 0) {
+          setAllPostsLoaded(true);
+        } else {
+          setLastVisible(newLastVisible);
+          setPosts(prevPosts => [...prevPosts, ...newPosts]);
+          setAllPostsLoaded(false);
+        }
 
-        setPosts(prevPosts => [...prevPosts, ...newPosts]);
         setLoading(false);
     }
+  };
+
+  const refreshPosts = async () => {
+    setLoading(true);
+    const refreshQuery = query(
+      collection(firestore, "posts"),
+      orderBy("postDate", "desc"),
+      limit(5)
+    );
+
+    const querySnapshot = await getDocs(refreshQuery);
+    const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setPosts(refreshedPosts);
+    setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    setAllPostsLoaded(false);
+    setLoading(false);
   };
 
   if (!pageLoading) {
@@ -116,28 +136,28 @@ function Home() {
 
         <div className='w-full bg-dark_gray'>            
           {/* search and logo bar */}
-          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between gap-7 p-2 '>
-            <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm sm:w-[200px] md:w-[300px] lg:w-[400px] max-sm:w-[200px]'>
-              <i
-                className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
-                // onClick={}
-              />
-              <input 
-                type='text'
-                placeholder='Search'
-                className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
-                onFocus={() => setIsSearchInputFocused(true)}
-                onBlur={() => setIsSearchInputFocused(false)}
-              />
-            </div>
-
-            <div className='flex flex-row justify-center items-center gap-2 mr-8'>
-              <h1 className='font-bold font-shining text-3xl text-grass sm:text-xl md:text-2xl max-sm:text-base'>BantayBuddy</h1>
-
-              <div className='bg-grass w-[40px] h-[40px] rounded-full shadow-lg max-sm:w-[25px] max-sm:h-[25px] sm:w-[25px] sm:h-[25px] sm:mr-[20px] max-sm:mr-[30px] md:xl:w-[40px] md:xl:h-[40px] md:xl:mr-[10px]'>
-                <Image src='/images/logo.png' alt='logo' width={100} height={100} className='rounded-full'/>
+          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+              <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
+                  <i
+                  className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
+                  // onClick={}
+                  />
+                  <input 
+                  type='text'
+                  placeholder='Search'
+                  className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
+                  onFocus={() => setIsSearchInputFocused(true)}
+                  onBlur={() => setIsSearchInputFocused(false)}
+                  />
               </div>
-            </div>
+
+              <div className='flex flex-row justify-center items-center gap-2 mr-8'>
+                  <h1 className='font-shining text-3xl text-grass'>BantayBuddy</h1>
+
+                  <div className='bg-grass w-[40px] h-[40px] rounded-full shadow-lg'>
+                  <Image src='/images/logo.png' alt='logo' width={100} height={100} className='rounded-full'/>
+                  </div>
+              </div>
           </div>  
 
           {/* main container */}
@@ -146,7 +166,7 @@ function Home() {
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
               {/* create post */}
               <div 
-                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md sm:w-[450px] md:w-[550px] lg:w-[650px] max-sm:w-[350px] max-sm:mr-[50px] p-2 gap-2'>
+                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md  p-2 gap-2'>
 
                   {userPhotoURL && <Image
                     src={userPhotoURL}
@@ -171,47 +191,90 @@ function Home() {
                       style={createPostModalStyle}
                   >
                       <CreatePost 
-                        props={{
-                          createType: 'original',
-                          currentUserID: user.uid,
-                          displayName: displayName,
-                          username: username,
-                          userPhotoURL: userPhotoURL,
-                          setShowCreatePostForm: setShowCreatePostForm,
-                        }}
+                          props={{
+                            createType: 'original',
+                            currentUserID: user.uid,
+                            displayName: displayName,
+                            username: username,
+                            userPhotoURL: userPhotoURL,
+                            setShowCreatePostForm: setShowCreatePostForm,
+                          }}
                       />
                   </Modal>
               </div>
 
-              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8 space-y-4 sm:scale-75 sm:h-[98px] max-sm:scale-50 max-sm:h-[30px] max-sm:-translate-x-6 md:xl:scale-100'>
+              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
                 
-                {posts.map((post, index) => (
-                    <div key={post.id}>
-                      <PostSnippet
-                        props={{
-                          currentUserID: user.uid,
-                          postID: post.id,
-                          postBody: post.postBody,
-                          postCategory: post.postCategory,
-                          postTrackerLocation: post.postTrackerLocation,
-                          postPets: post.postPets,
-                          postDate: post.postDate,
-                          imageUrls: post.imageUrls,
-                          authorID: post.authorID,
-                          authorDisplayName: post.authorDisplayName,
-                          authorUsername: post.authorUsername,
-                          authorPhotoURL: post.authorPhotoURL,
-                          isEdited: post.isEdited,
-                        }}
-                      />
-                    </div>
-                ))}
+                {posts.map((post, index) => {
+                  console.log(`Processing post ${index} with postType: ${post.postType}`);
+
+                  if (post.postType === "original") {
+                      return (
+                        <div key={post.id}>
+                            <PostSnippet
+                                props={{
+                                    currentUserID: user.uid,
+                                    postID: post.id,
+                                    postBody: post.postBody,
+                                    postCategory: post.postCategory,
+                                    postTrackerLocation: post.postTrackerLocation,
+                                    postPets: post.postPets,
+                                    postDate: post.postDate,
+                                    imageUrls: post.imageUrls,
+                                    authorID: post.authorID,
+                                    authorDisplayName: post.authorDisplayName,
+                                    authorUsername: post.authorUsername,
+                                    authorPhotoURL: post.authorPhotoURL,
+                                    isEdited: post.isEdited,
+                                    postType: post.postType,
+                                }}
+                            />
+                        </div>
+                      );
+                  } else if (post.postType === 'repost') {
+                      return (
+                        <div key={post.id}>
+                            <Repost
+                                props={{
+                                    currentUserID: user.uid,
+                                    authorID: post.authorID,
+                                    authorDisplayName: post.authorDisplayName,
+                                    authorUsername: post.authorUsername,
+                                    authorPhotoURL: post.authorPhotoURL,
+                                    postID: post.id,
+                                    postDate: post.postDate,
+                                    postType: 'repost',
+                                    postBody: post.postBody,
+                                    isEdited: post.isEdited,
+                                    repostID: post.repostID,
+                                    repostBody: post.repostBody,
+                                    repostCategory: post.repostCategory,
+                                    repostPets: post.repostPets,
+                                    repostDate: post.repostDate,
+                                    repostImageUrls: post.repostImageUrls,
+                                    repostAuthorID: post.repostAuthorID,
+                                    repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                    repostAuthorUsername: post.repostAuthorUsername,
+                                    repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                }}
+                            />
+                        </div>
+                      );
+                  } 
+                })}
 
                 {loading && <div>Loading...</div>}
 
-                {lastVisible && (
+                {allPostsLoaded ? (
                   <button
-                    className='px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all'
+                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                    onClick={refreshPosts}
+                  >
+                    Refresh Posts
+                  </button>
+                ) : (
+                  <button
+                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
                     onClick={fetchMorePosts}
                     disabled={loading}
                   >

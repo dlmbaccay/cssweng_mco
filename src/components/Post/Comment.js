@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast';
-import { firestore } from '../lib/firebase';
+import { firestore } from '../../lib/firebase';
 import Modal from 'react-modal';
-import { postDeleteConfirmationModalStyle } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle } from '../../lib/modalstyle';
 import Reply from './Reply';
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -59,11 +59,39 @@ export default function Comment( {props} ) {
 
     const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
 
-    const handleDeleteComment = (event) => {
-        firestore.collection('posts').doc(postID).collection('comments').doc(commentID).delete()
-        .then(() => {
+    const handleDeleteComment = async (event) => {
+        // firestore.collection('posts').doc(postID).collection('comments').doc(commentID).delete()
+        // .then(() => {
+        //     toast.success('Comment deleted successfully!');
+        // })
+
+        // delete comments subcollection, then delete the reations subcollection of comments, and the replies subcollection of comments, which has a subcollection of reactions
+        try {
+            // Delete reactions to replies
+            const repliesSnapshot = await firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').get();
+            for (const replyDoc of repliesSnapshot.docs) {
+                const reactionsSnapshot = await replyDoc.ref.collection('reactions').get();
+                for (const reactionDoc of reactionsSnapshot.docs) {
+                    await reactionDoc.ref.delete();
+                }
+                // Delete the reply
+                await replyDoc.ref.delete();
+            }
+
+            // Delete reactions to the comment
+            const commentReactionsSnapshot = await firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('reactions').get();
+            for (const reactionDoc of commentReactionsSnapshot.docs) {
+                await reactionDoc.ref.delete();
+            }
+
+            // Delete the comment itself
+            await firestore.collection('posts').doc(postID).collection('comments').doc(commentID).delete();
+
             toast.success('Comment deleted successfully!');
-        })
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            toast.error('Error occurred while deleting the comment.');
+        }
 
         event.stopPropagation();
         setShowDeleteCommentModal(false);
@@ -485,7 +513,7 @@ export default function Comment( {props} ) {
                                 }
                             })}
                             placeholder='Write a reply...' 
-                            className={`outline-none resize-none border border-[#d1d1d1] text-sm rounded-xl text-raisin_black w-full p-3 transition-all h-[80px]`}
+                            className={`outline-none resize-none border border-[#d1d1d1] bg-[#fafafa] text-sm rounded-xl text-raisin_black w-full p-3 transition-all h-[80px]`}
                         />
 
                         <button

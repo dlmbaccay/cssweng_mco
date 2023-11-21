@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
-import { firestore, storage, firebase } from '../lib/firebase';
+import { firestore, storage, firebase } from '../../lib/firebase';
 import { arrayRemove, onSnapshot } from 'firebase/firestore';
 import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
+import Share from './Share';
 
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -15,7 +16,7 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../../lib/modalstyle';
 import Comment from './Comment';
 import Reactions from './Reactions';
 
@@ -74,47 +75,60 @@ export default function PostExpanded({ props }) {
     };
 
     const handleDeletePost = async () => {
-      
-      // recap: every path created
-      // posts/postID (firestore)
-      // users/userID/posts/postID (firestore)
-      // posts/postID/imageURL (storage)
-      
-      // deleting post from firestore
-      const postRef = firestore.collection('posts').doc(postID);
-      await postRef.delete();
+        try {
+            // Deleting comments, replies, and their reactions associated with the post
+            const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
+            const commentsSnapshot = await commentsRef.get();
+            for (const commentDoc of commentsSnapshot.docs) {
+                // Deleting reactions to each reply of a comment
+                const repliesRef = commentDoc.ref.collection('replies');
+                const repliesSnapshot = await repliesRef.get();
+                for (const replyDoc of repliesSnapshot.docs) {
+                    const replyReactionsSnapshot = await replyDoc.ref.collection('reactions').get();
+                    for (const reactionDoc of replyReactionsSnapshot.docs) {
+                        await reactionDoc.ref.delete();
+                    }
+                    // Delete the reply
+                    await replyDoc.ref.delete();
+                }
 
-      // delete image urls from storage
-      imageUrls.forEach(async (url) => {
-        const imageRef = storage.refFromURL(url);
-        await imageRef.delete();
-      });
-  
-      // delete postID from user posts
-      const userRef = firestore.collection('users').doc(authorID);
-      await userRef.update({
-        posts: arrayRemove(postID)
-      });
+                // Deleting reactions to the comment
+                const commentReactionsSnapshot = await commentDoc.ref.collection('reactions').get();
+                for (const reactionDoc of commentReactionsSnapshot.docs) {
+                    await reactionDoc.ref.delete();
+                }
+                // Delete the comment itself
+                await commentDoc.ref.delete();
+            }
 
-      // delete all comments
-        const commentsRef = firestore.collection('posts').doc(postID).collection('comments');
-        const commentsSnapshot = await commentsRef.get();
-        commentsSnapshot.forEach(async (doc) => {
-            await doc.ref.delete();
-        });
+            // Delete reactions to the post
+            const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
+            const reactionsSnapshot = await reactionsRef.get();
+            for (const reactionDoc of reactionsSnapshot.docs) {
+                await reactionDoc.ref.delete();
+            }
 
-        // delete all reactions
-        const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
-        const reactionsSnapshot = await reactionsRef.get();
-        reactionsSnapshot.forEach(async (doc) => {
-            await doc.ref.delete();
-        });
+            // Delete the post from Firestore
+            const postRef = firestore.collection('posts').doc(postID);
+            await postRef.delete();
 
-      // reload page
-      // window.location.reload();
+            // Delete images associated with the post from storage
+            for (const url of imageUrls) {
+                const imageRef = storage.refFromURL(url);
+                await imageRef.delete();
+            }
 
-      toast.success('Post deleted successfully!');
-    }
+            // Remove the post reference from the user's posts
+            const userRef = firestore.collection('users').doc(authorID);
+            await userRef.update({
+                posts: arrayRemove(postID)
+            });
+
+            toast.success('Post deleted successfully!');
+        } catch (error) {
+            
+        }
+    };
 
     const handleEditPost = async () => {
 
@@ -145,9 +159,6 @@ export default function PostExpanded({ props }) {
 
       setShowEditPostModal(false);
     }
-
-    // get likes
-    const [reactions, setReactions] = useState([]);
     
     const handleReaction = async (newReaction) => {
       const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
@@ -189,27 +200,22 @@ export default function PostExpanded({ props }) {
 
     useEffect(() => {
         const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
-        const unsubscribe = reactionsRef.onSnapshot((snapshot) => {
-            const newReactions = snapshot.docs.map((doc) => ({
-                reactionType: doc.id,
-                userIDs: doc.data().userIDs,
-            }));
-            setReactions(newReactions);
+        const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Your actual reaction types
 
-            // find out if current user has reacted to this post
-            const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
-            for (let reaction of reactionTypes) {
-                const reactionData = newReactions.find(r => r.reactionType === reaction);
+        const unsubscribes = reactionTypes.map((reaction) => {
+            const reactionRef = reactionsRef.doc(reaction);
+
+            return reactionRef.onSnapshot((snapshot) => {
+                const reactionData = snapshot.data();
+
                 if (reactionData && reactionData.userIDs.includes(currentUserID)) {
                     setCurrentUserReaction(reaction);
-                    break;
+                    return;
                 }
-            }
+            });
         });
 
-        return () => {
-            unsubscribe();
-        }
+        return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
     }, []);
 
     // get comments
@@ -386,187 +392,162 @@ export default function PostExpanded({ props }) {
                 {/* Footer */}
                 <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative border-b border-dark_gray'>
                     <div id="left" className='flex flex-row gap-4'>
-                    <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                        {currentUserReaction === '' && 
-                        <i 
-                            className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                        <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
+                            {currentUserReaction === '' && 
+                            <i 
+                                className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)}
+                            />
+                            }
+                            
+                            {currentUserReaction === 'like' &&
+                            <Image
+                                src={likeReaction}
+                                alt="like reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'heart' &&
+                            <Image
+                                src={heartReaction}
+                                alt="heart reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'haha' &&
+                            <Image
+                                src={laughReaction}
+                                alt="haha reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'wow' &&
+                            <Image
+                                src={wowReaction}
+                                alt="wow reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'sad' &&
+                            <Image
+                                src={sadReaction}
+                                alt="sad reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+
+                            {currentUserReaction === 'angry' &&
+                            <Image
+                                src={angryReaction}
+                                alt="angry reaction"
+                                className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                                onMouseEnter={() => setIsOverlayVisible(true)}
+                                onMouseLeave={() => setIsOverlayVisible(false)} 
+                            />
+                            }
+                        <p>{reactionsLength}</p>
+
+                        {isOverlayVisible && (
+                            <div 
                             onMouseEnter={() => setIsOverlayVisible(true)}
                             onMouseLeave={() => setIsOverlayVisible(false)}
-                        />
-                        }
-                        
-                        {currentUserReaction === 'like' &&
-                        <Image
-                            src={likeReaction}
-                            alt="like reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'heart' &&
-                        <Image
-                            src={heartReaction}
-                            alt="heart reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'haha' &&
-                        <Image
-                            src={laughReaction}
-                            alt="haha reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'wow' &&
-                        <Image
-                            src={wowReaction}
-                            alt="wow reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'sad' &&
-                        <Image
-                            src={sadReaction}
-                            alt="sad reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-
-                        {currentUserReaction === 'angry' &&
-                        <Image
-                            src={angryReaction}
-                            alt="angry reaction"
-                            className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                            onMouseEnter={() => setIsOverlayVisible(true)}
-                            onMouseLeave={() => setIsOverlayVisible(false)} 
-                        />
-                        }
-                    <p>{reactionsLength}</p>
-
-                    {isOverlayVisible && (
-                        <div 
-                        onMouseEnter={() => setIsOverlayVisible(true)}
-                        onMouseLeave={() => setIsOverlayVisible(false)}
-                        id='overlay' 
-                        className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
-                        >
-                        <Image 
-                        src={likeReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('like')}
-                        />
-                        <Image 
-                        src={heartReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('heart')}
-                        />
-                        <Image 
-                        src={laughReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('haha')}
-                        />
-                        <Image 
-                        src={wowReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('wow')}
-                        />
-                        <Image 
-                        src={sadReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('sad')}
-                        />
-                        <Image 
-                        src={angryReaction} 
-                        alt="like reaction" 
-                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                        onClick={() => handleReaction('angry')}
-                        />
-                        </div>
-                    )}
-                    </div>
-                    
-                    <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
-                    <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all" 
-                        onClick={() => {
-                            document.getElementById('comment-body').focus();
-                        }}
-                        />
-                    <p>{commentsLength}</p>
-                    </div>
-
-                    <div id="share-control">
-                    <i 
-                        onClick={() => setShowSharePostModal(true)} 
-                        className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
-
-                        <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
-                            <div className='flex flex-col w-full h-full'>
-                                <div className='flex flex-row justify-center items-center'>
-                                    <p className='font-semibold'>Share Post</p>
-                                </div>
-
-                                <div className='h-full mt-2 mb-3'>
-                                    <textarea 
-                                        id="post-body" 
-                                        value={editedPostBody}
-                                        onChange={(event) => setEditedPostBody(event.target.value)}
-                                        placeholder='Say something about this...' 
-                                        className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-full p-4' 
-                                    />
-                                </div>
-                                
-                                <div className='flex flex-row gap-2 mb-4'>
-                                    <button 
-                                    className='px-4 py-2 bg-black text-white font-semibold hover:bg-red-600 rounded-lg text-sm cursor-pointer w-1/2 transition-all'
-                                    onClick={() => setShowSharePostModal(false)}>
-                                        Cancel
-                                    </button>
-
-                                    <button 
-                                    className='bg-xanthous hover:bg-pistachio text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all'>
-                                        Share now
-                                    </button>
-                                </div>
-                                <hr className=''></hr>
-                                <div className='mt-2'>
-                                    Share to
-                                    <div className='flex justify-between mt-2'>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-link hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-brands fa-facebook hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-brands fa-x-twitter hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    <div className='relative w-14 h-14 bg-pistachio rounded-full hover:bg-grass'>
-                                        <i className='absolute inset-0 flex items-center justify-center text-white text-2xl fas fa-ellipsis hover:scale-110 cursor-pointer'></i>
-                                    </div>
-                                    </div>
-                                </div>
+                            id='overlay' 
+                            className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                            >
+                            <Image 
+                            src={likeReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('like')}
+                            />
+                            <Image 
+                            src={heartReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('heart')}
+                            />
+                            <Image 
+                            src={laughReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('haha')}
+                            />
+                            <Image 
+                            src={wowReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('wow')}
+                            />
+                            <Image 
+                            src={sadReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('sad')}
+                            />
+                            <Image 
+                            src={angryReaction} 
+                            alt="like reaction" 
+                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                            onClick={() => handleReaction('angry')}
+                            />
                             </div>
-                        </Modal>
+                        )}
+                        </div>
+                        
+                        <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
+                        <i className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all" 
+                            onClick={() => {
+                                document.getElementById('comment-body').focus();
+                            }}
+                            />
+                        <p>{commentsLength}</p>
+                        </div>
+
+                        <div id="share-control">
+                        <i 
+                            onClick={() => setShowSharePostModal(true)} 
+                            className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
+
+                            <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
+                                {currentUser && <Share 
+                                    props={{
+                                        currentUserID: currentUserID,
+                                        currentUserPhotoURL: currentUser.photoURL,
+                                        currentUserUsername: currentUser.username,
+                                        currentUserDisplayName: currentUser.displayName,
+                                        postID: postID,
+                                        postBody: postBody,
+                                        postCategory: postCategory,
+                                        postTrackerLocation: postTrackerLocation,
+                                        postPets: postPets,
+                                        postDate: postDate,
+                                        imageUrls: imageUrls,
+                                        authorID: authorID,
+                                        authorDisplayName: authorDisplayName,
+                                        authorUsername: authorUsername,
+                                        authorPhotoURL: authorPhotoURL,
+                                        taggedPets: taggedPets,
+                                        setShowSharePostModal: setShowSharePostModal,
+                                    }}
+                                />}
+                            </Modal>
+                        </div>
                     </div>
-                </div>
 
                 <div id="right" className='flex flex-row gap-4 items-center'>
                     {currentUserID !== authorID && 
@@ -774,7 +755,7 @@ export default function PostExpanded({ props }) {
                             }
                         })}
                         placeholder='Write a comment...' 
-                        className={`outline-none resize-none border bg-[#f5f5f5] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
+                        className={`outline-none resize-none border bg-[#fafafa] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
                     />
 
                     <button
@@ -785,6 +766,5 @@ export default function PostExpanded({ props }) {
                 </form>
             </div>  
         </div>
-      
     )
 }
