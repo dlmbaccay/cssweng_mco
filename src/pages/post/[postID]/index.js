@@ -162,10 +162,12 @@ function Post() {
         const postRef = firestore.collection('posts').doc(postID);
         await postRef.delete();
 
-        // Delete images associated with the post from storage
-        for (const url of post?.imageUrls) {
-            const imageRef = storage.refFromURL(url);
-            await imageRef.delete();
+        if (post?.postType === 'original') {
+            // Delete images associated with the post from storage
+            for (const url of post?.imageUrls) {
+                const imageRef = storage.refFromURL(url);
+                await imageRef.delete();
+            }
         }
 
         // Remove the post reference from the user's posts
@@ -195,12 +197,21 @@ function Post() {
       }
 
       const postRef = firestore.collection('posts').doc(postID);
-      await postRef.update({
-        postBody: editedPostBody,
-        postCategory: editedCategory.value,
-        postTrackerLocation: editedPostTrackerLocation,
-        isEdited: true
-      });
+      
+      if (post?.postType === 'original') {
+        await postRef.update({
+            postBody: editedPostBody,
+            postCategory: editedCategory.value,
+            postTrackerLocation: editedPostTrackerLocation,
+            isEdited: true
+        });
+      } else if (post?.postType === 'repost') {
+        await postRef.update({
+            postBody: editedPostBody,
+            isEdited: true,
+        });
+      }
+      
 
       // reload page
       window.location.reload();
