@@ -513,7 +513,7 @@ export default function Comment( {props} ) {
                                 }
                             })}
                             placeholder='Write a reply...' 
-                            className={`outline-none resize-none border border-[#d1d1d1] text-sm rounded-xl text-raisin_black w-full p-3 transition-all h-[80px]`}
+                            className={`outline-none resize-none border border-[#d1d1d1] bg-[#fafafa] text-sm rounded-xl text-raisin_black w-full p-3 transition-all h-[80px]`}
                         />
 
                         <button

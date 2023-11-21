@@ -53,6 +53,9 @@ export default function Share({props}) {
             repostAuthorDisplayName: authorDisplayName,
             repostAuthorUsername: authorUsername,
             repostAuthorPhotoURL: authorPhotoURL,
+
+            comments: [],
+            reactions:[],
         }
 
         // add repost to firestore

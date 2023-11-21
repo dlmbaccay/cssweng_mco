@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
-import { firestore, storage, firebase } from '../../lib/firebase';
-import { arrayRemove, onSnapshot } from 'firebase/firestore';
-import Select from 'react-select'
+import { firestore, storage } from '../../lib/firebase';
+import { arrayRemove } from 'firebase/firestore';
 import Router from 'next/router';
 import toast from 'react-hot-toast';
-import Share from './Share';
 
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -16,11 +14,11 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, reactionsCountModal } from '../../lib/modalstyle';
 import Comment from './Comment';
 import Reactions from './Reactions';
 
-export default function PostExpanded({ props }) {
+export default function RepostExpanded({props}) {
 
     useEffect(() => {
       if (document.getElementById('root')) {
@@ -36,14 +34,13 @@ export default function PostExpanded({ props }) {
     }, []);
 
     const {
-        currentUserID, postID, postBody, 
-        postCategory, postTrackerLocation,
-        postPets, postDate, imageUrls,
-        authorID, authorDisplayName, authorUsername, 
-        authorPhotoURL, formatDate,
-        isEdited, taggedPets, 
-        setShowPostExpanded, postAction, commentsLength, reactionsLength
-    } = props 
+        currentUserID,
+        authorID, authorDisplayName, authorUsername, authorPhotoURL,
+        postID, postDate, postType, postBody, isEdited, repostID, repostBody,
+        repostCategory, repostPets, repostDate, repostImage,
+        repostAuthorID, repostAuthorDisplayName, repostAuthorUsername,
+        repostAuthorPhotoURL, setShowPostExpanded, postAction, commentsLength, reactionsLength, formatDate
+    } = props;
 
     // get currentUser data
     const [currentUser, setCurrentUser] = useState(null);
@@ -65,14 +62,8 @@ export default function PostExpanded({ props }) {
     const [showEditPostModal, setShowEditPostModal] = useState(postAction === 'edit');
 
     const [editedPostBody, setEditedPostBody] = useState(postBody);
-    const [editedCategory, setEditedCategory] = useState({ value: postCategory, label: postCategory });
-    const [editedPostTrackerLocation, setEditedPostTrackerLocation] = useState(postTrackerLocation);
 
     const [isFocused, setIsFocused] = useState(false);
-
-    const handleSelectEditedCategory = (editedCategory) => {
-      setEditedCategory(editedCategory);
-    };
 
     const handleDeletePost = async () => {
         try {
@@ -130,36 +121,29 @@ export default function PostExpanded({ props }) {
         }
     };
 
-    const handleEditPost = async () => {
+    const handleEditPost = async (e) => {
+        e.preventDefault();
 
-      if (!editedPostBody) {
-        toast.error('Bark up some words for your post!');
-        return;
-      }
-
-      if (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') {
-        if (!editedPostTrackerLocation) {
-          toast.error('Please enter a tracker location!');
-          return;
+        toast.loading('Editing post...');
+        
+        if (editedPostBody.trim() === '') {
+            toast.error('Post body is empty!');
+            return;
         }
-      }
 
-      const postRef = firestore.collection('posts').doc(postID);
-      await postRef.update({
-        postBody: editedPostBody,
-        postCategory: editedCategory.value,
-        postTrackerLocation: editedPostTrackerLocation,
-        isEdited: true
-      });
+        const postRef = firestore.collection('posts').doc(postID);
+        await postRef.update({
+            postBody: editedPostBody,
+            isEdited: true
+        });
 
-      // reload page
-      // window.location.reload();
+        e.stopPropagation();
+        toast.dismiss();
+        toast.success('Post edited successfully!');
 
-      toast.success('Post edited successfully!');
+        setShowEditPostModal(false);
+    };
 
-      setShowEditPostModal(false);
-    }
-    
     const handleReaction = async (newReaction) => {
       const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
       const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
@@ -194,7 +178,7 @@ export default function PostExpanded({ props }) {
       }
 
       toast.success('Reaction updated!');
-    }
+    };
 
     const [currentUserReaction, setCurrentUserReaction] = useState('');
 
@@ -272,7 +256,7 @@ export default function PostExpanded({ props }) {
     }
 
     const [showReactionsModal, setShowReactionsModal] = useState(false);
-
+    
     return (
         <div className='w-full h-full flex flex-col'>
             {/* expanded controls */}
@@ -292,101 +276,82 @@ export default function PostExpanded({ props }) {
                 className='w-full h-full rounded-lg mt-2 pr-6 pl-6 flex flex-col overflow-y-auto'>
 
                 {/* Header */}
-                <div id="post-header" className='flex flex-row justify-between'>
+                <div id='post-header' className='flex flex-row'>
+                    <div id='user-image' className='flex flex-row justify-start items-start'>
+                    <Image 
+                        src={authorPhotoURL} alt='Profile Picture' width={45} height={45}
+                        className='rounded-full drop-shadow-sm aspect-square'
+                    />
+                    </div>
 
-                    <div className='flex flex-row justify-start items-start '>
-                        <div id="user-image">
-                        <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm aspect-square'/>
-                        </div>
-
-                        <div id='post-meta' className='ml-4 items-center justify-center'>
-                            <div id='user-meta' className='flex flex-row gap-2'> {/* displayName, username */}
+                    <div id='post-meta' className='ml-4 items-center justify-center'>
+                        <div id='user-meta' className='flex flex-row gap-2'>
                             <div id='display-name' className='font-bold'><p>{authorDisplayName}</p></div>
                             <div className='font-bold'>·</div>
                             <Link href={'/user/' + authorUsername} id='display-name' className='hover:text-grass hover:font-bold transition-all'><p>@{authorUsername}</p></Link>
-                            </div>
+                        </div>
 
-                            <div id='publish-date' className='flex flex-row gap-2 items-center'> {/* YYYY-MM-DD at HH-MM */}
+                        <div id='publish-date' className='flex flex-row gap-2 items-center'> {/* YYYY-MM-DD at HH-MM */}
                             <p className='text-sm'>{formatDate(postDate)}</p>
                             {isEdited ? 
-                                ( 
+                            ( 
                                 <div className='relative flex flex-row items-center gap-2'>
-                                    <i className='hover-tooltip fa-solid fa-clock-rotate-left text-xs'/> 
-                                    <p className='edited-post-tooltip hidden text-xs'>Edited Post</p>
+                                <i className='hover-tooltip fa-solid fa-clock-rotate-left text-xs'/> 
+                                <p className='edited-post-tooltip hidden text-xs'>Edited Post</p>
                                 </div>
-                                )
+                            )
                             : null}
-                            </div>
                         </div>
                     </div>
-
-                    <div className='flex flex-col w-fit items-end'>
-                        {postCategory !== 'Default' && (
-                        <div className='flex flex-row items-center justify-center gap-2'>
-                            <div className='w-3 h-3 rounded-full bg-grass'></div>
-                            <p>{postCategory}</p>
-                        </div>
-                        )}
-                    </div>
-
                 </div>
 
                 {/* Body */}
-                <div id='post-body' className='mt-3 flex flex-col'>
-                    <div id='post-pets' className='mr-auto mb-2'>
+                <div id="post-body" className='mt-3 flex flex-col'>
+                    <p className='line-clamp-2 overflow-hidden'>{postBody}</p>
+                </div>
+
+                {/* Reposted Post */}
+                <div className='mt-3 flex flex-col w-full border border-[#d1d1d1] rounded-lg p-4 bg-[#] drop-shadow-md'>
                     
-                    {postPets.length > 0 && ( // display pet name if post has tagged pets
-                        <div className='flex flex-row items-center justify-center gap-2'>
-                            {taggedPets.length === 1 && <i class="fa-solid fa-tag text-md"></i>}
-                            {taggedPets.length > 1 && <i class="fa-solid fa-tags text-md"></i>}
-                            <p className='text-md'>
-                            {taggedPets.map((pet, index) => (
-                                <span key={pet.id}>
-                                    <Link href={`/pet/${pet.id}`} title={pet.petName} className='hover:text-grass hover:font-bold transition-all'>
-                                        {pet.petName}
-                                    </Link>
-                                    {index < taggedPets.length - 1 ? ', ' : ''}
-                                </span>
-                            ))}
-                        </p>
+                    <div className='flex flex-row'>
+                        <Image
+                        src={repostAuthorPhotoURL} alt='Profile Picture' width={45} height={45}
+                        className='rounded-full drop-shadow-sm aspect-square'
+                        />
+
+                        <div className='ml-4 items-center justify-center'>
+                        <div className='flex flex-row gap-2'> {/* displayName, username */}
+                            <div className='font-bold'><p>{repostAuthorDisplayName}</p></div>
+                            <div className='font-bold'>·</div>
+                            <Link href={'/user/' + repostAuthorUsername} id='display-name' className='hover:text-grass hover:font-bold transition-all'><p>@{repostAuthorUsername}</p></Link>
                         </div>
-                    )}
+
+                        <div className='flex flex-row gap-2 items-center'> {/* YYYY-MM-DD at HH-MM */}
+                            <p className='text-sm'>{formatDate(repostDate)}</p>
+                        </div>
+                        </div>
                     </div>
 
-                    { (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') && 
-                        <div className='flex flex-row items-center gap-2 mb-2'>
-                        <i className='fa-solid fa-location-crosshairs'/>
-                        <p className='line-clamp-1 overflow-hidden text-md'>{postTrackerLocation}</p>
+                    <div className='flex flex-row justify-between mt-2 gap-6 cursor-pointer' 
+                    onClick={() =>
+                    Router.push({
+                        pathname: '/post/[postID]',
+                        query: { postID: repostID },
+                    })
+                    }>
+                        <div>
+                        <p className='line-clamp-1 overflow-hidden'>{repostBody}</p>
                         </div>
-                    }
 
-                    <div id='post-text'>
-                        <p className='whitespace-pre-line'>{postBody}</p>
-                    </div>
-                
-                    { imageUrls.length >= 1 &&
-                        <div id="post-image" className='mt-4 h-[300px] w-auto flex items-center justify-center relative'>
-                            {imageUrls.length > 1 && (
-                            <>
-                                <i className="fa-solid fa-circle-chevron-left absolute left-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" 
-                                onClick={() => {
-                                    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageUrls.length) % imageUrls.length);
-                                }}
-                                ></i>
-                                <i className="fa-solid fa-circle-chevron-right absolute right-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" 
-                                onClick={() => {
-                                    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageUrls.length);
-                                }}></i>
-                            </>
-                            )}
-                            
-                            <Image src={imageUrls[currentImageIndex]} alt="post image" 
-                                layout='fill'
-                                objectFit='contain'
-                                className='rounded-lg'
+                        <div>
+                        {repostImage !== null ? (
+                            <Image
+                            src={repostImage} alt='Repost Image' width={45} height={45}
+                            className='rounded-md drop-shadow-sm aspect-square'
                             />
+                        ) : null}
                         </div>
-                    }
+                    </div>
                 </div>
 
                 {/* Footer */}
@@ -518,34 +483,14 @@ export default function PostExpanded({ props }) {
                         <p>{commentsLength}</p>
                         </div>
 
-                        <div id="share-control">
-                        <i 
-                            onClick={() => setShowSharePostModal(true)} 
-                            className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
-
-                            <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
-                                {currentUser && <Share 
-                                    props={{
-                                        currentUserID: currentUserID,
-                                        currentUserPhotoURL: currentUser.photoURL,
-                                        currentUserUsername: currentUser.username,
-                                        currentUserDisplayName: currentUser.displayName,
-                                        postID: postID,
-                                        postBody: postBody,
-                                        postCategory: postCategory,
-                                        postTrackerLocation: postTrackerLocation,
-                                        postPets: postPets,
-                                        postDate: postDate,
-                                        imageUrls: imageUrls,
-                                        authorID: authorID,
-                                        authorDisplayName: authorDisplayName,
-                                        authorUsername: authorUsername,
-                                        authorPhotoURL: authorPhotoURL,
-                                        taggedPets: taggedPets,
-                                        setShowSharePostModal: setShowSharePostModal,
-                                    }}
-                                />}
-                            </Modal>
+                        <div>
+                        <i id="share-control"
+                            onClick={() => {
+                            const url = `https://bantaybuddy.vercel.app/post/${postID}`;
+                            navigator.clipboard.writeText(url);
+                            toast.success('Link copied to clipboard!');
+                            }} 
+                            className="fa-solid fa-link hover:text-grass hover:cursor-pointer transition-all" />
                         </div>
                     </div>
 
@@ -571,64 +516,6 @@ export default function PostExpanded({ props }) {
                             </div>
 
                             <div className='h-full mt-2 mb-4 w-full flex flex-col justify-start gap-4'>
-
-                                {
-                                (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') && 
-                                    <Select 
-                                    options={[
-                                        {value: 'Retrieved Pets', label: 'Retrieved Pets'},
-                                    ]}
-                                    value={editedCategory}
-                                    onChange={handleSelectEditedCategory}
-                                    placeholder='Category'
-                                    className='w-full'
-                                    />
-                                }
-
-                                {
-                                (postCategory === 'Retrieved Pets') && 
-                                    <Select 
-                                    options={[
-                                        {value: 'Lost Pets', label: 'Lost Pets'},
-                                        {value: 'Unknown Owner', label: 'Unknown Owner'},
-                                    ]}
-                                    value={editedCategory}
-                                    onChange={handleSelectEditedCategory}
-                                    placeholder='Category'
-                                    className='w-full'
-                                    />
-                                }
-
-                                {
-                                (postCategory !== 'Lost Pets' && postCategory !== 'Unknown Owner' && postCategory !== 'Retrieved Pets') && 
-                                    <Select 
-                                        options={[
-                                            {value: 'Default', label: 'Default'},
-                                            {value: 'Q&A', label: 'Q&A'},
-                                            {value: 'Tips', label: 'Tips'},
-                                            {value: 'Pet Needs', label: 'Pet Needs'},
-                                            {value: 'Milestones', label: 'Milestones'},
-                                        ]}
-                                        value={editedCategory}
-                                        onChange={handleSelectEditedCategory}
-                                        placeholder='Category'
-                                        className='w-full'
-                                    />
-                                }
-
-                                {
-                                (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') &&
-                                    <input 
-                                        id='tracker-location'
-                                        type='text'
-                                        maxLength={50}
-                                        value={editedPostTrackerLocation}
-                                        onChange={(event) => setEditedPostTrackerLocation(event.target.value)}
-                                        placeholder='Tracker Location'
-                                        className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4'
-                                    />
-                                }
-
                                 <textarea 
                                     id="post-body" 
                                     value={editedPostBody}
@@ -755,7 +642,7 @@ export default function PostExpanded({ props }) {
                             }
                         })}
                         placeholder='Write a comment...' 
-                        className={`outline-none resize-none border bg-[#fafafa] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
+                        className={`outline-none resize-none border bg-[#fafafafa] text-md border-[#d1d1d1] rounded-xl text-raisin_black w-full p-3 transition-all ${isFocused ? 'max-h-[80px]' : 'max-h-[50px]'}`}
                     />
 
                     <button

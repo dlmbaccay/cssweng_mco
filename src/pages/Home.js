@@ -10,7 +10,7 @@ import Image from 'next/image';
 
 import CreatePost from '../components/Post/CreatePost';
 import PostSnippet from '../components/Post/PostSnippet';
-import Repost from '../components/Post/Repost';
+import Repost from '../components/Post/RepostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 import { createPostModalStyle } from '../lib/modalstyle';
 
@@ -236,12 +236,12 @@ function Home() {
                         <div key={post.id}>
                             <Repost
                                 props={{
-                                  currentUserID: user.uid,
+                                    currentUserID: user.uid,
                                     authorID: post.authorID,
                                     authorDisplayName: post.authorDisplayName,
                                     authorUsername: post.authorUsername,
                                     authorPhotoURL: post.authorPhotoURL,
-                                    id: post.id,
+                                    postID: post.id,
                                     postDate: post.postDate,
                                     postType: 'repost',
                                     postBody: post.postBody,
