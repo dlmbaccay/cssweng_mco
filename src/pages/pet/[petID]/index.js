@@ -16,7 +16,7 @@ import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import Loader from '@/src/components/Loader';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import RoundIcon from '@/src/components/RoundIcon';
-import PostSnippet from '@/src/components/PostSnippet';
+import PostSnippet from '@/src/components/Post/PostSnippet';
 import withAuth from '@/src/components/withAuth';
 
 function PetProfilePage() {

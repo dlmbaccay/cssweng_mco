@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast';
-import { firestore } from '../lib/firebase';
+import { firestore } from '../../lib/firebase';
 import Modal from 'react-modal';
-import { postDeleteConfirmationModalStyle } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle } from '../../lib/modalstyle';
 import Reply from './Reply';
 
 import likeReaction from '/public/images/post-reactions/like.png'

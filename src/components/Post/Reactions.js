@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { firestore } from '../lib/firebase'
+import { firestore } from '../../lib/firebase'
 import Image from 'next/image'
 
 import likeReaction from '/public/images/post-reactions/like.png'

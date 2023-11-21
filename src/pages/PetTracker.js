@@ -8,8 +8,8 @@ import Router from 'next/router';
 import Modal from 'react-modal';
 import Image from 'next/image';
 
-import CreatePost from '../components/CreatePost';
-import PostSnippet from '../components/PostSnippet';
+import CreatePost from '../components/Post/CreatePost';
+import PostSnippet from '../components/Post/PostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 import { createPostModalStyle } from '../lib/modalstyle';
 

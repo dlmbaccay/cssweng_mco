@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 import Modal from 'react-modal';
-import { firestore, storage, firebase } from '../lib/firebase';
+import { firestore, storage, firebase } from '../../lib/firebase';
 import { arrayRemove, onSnapshot } from 'firebase/firestore';
 import Select from 'react-select'
 import Router from 'next/router';
@@ -16,7 +16,7 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../../lib/modalstyle';
 import Comment from './Comment';
 import Reactions from './Reactions';
 

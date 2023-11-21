@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import Image from 'next/image'
 import Select from 'react-select'
-import { firestore, storage } from '../lib/firebase';
+import { firestore, storage } from '../../lib/firebase';
 import { arrayUnion } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import { useCurrentUserPets } from '../lib/hooks';
+import { useCurrentUserPets } from '../../lib/hooks';
 
 export default function CreatePost({ props }) {
 

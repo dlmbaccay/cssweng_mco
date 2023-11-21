@@ -13,8 +13,8 @@ import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, edit
 import ExpandedNavBar from '@/src/components/ExpandedNavBar';
 import RoundIcon from '@/src/components/RoundIcon';
 import CoverPhoto from '@/src/components/CoverPhoto';
-import PostSnippet from '@/src/components/PostSnippet';
-import CreatePost from '@/src/components/CreatePost';
+import PostSnippet from '@/src/components/Post/PostSnippet';
+import CreatePost from '@/src/components/Post/CreatePost';
 import withAuth from '@/src/components/withAuth';
 import { arrayUnion } from 'firebase/firestore';
 import { set } from 'react-hook-form';
