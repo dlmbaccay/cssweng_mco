@@ -116,28 +116,28 @@ function Home() {
 
         <div className='w-full bg-dark_gray'>            
           {/* search and logo bar */}
-          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between gap-7 p-2 '>
-            <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm sm:w-[200px] md:w-[300px] lg:w-[400px] max-sm:w-[200px]'>
-              <i
-                className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
-                // onClick={}
-              />
-              <input 
-                type='text'
-                placeholder='Search'
-                className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
-                onFocus={() => setIsSearchInputFocused(true)}
-                onBlur={() => setIsSearchInputFocused(false)}
-              />
-            </div>
-
-            <div className='flex flex-row justify-center items-center gap-2 mr-8'>
-              <h1 className='font-bold font-shining text-3xl text-grass sm:text-xl md:text-2xl max-sm:text-base'>BantayBuddy</h1>
-
-              <div className='bg-grass w-[40px] h-[40px] rounded-full shadow-lg max-sm:w-[25px] max-sm:h-[25px] sm:w-[25px] sm:h-[25px] sm:mr-[20px] max-sm:mr-[30px] md:xl:w-[40px] md:xl:h-[40px] md:xl:mr-[10px]'>
-                <Image src='/images/logo.png' alt='logo' width={100} height={100} className='rounded-full'/>
+          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+              <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
+                  <i
+                  className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
+                  // onClick={}
+                  />
+                  <input 
+                  type='text'
+                  placeholder='Search'
+                  className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
+                  onFocus={() => setIsSearchInputFocused(true)}
+                  onBlur={() => setIsSearchInputFocused(false)}
+                  />
               </div>
-            </div>
+
+              <div className='flex flex-row justify-center items-center gap-2 mr-8'>
+                  <h1 className='font-shining text-3xl text-grass'>BantayBuddy</h1>
+
+                  <div className='bg-grass w-[40px] h-[40px] rounded-full shadow-lg'>
+                  <Image src='/images/logo.png' alt='logo' width={100} height={100} className='rounded-full'/>
+                  </div>
+              </div>
           </div>  
 
           {/* main container */}
