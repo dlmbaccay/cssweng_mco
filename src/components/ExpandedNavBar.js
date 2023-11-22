@@ -187,6 +187,10 @@ export default function ExpandedNavBar({ props }) {
               <i className='transition-all fa-solid fa-right-from-bracket pl-[2px] w-[35px] h-[35px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black'></i>
               <p className='transition-all text-grass text-2xl font-shining group-hover:text-raisin_black'>Log Out</p>
             </button>
+
+            <button onClick={() => router.push('/AboutUs')} className='text-xanthous mb-2 mt-auto hover:text-grass'>
+              About Us
+            </button>
           </div>
         }
         
