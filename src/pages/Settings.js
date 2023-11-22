@@ -263,7 +263,7 @@ function Settings() {
                         onSubmit={handleSubmit}
                         className="rounded-lg drop-shadow-lg p-10 w-full h-full overflow-auto flex flex-col justify-start items-center">
 
-                        <div className='mt-2 flex flex-col justify-center items-center w-[750px] h-[150px] p-4 bg-pale_yellow rounded-lg drop-shadow-md mb-8'>
+                        <div className='mt-2 flex flex-col justify-center items-center w-[250px] md:w-[750px] h-[150px] p-4 bg-pale_yellow rounded-lg drop-shadow-md mb-8'>
                             <label htmlFor="user-visibility" className="block font-bold text-grass font-shining text-3xl mb-4">Security</label>
                             
                             <div> {/* Change password */}
@@ -326,8 +326,8 @@ function Settings() {
                             </div>
                         </div>
 
-                        <div className='flex flex-row justify-center items-start gap-12'>
-                            <div className="justify-start items-center w-[350px] h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg shadow-lg"> {/* User Visibility */}
+                        <div className='flex flex-col md:flex-row justify-center items-center gap-12'>
+                            <div className="justify-start items-center w-[250px] h-fit md:w-[350px] md:h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg shadow-lg"> {/* User Visibility */}
                                 <label htmlFor="user-visibility" className="font-shining text-3xl font-bold text-grass mb-4">User Visibility</label>
 
                                 {userSwitches.map((switchItem) => (
@@ -349,7 +349,7 @@ function Settings() {
                                 ))}
                             </div>
         
-                            <div className="justify-start items-center w-[350px] h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg drop-shadow-md"> {/* Pet Visibility */}
+                            <div className="justify-start items-center w-[250px] h-fit md:w-[350px] md:h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg drop-shadow-md"> {/* Pet Visibility */}
                                 <label htmlFor="pet-visibility" className="font-shining text-3xl font-bold text-grass mb-4">Pet Visibility</label>
                                 {petSwitches.map((switchItem) => (
                                     <div key={switchItem.id} className="flex justify-between w-full items-center mb-4">
@@ -373,7 +373,7 @@ function Settings() {
 
                         {/* buttons */}
                         <div className="flex mt-8">
-                            <button type='submit' className="py-3 px-8 rounded-md bg-grass text-pale_yellow font-shining transition-all hover:scale-105 active:scale-100 hover:bg-raisin_black text-xl">
+                            <button type='submit' className="md:py-3 md:px-8 py-2 px-6 rounded-md bg-grass text-pale_yellow font-shining transition-all hover:scale-105 active:scale-100 hover:bg-raisin_black text-xl">
                                 Save Changes
                             </button>
                         </div>
