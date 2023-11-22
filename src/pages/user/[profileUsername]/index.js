@@ -1047,7 +1047,7 @@ function UserProfilePage() {
                                                 </div>
                                             ) : (
                                                 <div className="w-full flex flex-col md:flex-row gap-12 items-center justify-start 
-                                                    pt-10 pl-10 pr-10 pb-10  
+                                                    pt-10 pl-10 pr-10 pb-28  
                                                     lg:pl-20 lg:pt-16 lg:pr-20 lg:pb-16  
                                                 ">
                                                     {pets.map((pet) => (
@@ -1080,7 +1080,7 @@ function UserProfilePage() {
                                                     ))}
 
                                                     { profileUserID === currentUserID && (
-                                                        <div className="flex flex-col ">
+                                                        <div className="flex flex-col">
                                                                 <button onClick={() => setShowCreatePetForm(true)}
                                                                 className=''>
                                                                     <i className="
