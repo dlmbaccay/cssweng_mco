@@ -576,30 +576,30 @@ export default function PostExpanded({ props }) {
                 <div id="right" className='flex flex-row gap-4 items-center'>
                     {currentUserID !== authorID && 
                     <div id='report-control'>
-                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all">
-                        <Modal isOpen={showReportPostModal} onRequestClose={() => setShowReportPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={reportPostModalStyle}>
-                                {currentUser && <Report 
-                                    props={{
-                                        currentUserID: currentUserID,
-                                        currentUserPhotoURL: currentUser.photoURL,
-                                        currentUserUsername: currentUser.username,
-                                        currentUserDisplayName: currentUser.displayName,
-                                        postID: postID,
-                                        postBody: postBody,
-                                        postCategory: postCategory,
-                                        postTrackerLocation: postTrackerLocation,
-                                        postPets: postPets,
-                                        postDate: postDate,
-                                        imageUrls: imageUrls,
-                                        authorID: authorID,
-                                        authorDisplayName: authorDisplayName,
-                                        authorUsername: authorUsername,
-                                        authorPhotoURL: authorPhotoURL,
-                                        taggedPets: taggedPets,
-                                        setShowReportPostModal: setShowReportPostModal,
-                                    }}
-                                />}
-                            </Modal>
+                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" onClick={() => setShowReportPostModal(true)}>
+                        <Modal isOpen={showReportPostModal} onRequestClose={() => setShowReportPostModal(false)} style={reportPostModalStyle}>
+                            {currentUser && <Report 
+                                props={{
+                                    currentUserID: currentUserID,
+                                    currentUserPhotoURL: currentUser.photoURL,
+                                    currentUserUsername: currentUser.username,
+                                    currentUserDisplayName: currentUser.displayName,
+                                    postID: postID,
+                                    postBody: postBody,
+                                    postCategory: postCategory,
+                                    postTrackerLocation: postTrackerLocation,
+                                    postPets: postPets,
+                                    postDate: postDate,
+                                    imageUrls: imageUrls,
+                                    authorID: authorID,
+                                    authorDisplayName: authorDisplayName,
+                                    authorUsername: authorUsername,
+                                    authorPhotoURL: authorPhotoURL,
+                                    taggedPets: taggedPets,
+                                    setShowReportPostModal: setShowReportPostModal,
+                                }}
+                            />}
+                        </Modal>
                         </i>
                     </div>
                     }

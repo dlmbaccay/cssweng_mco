@@ -77,53 +77,93 @@ export default function Report({props}) {
     //     });
 
         toast.dismiss();
-        toast.success('Report submitted!');
+        toast.success('Report button clicked!');
         e.stopPropagation();
-    //     setReposting(false);
+        // setReposting(false);
         setShowReportPostModal(false);
     }
+
+    const optionsGroup1 = ['Nudity', 'Harassment', 'Violence', 'Self-Injury'];
+    const optionsGroup2 = ['False Information', 'Spam', 'Hate Speech', 'Others'];
+
 
     return (
         <div className='flex flex-col w-full h-full justify-between'>
             <div className='flex flex-row w-full justify-between items-center'>
-                <p className='font-bold text-center w-full pl-2'>Report {authorUsername}'s Post</p>
+                <p className='font-bold text-center w-full pl-2'>Report {authorUsername}&apos;s Post</p>
                 <i className='fa-solid fa-circle-xmark hover:text-xanthous cursor-pointer' onClick={() => setShowReportPostModal(false)}/>
             </div>
 
             
 
-            <div className='flex flex-col mt-5'>
-                <div className='flex flex-col space-y-2'>
+            <div className='flex flex-col mt-5 w-full'>
+                <div className='flex flex-row gap-2 w-full'>
                 
-                {['Nudity', 'Harassment', 'Violence', 'Self-Injury', 'False Information', 'Spam', 'Hate Speech', 'Others'].map((option) => (
-                    <div key={option} className='flex items-center'>
-                    <input
-                        type='checkbox'
-                        id={`checkbox-${option}`}
-                        name={`checkbox-${option}`}
-                        checked={selectedOptions.includes(option)}
-                        onChange={() => handleCheckboxChange(option)}
-                        className='hidden'
-                    />
-                    {/* <label htmlFor={`checkbox-${option}`}>{option}</label> */}
-                    <label
-                        htmlFor={`checkbox-${option}`}
-                        className={`cursor-pointer flex items-center p-1 pl-2 border rounded w-40 ${selectedOptions.includes(option) ? 'bg-grass text-white' : 'border-gray-300'}`}
-                        >
-                        {option}
-                    </label>
-                    {option === 'Others' && selectedOptions.includes('Others') && (
+                <div className='flex flex-col gap-2 w-1/2'>
+                    {optionsGroup1.map((option) => (
+                        <div key={option} className='flex items-center'>
                         <input
-                        type='text'
-                        value={othersInput}
-                        onChange={(e) => setOthersInput(e.target.value)}
-                        placeholder='Please specify'
-                        className='ml-2 border border-[#d1d1d1] rounded p-1'
-                        required
+                            type='checkbox'
+                            id={`checkbox-${option}`}
+                            name={`checkbox-${option}`}
+                            checked={selectedOptions.includes(option)}
+                            onChange={() => handleCheckboxChange(option)}
+                            className='hidden'
                         />
-                    )}
-                    </div>
-                ))}
+                        {/* <label htmlFor={`checkbox-${option}`}>{option}</label> */}
+                        <label
+                            htmlFor={`checkbox-${option}`}
+                            className={`w-full cursor-pointer flex items-center p-1 pl-2 border rounded ${selectedOptions.includes(option) ? 'bg-grass text-white' : 'border-gray-300'}`}
+                            >
+                            {option}
+                        </label>
+                        {option === 'Others' && selectedOptions.includes('Others') && (
+                            <input
+                            type='text'
+                            value={othersInput}
+                            onChange={(e) => setOthersInput(e.target.value)}
+                            placeholder='Please specify'
+                            className='ml-2 border border-[#d1d1d1] rounded p-1'
+                            required
+                            />
+                        )}
+                        </div>
+                    ))}
+                </div>
+
+                <div className='flex flex-col gap-2 w-1/2'>
+                    {optionsGroup2.map((option) => (
+                        <div key={option} className='flex items-center'>
+                        <input
+                            type='checkbox'
+                            id={`checkbox-${option}`}
+                            name={`checkbox-${option}`}
+                            checked={selectedOptions.includes(option)}
+                            onChange={() => handleCheckboxChange(option)}
+                            className='hidden'
+                        />
+                        {/* <label htmlFor={`checkbox-${option}`}>{option}</label> */}
+                        <label
+                            htmlFor={`checkbox-${option}`}
+                            className={`w-full cursor-pointer flex items-center p-1 pl-2 border rounded ${selectedOptions.includes(option) ? 'bg-grass text-white' : 'border-gray-300'}`}
+                            >
+                            {option}
+                        </label>
+                        {option === 'Others' && selectedOptions.includes('Others') && (
+                            <input
+                            type='text'
+                            value={othersInput}
+                            onChange={(e) => setOthersInput(e.target.value)}
+                            placeholder='Please specify'
+                            className='ml-2 border border-[#d1d1d1] rounded p-1'
+                            required
+                            />
+                        )}
+                        </div>
+                    ))}
+                </div>
+
+                
             </div>
 
             </div>
