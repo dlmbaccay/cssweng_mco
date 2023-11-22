@@ -4,12 +4,15 @@ import { firestore } from '../lib/firebase'
 import { getAuth, updatePassword } from "firebase/auth";
 import Router from 'next/router';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 import { Switch } from '@headlessui/react';
 import Modal from 'react-modal';
 import { changePasswordStyle } from '../lib/modalstyle';
 import { checkPassword } from '../lib/formats';
 import withAuth from '../components/withAuth';
 import ExpandedNavBar from '../components/ExpandedNavBar';
+import PhoneNav from '../components/PhoneNav';
+import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 function Settings() {
     const { user, username, userPhotoURL } = useUserData();
@@ -202,6 +205,8 @@ function Settings() {
         await updateHiddenField();
     }
     
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+    
     return (
         <div>
             <div id="root" className='flex flex-row h-screen paw-background overflow-hidden'>
@@ -216,7 +221,7 @@ function Settings() {
                     />}
                 </div>
 
-                <div className='w-fit lg:hidden'>
+                <div className='w-fit md:flex lg:hidden hidden'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
                         props={{
                             userPhotoURL: userPhotoURL,
@@ -228,11 +233,37 @@ function Settings() {
                 </div>
 
                 <div className="w-full flex flex-col justify-center items-center h-full">
+
+                    <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                        <div className='h-full w-fit flex flex-row items-center gap-1'>
+                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                            <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                        </div>
+                        
+                        <button onClick={() => setShowPhoneNavModal(true)}>
+                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                        </button>
+
+                        <Modal 
+                            isOpen={showPhoneNavModal}
+                            onRequestClose={() => setShowPhoneNavModal(false)}
+                            style={phoneNavModalStyle}
+                        >
+                            <PhoneNav 
+                            props = {{
+                                setShowPhoneNavModal: setShowPhoneNavModal,
+                                currentUserUsername: username,
+                                currentUserPhotoURL: userPhotoURL,
+                            }}
+                            />
+                        </Modal>
+                    </nav>
+
                     <form
                         onSubmit={handleSubmit}
                         className="rounded-lg drop-shadow-lg p-10 w-full h-full overflow-auto flex flex-col justify-start items-center">
 
-                        <div className='mt-2 flex flex-col justify-center items-center w-[750px] h-[150px] p-4 bg-pale_yellow rounded-lg drop-shadow-md mb-8'>
+                        <div className='mt-2 flex flex-col justify-center items-center w-[250px] md:w-[750px] h-[150px] p-4 bg-pale_yellow rounded-lg drop-shadow-md mb-8'>
                             <label htmlFor="user-visibility" className="block font-bold text-grass font-shining text-3xl mb-4">Security</label>
                             
                             <div> {/* Change password */}
@@ -295,8 +326,8 @@ function Settings() {
                             </div>
                         </div>
 
-                        <div className='flex flex-row justify-center items-start gap-12'>
-                            <div className="justify-start items-center w-[350px] h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg shadow-lg"> {/* User Visibility */}
+                        <div className='flex flex-col md:flex-row justify-center items-center gap-12'>
+                            <div className="justify-start items-center w-[250px] h-fit md:w-[350px] md:h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg shadow-lg"> {/* User Visibility */}
                                 <label htmlFor="user-visibility" className="font-shining text-3xl font-bold text-grass mb-4">User Visibility</label>
 
                                 {userSwitches.map((switchItem) => (
@@ -318,7 +349,7 @@ function Settings() {
                                 ))}
                             </div>
         
-                            <div className="justify-start items-center w-[350px] h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg drop-shadow-md"> {/* Pet Visibility */}
+                            <div className="justify-start items-center w-[250px] h-fit md:w-[350px] md:h-[350px] flex flex-col bg-pale_yellow p-8 rounded-lg drop-shadow-md"> {/* Pet Visibility */}
                                 <label htmlFor="pet-visibility" className="font-shining text-3xl font-bold text-grass mb-4">Pet Visibility</label>
                                 {petSwitches.map((switchItem) => (
                                     <div key={switchItem.id} className="flex justify-between w-full items-center mb-4">
@@ -342,7 +373,7 @@ function Settings() {
 
                         {/* buttons */}
                         <div className="flex mt-8">
-                            <button type='submit' className="py-3 px-8 rounded-md bg-grass text-pale_yellow font-shining transition-all hover:scale-105 active:scale-100 hover:bg-raisin_black text-xl">
+                            <button type='submit' className="md:py-3 md:px-8 py-2 px-6 rounded-md bg-grass text-pale_yellow font-shining transition-all hover:scale-105 active:scale-100 hover:bg-raisin_black text-xl">
                                 Save Changes
                             </button>
                         </div>

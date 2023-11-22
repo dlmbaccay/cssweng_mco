@@ -135,10 +135,12 @@ export default function RepostSnippet( {props} ) {
           await reactionRef.set({ userIDs: [currentUserID] });
         }
       }
+
+      setIsOverlayVisible(false);
     };
 
   return (
-    <div className='drop-shadow-sm hover:drop-shadow-md bg-snow w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
+    <div className='drop-shadow-sm hover:drop-shadow-md bg-snow w-[320px] md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
       
       {/* Repost expanded */}
       <Modal isOpen={showPostExpanded} onRequestClose={() => setShowPostExpanded(false)} style={expandedPostStyle}>
@@ -159,23 +161,23 @@ export default function RepostSnippet( {props} ) {
         <div id='user-image' className='flex flex-row justify-start items-start'>
           <Image 
             src={authorPhotoURL} alt='Profile Picture' width={45} height={45}
-            className='rounded-full drop-shadow-sm aspect-square'
+            className='rounded-full drop-shadow-sm aspect-square h-[40px] w-[40px] md:h-[45px] md:w-[45px]'
           />
         </div>
 
         <div id='post-meta' className='ml-4 items-center justify-center'>
-              <div id='user-meta' className='flex flex-row gap-2'>
+              <div id='user-meta' className='flex flex-row gap-2 text-sm md:text-base'>
                 <div id='display-name' className='font-bold'><p>{authorDisplayName}</p></div>
                 <div className='font-bold'>·</div>
                 <Link href={'/user/' + authorUsername} id='display-name' className='hover:text-grass hover:font-bold transition-all'><p>@{authorUsername}</p></Link>
               </div>
 
               <div id='publish-date' className='flex flex-row gap-2 items-center'> {/* YYYY-MM-DD at HH-MM */}
-                <p className='text-sm'>{formatDate(postDate)}</p>
+                <p className='text-xs md:text-sm'>{formatDate(postDate)}</p>
                 {isEdited ? 
                   ( 
                     <div className='relative flex flex-row items-center gap-2'>
-                      <i className='hover-tooltip fa-solid fa-clock-rotate-left text-xs'/> 
+                      <i className='hover-tooltip fa-solid fa-clock-rotate-left text-[10px] md:text-xs'/> 
                       <p className='edited-post-tooltip hidden text-xs'>Edited Post</p>
                     </div>
                   )
@@ -186,7 +188,7 @@ export default function RepostSnippet( {props} ) {
 
       {/* Body */}
       <div id="post-body" className='mt-3 flex flex-col'>
-        <p className='line-clamp-2 overflow-hidden'>{postBody}</p>
+        <p className='line-clamp-2 overflow-hidden text-sm md:text-base'>{postBody}</p>
       </div>
 
       {/* Reposted Post */}
@@ -195,18 +197,18 @@ export default function RepostSnippet( {props} ) {
         <div className='flex flex-row'>
             <Image
               src={repostAuthorPhotoURL} alt='Profile Picture' width={45} height={45}
-              className='rounded-full drop-shadow-sm aspect-square'
+              className='rounded-full drop-shadow-sm aspect-square h-[40px] w-[40px] md:h-[45px] md:w-[45px]'
             />
 
             <div className='ml-4 items-center justify-center'>
-              <div className='flex flex-row gap-2'> {/* displayName, username */}
+              <div className='flex flex-row gap-2 text-sm md:text-base'> {/* displayName, username */}
                 <div className='font-bold'><p>{repostAuthorDisplayName}</p></div>
                 <div className='font-bold'>·</div>
                 <Link href={'/user/' + repostAuthorUsername} id='display-name' className='hover:text-grass hover:font-bold transition-all'><p>@{repostAuthorUsername}</p></Link>
               </div>
 
               <div className='flex flex-row gap-2 items-center'> {/* YYYY-MM-DD at HH-MM */}
-                <p className='text-sm'>{formatDate(repostDate)}</p>
+                <p className='text-xs md:text-sm'>{formatDate(repostDate)}</p>
               </div>
             </div>
         </div>
@@ -219,7 +221,7 @@ export default function RepostSnippet( {props} ) {
           })
         }>
             <div>
-              <p className='line-clamp-1 overflow-hidden'>{repostBody}</p>
+              <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{repostBody}</p>
             </div>
 
             <div>
@@ -235,126 +237,120 @@ export default function RepostSnippet( {props} ) {
 
        {/* Footer */}
         <div id='post-footer' className='mt-4 flex flex-row w-full justify-between relative'>
-          <div id="left" className='flex flex-row gap-4'>
+          <div id="left" className='flex flex-row gap-4 text-sm md:text-base items-center'>
             <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2 w-fit h-6'>
-              {!currentUserReaction && 
-                <i 
-                  className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)}
-                />
-              }
-              
-              {currentUserReaction === 'like' &&
-                <Image
-                  src={likeReaction}
-                  alt="like reaction"
-                  className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)} 
-                />
-              }
+                {!currentUserReaction && 
+                  <i 
+                    className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                    onClick={() => setIsOverlayVisible(true)}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                  />
+                }
+                
+                {currentUserReaction === 'like' &&
+                  <Image
+                    src={likeReaction}
+                    alt="like reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                  />
+                }
 
-              {currentUserReaction === 'heart' &&
-                <Image
-                  src={heartReaction}
-                  alt="heart reaction"
-                  className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)} 
-                />
-              }
+                {currentUserReaction === 'heart' &&
+                  <Image
+                    src={heartReaction}
+                    alt="heart reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                  />
+                }
 
-              {currentUserReaction === 'haha' &&
-                <Image
-                  src={laughReaction}
-                  alt="haha reaction"
-                  className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)} 
-                />
-              }
+                {currentUserReaction === 'haha' &&
+                  <Image
+                    src={laughReaction}
+                    alt="haha reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                  />
+                }
 
-              {currentUserReaction === 'wow' &&
-                <Image
-                  src={wowReaction}
-                  alt="wow reaction"
-                  className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)} 
-                />
-              }
+                {currentUserReaction === 'wow' &&
+                  <Image
+                    src={wowReaction}
+                    alt="wow reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                  />
+                }
 
-              {currentUserReaction === 'sad' &&
-                <Image
-                  src={sadReaction}
-                  alt="sad reaction"
-                  className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)} 
-                />
-              }
+                {currentUserReaction === 'sad' &&
+                  <Image
+                    src={sadReaction}
+                    alt="sad reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                  />
+                }
 
-              {currentUserReaction === 'angry' &&
-                <Image
-                  src={angryReaction}
-                  alt="angry reaction"
-                  className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)} 
-                />
-              }
+                {currentUserReaction === 'angry' &&
+                  <Image
+                    src={angryReaction}
+                    alt="angry reaction"
+                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                  />
+                }
 
-              <p>
-                {reactionsLength}
-              </p>
+                <p>
+                  {reactionsLength}
+                </p>
 
-              {isOverlayVisible && (
-                <div 
-                  onMouseEnter={() => setIsOverlayVisible(true)}
-                  onMouseLeave={() => setIsOverlayVisible(false)}
-                  id='overlay' 
-                  className='absolute -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
-                >
-                  <Image 
-                    src={likeReaction} 
-                    alt="like reaction" 
-                    className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                    onClick={() => handleReaction('like')}
-                    />
-                  <Image 
-                    src={heartReaction} 
-                    alt="like reaction" 
-                    className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                    onClick={() => handleReaction('heart')}
-                    />
-                  <Image 
-                    src={laughReaction} 
-                    alt="like reaction" 
-                    className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                    onClick={() => handleReaction('haha')}
-                    />
-                  <Image 
-                    src={wowReaction} 
-                    alt="like reaction" 
-                    className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                    onClick={() => handleReaction('wow')}
-                    />
-                  <Image 
-                    src={sadReaction} 
-                    alt="like reaction" 
-                    className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                    onClick={() => handleReaction('sad')}
-                    />
-                  <Image 
-                    src={angryReaction} 
-                    alt="like reaction" 
-                    className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                    onClick={() => handleReaction('angry')}
-                    />
-                </div>
-              )}
-            </div>
+                {isOverlayVisible && (
+                  <div 
+                    onMouseEnter={() => setIsOverlayVisible(true)}
+                    onMouseLeave={() => setIsOverlayVisible(false)}
+                    id='overlay' 
+                    className='absolute -left-1 md:-left-2 flex flex-row gap-2 md:w-[300px] md:h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                  >
+                    <Image 
+                      src={likeReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('like')}
+                      />
+                    <Image 
+                      src={heartReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('heart')}
+                      />
+                    <Image 
+                      src={laughReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('haha')}
+                      />
+                    <Image 
+                      src={wowReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('wow')}
+                      />
+                    <Image 
+                      src={sadReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('sad')}
+                      />
+                    <Image 
+                      src={angryReaction} 
+                      alt="like reaction" 
+                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                      onClick={() => handleReaction('angry')}
+                      />
+                  </div>
+                )}
+              </div>
             
             <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
               <i 
@@ -379,7 +375,7 @@ export default function RepostSnippet( {props} ) {
             </div>
           </div>
 
-          <div id="right" className='flex flex-row gap-4 items-center'>
+          <div id="right" className='flex flex-row gap-4 text-sm md:text-base items-center'>
             {currentUserID !== authorID && 
                 <i 
                 id='report-control'

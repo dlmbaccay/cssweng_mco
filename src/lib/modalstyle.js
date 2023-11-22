@@ -27,7 +27,7 @@ export const editUserProfileStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 'fit-content', 
+    width: '40%', 
     height: 'fit-content',
     overflow: 'auto',
     padding: '20px',
@@ -223,5 +223,23 @@ export const viewImageModalStyle = {
     padding: '20px',
     borderRadius: '8px',
     backgroundColor: '#FAFAFA',
+  },
+}
+
+export const phoneNavModalStyle = {
+  overlay: {
+    zIndex: 2000,
+  },
+  content: {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    overflow: 'auto',
+    padding: '0px',
+    borderRadius: '0px',
+    border: 'none',
+    backgroundColor: '#FFEBBE',
   },
 }

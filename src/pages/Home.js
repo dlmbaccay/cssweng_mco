@@ -12,7 +12,8 @@ import CreatePost from '../components/Post/CreatePost';
 import PostSnippet from '../components/Post/PostSnippet';
 import Repost from '../components/Post/RepostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
-import { createPostModalStyle } from '../lib/modalstyle';
+import PhoneNav from '../components/PhoneNav';
+import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 function Home() {
 
@@ -108,6 +109,8 @@ function Home() {
     setLoading(false);
   };
 
+  const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
   if (!pageLoading) {
     return (
       <div className='flex flex-row w-full h-screen overflow-hidden'>
@@ -123,7 +126,7 @@ function Home() {
           />}
         </div>
 
-        <div className='w-fit lg:hidden'>
+        <div className='w-fit md:flex lg:hidden hidden'>
           {(userPhotoURL && username) && <ExpandedNavBar 
               props={{
                 userPhotoURL: userPhotoURL,
@@ -135,8 +138,34 @@ function Home() {
         </div>
 
         <div className='w-full bg-dark_gray'>            
+
+          <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+              <div className='h-full w-fit flex flex-row items-center gap-1'>
+                <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+              </div>
+              
+              <button onClick={() => setShowPhoneNavModal(true)}>
+                <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+              </button>
+
+              <Modal 
+                  isOpen={showPhoneNavModal}
+                  onRequestClose={() => setShowPhoneNavModal(false)}
+                  style={phoneNavModalStyle}
+              >
+                <PhoneNav 
+                  props = {{
+                    setShowPhoneNavModal: setShowPhoneNavModal,
+                    currentUserUsername: username,
+                    currentUserPhotoURL: userPhotoURL,
+                  }}
+                />
+              </Modal>
+          </nav>
+
           {/* search and logo bar */}
-          <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+          <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
               <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
                   <i
                   className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
@@ -166,7 +195,7 @@ function Home() {
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
               {/* create post */}
               <div 
-                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md  p-2 gap-2'>
+                className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
 
                   {userPhotoURL && <Image
                     src={userPhotoURL}
@@ -174,14 +203,14 @@ function Home() {
                     width={50}
                     height={50}
                     onClick={() => router.push(`/user/${username}`)}
-                    className='rounded-full h-[50px] w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                    className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer'
                   />}
 
-                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left pl-4 text-sm text-raisin_black hover:opacity-60 transition-all'>
+                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
                     <p>What&apos;s on your mind, {displayName}?</p>
                   </button>
 
-                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
+                  <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
                     <i className='fa-solid fa-image'/>
                   </button>
 
@@ -190,16 +219,16 @@ function Home() {
                       onRequestClose={() => setShowCreatePostForm(false)}
                       style={createPostModalStyle}
                   >
-                      <CreatePost 
-                          props={{
-                            createType: 'original',
-                            currentUserID: user.uid,
-                            displayName: displayName,
-                            username: username,
-                            userPhotoURL: userPhotoURL,
-                            setShowCreatePostForm: setShowCreatePostForm,
-                          }}
-                      />
+                        <CreatePost 
+                            props={{
+                              createType: 'original',
+                              currentUserID: user.uid,
+                              displayName: displayName,
+                              username: username,
+                              userPhotoURL: userPhotoURL,
+                              setShowCreatePostForm: setShowCreatePostForm,
+                            }}
+                        />
                   </Modal>
               </div>
 

@@ -8,9 +8,10 @@ import { useRouter } from 'next/router';
 import { firestore, storage, STATE_CHANGED } from '@/src/lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
 import { useUserData, usePetData, useUserIDfromUsername, useAllUserPosts } from '@/src/lib/hooks'
-import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
+import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle, phoneNavModalStyle } from '../../../lib/modalstyle';
 
 import ExpandedNavBar from '@/src/components/ExpandedNavBar';
+import PhoneNav from '@/src/components/PhoneNav';
 import RoundIcon from '@/src/components/RoundIcon';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import PostSnippet from '@/src/components/Post/PostSnippet';
@@ -519,10 +520,12 @@ function UserProfilePage() {
         setLoading(false);
     };
 
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
     return (
         <div id="root" className='flex flex-row h-screen'>
 
-            <div className='w-fit'>
+            <div className='w-fit md:flex hidden'>
                 {(userPhotoURL && username) && <ExpandedNavBar 
                     props={{
                     userPhotoURL: userPhotoURL,
@@ -536,14 +539,40 @@ function UserProfilePage() {
             {profileUser &&
 
                 <div className="h-screen w-full overflow-hidden">
-                    <div id='header-container' className='h-1/5 border-l border-neutral-300'>
+                    
+                    <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                        <div className='h-full w-fit flex flex-row items-center gap-1'>
+                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                            <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                        </div>
+                        
+                        <button onClick={() => setShowPhoneNavModal(true)}>
+                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                        </button>
+
+                        <Modal 
+                            isOpen={showPhoneNavModal}
+                            onRequestClose={() => setShowPhoneNavModal(false)}
+                            style={phoneNavModalStyle}
+                        >
+                            <PhoneNav 
+                            props = {{
+                                setShowPhoneNavModal: setShowPhoneNavModal,
+                                currentUserUsername: username,
+                                currentUserPhotoURL: userPhotoURL,
+                            }}
+                            />
+                        </Modal>
+                    </nav>
+
+                    <div id='header-container' className='h-1/5 border-l border-neutral-300 hidden md:block'>
                         <CoverPhoto src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} />
                     </div>
 
-                    <div id='content-container' className='h-4/5 flex flex-row'>
+                    <div id='content-container' className='h-full md:h-4/5 flex flex-row'>
                         
                         {/* Profile Picture */}
-                        <div className="flex absolute justify-center w-80 h-44">
+                        <div className="hidden md:flex absolute justify-center w-80 h-44">
                             <div className='rounded-full z-10
                                 -translate-y-40 w-32 h-32 -translate-x-14
                                 lg:w-44 lg:h-44 lg:-translate-y-24 lg:translate-x-0'>
@@ -801,18 +830,18 @@ function UserProfilePage() {
 
                         {/* Main Container */}
                         <div id='main-content-container' className='overflow-hidden flex flex-col lg:translate-x-80 lg:w-[calc(100%-20rem)] w-full'>
-                            <div id='flex-profile-details' className='lg:hidden w-full h-12 bg-snow flex flex-row items-center pl-10 gap-8'>
-                                <div className='flex flex-row gap-2'>
+                            <div id='flex-profile-details' className='lg:hidden w-full h-20 md:h-12 bg-snow flex flex-row items-center md:pl-10 gap-8 md:justify-start justify-center'>
+                                <div className='flex flex-col h-fit items-center md:flex-row md:gap-2'>
                                     <p className='font-bold'>
                                     {profileUser.displayName}
                                     </p>
-                                    <p className='font-bold'>·</p>
+                                    <p className='font-bold md:flex hidden'>·</p>
                                     <p className='font'>
                                         @{profileUser.username}
                                     </p>
                                 </div>
 
-                                <div className='flex flex-row gap-2'>
+                                <div className='flex flex-col h-fit items-center md:flex-row md:gap-2 gap-1'>
                                     {/* followers */}
                                     <div className='flex flex-row gap-2 items-center'>
                                         <p className='font-semibold text-sm'>{profileUser.followers.length}</p>
@@ -828,14 +857,14 @@ function UserProfilePage() {
                                 { profileUserID === currentUserID ? 
                                     (<button 
                                         onClick={() => setShowEditProfile(true)}
-                                        className='text-sm font-semibold text-white bg-citron w-12 h-6 rounded-md'
+                                        className='text-sm font-semibold text-white bg-citron w-12 md:h-6 h-8 rounded-md'
                                     >
                                         Edit
                                     </button>) : 
                                     (
                                         <button 
                                             onClick={handleFollow}
-                                            className='text-sm font-semibold text-white bg-citron w-16 h-6 rounded-md'
+                                            className='text-sm font-semibold text-white bg-citron w-16 md:h-6 h-8 rounded-md'
                                         >
                                             {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                         </button>
@@ -843,21 +872,21 @@ function UserProfilePage() {
                                 }
                             </div>
 
-                            <div id="tab-actions" className="flex flex-row h-12 font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm">
+                            <div id="tab-actions" className="flex flex-row h-12 font-shining bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm md:justify-start justify-between">
                                 <button
-                                    className={`px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
+                                    className={`w-1/3 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Posts')}>
                                     Posts
                                 </button>
                                 <button
-                                    className={`px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
+                                    className={`w-1/3 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Pets')}>
                                     Pets
                                 </button>
                                 <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Media' ? 'bg-citron text-white' : ''
+                                    className={`w-1/3 md:w-fit text-sm md:text-base px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Media' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Media')}>
                                     Media
@@ -878,7 +907,7 @@ function UserProfilePage() {
                                                 {/* if no media... */}
                                                 <div className='flex flex-col items-center justify-center h-full w-full'>
                                                     <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                                    <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                                 </div>
 
                                             </div>
@@ -886,7 +915,7 @@ function UserProfilePage() {
 
                                         {currentUserID === profileUserID ? (
                                             <div 
-                                                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center mt-8 hover:drop-shadow-md'>
+                                                className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2 mt-8'>
 
                                                 {userPhotoURL && <Image
                                                     src={userPhotoURL}
@@ -894,14 +923,14 @@ function UserProfilePage() {
                                                     width={50}
                                                     height={50}
                                                     onClick={() => router.push(`/user/${username}`)}
-                                                    className='rounded-full h-[50px] w-[50px] hover:opacity-95 transition-all cursor-pointer'
+                                                    className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-95 transition-all cursor-pointer'
                                                 />}
 
-                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left pl-4 text-sm text-raisin_black hover:bg-gray transition-all'>
+                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
                                                     <p>What&apos;s on your mind, {displayName}?</p>
                                                 </button>
 
-                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
+                                                <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
                                                     <i className='fa-solid fa-image'/>
                                                 </button>
 
@@ -923,85 +952,87 @@ function UserProfilePage() {
                                                 </Modal>
                                             </div>
                                         ) : null}
+                                        
+                                        { posts.length > 0 && (
+                                            <div className="flex mt-8 mb-20 md:mb-8 flex-col gap-8 justify-start items-center">
+                                                {posts.map((post, index) => {
+                                                    console.log(`Processing post ${index} with postType: ${post.postType}`);
 
-                                        <div className="flex mt-8 mb-8 flex-col gap-8 justify-start items-center">
-                                            {posts.map((post, index) => {
-                                                console.log(`Processing post ${index} with postType: ${post.postType}`);
+                                                    if (post.postType === "original") {
+                                                        return (
+                                                            <div key={post.id}>
+                                                                <PostSnippet
+                                                                    props={{
+                                                                        currentUserID: currentUserID,
+                                                                        postID: post.id,
+                                                                        postBody: post.postBody,
+                                                                        postCategory: post.postCategory,
+                                                                        postTrackerLocation: post.postTrackerLocation,
+                                                                        postPets: post.postPets,
+                                                                        postDate: post.postDate,
+                                                                        imageUrls: post.imageUrls,
+                                                                        authorID: post.authorID,
+                                                                        authorDisplayName: post.authorDisplayName,
+                                                                        authorUsername: post.authorUsername,
+                                                                        authorPhotoURL: post.authorPhotoURL,
+                                                                        isEdited: post.isEdited,
+                                                                        postType: post.postType,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    } else if (post.postType === 'repost') {
+                                                        return (
+                                                            <div key={post.id}>
+                                                                <RepostSnippet
+                                                                    props={{
+                                                                        currentUserID: currentUserID,
+                                                                        authorID: post.authorID,
+                                                                        authorDisplayName: post.authorDisplayName,
+                                                                        authorUsername: post.authorUsername,
+                                                                        authorPhotoURL: post.authorPhotoURL,
+                                                                        postID: post.id,
+                                                                        postDate: post.postDate,
+                                                                        postType: 'repost',
+                                                                        postBody: post.postBody,
+                                                                        isEdited: post.isEdited,
+                                                                        repostID: post.repostID,
+                                                                        repostBody: post.repostBody,
+                                                                        repostCategory: post.repostCategory,
+                                                                        repostPets: post.repostPets,
+                                                                        repostDate: post.repostDate,
+                                                                        repostImageUrls: post.repostImageUrls,
+                                                                        repostAuthorID: post.repostAuthorID,
+                                                                        repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                                                        repostAuthorUsername: post.repostAuthorUsername,
+                                                                        repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    } 
+                                                    })}
 
-                                                if (post.postType === "original") {
-                                                    return (
-                                                        <div key={post.id}>
-                                                            <PostSnippet
-                                                                props={{
-                                                                    currentUserID: currentUserID,
-                                                                    postID: post.id,
-                                                                    postBody: post.postBody,
-                                                                    postCategory: post.postCategory,
-                                                                    postTrackerLocation: post.postTrackerLocation,
-                                                                    postPets: post.postPets,
-                                                                    postDate: post.postDate,
-                                                                    imageUrls: post.imageUrls,
-                                                                    authorID: post.authorID,
-                                                                    authorDisplayName: post.authorDisplayName,
-                                                                    authorUsername: post.authorUsername,
-                                                                    authorPhotoURL: post.authorPhotoURL,
-                                                                    isEdited: post.isEdited,
-                                                                    postType: post.postType,
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    );
-                                                } else if (post.postType === 'repost') {
-                                                    return (
-                                                        <div key={post.id}>
-                                                            <RepostSnippet
-                                                                props={{
-                                                                    currentUserID: currentUserID,
-                                                                    authorID: post.authorID,
-                                                                    authorDisplayName: post.authorDisplayName,
-                                                                    authorUsername: post.authorUsername,
-                                                                    authorPhotoURL: post.authorPhotoURL,
-                                                                    postID: post.id,
-                                                                    postDate: post.postDate,
-                                                                    postType: 'repost',
-                                                                    postBody: post.postBody,
-                                                                    isEdited: post.isEdited,
-                                                                    repostID: post.repostID,
-                                                                    repostBody: post.repostBody,
-                                                                    repostCategory: post.repostCategory,
-                                                                    repostPets: post.repostPets,
-                                                                    repostDate: post.repostDate,
-                                                                    repostImageUrls: post.repostImageUrls,
-                                                                    repostAuthorID: post.repostAuthorID,
-                                                                    repostAuthorDisplayName: post.repostAuthorDisplayName,
-                                                                    repostAuthorUsername: post.repostAuthorUsername,
-                                                                    repostAuthorPhotoURL: post.repostAuthorPhotoURL,
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    );
-                                                } 
-                                                })}
+                                                    {loading && <div>Loading...</div>}
 
-                                                {loading && <div>Loading...</div>}
-
-                                                {allPostsLoaded ? (
-                                                <button
-                                                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                                                    onClick={refreshPosts}
-                                                >
-                                                    Refresh Posts
-                                                </button>
-                                                ) : (
-                                                <button
-                                                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                                                    onClick={fetchMorePosts}
-                                                    disabled={loading}
-                                                >
-                                                    Load More
-                                                </button>
-                                                )}
-                                        </div>
+                                                    {allPostsLoaded ? (
+                                                    <button
+                                                        className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                                                        onClick={refreshPosts}
+                                                    >
+                                                        Refresh Posts
+                                                    </button>
+                                                    ) : (
+                                                    <button
+                                                        className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                                                        onClick={fetchMorePosts}
+                                                        disabled={loading}
+                                                    >
+                                                        Load More
+                                                    </button>
+                                                    )}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -1010,12 +1041,12 @@ function UserProfilePage() {
                                     <div className="w-full flex justify-center">
                                         {
                                             (profileUserID !== currentUserID && pets.length === 0) ? (
-                                                <div className='flex flex-col items-center justify-center h-full w-full'>
+                                                <div className='flex flex-col pt-20 items-center justify-center h-full w-full'>
                                                     <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                                    <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                                 </div>
                                             ) : (
-                                                <div className="w-full flex flex-row gap-12 items-center justify-start 
+                                                <div className="w-full flex flex-col md:flex-row gap-12 items-center justify-start 
                                                     pt-10 pl-10 pr-10 pb-10  
                                                     lg:pl-20 lg:pt-16 lg:pr-20 lg:pb-16  
                                                 ">
@@ -1054,9 +1085,9 @@ function UserProfilePage() {
                                                                 className=''>
                                                                     <i className="
                                                                             fa-solid fa-paw text-white rounded-full 
-                                                                            w-36 h-36 responsive bg-pale_yellow flex items-center
+                                                                            md:w-36 md:h-36 p-6 responsive bg-pale_yellow flex items-center
                                                                             justify-center transition-all
-                                                                            text-7xl hover:bg-grass hover:text-pale_yellow" />
+                                                                            md:text-7xl text-6xl hover:bg-grass hover:text-pale_yellow" />
                                                                 </button>
                                                                 <p className='text-center mt-2 text-lg font-bold flex flex-row items-center justify-center'
                                                                 >Add Pet</p>
@@ -1129,7 +1160,7 @@ function UserProfilePage() {
                                     <div className="w-full p-20 pl-24 pr-24 flex justify-center">
                                         <div className='flex flex-col items-center justify-center h-full w-full'>
                                             <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                            <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                            <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                         </div>
                                     </div>
                                 )}

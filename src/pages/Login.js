@@ -151,33 +151,33 @@ export default function Login() {
             flex flex-col justify-center items-center 
             lg:flex-row lg:gap-32'>
 
-            <div id="login" className='bg-jasmine drop-shadow-md w-[500px] h-[500px] rounded-3xl flex pl-12 pr-12 flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine drop-shadow-md w-[300px] h-[500px] md:w-[500px] md:h-[500px] rounded-3xl flex md:pl-12 md:pr-12 pl-8 pr-8 flex-col justify-center items-center'>
 
-                <h1 className='text-6xl font-bold font-shining mb-4 text-grass'>BantayBuddy</h1>
+                <h1 className='md:text-6xl text-[44px] font-bold font-shining md:mb-4 mb-2 text-grass'>BantayBuddy</h1>
                 
                 <input 
                     type="text" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value.trim())}
                     placeholder='Email Address'
-                    className='bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 text-lg font-semibold outline-none' />
+                    className='bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 md:text-lg font-semibold outline-none' />
                 
                 <input 
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value.trim())}
                     placeholder='Password'
-                    className='bg-light_yellow rounded-xl mt-3 mb-3 p-4 w-full h-12 text-lg font-semibold outline-none' />
+                    className='bg-light_yellow rounded-xl mt-3 mb-3 p-4 w-full h-12 md:text-lg font-semibold outline-none' />
                 
                 <p 
                     onClick={handleForgotPassword}
-                    className='text-sm font-semibold cursor-pointer text-gray-600 hover:text-black mb-3'>
+                    className='text-xs md:text-sm font-semibold cursor-pointer text-gray-600 hover:text-grass transition-all mb-3'>
                     Forgot Password?
                 </p>
 
                 <button 
                     onClick={handleLogin}
-                    className='bg-xanthous rounded-xl mt-3 mb-3 w-full h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
+                    className='bg-xanthous rounded-xl mt-3 mb-3 w-full h-12 md:text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
                     Log In
                 </button>
                 
@@ -185,15 +185,15 @@ export default function Login() {
                     {/* google */}
                     <button 
                         onClick={handleGooglePopUp}
-                        className='bg-snow rounded-xl mb-3 w-full h-12 text-lg font-bold text-center flex items-center justify-center gap-2 hover:bg-light_yellow transition-all'>
+                        className='bg-snow rounded-xl mb-3 w-full h-12 md:text-lg font-bold text-center flex items-center justify-center gap-2 hover:bg-light_yellow transition-all'>
                         <p>Continue with </p>
                         <Image src='/images/google.ico' alt='Google Logo' width={20} height={20} />
                     </button>
                 </span>
 
-                <div className='text-sm'>
+                <div className='text-xs md:text-sm'>
                     Don`t have an account?
-                    <Link href={'/Register'} className='font-bold hover:text-gray-600 text-black'> Register</Link>
+                    <Link href={'/Register'} className='font-bold hover:text-grass transition-all text-black'> Register</Link>
                 </div>
             </div>            
 

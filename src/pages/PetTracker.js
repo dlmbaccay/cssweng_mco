@@ -11,8 +11,8 @@ import Image from 'next/image';
 import CreatePost from '../components/Post/CreatePost';
 import PostSnippet from '../components/Post/PostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
-import { createPostModalStyle } from '../lib/modalstyle';
-
+import PhoneNav from '../components/PhoneNav';
+import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 export default function PetTracker() {
 
@@ -195,6 +195,8 @@ export default function PetTracker() {
         setLoadingFound(false);
     };
 
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
     if (!pageLoading) {
         return (
         <div className='flex flex-row w-full h-screen overflow-hidden'>
@@ -209,7 +211,7 @@ export default function PetTracker() {
                 />}
             </div>
 
-            <div className='w-fit lg:hidden'>
+            <div className='w-fit md:flex lg:hidden hidden'>
                 {(userPhotoURL && username) && <ExpandedNavBar 
                     props={{
                         userPhotoURL: userPhotoURL,
@@ -220,9 +222,35 @@ export default function PetTracker() {
                 />}
             </div>
 
-            <div className='w-full bg-dark_gray'>            
+            <div className='w-full bg-dark_gray'>
+
+                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                    <div className='h-full w-fit flex flex-row items-center gap-1'>
+                        <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                        <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                    </div>
+                    
+                    <button onClick={() => setShowPhoneNavModal(true)}>
+                        <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                    </button>
+
+                    <Modal 
+                        isOpen={showPhoneNavModal}
+                        onRequestClose={() => setShowPhoneNavModal(false)}
+                        style={phoneNavModalStyle}
+                    >
+                        <PhoneNav 
+                        props = {{
+                            setShowPhoneNavModal: setShowPhoneNavModal,
+                            currentUserUsername: username,
+                            currentUserPhotoURL: userPhotoURL,
+                        }}
+                        />
+                    </Modal>
+                </nav>
+
                 {/* search and logo bar */}
-                <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+                <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
                     
                     <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
                         <i
@@ -252,7 +280,7 @@ export default function PetTracker() {
                     
                     {/* create post */}
                     <div 
-                        className='group flex flex-row w-[650px] min-h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md'>
+                        className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
 
                         {userPhotoURL && <Image
                         src={userPhotoURL}
@@ -260,14 +288,14 @@ export default function PetTracker() {
                         width={50}
                         height={50}
                         onClick={() => router.push(`/user/${username}`)}
-                        className='rounded-full h-[50px] w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                        className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer'
                         />}
 
-                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left pl-4 text-sm text-raisin_black hover:opacity-60 transition-all'>
+                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
                         <p>What&apos;s on your mind, {displayName}?</p>
                         </button>
 
-                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:text-pale_yellow hover:bg-grass transition-all flex items-center justify-center'>
+                        <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:text-pale_yellow hover:bg-grass transition-all flex items-center justify-center'>
                         <i className='fa-solid fa-image'/>
                         </button>
 
@@ -289,7 +317,7 @@ export default function PetTracker() {
                         </Modal>
                     </div>
 
-                    <div className='w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
+                    <div className='w-[320px] md:w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
                         <button
                             onClick={() => setActiveContainer('Lost Pets')}
                             className={`transition-all w-1/2 h-full rounded-l-lg text-raisin_black font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'Lost Pets' ? "text-snow bg-grass" : ''}`}
