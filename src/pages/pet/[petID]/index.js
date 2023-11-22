@@ -5,7 +5,7 @@ import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, whe
 import { useRouter } from 'next/router';
 import { useUserData, useUserIDfromUsername } from '@/src/lib/hooks'; // Import the useUser hook
 import { formatDateWithWords } from '../../../lib/formats';
-import { editPetProfileStyle } from '../../../lib/modalstyle';
+import { editPetProfileStyle, phoneNavModalStyle } from '../../../lib/modalstyle';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ import toast from 'react-hot-toast'
 import Modal from 'react-modal'; // Import the Modal component  
 
 import ExpandedNavBar from '@/src/components/ExpandedNavBar';
+import PhoneNav from '@/src/components/PhoneNav';
 import Loader from '@/src/components/Loader';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import RoundIcon from '@/src/components/RoundIcon';
@@ -338,6 +339,8 @@ function PetProfilePage() {
         setLoading(false);
     };
     
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
     if (!pet) {
         return (
             <Loader />
@@ -346,7 +349,7 @@ function PetProfilePage() {
 
     return (
         <div id="root" className='flex'>
-            <div className='w-fit'>
+            <div className='w-fit md:flex hidden'>
                 {(petOwnerPhotoURL && petOwnerUsername) && <ExpandedNavBar 
                     props={{
                     userPhotoURL: petOwnerPhotoURL,
@@ -359,14 +362,40 @@ function PetProfilePage() {
 
             {pet && currentUser &&
                 <div className="h-screen w-full">
-                    <div id='header-container' className='h-1/5 border-l border-neutral-300'>
+
+                    <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                        <div className='h-full w-fit flex flex-row items-center gap-1'>
+                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                            <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                        </div>
+                        
+                        <button onClick={() => setShowPhoneNavModal(true)}>
+                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                        </button>
+
+                        <Modal 
+                            isOpen={showPhoneNavModal}
+                            onRequestClose={() => setShowPhoneNavModal(false)}
+                            style={phoneNavModalStyle}
+                        >
+                            <PhoneNav 
+                            props = {{
+                                setShowPhoneNavModal: setShowPhoneNavModal,
+                                currentUserUsername: currentUser.username,
+                                currentUserPhotoURL: currentUser.userPhotoURL,
+                            }}
+                            />
+                        </Modal>
+                    </nav>
+
+                    <div id='header-container' className='h-1/5 border-l border-neutral-300 hidden md:block'>
                         <CoverPhoto src={petOwnerCoverPhotoURL} alt={petOwnerUsername + " cover photo"} />
                     </div>
 
-                    <div id='content-container' className='h-4/5 flex flex-row'>
+                    <div id='content-container' className='h-full md:h-4/5 flex flex-row'>
 
                         {/* Profile Picture */}
-                        <div className="flex absolute justify-center w-80 h-44">
+                        <div className="hidden md:flex absolute justify-center w-80 h-44">
                             <div className='rounded-full z-10
                                 -translate-y-40 w-32 h-32 -translate-x-14
                                 lg:w-44 lg:h-44 lg:-translate-y-24 lg:translate-x-0'>
@@ -648,20 +677,23 @@ function PetProfilePage() {
 
                         <div id='main-content-container' className='overflow-hidden flex flex-col lg:translate-x-80 lg:w-[calc(100%-20rem)] w-full'>
                             
-                            <div id='flex-profile-details' className='lg:hidden w-full h-12 bg-snow flex flex-row items-center pl-10 gap-8'>
-                                <div className='flex flex-row gap-2'>
+                            <div id='flex-profile-details' className='lg:hidden w-full h-24 md:h-12 bg-snow flex flex-row items-center md:pl-10 gap-4 md:justify-start justify-center'>
+
+                                <Image src={petPhotoURL} alt={petName + " profile picture"} width={45} height={45} className='rounded-full drop-shadow-sm' />
+
+                                <div className='flex flex-col h-fit items-center md:flex-row md:gap-2'>
                                     <p className='font-bold'>
                                         {petName}
                                     </p>
-                                    <p className='font-bold'>·</p>
+                                    <p className='font-bold md:flex hidden'>·</p>
                                         @{petOwnerUsername}
                                     <p className='font'>
                                     </p>
                                 </div>
 
-                                <div className='flex flex-row gap-2'>
+                                <div className='flex flex-row gap-2 mr-2 md:mr-0'>
                                     {/* followers */}
-                                    <div className='flex flex-row gap-2 items-center'>
+                                    <div className='flex flex-col-reverse md:flex-row md:gap-2 items-center'>
                                         <p className='font-semibold text-sm'>{pet.followers.length}</p>
                                         <p className='text-grass font-bold text-sm'>Followers</p>
                                     </div>
@@ -670,14 +702,14 @@ function PetProfilePage() {
                                 { currentUserID === petOwnerID ? 
                                     (<button 
                                         onClick={() => setShowEditProfile(true)}
-                                        className='text-sm font-semibold text-white bg-citron w-12 h-6 rounded-md'
+                                        className='text-sm font-semibold text-white bg-citron w-12 md:h-6 h-8 rounded-md'
                                     >
                                         Edit
                                     </button>) : 
                                     (
                                         <button 
                                             onClick={handleFollow}
-                                            className='text-sm font-semibold text-white bg-citron w-16 h-6 rounded-md'
+                                            className='text-sm font-semibold text-white bg-citron w-16 md:h-6 h-8 rounded-md'
                                         >
                                             {followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                         </button>
@@ -685,23 +717,23 @@ function PetProfilePage() {
                                 }
                             </div>
 
-                            <div id="tab-actions" className='flex flex-row font-shining h-10 text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300'>
+                            <div id="tab-actions" className='flex flex-row h-12 font-shining bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm md:justify-start justify-between'>
                                 <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Tagged Posts' ? 'bg-citron text-white' : ''
+                                    className={`w-1/3 md:w-fit text-sm md:text-base md:px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Tagged Posts' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Tagged Posts')}>
                                     Tagged Posts
                                 </button>
 
                                 <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Milestones' ? 'bg-citron text-white' : ''
+                                    className={`w-1/3 md:w-fit text-sm md:text-base md:px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Milestones' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Milestones')}>
                                     Milestones
                                 </button>
 
                                 <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Media' ? 'bg-citron text-white' : ''
+                                    className={`w-1/3 md:w-fit text-sm md:text-base  md:px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Media' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Media')}>
                                     Media
@@ -719,7 +751,7 @@ function PetProfilePage() {
                                                 {/* if no media... */}
                                                 <div className='flex flex-col items-center justify-center h-full w-full'>
                                                     <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                                    <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                                 </div>
 
                                             </div>
@@ -783,7 +815,7 @@ function PetProfilePage() {
                                             <div className="w-full pt-12 pl-24 pr-24 flex justify-center">
                                             <div className='flex flex-col items-center justify-center h-full w-full'>
                                                 <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                            <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                            <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                             </div>
                                         </div>
                                         )}
@@ -823,7 +855,7 @@ function PetProfilePage() {
                                         {/* if no media... */}
                                         <div className='flex flex-col items-center justify-center h-full w-full'>
                                             <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                            <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                            <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                         </div>
 
                                     </div>
