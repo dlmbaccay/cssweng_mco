@@ -424,7 +424,7 @@ function PetProfilePage() {
                             {currentUserID === petOwnerID ? (
                                 // Edit pet profile button
                                 <button
-                                    onClick={openEdit}
+                                    onClick={() => setModalIsOpen(true)}
                                     className="text-center mt-4 w-20 px-2 py-1 bg-citron hover:bg-xanthous shadow-lg text-snow font-bold rounded-lg border-none"
                                 >Edit</button>
                             ) :
@@ -442,18 +442,28 @@ function PetProfilePage() {
                                 <Modal
                                     isOpen={modalIsOpen}
                                     onRequestClose={() => setModalIsOpen(false)}
-                                    style={editPetProfileStyle}
+                                    className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow '
+                                    style={{
+                                        overlay: {
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            zIndex: 1000,
+
+                                        }
+                                    }}
                                 >
 
                                     <form
                                         onSubmit={handleSave}
                                         className="flex flex-col h-full w-full"
                                     >
+                                        
+                                        <div className='flex flex-row items-center justify-between'>
+                                            <h1 className='font-bold text-xl'>Edit {petName}`s Profile</h1>
+                                            <i className='fa-solid fa-xmark' onClick={handleCancelEditProfile}/>
+                                        </div>
 
-                                        <h1 className='font-bold text-xl'>Edit {petName}`s Profile</h1>
-
-                                        <div className='flex flex-row w-full h-full justify-center items-center'>
-                                            <div className='flex flex-col justify-evenly items-center w-[50%]'>
+                                        <div className='flex flex-col md:flex-row w-full h-full justify-center items-center'>
+                                            <div className='flex flex-col justify-evenly items-center w-full md:w-[50%] mt-8 md:mt-0'>
                                                 <div className="w-full flex flex-col justify-center items-center">
                                                     <h1 className='font-medium mb-2'>Change Profile Picture</h1>
                                                     <div>
@@ -474,9 +484,9 @@ function PetProfilePage() {
                                                     />
                                                 </div>
                                                 
-                                                <div className='mt-7 w-[65%] flex flex-col justify-evenly items-center p-4 mb-4 rounded-lg font-semibold bg-snow gap-2'>
+                                                <div className='mt-7 w-full md:w-[65%] flex flex-col justify-evenly items-center p-4 mb-4 rounded-lg font-semibold gap-4'>
 
-                                                    <div className='flex flex-row items-center justify-evenly w-full'>
+                                                    <div className='flex flex-row items-center gap-8 justify-center w-full'>
                                                         <div className='flex flex-row gap-2 items-center justify-center'>
                                                             <i className='fa-solid fa-venus-mars' />
                                                             <p>{sex}</p>
@@ -488,7 +498,7 @@ function PetProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    <div className='flex flex-row items-center justify-evenly w-full'>
+                                                    <div className='flex flex-row items-center gap-8 justify-center w-full'>
                                                         <div className='flex flex-row gap-2 items-center justify-center'>
                                                             <i className='fa-solid fa-cake-candles' />
                                                             <p>{birthYear}</p>
@@ -502,8 +512,8 @@ function PetProfilePage() {
                                                 </div>
                                             </div>
 
-                                            <div className='flex flex-col justify-center items-center h-full w-[50%]'>
-                                                <div className='w-full pr-8'>
+                                            <div className='flex flex-col justify-center items-center h-full w-full md:w-[50%]'>
+                                                <div className='w-full pl-8 md:pl-0 pr-8'>
 
                                                     <div className="mb-4 w-full">
                                                         <label
@@ -592,7 +602,7 @@ function PetProfilePage() {
                                             </div>
                                         </div>
 
-                                        <div className='mt-4 flex justify-end gap-4'>
+                                        <div className='mt-4 pb-8 md:pb-0 flex justify-end gap-4'>
                                             <button
                                                 type="button"
                                                 onClick={handleCancelEditProfile}
@@ -701,7 +711,7 @@ function PetProfilePage() {
 
                                 { currentUserID === petOwnerID ? 
                                     (<button 
-                                        onClick={() => setShowEditProfile(true)}
+                                        onClick={() => setModalIsOpen(true)}
                                         className='text-sm font-semibold text-white bg-citron w-12 md:h-6 h-8 rounded-md'
                                     >
                                         Edit

@@ -695,7 +695,14 @@ function Post() {
                                         onClick={() => setShowSharePostModal(true)} 
                                         className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
 
-                                        <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
+                                        <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                            style={{
+                                            overlay: {
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                zIndex: 1000,
+
+                                            }
+                                            }}>
                                             <Share 
                                                 props={{
                                                     currentUserID: currentUserID,
@@ -736,7 +743,14 @@ function Post() {
                                         >
                                         </i>
 
-                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={editPostModalStyle}>
+                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                            style={{
+                                            overlay: {
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                zIndex: 1000,
+
+                                            }
+                                            }}>
                                             <div className='flex flex-col w-full h-full'>
                                             <div className='flex flex-row justify-center items-center'>
                                                 <p className='font-semibold'>Edit Post</p>
@@ -853,7 +867,14 @@ function Post() {
                                     View Reactions
                                     
                                     
-                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full md:w-[35%] lg:w-[20%] h-[32%] overflow-auto p-4 rounded-md bg-gray-100 z-50 bg-snow"
+                                        style={{
+                                        overlay: {
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            zIndex: 1000,
+
+                                        }
+                                        }}>
 
                                         <Reactions props={{
                                             postID: postID,
@@ -1256,7 +1277,14 @@ function Post() {
                                         >
                                         </i>
 
-                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={editPostModalStyle}>
+                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                            style={{
+                                            overlay: {
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                zIndex: 1000,
+
+                                            }
+                                            }}>
                                             <div className='flex flex-col w-full h-full'>
                                             <div className='flex flex-row justify-center items-center'>
                                                 <p className='font-semibold'>Edit Post</p>
@@ -1315,7 +1343,14 @@ function Post() {
                                     View Reactions
                                     
                                     
-                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full md:w-[35%] lg:w-[20%] h-[32%] overflow-auto p-4 rounded-md bg-gray-100 z-50 bg-snow"
+                                        style={{
+                                        overlay: {
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            zIndex: 1000,
+
+                                        }
+                                        }}>
 
                                         <Reactions props={{
                                             postID: postID,

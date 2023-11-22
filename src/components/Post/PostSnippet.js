@@ -154,7 +154,15 @@ export default function PostSnippet({ props }) {
         className='drop-shadow-sm hover:drop-shadow-md bg-snow w-[320px] md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
 
           {/* Post expanded */}
-          <Modal isOpen={showPostExpanded} onRequestClose={() => setShowPostExpanded(false)} style={expandedPostStyle}>
+          <Modal isOpen={showPostExpanded} onRequestClose={() => setShowPostExpanded(false)} 
+            className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[750px] md:h-[95%] overflow-auto p-2 rounded-md bg-gray-100 z-50 bg-snow '
+            style={{
+                overlay: {
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    zIndex: 1000,
+                }
+            }}
+            >
             <PostExpanded
               props = {{
                 currentUserID, postID, postBody, postCategory, postTrackerLocation,
@@ -415,6 +423,10 @@ export default function PostSnippet({ props }) {
               {currentUserID !== authorID && 
                   <i 
                   id='report-control'
+                  onClick={() => {
+                    setShowPostExpanded(true)
+                    setPostAction('report')
+                  }} 
                   className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" />
               }
 

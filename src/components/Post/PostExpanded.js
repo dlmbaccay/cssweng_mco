@@ -8,6 +8,7 @@ import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
 import Share from './Share';
+import Report from './Report';
 
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -16,7 +17,7 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal, viewImageModalStyle } from '../../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reportPostModalStyle, reactionsCountModal, viewImageModalStyle } from '../../lib/modalstyle';
 import Comment from './Comment';
 import Reactions from './Reactions';
 
@@ -62,6 +63,7 @@ export default function PostExpanded({ props }) {
         
     const [showDeletePostModal, setShowDeletePostModal] = useState(postAction === 'delete');
     const [showSharePostModal, setShowSharePostModal] = useState(postAction === 'share');
+    const [showReportPostModal, setShowReportPostModal] = useState(postAction === 'report');
     const [showEditPostModal, setShowEditPostModal] = useState(postAction === 'edit');
 
     const [editedPostBody, setEditedPostBody] = useState(postBody);
@@ -538,7 +540,14 @@ export default function PostExpanded({ props }) {
                             onClick={() => setShowSharePostModal(true)} 
                             className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
 
-                            <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
+                            <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                style={{
+                                overlay: {
+                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                    zIndex: 1000,
+
+                                }
+                                }}>
                                 {currentUser && <Share 
                                     props={{
                                         currentUserID: currentUserID,
@@ -567,141 +576,180 @@ export default function PostExpanded({ props }) {
                 <div id="right" className='flex flex-row gap-4 items-center'>
                     {currentUserID !== authorID && 
                     <div id='report-control'>
-                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"></i>
+                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" onClick={() => setShowReportPostModal(true)}>
+                        <Modal isOpen={showReportPostModal} onRequestClose={() => setShowReportPostModal(false)} style={reportPostModalStyle}>
+                            {currentUser && <Report 
+                                props={{
+                                    currentUserID: currentUserID,
+                                    currentUserPhotoURL: currentUser.photoURL,
+                                    currentUserUsername: currentUser.username,
+                                    currentUserDisplayName: currentUser.displayName,
+                                    postID: postID,
+                                    postBody: postBody,
+                                    postCategory: postCategory,
+                                    postTrackerLocation: postTrackerLocation,
+                                    postPets: postPets,
+                                    postDate: postDate,
+                                    imageUrls: imageUrls,
+                                    authorID: authorID,
+                                    authorDisplayName: authorDisplayName,
+                                    authorUsername: authorUsername,
+                                    authorPhotoURL: authorPhotoURL,
+                                    taggedPets: taggedPets,
+                                    setShowReportPostModal: setShowReportPostModal,
+                                }}
+                            />}
+                        </Modal>
+                        </i>
                     </div>
                     }
 
-                    {currentUserID === authorID && (
-                    <>
-                        <div id="edit-control">
-                        <i className="fa-solid fa-pencil hover:text-grass hover:scale- hover:cursor-pointer"
-                        onClick={() => setShowEditPostModal(true)}
-                        >
-                        </i>
+                        {currentUserID === authorID && (
+                        <>
+                            <div id="edit-control">
+                            <i className="fa-solid fa-pencil hover:text-grass hover:scale- hover:cursor-pointer"
+                            onClick={() => setShowEditPostModal(true)}
+                            >
+                            </i>
 
-                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={editPostModalStyle}>
-                            <div className='flex flex-col w-full h-full'>
-                            <div className='flex flex-row justify-center items-center'>
-                                <p className='font-semibold'>Edit Post</p>
-                            </div>
+                            <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)}
+                                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                style={{
+                                overlay: {
+                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                    zIndex: 1000,
 
-                            <div className='h-full mt-2 mb-4 w-full flex flex-col justify-start gap-4'>
-
-                                {
-                                (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') && 
-                                    <Select 
-                                    options={[
-                                        {value: 'Retrieved Pets', label: 'Retrieved Pets'},
-                                    ]}
-                                    value={editedCategory}
-                                    onChange={handleSelectEditedCategory}
-                                    placeholder='Category'
-                                    className='w-full'
-                                    />
                                 }
+                                }}
+                            >
+                                <div className='flex flex-col w-full h-full'>
+                                <div className='flex flex-row justify-center items-center'>
+                                    <p className='font-semibold'>Edit Post</p>
+                                </div>
 
-                                {
-                                (postCategory === 'Retrieved Pets') && 
-                                    <Select 
-                                    options={[
-                                        {value: 'Lost Pets', label: 'Lost Pets'},
-                                        {value: 'Unknown Owner', label: 'Unknown Owner'},
-                                    ]}
-                                    value={editedCategory}
-                                    onChange={handleSelectEditedCategory}
-                                    placeholder='Category'
-                                    className='w-full'
-                                    />
-                                }
+                                <div className='h-full mt-2 mb-4 w-full flex flex-col justify-start gap-4'>
 
-                                {
-                                (postCategory !== 'Lost Pets' && postCategory !== 'Unknown Owner' && postCategory !== 'Retrieved Pets') && 
-                                    <Select 
+                                    {
+                                    (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') && 
+                                        <Select 
                                         options={[
-                                            {value: 'Default', label: 'Default'},
-                                            {value: 'Q&A', label: 'Q&A'},
-                                            {value: 'Tips', label: 'Tips'},
-                                            {value: 'Pet Needs', label: 'Pet Needs'},
-                                            {value: 'Milestones', label: 'Milestones'},
+                                            {value: 'Retrieved Pets', label: 'Retrieved Pets'},
                                         ]}
                                         value={editedCategory}
                                         onChange={handleSelectEditedCategory}
                                         placeholder='Category'
                                         className='w-full'
+                                        />
+                                    }
+
+                                    {
+                                    (postCategory === 'Retrieved Pets') && 
+                                        <Select 
+                                        options={[
+                                            {value: 'Lost Pets', label: 'Lost Pets'},
+                                            {value: 'Unknown Owner', label: 'Unknown Owner'},
+                                        ]}
+                                        value={editedCategory}
+                                        onChange={handleSelectEditedCategory}
+                                        placeholder='Category'
+                                        className='w-full'
+                                        />
+                                    }
+
+                                    {
+                                    (postCategory !== 'Lost Pets' && postCategory !== 'Unknown Owner' && postCategory !== 'Retrieved Pets') && 
+                                        <Select 
+                                            options={[
+                                                {value: 'Default', label: 'Default'},
+                                                {value: 'Q&A', label: 'Q&A'},
+                                                {value: 'Tips', label: 'Tips'},
+                                                {value: 'Pet Needs', label: 'Pet Needs'},
+                                                {value: 'Milestones', label: 'Milestones'},
+                                            ]}
+                                            value={editedCategory}
+                                            onChange={handleSelectEditedCategory}
+                                            placeholder='Category'
+                                            className='w-full'
+                                        />
+                                    }
+
+                                    {
+                                    (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') &&
+                                        <input 
+                                            id='tracker-location'
+                                            type='text'
+                                            maxLength={50}
+                                            value={editedPostTrackerLocation}
+                                            onChange={(event) => setEditedPostTrackerLocation(event.target.value)}
+                                            placeholder='Tracker Location'
+                                            className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4'
+                                        />
+                                    }
+
+                                    <textarea 
+                                        id="post-body" 
+                                        value={editedPostBody}
+                                        onChange={(event) => setEditedPostBody(event.target.value)}
+                                        placeholder='What`s on your mind?' 
+                                        className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full p-4 h-full' 
                                     />
-                                }
+                                </div>
+                                
+                                <div className='flex flex-row gap-2'>
+                                    <button 
+                                    className='px-4 py-2 font-semibold hover:bg-black hover:text-snow rounded-lg text-sm cursor-pointer w-1/2 transition-all'
+                                    onClick={() => setShowEditPostModal(false)}>
+                                        Cancel
+                                    </button>
 
-                                {
-                                (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner') &&
-                                    <input 
-                                        id='tracker-location'
-                                        type='text'
-                                        maxLength={50}
-                                        value={editedPostTrackerLocation}
-                                        onChange={(event) => setEditedPostTrackerLocation(event.target.value)}
-                                        placeholder='Tracker Location'
-                                        className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4'
-                                    />
-                                }
+                                    <button 
+                                    className='bg-black hover:bg-grass text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all' 
+                                    onClick={handleEditPost}>
+                                        Save
+                                    </button>
+                                </div>
+                                </div>
+                            </Modal>
+                            </div>
 
-                                <textarea 
-                                    id="post-body" 
-                                    value={editedPostBody}
-                                    onChange={(event) => setEditedPostBody(event.target.value)}
-                                    placeholder='What`s on your mind?' 
-                                    className='outline-none resize-none border border-[#d1d1d1] rounded-md text-raisin_black w-full p-4 h-full' 
-                                />
-                            </div>
-                            
-                            <div className='flex flex-row gap-2'>
-                                <button 
-                                className='px-4 py-2 font-semibold hover:bg-black hover:text-snow rounded-lg text-sm cursor-pointer w-1/2 transition-all'
-                                onClick={() => setShowEditPostModal(false)}>
-                                    Cancel
-                                </button>
+                            <div id="delete-control">
+                            <i className="fa-solid fa-trash hover:text-red-600 hover:scale- hover:cursor-pointer"
+                            onClick={() => setShowDeletePostModal(true)}
+                            ></i>
 
-                                <button 
-                                className='bg-black hover:bg-grass text-white font-semibold rounded-md px-4 text-sm py-2 w-1/2 transition-all' 
-                                onClick={handleEditPost}>
-                                    Save
-                                </button>
+                            <Modal isOpen={showDeletePostModal} onRequestClose={() => setShowDeletePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={postDeleteConfirmationModalStyle}>
+                                <div className='flex flex-col items-center justify-center h-full gap-4'>
+                                <p className='font-bold text-center'>Are you sure you want to delete this post?</p>
+                                <div className='flex flex-row gap-4'>
+                                    <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={() => setShowDeletePostModal(false)}>Cancel</button>
+                                    <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={handleDeletePost}>Delete</button>
+                                </div>
+                                </div>
+                            </Modal>
                             </div>
-                            </div>
-                        </Modal>
-                        </div>
-
-                        <div id="delete-control">
-                        <i className="fa-solid fa-trash hover:text-red-600 hover:scale- hover:cursor-pointer"
-                        onClick={() => setShowDeletePostModal(true)}
-                        ></i>
-
-                        <Modal isOpen={showDeletePostModal} onRequestClose={() => setShowDeletePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={postDeleteConfirmationModalStyle}>
-                            <div className='flex flex-col items-center justify-center h-full gap-4'>
-                            <p className='font-bold text-center'>Are you sure you want to delete this post?</p>
-                            <div className='flex flex-row gap-4'>
-                                <button className='bg-gray-400 hover:bg-black hover:text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={() => setShowDeletePostModal(false)}>Cancel</button>
-                                <button className='bg-black hover:bg-red-600 text-white font-semibold rounded-lg px-4 text-sm py-2' onClick={handleDeletePost}>Delete</button>
-                            </div>
-                            </div>
-                        </Modal>
-                        </div>
-                    </>
-                    )}
-                </div>
+                        </>
+                        )}
+                    </div>
                 </div>
 
                 {/* Reactions */}
                 <div className='w-fit text-sm mt-3 hover:underline cursor-pointer' onClick={() => setShowReactionsModal(true)}>
                     View Reactions...
 
-                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full md:w-[35%] lg:w-[20%] h-[32%] overflow-auto p-4 rounded-md bg-gray-100 z-50 bg-snow"
+                    style={{
+                      overlay: {
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        zIndex: 1000,
 
+                      }
+                    }}
+                    >
                         <Reactions props={{
                             postID: postID,
                             setShowReactionsModal: setShowReactionsModal,
                             }} 
                         />
-
                     </Modal>
                 </div>
 
