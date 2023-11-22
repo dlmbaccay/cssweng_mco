@@ -389,7 +389,7 @@ function PetProfilePage() {
                                     {petName}
                                 </div>
 
-                                <Link href={'/user/' + petOwnerUsername} className='hover:text-grass text-md text-raisin_black hover:font-semibold transition-all'>@{petOwnerUsername}</Link>
+                                <Link href={'/user/' + petOwnerUsername} className='hover:text-grass text-md text-raisin_black hover:font-bold transition-all'>@{petOwnerUsername}</Link>
                             </div>
 
                             {currentUserID === petOwnerID ? (

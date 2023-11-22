@@ -209,8 +209,8 @@ export default function PostSnippet({ props }) {
               {/* display their names */}
               {postPets.length > 0 && (
                 <div className='flex flex-row items-center justify-center gap-2'>
-                  {taggedPets.length === 1 && <i class="fa-solid fa-tag text-md"></i>}
-                  {taggedPets.length > 1 && <i class="fa-solid fa-tags text-md"></i>}
+                  {taggedPets.length === 1 && <i className="fa-solid fa-tag text-md"></i>}
+                  {taggedPets.length > 1 && <i className="fa-solid fa-tags text-md"></i>}
                   {/* <p className='line-clamp-1 overflow-hidden text-md'>{taggedPets.map(pet => pet.petName).join(', ')}</p> */}
                   <p className='line-clamp-1 overflow-hidden text-md'>
                     {taggedPets.map((pet, index) => (
