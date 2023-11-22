@@ -245,11 +245,11 @@ export default function CreatePost({ props }) {
                 />
             </div>
 
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-col justify-between'>
                 {/* media */}
                 <div className="image-previews flex flex-row w-full mt-6 mb-6">
                     <div>
-                        <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
+                        <label htmlFor="post-images" className={`md:h-[100px] md:w-[100px] h-[75px] w-[75px]  flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
                             <i className="fa-regular fa-image text-3xl"></i>
                         </label>
 
@@ -287,7 +287,7 @@ export default function CreatePost({ props }) {
                 </div>
 
                 {/* post button */}
-                <div className='flex items-end w-36'>
+                <div className='flex w-full'>
                     <button 
                         type='submit'
                         className={`

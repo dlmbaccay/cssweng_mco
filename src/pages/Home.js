@@ -215,20 +215,27 @@ function Home() {
                   </button>
 
                   <Modal
-                      isOpen={showCreatePostForm}
-                      onRequestClose={() => setShowCreatePostForm(false)}
-                      style={createPostModalStyle}
+                    isOpen={showCreatePostForm}
+                    onRequestClose={() => setShowCreatePostForm(false)}
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[80%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                    style={{
+                      overlay: {
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        zIndex: 1000,
+
+                      }
+                    }}
                   >
-                        <CreatePost 
-                            props={{
-                              createType: 'original',
-                              currentUserID: user.uid,
-                              displayName: displayName,
-                              username: username,
-                              userPhotoURL: userPhotoURL,
-                              setShowCreatePostForm: setShowCreatePostForm,
-                            }}
-                        />
+                    <CreatePost 
+                      props={{
+                        createType: 'original',
+                        currentUserID: user.uid,
+                        displayName: displayName,
+                        username: username,
+                        userPhotoURL: userPhotoURL,
+                        setShowCreatePostForm: setShowCreatePostForm,
+                      }}
+                    />
                   </Modal>
               </div>
 
