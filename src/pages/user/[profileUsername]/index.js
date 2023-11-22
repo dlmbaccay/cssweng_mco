@@ -623,12 +623,22 @@ function UserProfilePage() {
                                 <Modal
                                     isOpen={showEditProfile}
                                     onRequestClose={() => setShowEditProfile(false)}
-                                    style={editUserProfileStyle}
+                                    className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow '
+                                    style={{
+                                        overlay: {
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            zIndex: 1000,
+
+                                        }
+                                    }}
                                 >
                                     <div className='w-full h-full flex flex-col justify-between pr-2'>
-                                        <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
+                                        <div className='flex flex-row items-center justify-between'>
+                                            <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
+                                            <i className='fa-solid fa-xmark md:hidden' onClick={handleCancelEditProfile}/>
+                                        </div>
 
-                                        <div className='flex flex-row w-full h-fit gap-6 justify-evenly items-cet'>
+                                        <div className='flex flex-col md:flex-row w-full h-fit gap-6 justify-evenly'>
                                             <div className='flex flex-col items-center justify-evenly p-4 gap-8 rounded-lg h-full'>
                                                 {/* profile picture */}
                                                 <div className="items-center justify-center">
@@ -656,7 +666,7 @@ function UserProfilePage() {
                                                 </div>
                                             </div>
 
-                                            <div className='flex flex-col w-[50%] gap-4 h-full rounded-lg justify-center items-center'>
+                                            <div className='flex flex-col md:w-[50%] w-full gap-4 h-full rounded-lg justify-center items-center mb-6 md:mb-0 pr-8 pl-8 md:pr-0 md:pl-0'>
                                                 {/* Display Name */}
                                                 <div className="w-full">
                                                     <label
@@ -745,7 +755,7 @@ function UserProfilePage() {
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-end gap-4">
+                                        <div className="flex w-full justify-end gap-4 pb-6 md:pb-2">
                                             <button
                                                 type="button"
                                                 onClick={handleCancelEditProfile}
@@ -937,7 +947,14 @@ function UserProfilePage() {
                                                 <Modal
                                                     isOpen={showCreatePostForm}
                                                     onRequestClose={() => setShowCreatePostForm(false)}
-                                                    style={createPostModalStyle}
+                                                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[80%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                                    style={{
+                                                        overlay: {
+                                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                                            zIndex: 1000,
+
+                                                        }
+                                                    }}
                                                 >
                                                     <CreatePost 
                                                         props={{
@@ -1112,16 +1129,18 @@ function UserProfilePage() {
                                                                 </div>
 
                                                                 <div className='flex flex-row items-center gap-4'>
-                                                                    <button
-                                                                        onClick={confirmDeletePetProfile}
-                                                                        className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
-                                                                    >
-                                                                        Delete</button>
+                                                                    
                                                                     <button
                                                                         onClick={() => setShowPetDeleteConfirmation(false)}
                                                                         className='rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-black hover:text-white font-bold'
                                                                     >
                                                                         Cancel</button>
+
+                                                                    <button
+                                                                    onClick={confirmDeletePetProfile}
+                                                                    className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
+                                                                    >
+                                                                        Delete</button>
                                                                 </div>
                                                             </div>
                                                         </Modal>
@@ -1133,7 +1152,14 @@ function UserProfilePage() {
                                                             isOpen={showCreatePetForm}
                                                             onRequestClose={() => setShowCreatePetForm(false)}
                                                             contentLabel="Create Pet Profile Label"
-                                                            style={createPetModalStyle}
+                                                            className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow '
+                                                            style={{
+                                                                overlay: {
+                                                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                                                    zIndex: 1000,
+
+                                                                }
+                                                            }}
                                                         >
                                                             <PetAccountSetup
                                                                 props={{
@@ -1344,8 +1370,18 @@ function PetAccountSetup({ props }) {
 
     return (
         <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
+
+            <div className="font-bold text-xl gap-2 flex-row items-center h-16 flex w-full justify-between">
+                <div className='flex gap-2'>
+                    <i className='fa-solid fa-paw'></i>
+                    <p className='text-sm'>Create A Pet</p>
+                </div>
+
+                <i className='fa-solid fa-xmark' onClick={() => setShowCreatePetForm(false)}/>
+            </div>
+
             <div className='h-full flex flex-col justify-start'>
-                <div className='flex flex-row w-full justify-evenly items-start gap-4 mb-4'>
+                <div className='flex flex-col md:flex-row w-full justify-evenly items-start gap-4 mb-4'>
                     {/* Display Name */}
                     <div className="w-full">
                         <label
@@ -1391,7 +1427,7 @@ function PetAccountSetup({ props }) {
                     </div>
                 </div>
 
-                <div className='flex flex-row w-full h-fit justify-evenly items-start gap-4 mb-4'>
+                <div className='flex flex-col md:flex-row w-full h-fit justify-evenly items-start gap-4 mb-4'>
                     {/* Photo */}
                     <div className='w-full h-full flex flex-col justify-center items-center'>
                         <label htmlFor="photo" className='text-start w-full text-sm font-medium text-gray-700 mb-2'>
@@ -1469,7 +1505,7 @@ function PetAccountSetup({ props }) {
                 </div>
 
                 {/* sex, birthdate, birthplace */}
-                <div className='flex flex-row gap-4 w-full'>
+                <div className='flex flex-col md:flex-row gap-2 md:gap-4 w-full'>
                     {/* Sex */}
                     <div className="mb-4 w-full">
                         <label
@@ -1538,17 +1574,17 @@ function PetAccountSetup({ props }) {
             </div>
 
             {/* form button controls */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-end md:justify-between items-center pt-2 pb-4 mt-8 md:mt-0 md:pb-0 w-full">
 
-                <h2 className="font-bold text-xl gap-2 flex flex-row items-center mb-2">
+                <h2 className="hidden md:flex font-bold text-xl gap-2 flex-row items-center h-10 ">
                     <i className='fa-solid fa-paw'></i>
-                    Add a New Pet
+                    <p className='text-sm'>Create A Pet</p>
                 </h2>
 
                 <div className='flex flex-row gap-4'>
                     <button
                         type="button"
-                        className="font-semibold py-2 px-4 rounded-md transition-all hover:bg-raisin_black hover:text-white"
+                        className="font-semibold text-sm md:text-base h-10 px-4 rounded-md transition-all hover:bg-raisin_black hover:text-white"
                         onClick={() => setShowCreatePetForm(false)}
                     >
                         Cancel
@@ -1556,8 +1592,8 @@ function PetAccountSetup({ props }) {
                     <button
                         type="submit"
                         disabled={!petNameValid}
-                        className={`font-semibold py-2 px-4 rounded-md bg-xanthous text-white transition-all ${petNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
-                        Create Pet Profile
+                        className={`font-semibold text-sm md:text-base h-10 px-4 rounded-md bg-xanthous text-white transition-all ${petNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
+                        Create Pet
                     </button>       
                 </div>
             </div>
