@@ -280,7 +280,7 @@ export default function PetTracker() {
                     
                     {/* create post */}
                     <div 
-                        className='group flex flex-row w-[650px] min-h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md'>
+                        className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
 
                         {userPhotoURL && <Image
                         src={userPhotoURL}
@@ -288,14 +288,14 @@ export default function PetTracker() {
                         width={50}
                         height={50}
                         onClick={() => router.push(`/user/${username}`)}
-                        className='rounded-full h-[50px] w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                        className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer'
                         />}
 
-                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left pl-4 text-sm text-raisin_black hover:opacity-60 transition-all'>
+                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
                         <p>What&apos;s on your mind, {displayName}?</p>
                         </button>
 
-                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:text-pale_yellow hover:bg-grass transition-all flex items-center justify-center'>
+                        <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:text-pale_yellow hover:bg-grass transition-all flex items-center justify-center'>
                         <i className='fa-solid fa-image'/>
                         </button>
 
@@ -317,7 +317,7 @@ export default function PetTracker() {
                         </Modal>
                     </div>
 
-                    <div className='w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
+                    <div className='w-[320px] md:w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
                         <button
                             onClick={() => setActiveContainer('Lost Pets')}
                             className={`transition-all w-1/2 h-full rounded-l-lg text-raisin_black font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'Lost Pets' ? "text-snow bg-grass" : ''}`}

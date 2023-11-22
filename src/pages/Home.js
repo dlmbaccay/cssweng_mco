@@ -195,7 +195,7 @@ function Home() {
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
               {/* create post */}
               <div 
-                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md  p-2 gap-2'>
+                className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
 
                   {userPhotoURL && <Image
                     src={userPhotoURL}
@@ -203,14 +203,14 @@ function Home() {
                     width={50}
                     height={50}
                     onClick={() => router.push(`/user/${username}`)}
-                    className='rounded-full h-[50px] w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                    className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer'
                   />}
 
-                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left pl-4 text-sm text-raisin_black hover:opacity-60 transition-all'>
+                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
                     <p>What&apos;s on your mind, {displayName}?</p>
                   </button>
 
-                  <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
+                  <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
                     <i className='fa-solid fa-image'/>
                   </button>
 
@@ -219,16 +219,16 @@ function Home() {
                       onRequestClose={() => setShowCreatePostForm(false)}
                       style={createPostModalStyle}
                   >
-                      <CreatePost 
-                          props={{
-                            createType: 'original',
-                            currentUserID: user.uid,
-                            displayName: displayName,
-                            username: username,
-                            userPhotoURL: userPhotoURL,
-                            setShowCreatePostForm: setShowCreatePostForm,
-                          }}
-                      />
+                        <CreatePost 
+                            props={{
+                              createType: 'original',
+                              currentUserID: user.uid,
+                              displayName: displayName,
+                              username: username,
+                              userPhotoURL: userPhotoURL,
+                              setShowCreatePostForm: setShowCreatePostForm,
+                            }}
+                        />
                   </Modal>
               </div>
 
