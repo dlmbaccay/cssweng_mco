@@ -155,7 +155,7 @@ export default function Report({props}) {
                             value={othersInput}
                             onChange={(e) => setOthersInput(e.target.value)}
                             placeholder='Please specify'
-                            className='ml-2 border border-[#d1d1d1] rounded p-1'
+                            className='ml-2 border border-[#d1d1d1] rounded p-1 w-32'
                             required
                             />
                         )}
