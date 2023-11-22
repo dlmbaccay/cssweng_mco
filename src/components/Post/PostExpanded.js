@@ -8,6 +8,7 @@ import Select from 'react-select'
 import Router from 'next/router';
 import toast from 'react-hot-toast';
 import Share from './Share';
+import Report from './Report';
 
 
 import likeReaction from '/public/images/post-reactions/like.png'
@@ -16,7 +17,7 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal, viewImageModalStyle } from '../../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reportPostModalStyle, reactionsCountModal, viewImageModalStyle } from '../../lib/modalstyle';
 import Comment from './Comment';
 import Reactions from './Reactions';
 
@@ -62,6 +63,7 @@ export default function PostExpanded({ props }) {
         
     const [showDeletePostModal, setShowDeletePostModal] = useState(postAction === 'delete');
     const [showSharePostModal, setShowSharePostModal] = useState(postAction === 'share');
+    const [showReportPostModal, setShowReportPostModal] = useState(postAction === 'report');
     const [showEditPostModal, setShowEditPostModal] = useState(postAction === 'edit');
 
     const [editedPostBody, setEditedPostBody] = useState(postBody);
@@ -571,12 +573,36 @@ export default function PostExpanded({ props }) {
                         </div>
                     </div>
 
-                    <div id="right" className='flex flex-row gap-4 items-center'>
-                        {currentUserID !== authorID && 
-                        <div id='report-control'>
-                            <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"></i>
-                        </div>
-                        }
+                <div id="right" className='flex flex-row gap-4 items-center'>
+                    {currentUserID !== authorID && 
+                    <div id='report-control'>
+                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all">
+                        <Modal isOpen={showReportPostModal} onRequestClose={() => setShowReportPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={reportPostModalStyle}>
+                                {currentUser && <Report 
+                                    props={{
+                                        currentUserID: currentUserID,
+                                        currentUserPhotoURL: currentUser.photoURL,
+                                        currentUserUsername: currentUser.username,
+                                        currentUserDisplayName: currentUser.displayName,
+                                        postID: postID,
+                                        postBody: postBody,
+                                        postCategory: postCategory,
+                                        postTrackerLocation: postTrackerLocation,
+                                        postPets: postPets,
+                                        postDate: postDate,
+                                        imageUrls: imageUrls,
+                                        authorID: authorID,
+                                        authorDisplayName: authorDisplayName,
+                                        authorUsername: authorUsername,
+                                        authorPhotoURL: authorPhotoURL,
+                                        taggedPets: taggedPets,
+                                        setShowReportPostModal: setShowReportPostModal,
+                                    }}
+                                />}
+                            </Modal>
+                        </i>
+                    </div>
+                    }
 
                         {currentUserID === authorID && (
                         <>

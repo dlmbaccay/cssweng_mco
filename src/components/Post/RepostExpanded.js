@@ -486,7 +486,9 @@ export default function RepostExpanded({props}) {
                 <div id="right" className='flex flex-row gap-4 items-center'>
                     {currentUserID !== authorID && 
                     <div id='report-control'>
-                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"></i>
+                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all">
+                        
+                        </i>
                     </div>
                     }
 

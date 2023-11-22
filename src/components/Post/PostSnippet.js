@@ -423,6 +423,10 @@ export default function PostSnippet({ props }) {
               {currentUserID !== authorID && 
                   <i 
                   id='report-control'
+                  onClick={() => {
+                    setShowPostExpanded(true)
+                    setPostAction('report')
+                  }} 
                   className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" />
               }
 

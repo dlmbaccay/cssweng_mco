@@ -131,6 +131,25 @@ export const sharePostModalStyle = {
   },
 }
 
+export const reportPostModalStyle = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+  },
+  content: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '30%', 
+    height: '80%',
+    overflow: 'auto',
+    padding: '20px',
+    borderRadius: '8px',
+    backgroundColor: '#FAFAFA',
+  },
+}
+
 export const editPostModalStyle = {
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
