@@ -4,12 +4,15 @@ import { firestore } from '../lib/firebase'
 import { getAuth, updatePassword } from "firebase/auth";
 import Router from 'next/router';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 import { Switch } from '@headlessui/react';
 import Modal from 'react-modal';
 import { changePasswordStyle } from '../lib/modalstyle';
 import { checkPassword } from '../lib/formats';
 import withAuth from '../components/withAuth';
 import ExpandedNavBar from '../components/ExpandedNavBar';
+import PhoneNav from '../components/PhoneNav';
+import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 function Settings() {
     const { user, username, userPhotoURL } = useUserData();
@@ -202,6 +205,8 @@ function Settings() {
         await updateHiddenField();
     }
     
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+    
     return (
         <div>
             <div id="root" className='flex flex-row h-screen paw-background overflow-hidden'>
@@ -216,7 +221,7 @@ function Settings() {
                     />}
                 </div>
 
-                <div className='w-fit lg:hidden'>
+                <div className='w-fit md:flex lg:hidden hidden'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
                         props={{
                             userPhotoURL: userPhotoURL,
@@ -228,6 +233,32 @@ function Settings() {
                 </div>
 
                 <div className="w-full flex flex-col justify-center items-center h-full">
+
+                    <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                        <div className='h-full w-fit flex flex-row items-center gap-1'>
+                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                            <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                        </div>
+                        
+                        <button onClick={() => setShowPhoneNavModal(true)}>
+                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                        </button>
+
+                        <Modal 
+                            isOpen={showPhoneNavModal}
+                            onRequestClose={() => setShowPhoneNavModal(false)}
+                            style={phoneNavModalStyle}
+                        >
+                            <PhoneNav 
+                            props = {{
+                                setShowPhoneNavModal: setShowPhoneNavModal,
+                                currentUserUsername: username,
+                                currentUserPhotoURL: userPhotoURL,
+                            }}
+                            />
+                        </Modal>
+                    </nav>
+
                     <form
                         onSubmit={handleSubmit}
                         className="rounded-lg drop-shadow-lg p-10 w-full h-full overflow-auto flex flex-col justify-start items-center">

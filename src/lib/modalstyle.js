@@ -225,3 +225,21 @@ export const viewImageModalStyle = {
     backgroundColor: '#FAFAFA',
   },
 }
+
+export const phoneNavModalStyle = {
+  overlay: {
+    zIndex: 2000,
+  },
+  content: {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    overflow: 'auto',
+    padding: '0px',
+    borderRadius: '0px',
+    border: 'none',
+    backgroundColor: '#FFEBBE',
+  },
+}

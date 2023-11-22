@@ -11,8 +11,8 @@ import Image from 'next/image';
 import CreatePost from '../components/Post/CreatePost';
 import PostSnippet from '../components/Post/PostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
-import { createPostModalStyle } from '../lib/modalstyle';
-
+import PhoneNav from '../components/PhoneNav';
+import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 export default function PetTracker() {
 
@@ -195,6 +195,8 @@ export default function PetTracker() {
         setLoadingFound(false);
     };
 
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
     if (!pageLoading) {
         return (
         <div className='flex flex-row w-full h-screen overflow-hidden'>
@@ -209,7 +211,7 @@ export default function PetTracker() {
                 />}
             </div>
 
-            <div className='w-fit lg:hidden'>
+            <div className='w-fit md:flex lg:hidden hidden'>
                 {(userPhotoURL && username) && <ExpandedNavBar 
                     props={{
                         userPhotoURL: userPhotoURL,
@@ -220,9 +222,35 @@ export default function PetTracker() {
                 />}
             </div>
 
-            <div className='w-full bg-dark_gray'>            
+            <div className='w-full bg-dark_gray'>
+
+                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                    <div className='h-full w-fit flex flex-row items-center gap-1'>
+                        <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                        <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                    </div>
+                    
+                    <button onClick={() => setShowPhoneNavModal(true)}>
+                        <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                    </button>
+
+                    <Modal 
+                        isOpen={showPhoneNavModal}
+                        onRequestClose={() => setShowPhoneNavModal(false)}
+                        style={phoneNavModalStyle}
+                    >
+                        <PhoneNav 
+                        props = {{
+                            setShowPhoneNavModal: setShowPhoneNavModal,
+                            currentUserUsername: username,
+                            currentUserPhotoURL: userPhotoURL,
+                        }}
+                        />
+                    </Modal>
+                </nav>
+
                 {/* search and logo bar */}
-                <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+                <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
                     
                     <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
                         <i
