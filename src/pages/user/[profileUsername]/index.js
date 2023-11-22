@@ -923,85 +923,87 @@ function UserProfilePage() {
                                                 </Modal>
                                             </div>
                                         ) : null}
+                                        
+                                        { posts.length > 0 && (
+                                            <div className="flex mt-8 mb-8 flex-col gap-8 justify-start items-center">
+                                                {posts.map((post, index) => {
+                                                    console.log(`Processing post ${index} with postType: ${post.postType}`);
 
-                                        <div className="flex mt-8 mb-8 flex-col gap-8 justify-start items-center">
-                                            {posts.map((post, index) => {
-                                                console.log(`Processing post ${index} with postType: ${post.postType}`);
+                                                    if (post.postType === "original") {
+                                                        return (
+                                                            <div key={post.id}>
+                                                                <PostSnippet
+                                                                    props={{
+                                                                        currentUserID: currentUserID,
+                                                                        postID: post.id,
+                                                                        postBody: post.postBody,
+                                                                        postCategory: post.postCategory,
+                                                                        postTrackerLocation: post.postTrackerLocation,
+                                                                        postPets: post.postPets,
+                                                                        postDate: post.postDate,
+                                                                        imageUrls: post.imageUrls,
+                                                                        authorID: post.authorID,
+                                                                        authorDisplayName: post.authorDisplayName,
+                                                                        authorUsername: post.authorUsername,
+                                                                        authorPhotoURL: post.authorPhotoURL,
+                                                                        isEdited: post.isEdited,
+                                                                        postType: post.postType,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    } else if (post.postType === 'repost') {
+                                                        return (
+                                                            <div key={post.id}>
+                                                                <RepostSnippet
+                                                                    props={{
+                                                                        currentUserID: currentUserID,
+                                                                        authorID: post.authorID,
+                                                                        authorDisplayName: post.authorDisplayName,
+                                                                        authorUsername: post.authorUsername,
+                                                                        authorPhotoURL: post.authorPhotoURL,
+                                                                        postID: post.id,
+                                                                        postDate: post.postDate,
+                                                                        postType: 'repost',
+                                                                        postBody: post.postBody,
+                                                                        isEdited: post.isEdited,
+                                                                        repostID: post.repostID,
+                                                                        repostBody: post.repostBody,
+                                                                        repostCategory: post.repostCategory,
+                                                                        repostPets: post.repostPets,
+                                                                        repostDate: post.repostDate,
+                                                                        repostImageUrls: post.repostImageUrls,
+                                                                        repostAuthorID: post.repostAuthorID,
+                                                                        repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                                                        repostAuthorUsername: post.repostAuthorUsername,
+                                                                        repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    } 
+                                                    })}
 
-                                                if (post.postType === "original") {
-                                                    return (
-                                                        <div key={post.id}>
-                                                            <PostSnippet
-                                                                props={{
-                                                                    currentUserID: currentUserID,
-                                                                    postID: post.id,
-                                                                    postBody: post.postBody,
-                                                                    postCategory: post.postCategory,
-                                                                    postTrackerLocation: post.postTrackerLocation,
-                                                                    postPets: post.postPets,
-                                                                    postDate: post.postDate,
-                                                                    imageUrls: post.imageUrls,
-                                                                    authorID: post.authorID,
-                                                                    authorDisplayName: post.authorDisplayName,
-                                                                    authorUsername: post.authorUsername,
-                                                                    authorPhotoURL: post.authorPhotoURL,
-                                                                    isEdited: post.isEdited,
-                                                                    postType: post.postType,
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    );
-                                                } else if (post.postType === 'repost') {
-                                                    return (
-                                                        <div key={post.id}>
-                                                            <RepostSnippet
-                                                                props={{
-                                                                    currentUserID: currentUserID,
-                                                                    authorID: post.authorID,
-                                                                    authorDisplayName: post.authorDisplayName,
-                                                                    authorUsername: post.authorUsername,
-                                                                    authorPhotoURL: post.authorPhotoURL,
-                                                                    postID: post.id,
-                                                                    postDate: post.postDate,
-                                                                    postType: 'repost',
-                                                                    postBody: post.postBody,
-                                                                    isEdited: post.isEdited,
-                                                                    repostID: post.repostID,
-                                                                    repostBody: post.repostBody,
-                                                                    repostCategory: post.repostCategory,
-                                                                    repostPets: post.repostPets,
-                                                                    repostDate: post.repostDate,
-                                                                    repostImageUrls: post.repostImageUrls,
-                                                                    repostAuthorID: post.repostAuthorID,
-                                                                    repostAuthorDisplayName: post.repostAuthorDisplayName,
-                                                                    repostAuthorUsername: post.repostAuthorUsername,
-                                                                    repostAuthorPhotoURL: post.repostAuthorPhotoURL,
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    );
-                                                } 
-                                                })}
+                                                    {loading && <div>Loading...</div>}
 
-                                                {loading && <div>Loading...</div>}
-
-                                                {allPostsLoaded ? (
-                                                <button
-                                                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                                                    onClick={refreshPosts}
-                                                >
-                                                    Refresh Posts
-                                                </button>
-                                                ) : (
-                                                <button
-                                                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                                                    onClick={fetchMorePosts}
-                                                    disabled={loading}
-                                                >
-                                                    Load More
-                                                </button>
-                                                )}
-                                        </div>
+                                                    {allPostsLoaded ? (
+                                                    <button
+                                                        className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                                                        onClick={refreshPosts}
+                                                    >
+                                                        Refresh Posts
+                                                    </button>
+                                                    ) : (
+                                                    <button
+                                                        className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                                                        onClick={fetchMorePosts}
+                                                        disabled={loading}
+                                                    >
+                                                        Load More
+                                                    </button>
+                                                    )}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -1010,7 +1012,7 @@ function UserProfilePage() {
                                     <div className="w-full flex justify-center">
                                         {
                                             (profileUserID !== currentUserID && pets.length === 0) ? (
-                                                <div className='flex flex-col items-center justify-center h-full w-full'>
+                                                <div className='flex flex-col pt-20 items-center justify-center h-full w-full'>
                                                     <i className="fa-solid fa-hippo text-8xl text-grass"></i>
                                                     <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
                                                 </div>

@@ -27,7 +27,7 @@ export const editUserProfileStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 'fit-content', 
+    width: '40%', 
     height: 'fit-content',
     overflow: 'auto',
     padding: '20px',

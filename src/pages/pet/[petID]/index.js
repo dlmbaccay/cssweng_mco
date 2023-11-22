@@ -281,7 +281,7 @@ function PetProfilePage() {
             const newPosts = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
-            })).sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+            }))
 
             setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
             setTaggedPosts(newPosts);
@@ -712,78 +712,113 @@ function PetProfilePage() {
 
                                 {/* Tagged Posts */}
                                 {activeTab === 'Tagged Posts' && (
-                                    <div
-                                        id="showcase"
-                                        className="flex justify-center w-full"
-                                    >
-                                        <div className='flex flex-col mt-8 mb-8 gap-8 items-center'>
-                                            {taggedPosts.map((post, index) => (
-                                                <div key={post.id}>
-                                                    <PostSnippet
-                                                        props={{
-                                                            currentUserID: currentUserID,
-                                                            postID: post.id,
-                                                            postBody: post.postBody,
-                                                            postCategory: post.postCategory,
-                                                            postTrackerLocation: post.postTrackerLocation,
-                                                            postPets: post.postPets,
-                                                            postDate: post.postDate,
-                                                            imageUrls: post.imageUrls,
-                                                            authorID: post.authorID,
-                                                            authorDisplayName: post.authorDisplayName,
-                                                            authorUsername: post.authorUsername,
-                                                            authorPhotoURL: post.authorPhotoURL,
-                                                            isEdited: post.isEdited,
-                                                            postType: post.postType,
-                                                        }}
-                                                    />
+                                    <div className="flex justify-center w-full">
+                                        { taggedPosts.length === 0 && (
+                                            <div className="w-full pt-20 pl-24 pr-24 flex justify-center">
+
+                                                {/* if no media... */}
+                                                <div className='flex flex-col items-center justify-center h-full w-full'>
+                                                    <i className="fa-solid fa-hippo text-8xl text-grass"></i>
+                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
                                                 </div>
-                                            ))}
 
-                                            {loading && <div>Loading...</div>}
+                                            </div>
+                                        )}
 
-                                            {allTaggedPostsLoaded ? (
-                                                <button
-                                                    className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
-                                                    onClick={refreshPosts}
-                                                >
-                                                    Refresh Posts
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
-                                                    onClick={fetchMorePosts}
-                                                    disabled={loading}
-                                                >
-                                                    Load More
-                                                </button>
-                                            )}
-                                        </div>
+                                        { taggedPosts.length > 0 && (
+                                            <div className='flex flex-col mt-8 mb-8 gap-8 items-center'>
+                                                {taggedPosts.map((post, index) => (
+                                                    <div key={post.id}>
+                                                        <PostSnippet
+                                                            props={{
+                                                                currentUserID: currentUserID,
+                                                                postID: post.id,
+                                                                postBody: post.postBody,
+                                                                postCategory: post.postCategory,
+                                                                postTrackerLocation: post.postTrackerLocation,
+                                                                postPets: post.postPets,
+                                                                postDate: post.postDate,
+                                                                imageUrls: post.imageUrls,
+                                                                authorID: post.authorID,
+                                                                authorDisplayName: post.authorDisplayName,
+                                                                authorUsername: post.authorUsername,
+                                                                authorPhotoURL: post.authorPhotoURL,
+                                                                isEdited: post.isEdited,
+                                                                postType: post.postType,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                ))}
+
+                                                {loading && <div>Loading...</div>}
+
+                                                {allTaggedPostsLoaded ? (
+                                                    <button
+                                                        className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
+                                                        onClick={refreshPosts}
+                                                    >
+                                                        Refresh Posts
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className='px-4 py-2 text-white bg-grass rounded-lg w-fit text-sm hover:bg-raisin_black transition-all'
+                                                        onClick={fetchMorePosts}
+                                                        disabled={loading}
+                                                    >
+                                                        Load More
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
                                 {/* Milestones */}
                                 {activeTab === 'Milestones' && (
-                                    <div className="w-full p-14 pl-16">
-
-                                        {/* if no media... */}
-                                        <div className='flex flex-col items-center justify-center h-full w-full'>
-                                            <i className="fa-solid fa-hippo text-8xl text-grass"></i>
+                                    <div className="flex justify-center w-full pt-8">
+                                        
+                                        {/* if no milestones */}
+                                        
+                                        {taggedPosts.filter(post => post.postCategory === 'Milestones').length === 0 && (
+                                            <div className="w-full pt-12 pl-24 pr-24 flex justify-center">
+                                            <div className='flex flex-col items-center justify-center h-full w-full'>
+                                                <i className="fa-solid fa-hippo text-8xl text-grass"></i>
                                             <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                            </div>
                                         </div>
+                                        )}
 
-                                        {/* if w/ media */}
-                                        {/* <div className="grid grid-cols-8">
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                        </div> */}
+                                        {taggedPosts.filter(post => post.postCategory === 'Milestones').map((post, index) => (
+                                            <div key={post.id}>
+                                                <PostSnippet
+                                                    props={{
+                                                        currentUserID: currentUserID,
+                                                        postID: post.id,
+                                                        postBody: post.postBody,
+                                                        postCategory: post.postCategory,
+                                                        postTrackerLocation: post.postTrackerLocation,
+                                                        postPets: post.postPets,
+                                                        postDate: post.postDate,
+                                                        imageUrls: post.imageUrls,
+                                                        authorID: post.authorID,
+                                                        authorDisplayName: post.authorDisplayName,
+                                                        authorUsername: post.authorUsername,
+                                                        authorPhotoURL: post.authorPhotoURL,
+                                                        isEdited: post.isEdited,
+                                                        postType: post.postType,
+                                                    }}
+                                                />
+                                            </div>
+                                        ))}
+
+                                        
                                     </div>
+
                                 )}
 
                                 {/* Media */}
                                 {activeTab === 'Media' && (
-                                    <div className="w-full p-14 pl-16">
+                                    <div className="w-full pt-20 pl-24 pr-24 flex justify-center">
 
                                         {/* if no media... */}
                                         <div className='flex flex-col items-center justify-center h-full w-full'>
@@ -791,12 +826,6 @@ function PetProfilePage() {
                                             <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
                                         </div>
 
-                                        {/* if w/ media */}
-                                        {/* <div className="grid grid-cols-8">
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                            <div className="w-36 h-36 rounded-xl bg-pale_yellow"></div>
-                                        </div> */}
                                     </div>
                                 )}
                             </div>
