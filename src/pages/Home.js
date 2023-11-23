@@ -283,7 +283,7 @@ function Home() {
           {/* main container */}
           <div className='h-full w-full overflow-y-scroll'>
 
-            <div className='flex flex-col justify-center items-center pt-10 pb-10'>
+            <div className='flex flex-col justify-center items-center md:pt-10 pb-10'>
               {/* create post */}
               <div 
                 className='group flex flex-row w-screen md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>

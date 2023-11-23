@@ -696,7 +696,10 @@ function PetProfilePage() {
                                         {petName}
                                     </p>
                                     <p className='font-bold md:flex hidden'>·</p>
-                                        @{petOwnerUsername}
+                                        <Link 
+                                            href={'/user/' + petOwnerUsername}
+                                            className='hover:text-grass text-sm text-raisin_black hover:font-bold transition-all'
+                                        >@{petOwnerUsername}</Link>
                                     <p className='font'>
                                     </p>
                                 </div>
@@ -743,13 +746,13 @@ function PetProfilePage() {
                                 </button>
                             </div>
 
-                            <div id="tab-container" className='overflow-y-scroll h-full bg-[#FAFAFA]'>
+                            <div id="tab-container" className='overflow-y-scroll h-full w-fit md:w-full bg-[#FAFAFA]'>
 
                                 {/* Tagged Posts */}
                                 {activeTab === 'Tagged Posts' && (
-                                    <div className="flex justify-center w-full">
+                                    <div className="flex flex-col items-center justify-start w-full">
                                         { taggedPosts.length === 0 && (
-                                            <div className="w-full pt-20 pl-24 pr-24 flex justify-center">
+                                            <div className="flex mt-8 mb-20 md:mb-8 flex-col gap-8 justify-start items-center">
 
                                                 {/* if no media... */}
                                                 <div className='flex flex-col items-center justify-center h-full w-full'>
@@ -810,7 +813,7 @@ function PetProfilePage() {
 
                                 {/* Milestones */}
                                 {activeTab === 'Milestones' && (
-                                    <div className="flex justify-center w-full pt-8">
+                                    <div className='flex flex-col mt-8 mb-8 gap-8 items-center'>
                                         
                                         {/* if no milestones */}
                                         

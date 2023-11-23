@@ -919,7 +919,7 @@ function UserProfilePage() {
 
                                         {currentUserID === profileUserID ? (
                                             <div 
-                                                className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2 mt-8'>
+                                                className='group flex flex-row w-screen md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2 md:mt-8'>
 
                                                 {userPhotoURL && <Image
                                                     src={userPhotoURL}

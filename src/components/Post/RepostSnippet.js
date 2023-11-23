@@ -220,12 +220,12 @@ export default function RepostSnippet( {props} ) {
         </div>
 
         <div className={`flex flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
-        onClick={() =>
-          Router.push({
-            pathname: '/post/[postID]',
-            query: { postID: repostID },
-          })
-        }>
+          onClick={() =>
+            Router.push({
+              pathname: '/post/[postID]',
+              query: { postID: repostID },
+            })
+          }>
             <div>
               <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
             </div>
