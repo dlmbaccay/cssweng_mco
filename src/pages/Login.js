@@ -153,7 +153,7 @@ export default function Login() {
 
             <div id="login" className='bg-jasmine drop-shadow-md w-[300px] h-[500px] md:w-[500px] md:h-[500px] rounded-3xl flex md:pl-12 md:pr-12 pl-8 pr-8 flex-col justify-center items-center'>
 
-                <h1 className='md:text-6xl text-[44px] font-bold font-shining md:mb-4 mb-2 text-grass'>BantayBuddy</h1>
+                <h1 className='md:text-6xl text-[44px] font-bold font-shining md:mb-4 mb-2 text-grass cursor-pointer' onClick={() => router.push('/AboutUs')}>BantayBuddy</h1>
                 
                 <input 
                     type="text" 
@@ -265,5 +265,6 @@ function PostShowcase() {
               </div>
             </div>
         </div>
+        
     )
 }
