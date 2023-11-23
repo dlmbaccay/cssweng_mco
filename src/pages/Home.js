@@ -286,7 +286,7 @@ function Home() {
             <div className='flex flex-col justify-center items-center pt-10 pb-10'>
               {/* create post */}
               <div 
-                className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
+                className='group flex flex-row w-screen md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
 
                   {userPhotoURL && <Image
                     src={userPhotoURL}
@@ -330,7 +330,7 @@ function Home() {
                   </Modal>
               </div>
 
-              <div className='w-[320px] md:w-[650px] h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 flex flex-row justify-center items-center'>
+              <div className='w-screen md:w-[650px] h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 flex flex-row justify-center items-center'>
                   <button
                       onClick={() => setActiveContainer('For You')}
                       className={`transition-all w-1/2 h-full rounded-l-lg text-raisin_black font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'For You' ? "text-snow bg-grass" : ''}`}
