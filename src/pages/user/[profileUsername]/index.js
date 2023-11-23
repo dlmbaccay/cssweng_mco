@@ -114,16 +114,16 @@ function UserProfilePage() {
                 setUserPhotoURL(doc.data()?.photoURL);
                 setCoverPhotoURL(doc.data()?.coverPhotoURL);
                 setHidden(doc.data()?.hidden);
-                
+
                 setFollowers(doc.data()?.followers);
                 setFollowing(doc.data()?.following);
-                
+
                 setBirthdate(doc.data()?.birthdate);
                 setGender(doc.data()?.gender);
                 setEmail(doc.data()?.email);
                 setPhoneNumber(doc.data()?.phoneNumber);
                 setLocation(doc.data()?.location);
-                
+
                 setEditedDisplayName(doc.data()?.displayName);
                 setEditedAbout(doc.data()?.about);
                 setEditedLocation(doc.data()?.location);
@@ -263,46 +263,46 @@ function UserProfilePage() {
     const handleEditProfileSave = async () => {
         const userRef = firestore.collection('users').doc(profileUserID);
         const batch = firestore.batch();
-     
+
         try {
             const uploadFile = async (ref, file, field) => {
                 const task = ref.put(file);
                 task.on(
                     'state_changed',
                     (snapshot) => {
-                       const progress = Math.round(
-                           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                       );
+                        const progress = Math.round(
+                            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                        );
                     },
                     (error) => {
-                       toast.error('Error uploading file.');
+                        toast.error('Error uploading file.');
                     },
                     async () => {
-                       toast.success('Photo uploaded successfully!');
-                       let url = await task.snapshot.ref.getDownloadURL(); 
-                       const userRef = firestore.doc(`users/${currentUserID}`);
-                       userRef.update({ [field]: url });
+                        toast.success('Photo uploaded successfully!');
+                        let url = await task.snapshot.ref.getDownloadURL();
+                        const userRef = firestore.doc(`users/${currentUserID}`);
+                        userRef.update({ [field]: url });
                     }
                 );
             };
-     
+
             if (selectedCoverFile) {
                 await uploadFile(storage.ref(`profilePictures/${profileUserID}/coverPic`), selectedCoverFile, 'coverPhotoURL');
             }
             if (selectedProfileFile) {
                 await uploadFile(storage.ref(`profilePictures/${profileUserID}/profilePic`), selectedProfileFile, 'photoURL');
             }
-            
-           
-     
+
+
+
             const updateData = {
                 displayName: editedDisplayName,
                 about: editedAbout,
                 location: editedLocation
             };
-     
+
             batch.update(userRef, updateData);
-     
+
             await batch.commit();
             setShowEditProfile(false);
             setSelectedProfileFile(null);
@@ -310,12 +310,12 @@ function UserProfilePage() {
             setPreviewCoverUrl(null);
             setPreviewProfileUrl(null);
             toast.success('User profile updated successfully!');
-     
+
         } catch (error) {
-            toast.error('Error saving profile:'+ error);
+            toast.error('Error saving profile:' + error);
         }
     }
-    
+
     const [selectedProfileFile, setSelectedProfileFile] = useState(null);
     const [previewProfileUrl, setPreviewProfileUrl] = useState(null);
     const [selectedCoverFile, setSelectedCoverFile] = useState(null);
@@ -324,7 +324,7 @@ function UserProfilePage() {
     const handleProfileFileSelect = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
-      
+
         if (file !== undefined && allowedTypes.includes(file.type)) {
             setSelectedProfileFile(file);
             setPreviewProfileUrl(URL.createObjectURL(file));
@@ -339,7 +339,7 @@ function UserProfilePage() {
     const handleCoverFileSelect = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
-      
+
         if (file !== undefined && allowedTypes.includes(file.type)) {
             setSelectedCoverFile(file);
             setPreviewCoverUrl(URL.createObjectURL(file));
@@ -444,7 +444,7 @@ function UserProfilePage() {
         // }
     };
 
-    const [posts, setPosts] = useState([]);   
+    const [posts, setPosts] = useState([]);
     const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(false);
     const [allPostsLoaded, setAllPostsLoaded] = useState(false);
@@ -459,10 +459,10 @@ function UserProfilePage() {
             limit(5)
         );
 
-        const unsubscribe = onSnapshot(q, 
+        const unsubscribe = onSnapshot(q,
             (snapshot) => {
                 const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
+
                 setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
                 setPosts(newPosts);
                 setLoading(false);
@@ -526,12 +526,12 @@ function UserProfilePage() {
         <div id="root" className='flex flex-row h-screen'>
 
             <div className='w-fit md:flex hidden'>
-                {(userPhotoURL && username) && <ExpandedNavBar 
+                {(userPhotoURL && username) && <ExpandedNavBar
                     props={{
-                    userPhotoURL: userPhotoURL,
-                    username: username,
-                    activePage: "Profile",
-                    expanded: false
+                        userPhotoURL: userPhotoURL,
+                        username: username,
+                        activePage: "Profile",
+                        expanded: false
                     }}
                 />}
             </div>
@@ -539,28 +539,28 @@ function UserProfilePage() {
             {profileUser &&
 
                 <div className="h-screen w-full overflow-hidden">
-                    
+
                     <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
                         <div className='h-full w-fit flex flex-row items-center gap-1'>
-                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full' />
                             <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
                         </div>
-                        
+
                         <button onClick={() => setShowPhoneNavModal(true)}>
-                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center' />
                         </button>
 
-                        <Modal 
+                        <Modal
                             isOpen={showPhoneNavModal}
                             onRequestClose={() => setShowPhoneNavModal(false)}
                             style={phoneNavModalStyle}
                         >
-                            <PhoneNav 
-                            props = {{
-                                setShowPhoneNavModal: setShowPhoneNavModal,
-                                currentUserUsername: username,
-                                currentUserPhotoURL: userPhotoURL,
-                            }}
+                            <PhoneNav
+                                props={{
+                                    setShowPhoneNavModal: setShowPhoneNavModal,
+                                    currentUserUsername: username,
+                                    currentUserPhotoURL: userPhotoURL,
+                                }}
                             />
                         </Modal>
                     </nav>
@@ -570,13 +570,13 @@ function UserProfilePage() {
                     </div>
 
                     <div id='content-container' className='h-full md:h-4/5 flex flex-row'>
-                        
+
                         {/* Profile Picture */}
                         <div className="hidden md:flex absolute justify-center w-80 h-44">
                             <div className='rounded-full z-10
                                 -translate-y-40 w-32 h-32 -translate-x-14
                                 lg:w-44 lg:h-44 lg:-translate-y-24 lg:translate-x-0'>
-                                <Image 
+                                <Image
                                     src={userPhotoURL}
                                     alt={username + " profile picture"}
                                     fill='fill'
@@ -635,7 +635,7 @@ function UserProfilePage() {
                                     <div className='w-full h-full flex flex-col justify-between pr-2'>
                                         <div className='flex flex-row items-center justify-between'>
                                             <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
-                                            <i className='fa-solid fa-xmark md:hidden' onClick={handleCancelEditProfile}/>
+                                            <i className='fa-solid fa-xmark md:hidden' onClick={handleCancelEditProfile} />
                                         </div>
 
                                         <div className='flex flex-col md:flex-row w-full h-fit gap-6 justify-evenly'>
@@ -645,8 +645,8 @@ function UserProfilePage() {
                                                     <h1 className='font-medium mb-2 text-center'>Change Profile Picture</h1>
                                                     <label htmlFor="userPhoto">
                                                         <div className="flex justify-center w-40 h-40 cursor-pointer rounded-full shadow-lg hover:opacity-50">
-                                                            {previewProfileUrl ? (<RoundIcon src={previewProfileUrl} alt={"Preview"} />): 
-                                                            (<RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />)}
+                                                            {previewProfileUrl ? (<RoundIcon src={previewProfileUrl} alt={"Preview"} />) :
+                                                                (<RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />)}
                                                         </div>
                                                     </label>
                                                     <input type="file" id="userPhoto" onChange={handleProfileFileSelect} className='hidden' />
@@ -656,10 +656,10 @@ function UserProfilePage() {
                                                 <div>
                                                     <h1 className='font-medium mb-2 text-center'>Change Cover Photo</h1>
                                                     <label htmlFor="coverPhoto">
-                                                        <div className='relative mx-auto w-full' style={{height: '150px', width: '250px'}}>
+                                                        <div className='relative mx-auto w-full' style={{ height: '150px', width: '250px' }}>
                                                             {previewCoverUrl ? (
-                                                                <Image src={previewCoverUrl} alt="Preview" layout='fill' className='object-cover rounded-lg'/>
-                                                            ): (profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} layout='fill' className='object-cover rounded-lg'/>)}
+                                                                <Image src={previewCoverUrl} alt="Preview" layout='fill' className='object-cover rounded-lg' />
+                                                            ) : (profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} layout='fill' className='object-cover rounded-lg' />)}
                                                         </div>
                                                     </label>
                                                     <input type="file" id="coverPhoto" onChange={handleCoverFileSelect} className="hidden" />
@@ -729,7 +729,7 @@ function UserProfilePage() {
                                                     />
                                                 </div>
 
-                                                 <div className='flex flex-col w-full items-center h-full gap-4 rounded-lg'>
+                                                <div className='flex flex-col w-full items-center h-full gap-4 rounded-lg'>
                                                     <div className='flex flex-row gap-2 items-center'>
                                                         <i className="fa-solid fa-phone"></i>
                                                         <p>{phoneNumber}</p>
@@ -799,38 +799,43 @@ function UserProfilePage() {
                             </div>
 
                             {/* Details */}
-                            <div className='mt-4 mb-2 flex flex-col w-full gap-2 items-center'>
+                            <div className='mt-4 mb-2 flex flex-col w-full gap-2 items-center' alt>
                                 {hidden && !hidden.includes('location') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-location-dot"></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Location</span>
                                         <p>{location}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('gender') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-venus-mars"></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Gender</span>
                                         <p>{gender}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('birthdate') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
-                                        <i className="fa-solid fa-calendar"></i>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
+                                        <i className="fa-solid fa-calendar "></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Birthdate</span>
                                         <p>{birthdate}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('contactNumber') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-phone"></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Number</span>
                                         <p>{phoneNumber}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('email') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
-                                        <i className="fa-solid fa-envelope"></i>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
+<i className="fa-solid fa-envelope "></i>
+    <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">E-mail</span>
                                         <p>{email}</p>
                                     </div>
                                 ) : ''}
@@ -843,7 +848,7 @@ function UserProfilePage() {
                             <div id='flex-profile-details' className='lg:hidden w-full h-20 md:h-12 bg-snow flex flex-row items-center md:pl-10 gap-8 md:justify-start justify-center'>
                                 <div className='flex flex-col h-fit items-center md:flex-row md:gap-2'>
                                     <p className='font-bold'>
-                                    {profileUser.displayName}
+                                        {profileUser.displayName}
                                     </p>
                                     <p className='font-bold md:flex hidden'>·</p>
                                     <p className='font'>
@@ -864,15 +869,15 @@ function UserProfilePage() {
                                     </div>
                                 </div>
 
-                                { profileUserID === currentUserID ? 
-                                    (<button 
+                                {profileUserID === currentUserID ?
+                                    (<button
                                         onClick={() => setShowEditProfile(true)}
                                         className='text-sm font-semibold text-white bg-citron w-12 md:h-6 h-8 rounded-md'
                                     >
                                         Edit
-                                    </button>) : 
+                                    </button>) :
                                     (
-                                        <button 
+                                        <button
                                             onClick={handleFollow}
                                             className='text-sm font-semibold text-white bg-citron w-20 md:h-6 h-8 rounded-md'
                                         >
@@ -918,7 +923,7 @@ function UserProfilePage() {
                                         )}
 
                                         {currentUserID === profileUserID ? (
-                                            <div 
+                                            <div
                                                 className='group flex flex-row w-screen md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2 md:mt-8'>
 
                                                 {userPhotoURL && <Image
@@ -935,7 +940,7 @@ function UserProfilePage() {
                                                 </button>
 
                                                 <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
-                                                    <i className='fa-solid fa-image'/>
+                                                    <i className='fa-solid fa-image' />
                                                 </button>
 
                                                 <Modal
@@ -950,21 +955,21 @@ function UserProfilePage() {
                                                         }
                                                     }}
                                                 >
-                                                    <CreatePost 
+                                                    <CreatePost
                                                         props={{
-                                                        createType: 'original',
-                                                        currentUserID: currentUserID,
-                                                        displayName: displayName,
-                                                        username: username,
-                                                        userPhotoURL: userPhotoURL,
-                                                        setShowCreatePostForm: setShowCreatePostForm,
+                                                            createType: 'original',
+                                                            currentUserID: currentUserID,
+                                                            displayName: displayName,
+                                                            username: username,
+                                                            userPhotoURL: userPhotoURL,
+                                                            setShowCreatePostForm: setShowCreatePostForm,
                                                         }}
                                                     />
                                                 </Modal>
                                             </div>
                                         ) : null}
-                                        
-                                        { posts.length > 0 && (
+
+                                        {posts.length > 0 && (
                                             <div className="flex mt-8 mb-20 md:mb-8 flex-col gap-8 justify-start items-center">
                                                 {posts.map((post, index) => {
                                                     console.log(`Processing post ${index} with postType: ${post.postType}`);
@@ -1021,19 +1026,19 @@ function UserProfilePage() {
                                                                 />
                                                             </div>
                                                         );
-                                                    } 
-                                                    })}
+                                                    }
+                                                })}
 
-                                                    {loading && <div>Loading...</div>}
+                                                {loading && <div>Loading...</div>}
 
-                                                    {allPostsLoaded ? (
+                                                {allPostsLoaded ? (
                                                     <button
                                                         className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
                                                         onClick={refreshPosts}
                                                     >
                                                         Refresh Posts
                                                     </button>
-                                                    ) : (
+                                                ) : (
                                                     <button
                                                         className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
                                                         onClick={fetchMorePosts}
@@ -1041,7 +1046,7 @@ function UserProfilePage() {
                                                     >
                                                         Load More
                                                     </button>
-                                                    )}
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -1064,7 +1069,7 @@ function UserProfilePage() {
                                                     {pets.map((pet) => (
                                                         <div key={pet.id} className="rounded-xl">
                                                             <Link href={`/pet/${pet.id}`} className='rounded-full hover:opacity-80 flex flex-col'>
-                                                                <Image 
+                                                                <Image
                                                                     src={pet.photoURL}
                                                                     alt={pet.petName + " profile picture"}
                                                                     width={144}
@@ -1090,19 +1095,19 @@ function UserProfilePage() {
                                                         </div>
                                                     ))}
 
-                                                    { profileUserID === currentUserID && (
+                                                    {profileUserID === currentUserID && (
                                                         <div className="flex flex-col">
-                                                                <button onClick={() => setShowCreatePetForm(true)}
+                                                            <button onClick={() => setShowCreatePetForm(true)}
                                                                 className=''>
-                                                                    <i className="
+                                                                <i className="
                                                                             fa-solid fa-paw text-white rounded-full 
                                                                             md:w-36 md:h-36 p-6 responsive bg-pale_yellow flex items-center
                                                                             justify-center transition-all
                                                                             md:text-7xl text-6xl hover:bg-grass hover:text-pale_yellow" />
-                                                                </button>
-                                                                <p className='text-center mt-2 text-lg font-bold flex flex-row items-center justify-center'
-                                                                >Add Pet</p>
-                                                            </div>
+                                                            </button>
+                                                            <p className='text-center mt-2 text-lg font-bold flex flex-row items-center justify-center'
+                                                            >Add Pet</p>
+                                                        </div>
                                                     )}
 
                                                     {/* delete pet profile confirmation modal */}
@@ -1123,7 +1128,7 @@ function UserProfilePage() {
                                                                 </div>
 
                                                                 <div className='flex flex-row items-center gap-4'>
-                                                                    
+
                                                                     <button
                                                                         onClick={() => setShowPetDeleteConfirmation(false)}
                                                                         className='rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-black hover:text-white font-bold'
@@ -1131,8 +1136,8 @@ function UserProfilePage() {
                                                                         Cancel</button>
 
                                                                     <button
-                                                                    onClick={confirmDeletePetProfile}
-                                                                    className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
+                                                                        onClick={confirmDeletePetProfile}
+                                                                        className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
                                                                     >
                                                                         Delete</button>
                                                                 </div>
@@ -1241,7 +1246,7 @@ function PetAccountSetup({ props }) {
     const handlePetProfileSelect = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
-      
+
         if (file !== undefined && allowedTypes.includes(file.type)) {
             setPetPhotoURL(file);
             setPreviewPetProfile(URL.createObjectURL(file));
@@ -1361,7 +1366,7 @@ function PetAccountSetup({ props }) {
                     <p className='text-sm'>Create A Pet</p>
                 </div>
 
-                <i className='fa-solid fa-xmark' onClick={() => setShowCreatePetForm(false)}/>
+                <i className='fa-solid fa-xmark' onClick={() => setShowCreatePetForm(false)} />
             </div>
 
             <div className='h-full flex flex-col justify-start'>
@@ -1420,7 +1425,7 @@ function PetAccountSetup({ props }) {
                         </label>
                         <input type="file" id="photo" onChange={e => handlePetProfileSelect(e)} required className='mb-4 text-start w-full' />
                         <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full hover:opacity-50">
-                            {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />): null}
+                            {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />) : null}
                         </div>
                     </div>
 
@@ -1578,7 +1583,7 @@ function PetAccountSetup({ props }) {
                         disabled={!petNameValid}
                         className={`font-semibold text-sm md:text-base h-10 px-4 rounded-md bg-xanthous text-white transition-all ${petNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
                         Create Pet
-                    </button>       
+                    </button>
                 </div>
             </div>
         </form>
