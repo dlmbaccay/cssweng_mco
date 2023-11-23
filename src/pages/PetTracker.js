@@ -276,11 +276,11 @@ export default function PetTracker() {
                 </div>  
 
                 {/* main container */}
-                <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-10 pb-10'>
+                <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center md:pt-10 pb-10'>
                     
                     {/* create post */}
                     <div 
-                        className='group flex flex-row w-[320px] md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
+                        className='group flex flex-row w-screen md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
 
                         {userPhotoURL && <Image
                         src={userPhotoURL}
@@ -324,7 +324,7 @@ export default function PetTracker() {
                         </Modal>
                     </div>
 
-                    <div className='w-[320px] md:w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
+                    <div className='w-screen md:w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
                         <button
                             onClick={() => setActiveContainer('Lost Pets')}
                             className={`transition-all w-1/2 h-full rounded-l-lg text-raisin_black font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'Lost Pets' ? "text-snow bg-grass" : ''}`}

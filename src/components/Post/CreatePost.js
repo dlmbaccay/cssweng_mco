@@ -75,8 +75,11 @@ export default function CreatePost({ props }) {
         event.preventDefault();
 
         if (!postBody) {
-            toast.error('Bark up some words for your post!');
-            return;
+            // if no images uploaded
+            if (images.length === 0) {
+                toast.error('Please upload at least one image!');
+                return;
+            }
         }
 
          // disable submit button

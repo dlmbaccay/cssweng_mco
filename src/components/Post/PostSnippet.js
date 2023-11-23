@@ -151,7 +151,7 @@ export default function PostSnippet({ props }) {
 
     return (
       <div 
-        className='drop-shadow-sm hover:drop-shadow-md bg-snow w-[320px] md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
+        className='drop-shadow-sm hover:drop-shadow-md bg-snow w-screen md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
 
           {/* Post expanded */}
           <Modal isOpen={showPostExpanded} onRequestClose={() => setShowPostExpanded(false)} 
