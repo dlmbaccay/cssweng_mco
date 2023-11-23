@@ -884,22 +884,16 @@ function UserProfilePage() {
 
                             <div id="tab-actions" className="flex flex-row h-12 font-shining bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm md:justify-start justify-between">
                                 <button
-                                    className={`w-1/3 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
+                                    className={`w-1/2 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Posts')}>
                                     Posts
                                 </button>
                                 <button
-                                    className={`w-1/3 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
+                                    className={`w-1/2 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Pets')}>
                                     Pets
-                                </button>
-                                <button
-                                    className={`w-1/3 md:w-fit text-sm md:text-base px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Media' ? 'bg-citron text-white' : ''
-                                        }`}
-                                    onClick={() => handleTabEvent('Media')}>
-                                    Media
                                 </button>
                             </div>
 
@@ -1178,16 +1172,6 @@ function UserProfilePage() {
                                                 </div>
                                             )
                                         }
-                                    </div>
-                                )}
-
-                                {/* Media */}
-                                {activeTab === 'Media' && (
-                                    <div className="w-full p-20 pl-24 pr-24 flex justify-center">
-                                        <div className='flex flex-col items-center justify-center h-full w-full'>
-                                            <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                            <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
-                                        </div>
                                     </div>
                                 )}
                             </div>
