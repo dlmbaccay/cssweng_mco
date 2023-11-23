@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { auth, firestore } from '../lib/firebase'
-import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
 import { useUserData } from '../lib/hooks';
 import withAuth from '../components/withAuth';
 
@@ -14,6 +14,7 @@ import Repost from '../components/Post/RepostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 import PhoneNav from '../components/PhoneNav';
 import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
+import toast from 'react-hot-toast'
 
 function Home() {
 
@@ -33,46 +34,90 @@ function Home() {
   }, []);
 
   const { user, username, description, email, displayName, userPhotoURL } = useUserData();
+
   const router = Router;
   const [ pageLoading, setPageLoading ] = useState(true);
   const [ isSearchInputFocused, setIsSearchInputFocused ] = useState(false);
   const [ showCreatePostForm, setShowCreatePostForm ] = useState(false);
 
-  const [posts, setPosts] = useState([]);
-  const [lastVisible, setLastVisible] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [allPostsLoaded, setAllPostsLoaded] = useState(false);
   
+  const [allPosts, setAllPosts] = useState([]);
+  const [allPostsLoaded, setAllPostsLoaded] = useState(false);
+  const [allPostsLastVisible, setAllPostsLastVisible] = useState(null);
+  
+  const [following, setFollowing] = useState([]); 
+  const [followingPosts, setFollowingPosts] = useState([]);
+  const [followingPostsLoaded, setFollowingPostsLoaded] = useState(false);
+  const [followingLastVisible, setFollowingLastVisible] = useState(null);
+
   useEffect(() => {
-      setLoading(true);
+    setPageLoading(true);
 
-      const q = query(
-        collection(firestore, "posts"),
-        orderBy("postDate", "desc"),
-        limit(5)
-      );
+    // Fetch the 'following' array from the current user's document
+    const fetchFollowing = async () => {
+        const userDoc = await firestore.collection("users").doc(user.uid).get();
+        setFollowing(userDoc.data().following);
+        return userDoc.data().following;
+    };
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-          const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-          setPosts(newPosts);
-          setLoading(false);
-      }, (error) => {
-          console.error("Error fetching posts:", error);
-          setLoading(false);
-      });
+    fetchFollowing().then((following) => {
+        const allPostsQuery = query(
+            collection(firestore, "posts"),
+            orderBy("postDate", "desc"),
+            limit(5)
+        );
 
-      // Return the cleanup function to unsubscribe from the listener
-      return () => unsubscribe();
-  }, []); // Ensure this effect only runs once on component mount
+        const allPostsUnsubscribe = onSnapshot(allPostsQuery, (snapshot) => {
+            const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setAllPostsLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+            setAllPosts(newPosts);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching posts:", error);
+            setPageLoading(false);
+        });
 
-  const fetchMorePosts = async () => {
-    if (lastVisible && !loading) {
+        // Only make the query if 'following' is not empty
+        if (following.length > 0) {
+            const followingPostsQuery = query(
+                collection(firestore, "posts"),
+                where("authorID", "in", following),
+                orderBy("postDate", "desc"),
+                limit(5)
+            );
+
+            const followingPostsUnsubscribe = onSnapshot(followingPostsQuery, (snapshot) => {
+                const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setFollowingLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+                setFollowingPosts(newPosts);
+                setLoading(false);
+            }, (error) => {
+                console.error("Error fetching posts:", error);
+                setPageLoading(false);
+            });
+
+            // Return the cleanup function to unsubscribe from the listener
+            return () => {
+                allPostsUnsubscribe();
+                followingPostsUnsubscribe();
+            };
+        } else {
+            // Return the cleanup function to unsubscribe from the listener
+            return () => {
+                allPostsUnsubscribe();
+            };
+        }
+    });
+}, []); // Ensure this effect only runs once on component mount
+
+  const fetchMoreAllPosts = async () => {
+    if (allPostsLastVisible && !loading) {
         setLoading(true);
         const nextQuery = query(
           collection(firestore, "posts"),
           orderBy("postDate", "desc"), 
-          startAfter(lastVisible), 
+          startAfter(allPostsLastVisible), 
           limit(5)
         );
 
@@ -84,8 +129,8 @@ function Home() {
         if (newPosts.length === 0) {
           setAllPostsLoaded(true);
         } else {
-          setLastVisible(newLastVisible);
-          setPosts(prevPosts => [...prevPosts, ...newPosts]);
+          setAllPostsLastVisible(newLastVisible);
+          setAllPosts(prevPosts => [...prevPosts, ...newPosts]);
           setAllPostsLoaded(false);
         }
 
@@ -93,7 +138,7 @@ function Home() {
     }
   };
 
-  const refreshPosts = async () => {
+  const refreshAllPosts = async () => {
     setLoading(true);
     const refreshQuery = query(
       collection(firestore, "posts"),
@@ -103,13 +148,59 @@ function Home() {
 
     const querySnapshot = await getDocs(refreshQuery);
     const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setPosts(refreshedPosts);
-    setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    setAllPosts(refreshedPosts);
+    setAllPostsLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
     setAllPostsLoaded(false);
     setLoading(false);
   };
 
+  const fetchMoreFollowingPosts = async () => {
+    if (followingLastVisible && !loading) {
+        setLoading(true);
+        const nextQuery = query(
+          collection(firestore, "posts"),
+          where("authorID", "in", following),
+          orderBy("postDate", "desc"), 
+          startAfter(followingLastVisible), 
+          limit(5)
+        );
+
+        const querySnapshot = await getDocs(nextQuery);
+        const newPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+        // Update state based on whether new posts are fetched
+        if (newPosts.length === 0) {
+          setFollowingPostsLoaded(true);
+        } else {
+          setFollowingLastVisible(newLastVisible);
+          setFollowingPosts(prevPosts => [...prevPosts, ...newPosts]);
+          setFollowingPostsLoaded(false);
+        }
+
+        setLoading(false);
+    }
+  };
+
+  const refreshFollowingPosts = async () => {
+    setLoading(true);
+    const refreshQuery = query(
+      collection(firestore, "posts"),
+      where("authorID", "in", following),
+      orderBy("postDate", "desc"),
+      limit(5)
+    );
+
+    const querySnapshot = await getDocs(refreshQuery);
+    const refreshedPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setFollowingPosts(refreshedPosts);
+    setFollowingLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    setFollowingPostsLoaded(false);
+    setLoading(false);
+  };
+
   const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+  const [activeContainer, setActiveContainer] = useState('For You');
 
   if (!pageLoading) {
     return (
@@ -239,86 +330,184 @@ function Home() {
                   </Modal>
               </div>
 
-              <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
-                
-                {posts.map((post, index) => {
-                  console.log(`Processing post ${index} with postType: ${post.postType}`);
-
-                  if (post.postType === "original") {
-                      return (
-                        <div key={post.id}>
-                            <PostSnippet
-                                props={{
-                                    currentUserID: user.uid,
-                                    postID: post.id,
-                                    postBody: post.postBody,
-                                    postCategory: post.postCategory,
-                                    postTrackerLocation: post.postTrackerLocation,
-                                    postPets: post.postPets,
-                                    postDate: post.postDate,
-                                    imageUrls: post.imageUrls,
-                                    authorID: post.authorID,
-                                    authorDisplayName: post.authorDisplayName,
-                                    authorUsername: post.authorUsername,
-                                    authorPhotoURL: post.authorPhotoURL,
-                                    isEdited: post.isEdited,
-                                    postType: post.postType,
-                                }}
-                            />
-                        </div>
-                      );
-                  } else if (post.postType === 'repost') {
-                      return (
-                        <div key={post.id}>
-                            <Repost
-                                props={{
-                                    currentUserID: user.uid,
-                                    authorID: post.authorID,
-                                    authorDisplayName: post.authorDisplayName,
-                                    authorUsername: post.authorUsername,
-                                    authorPhotoURL: post.authorPhotoURL,
-                                    postID: post.id,
-                                    postDate: post.postDate,
-                                    postType: 'repost',
-                                    postBody: post.postBody,
-                                    isEdited: post.isEdited,
-                                    repostID: post.repostID,
-                                    repostBody: post.repostBody,
-                                    repostCategory: post.repostCategory,
-                                    repostPets: post.repostPets,
-                                    repostDate: post.repostDate,
-                                    repostImageUrls: post.repostImageUrls,
-                                    repostAuthorID: post.repostAuthorID,
-                                    repostAuthorDisplayName: post.repostAuthorDisplayName,
-                                    repostAuthorUsername: post.repostAuthorUsername,
-                                    repostAuthorPhotoURL: post.repostAuthorPhotoURL,
-                                }}
-                            />
-                        </div>
-                      );
-                  } 
-                })}
-
-                {loading && <div>Loading...</div>}
-
-                {allPostsLoaded ? (
+              <div className='w-[320px] md:w-[650px] h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 flex flex-row justify-center items-center'>
                   <button
-                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                    onClick={refreshPosts}
+                      onClick={() => setActiveContainer('For You')}
+                      className={`transition-all w-1/2 h-full rounded-l-lg text-raisin_black font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'For You' ? "text-snow bg-grass" : ''}`}
                   >
-                    Refresh Posts
+                      For You
                   </button>
-                ) : (
+
                   <button
-                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                    onClick={fetchMorePosts}
-                    disabled={loading}
+                      onClick={() => setActiveContainer('Following')}
+                      className={`transition-all w-1/2 h-full rounded-r-lg text-raisin_black font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'Following' ? 'text-snow bg-grass' : ''}`}
                   >
-                    Load More
+                      Following
                   </button>
-                )}
-                
               </div>
+
+              { activeContainer === 'For You' &&
+                <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
+                  
+                  {allPosts.map((post, index) => {
+                    if (post.postType === "original") {
+                        return (
+                          <div key={post.id}>
+                              <PostSnippet
+                                  props={{
+                                      currentUserID: user.uid,
+                                      postID: post.id,
+                                      postBody: post.postBody,
+                                      postCategory: post.postCategory,
+                                      postTrackerLocation: post.postTrackerLocation,
+                                      postPets: post.postPets,
+                                      postDate: post.postDate,
+                                      imageUrls: post.imageUrls,
+                                      authorID: post.authorID,
+                                      authorDisplayName: post.authorDisplayName,
+                                      authorUsername: post.authorUsername,
+                                      authorPhotoURL: post.authorPhotoURL,
+                                      isEdited: post.isEdited,
+                                      postType: post.postType,
+                                  }}
+                              />
+                          </div>
+                        );
+                    } else if (post.postType === 'repost') {
+                        return (
+                          <div key={post.id}>
+                              <Repost
+                                  props={{
+                                      currentUserID: user.uid,
+                                      authorID: post.authorID,
+                                      authorDisplayName: post.authorDisplayName,
+                                      authorUsername: post.authorUsername,
+                                      authorPhotoURL: post.authorPhotoURL,
+                                      postID: post.id,
+                                      postDate: post.postDate,
+                                      postType: 'repost',
+                                      postBody: post.postBody,
+                                      isEdited: post.isEdited,
+                                      repostID: post.repostID,
+                                      repostBody: post.repostBody,
+                                      repostCategory: post.repostCategory,
+                                      repostPets: post.repostPets,
+                                      repostDate: post.repostDate,
+                                      repostImageUrls: post.repostImageUrls,
+                                      repostAuthorID: post.repostAuthorID,
+                                      repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                      repostAuthorUsername: post.repostAuthorUsername,
+                                      repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                  }}
+                              />
+                          </div>
+                        );
+                    } 
+                  })}
+
+                  {loading && <div>Loading...</div>}
+
+                  {allPostsLoaded ? (
+                    <button
+                      className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                      onClick={refreshAllPosts}
+                    >
+                      Refresh Posts
+                    </button>
+                  ) : (
+                    <button
+                      className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                      onClick={fetchMoreAllPosts}
+                      disabled={loading}
+                    >
+                      Load More
+                    </button>
+                  )}
+                  
+                </div>
+              }
+
+              {
+                activeContainer === 'Following' && 
+                <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
+                
+                  {followingPosts.map((post, index) => {
+                    if (post.postType === "original") {
+                        return (
+                          <div key={post.id}>
+                              <PostSnippet
+                                  props={{
+                                      currentUserID: user.uid,
+                                      postID: post.id,
+                                      postBody: post.postBody,
+                                      postCategory: post.postCategory,
+                                      postTrackerLocation: post.postTrackerLocation,
+                                      postPets: post.postPets,
+                                      postDate: post.postDate,
+                                      imageUrls: post.imageUrls,
+                                      authorID: post.authorID,
+                                      authorDisplayName: post.authorDisplayName,
+                                      authorUsername: post.authorUsername,
+                                      authorPhotoURL: post.authorPhotoURL,
+                                      isEdited: post.isEdited,
+                                      postType: post.postType,
+                                  }}
+                              />
+                          </div>
+                        );
+                    } else if (post.postType === 'repost') {
+                        return (
+                          <div key={post.id}>
+                              <Repost
+                                  props={{
+                                      currentUserID: user.uid,
+                                      authorID: post.authorID,
+                                      authorDisplayName: post.authorDisplayName,
+                                      authorUsername: post.authorUsername,
+                                      authorPhotoURL: post.authorPhotoURL,
+                                      postID: post.id,
+                                      postDate: post.postDate,
+                                      postType: 'repost',
+                                      postBody: post.postBody,
+                                      isEdited: post.isEdited,
+                                      repostID: post.repostID,
+                                      repostBody: post.repostBody,
+                                      repostCategory: post.repostCategory,
+                                      repostPets: post.repostPets,
+                                      repostDate: post.repostDate,
+                                      repostImageUrls: post.repostImageUrls,
+                                      repostAuthorID: post.repostAuthorID,
+                                      repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                      repostAuthorUsername: post.repostAuthorUsername,
+                                      repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                  }}
+                              />
+                          </div>
+                        );
+                    } 
+                  })}
+
+                  {loading && <div>Loading...</div>}
+
+                  {followingPostsLoaded ? (
+                    <button
+                      className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                      onClick={refreshFollowingPosts}
+                    >
+                      Refresh Posts
+                    </button>
+                  ) : (
+                    <button
+                      className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                      onClick={fetchMoreFollowingPosts}
+                      disabled={loading}
+                    >
+                      Load More
+                    </button>
+                  )}
+
+                </div>
+              }
             </div>
 
           </div>
