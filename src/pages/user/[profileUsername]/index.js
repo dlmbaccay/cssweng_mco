@@ -874,7 +874,7 @@ function UserProfilePage() {
                                     (
                                         <button 
                                             onClick={handleFollow}
-                                            className='text-sm font-semibold text-white bg-citron w-16 md:h-6 h-8 rounded-md'
+                                            className='text-sm font-semibold text-white bg-citron w-20 md:h-6 h-8 rounded-md'
                                         >
                                             {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                         </button>
