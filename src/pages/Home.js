@@ -429,83 +429,99 @@ function Home() {
 
               {
                 activeContainer === 'Following' && 
-                <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
-                
-                  {followingPosts.map((post, index) => {
-                    if (post.postType === "original") {
-                        return (
-                          <div key={post.id}>
-                              <PostSnippet
-                                  props={{
-                                      currentUserID: user.uid,
-                                      postID: post.id,
-                                      postBody: post.postBody,
-                                      postCategory: post.postCategory,
-                                      postTrackerLocation: post.postTrackerLocation,
-                                      postPets: post.postPets,
-                                      postDate: post.postDate,
-                                      imageUrls: post.imageUrls,
-                                      authorID: post.authorID,
-                                      authorDisplayName: post.authorDisplayName,
-                                      authorUsername: post.authorUsername,
-                                      authorPhotoURL: post.authorPhotoURL,
-                                      isEdited: post.isEdited,
-                                      postType: post.postType,
-                                  }}
-                              />
-                          </div>
-                        );
-                    } else if (post.postType === 'repost') {
-                        return (
-                          <div key={post.id}>
-                              <Repost
-                                  props={{
-                                      currentUserID: user.uid,
-                                      authorID: post.authorID,
-                                      authorDisplayName: post.authorDisplayName,
-                                      authorUsername: post.authorUsername,
-                                      authorPhotoURL: post.authorPhotoURL,
-                                      postID: post.id,
-                                      postDate: post.postDate,
-                                      postType: 'repost',
-                                      postBody: post.postBody,
-                                      isEdited: post.isEdited,
-                                      repostID: post.repostID,
-                                      repostBody: post.repostBody,
-                                      repostCategory: post.repostCategory,
-                                      repostPets: post.repostPets,
-                                      repostDate: post.repostDate,
-                                      repostImageUrls: post.repostImageUrls,
-                                      repostAuthorID: post.repostAuthorID,
-                                      repostAuthorDisplayName: post.repostAuthorDisplayName,
-                                      repostAuthorUsername: post.repostAuthorUsername,
-                                      repostAuthorPhotoURL: post.repostAuthorPhotoURL,
-                                  }}
-                              />
-                          </div>
-                        );
-                    } 
-                  })}
-
-                  {loading && <div>Loading...</div>}
-
-                  {followingPostsLoaded ? (
-                    <button
-                      className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                      onClick={refreshFollowingPosts}
-                    >
-                      Refresh Posts
-                    </button>
+                <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-6'>
+                  {followingPosts.length === 0 ? (
+                    <>
+                      <p className='font-shining text-xl'>
+                        {following.length === 0 ? "You're not following anyone yet!" : "No posts from your following yet!"}
+                      </p>
+                      <button
+                        className='px-4 py-2 text-white bg-grass rounded-lg font-shining hover:bg-raisin_black transition-all'
+                        onClick={() => setActiveContainer('For You')}
+                      >
+                        Explore
+                      </button>
+                    </>
                   ) : (
-                    <button
-                      className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                      onClick={fetchMoreFollowingPosts}
-                      disabled={loading}
-                    >
-                      Load More
-                    </button>
-                  )}
+                    <div className='w-full h-full justify-start items-center flex flex-col mt-8 mb-16 gap-8'>
+                
+                      {followingPosts.map((post, index) => {
+                        if (post.postType === "original") {
+                            return (
+                              <div key={post.id}>
+                                  <PostSnippet
+                                      props={{
+                                          currentUserID: user.uid,
+                                          postID: post.id,
+                                          postBody: post.postBody,
+                                          postCategory: post.postCategory,
+                                          postTrackerLocation: post.postTrackerLocation,
+                                          postPets: post.postPets,
+                                          postDate: post.postDate,
+                                          imageUrls: post.imageUrls,
+                                          authorID: post.authorID,
+                                          authorDisplayName: post.authorDisplayName,
+                                          authorUsername: post.authorUsername,
+                                          authorPhotoURL: post.authorPhotoURL,
+                                          isEdited: post.isEdited,
+                                          postType: post.postType,
+                                      }}
+                                  />
+                              </div>
+                            );
+                        } else if (post.postType === 'repost') {
+                            return (
+                              <div key={post.id}>
+                                  <Repost
+                                      props={{
+                                          currentUserID: user.uid,
+                                          authorID: post.authorID,
+                                          authorDisplayName: post.authorDisplayName,
+                                          authorUsername: post.authorUsername,
+                                          authorPhotoURL: post.authorPhotoURL,
+                                          postID: post.id,
+                                          postDate: post.postDate,
+                                          postType: 'repost',
+                                          postBody: post.postBody,
+                                          isEdited: post.isEdited,
+                                          repostID: post.repostID,
+                                          repostBody: post.repostBody,
+                                          repostCategory: post.repostCategory,
+                                          repostPets: post.repostPets,
+                                          repostDate: post.repostDate,
+                                          repostImageUrls: post.repostImageUrls,
+                                          repostAuthorID: post.repostAuthorID,
+                                          repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                          repostAuthorUsername: post.repostAuthorUsername,
+                                          repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                      }}
+                                  />
+                              </div>
+                            );
+                        } 
+                      })}
 
+                      {loading && <div>Loading...</div>}
+
+                      {followingPostsLoaded ? (
+                        <button
+                          className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                          onClick={refreshFollowingPosts}
+                        >
+                          Refresh Posts
+                        </button>
+                      ) : (
+                        <button
+                          className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                          onClick={fetchMoreFollowingPosts}
+                          disabled={loading}
+                        >
+                          Load More
+                        </button>
+                      )}
+
+                    </div>
+                  )}
                 </div>
               }
             </div>
