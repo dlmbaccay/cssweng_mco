@@ -17,7 +17,7 @@ import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 import anne from '/public/images/team/Ysobella_Torio.jpg'
 import andre from '/public/images/team/Aquino.jpg'
-import doms from '/public/images/team/Ysobella_Torio.jpg'
+import doms from '/public/images/team/BACCAY.jpg'
 import bella from '/public/images/team/Ysobella_Torio.jpg'
 import luis from '/public/images/team/RANA.jpg'
 import bien from '/public/images/team/Miranda_Bien.jpg'
@@ -113,14 +113,14 @@ export default function AboutUs() {
 
                 {/* main container */}
                 <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-5 pb-10'>
-                    <h1 className='text-raisin_black text-3xl font-bold mb-4'>Meet the Team!</h1>
+                    <h1 className='text-raisin_black text-4xl mb-4 font-shining'>Meet the Team!</h1>
 
                     
 
                     <div>
                         {/* Team Lead */}
                         <div className='flex flex-col items-center'>
-                            <p className='font-bold text-lg text-grass'>Team Lead</p>
+                            <p className='text-2xl text-grass font-shining'>Team Lead</p>
                             {/* <button className='mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105'></button> */}
                             
                             <div
@@ -188,7 +188,7 @@ export default function AboutUs() {
                         <div className='flex'>
                             {/* Developers */}
                             <div className='flex flex-col mt-4 mr-4 items-center'>
-                            <p className='font-bold text-lg text-grass'>Developers</p>
+                            <p className='font-shining text-2xl text-grass'>Developers</p>
                                 <div className='flex'>
                                     <div className='flex flex-col items-center'>
                                         {/* <button className='mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105'></button> */}
@@ -305,7 +305,7 @@ export default function AboutUs() {
 
                             {/* QA Testers */}
                             <div className='flex flex-col mt-4 items-center'>
-                            <p className='font-bold text-lg text-grass'>QA Testers</p>
+                            <p className='font-shining text-2xl text-grass'>QA Testers</p>
                                 <div className='flex'>
                                     <div className='flex flex-col items-center'>
                                         {/* <button className='mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105'></button> */}
@@ -424,7 +424,7 @@ export default function AboutUs() {
 
                         {/* Designers */}
                         <div className='flex flex-col items-center mb-8'>
-                        <p className='font-bold text-lg text-grass mt-4'>Designers</p>
+                        <p className='font-shining text-2xl text-grass mt-4'>Designers</p>
                             <div className='flex'>
                                 <div className='flex flex-col items-center'>
                                     {/* <button className='mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105' ></button> */}
