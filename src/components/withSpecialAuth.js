@@ -1,6 +1,6 @@
 import React from 'react';
-import firebase from 'firebase/app';
 import 'firebase/auth';
+import {auth} from '@/src/lib/firebase';
 import Router from 'next/router';
 
 const withSpecialAuth = (allowedUserIds) => (Component) => {
@@ -8,12 +8,12 @@ const withSpecialAuth = (allowedUserIds) => (Component) => {
    state = { authenticated: null }
 
    componentDidMount() {
-     firebase.auth().onAuthStateChanged(authUser => {
+     auth.onAuthStateChanged(authUser => {
        if (!authUser) {
-         Router.push('/login');
+         Router.push('/Login');
        } else if (!allowedUserIds.includes(authUser.uid)) {
          // user is authenticated but not allowed
-         Router.push('/unauthorized');
+         Router.push('/Login');
        } else {
          // user is authenticated and allowed
          this.setState({ authenticated: true });
