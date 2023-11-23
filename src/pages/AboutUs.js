@@ -16,7 +16,7 @@ import PhoneNav from '../components/PhoneNav';
 import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 import anne from '/public/images/team/Ysobella_Torio.jpg'
-import andre from '/public/images/team/Aquino.jpg'
+import andre from '/public/images/team/AQUINO.jpg'
 import doms from '/public/images/team/BACCAY.jpg'
 import bella from '/public/images/team/Ysobella_Torio.jpg'
 import luis from '/public/images/team/RANA.jpg'
