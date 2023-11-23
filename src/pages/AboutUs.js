@@ -663,7 +663,7 @@ export default function AboutUs() {
                         <p class="mb-6">
                             <span class="font-shining text-xl text-grass">BantayBuddy</span> was created in collaboration with Product Owner
                             <a href="https://www.linkedin.com/in/ardy-ubanos/" target="_blank" class="text-grass hover:font-bold"> Mr. Ardy Ubanos </a>
-                            as the team's major course output in the Software Engineering (CSSWENG) course at De La Salle University Manila.
+                            as the team&apos;s major course output in the Software Engineering (CSSWENG) course at De La Salle University Manila.
                         </p>
                         
                     </div>
