@@ -33,16 +33,25 @@ export default function AboutUs() {
         }
     }, []);
 
+    const [hasUser, setHasUser] = useState(false);
+
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) setPageLoading(false);
-        else setPageLoading(true);
+        const unsubscribeAuth = auth.onAuthStateChanged(user => {
+            if (user) {
+                setHasUser(true);
+                setPageLoading(false);
+            } else {
+                setHasUser(false);
+                setPageLoading(false);
+            }
         });
 
-        return () => unsubscribe(); // Cleanup subscription on unmount
+        // Cleanup subscription on unmount
+        return () => unsubscribeAuth();
     }, []);
 
-    const { user, username, description, email, displayName, userPhotoURL } = useUserData();
+    const { username, userPhotoURL } = useUserData();
+
     const router = Router;
     const [ pageLoading, setPageLoading ] = useState(true);
 
@@ -62,60 +71,66 @@ export default function AboutUs() {
     if (!pageLoading) {
         return (
         <div className='flex flex-row w-full h-screen overflow-hidden'>
-            <div className='hidden lg:flex lg:w-[300px]'>
-                {(userPhotoURL && username) && <ExpandedNavBar 
-                    props={{
-                        userPhotoURL: userPhotoURL,
-                        username: username,
-                        activePage: "",
-                        expanded: true
-                    }}
-                />}
-            </div>
+            
 
-            <div className='w-fit md:flex lg:hidden hidden'>
-                {(userPhotoURL && username) && <ExpandedNavBar 
-                    props={{
-                        userPhotoURL: userPhotoURL,
-                        username: username,
-                        activePage: "",
-                        expanded: false
-                    }}
-                />}
-            </div>
-
-            <div className='w-full bg-dark_gray'>
-
-                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
-                    <div className='h-full w-fit flex flex-row items-center gap-1'>
-                        <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
-                        <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
-                    </div>
-                    
-                    <button onClick={() => setShowPhoneNavModal(true)}>
-                        <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
-                    </button>
-
-                    <Modal 
-                        isOpen={showPhoneNavModal}
-                        onRequestClose={() => setShowPhoneNavModal(false)}
-                        style={phoneNavModalStyle}
-                    >
-                        <PhoneNav 
-                        props = {{
-                            setShowPhoneNavModal: setShowPhoneNavModal,
-                            currentUserUsername: username,
-                            currentUserPhotoURL: userPhotoURL,
+            {   hasUser && 
+                <div className='hidden lg:flex lg:w-[300px]'>
+                    {(userPhotoURL && username) && <ExpandedNavBar 
+                        props={{
+                            userPhotoURL: userPhotoURL,
+                            username: username,
+                            activePage: "",
+                            expanded: true
                         }}
-                        />
-                    </Modal>
-                </nav>
+                        />}
+                </div>
+            }
+
+            { hasUser && 
+                <div className='w-fit md:flex lg:hidden hidden'>
+                    {(userPhotoURL && username) && <ExpandedNavBar 
+                        props={{
+                            userPhotoURL: userPhotoURL,
+                            username: username,
+                            activePage: "",
+                            expanded: false
+                        }}
+                        />}
+                </div>
+            }
+
+            <div className={`bg-dark_gray ${hasUser ? "" : "w-full"}`}>
+
+                { hasUser && 
+                    <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                        <div className='h-full w-fit flex flex-row items-center gap-1'>
+                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                            <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                        </div>
+                        
+                        <button onClick={() => setShowPhoneNavModal(true)}>
+                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                        </button>
+
+                        <Modal 
+                            isOpen={showPhoneNavModal}
+                            onRequestClose={() => setShowPhoneNavModal(false)}
+                            style={phoneNavModalStyle}
+                        >
+                            <PhoneNav 
+                            props = {{
+                                setShowPhoneNavModal: setShowPhoneNavModal,
+                                currentUserUsername: username,
+                                currentUserPhotoURL: userPhotoURL,
+                            }}
+                            />
+                        </Modal>
+                    </nav>
+                }
 
                 {/* main container */}
                 <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-5 pb-10'>
                     <h1 className='text-raisin_black text-4xl mb-10 font-shining'>Meet the Team!</h1>
-
-                    
 
                     <div>
                         {/* Team Lead */}
@@ -185,7 +200,7 @@ export default function AboutUs() {
                             <p className='opacity-60'>Anne Sulit</p>
                         </div>
 
-                        <div className='flex'>
+                        <div className='flex flex-col md:flex-row'>
                             {/* Developers */}
                             <div className='flex flex-col mt-4 mr-4 items-center'>
                             <p className='font-shining text-2xl text-grass'>Developers</p>
@@ -261,7 +276,7 @@ export default function AboutUs() {
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="bantaybuddy.vercel.app/user/dlmbaccay" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/dlmbaccay" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -425,232 +440,236 @@ export default function AboutUs() {
                         {/* Designers */}
                         <div className='flex flex-col items-center mb-8'>
                         <p className='font-shining text-2xl text-grass mt-4'>Designers</p>
-                            <div className='flex'>
-                                <div className='flex flex-col items-center'>
-                                    {/* <button className='mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105' ></button> */}
+                            <div className='flex flex-col md:flex-row'>
+                                <div className='flex'> 
+                                    <div className='flex flex-col items-center'>
+                                        {/* <button className='mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105' ></button> */}
+                                        
+                                        <div
+                                            className={`mr-4 main flex flex-col gap-2 ${isHovered6 ? '' : 'hidden'}`}
+                                            onMouseLeave={() => setIsHovered6(false)}
+                                        >
+                                            {isHovered6 && (
+                                                <>
+                                                <div className="up flex flex-row gap-2 -mt-3">
+                                                    <Link href="mailto:ysobella_torio@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
+                                                            <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
+                                                            <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                    <Link href="https://bantaybuddy.vercel.app/user/bella" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
+                                                            <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
+                                                            <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                </div>
+                                                <div className="down flex flex-row gap-2 mt-3">
+                                                    <Link href="https://github.com/ysobella" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
+                                                            <div className="github mt--0.6 ml-1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                    <Link href="https://linkedin.com/in/ysobella-torio/" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
+                                                            <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                </div>
+                                                </>
+                                            )}
+                                            
+                                        </div>
+                                        
+                                        <Image
+                                            src={bella}  // Replace this path with the correct path to your image
+                                            alt="Ysobella Torio"
+                                            className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
+                                                isHovered6 ? 'hidden' : ''
+                                                }`}
+                                                onMouseEnter={() => setIsHovered6(true)}
+                                        />
+                                        {/* <Image
+                                            src={bella}  // Replace this path with the correct path to your image
+                                            alt="Ysobella Torio"
+                                            className="mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105"
+                                        /> */}
+                                        <p className='mr-4 opacity-60'>Ysobella Torio</p>
+                                    </div>
                                     
+                                    <div className='flex flex-col items-center'>
                                     <div
-                                        className={`mr-4 main flex flex-col gap-2 ${isHovered6 ? '' : 'hidden'}`}
-                                        onMouseLeave={() => setIsHovered6(false)}
-                                    >
-                                        {isHovered6 && (
-                                            <>
-                                            <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:ysobella_torio@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
-                                                        <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
-                                                        <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
+                                            className={`mr-4 main flex flex-col gap-2 ${isHovered7 ? '' : 'hidden'}`}
+                                            onMouseLeave={() => setIsHovered7(false)}
+                                        >
+                                            {isHovered7 && (
+                                                <>
+                                                <div className="up flex flex-row gap-2 -mt-3">
+                                                    <Link href="mailto:gene_alejo@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
+                                                            <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
+                                                            <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://bantaybuddy.vercel.app/user/bella" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
-                                                        <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
-                                                        <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
+                                                    </Link>
+                                                    <Link href="https://bantaybuddy.vercel.app/user/genecedricalejo" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
+                                                            <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
+                                                            <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com/ysobella" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
-                                                        <div className="github mt--0.6 ml-1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
+                                                    </Link>
+                                                </div>
+                                                <div className="down flex flex-row gap-2 mt-3">
+                                                    <Link href="https://github.com/CedricAlejo21" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
+                                                            <div className="github mt--0.6 ml-1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://linkedin.com/in/ysobella-torio/" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
-                                                        <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                                    </Link>
+                                                    <Link href="https://www.linkedin.com/in/GeneCedricAlejo/" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
+                                                            <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            </>
-                                        )}
+                                                    </Link>
+                                                </div>
+                                                </>
+                                            )}
+                                            
+                                        </div>
                                         
+                                        <Image
+                                            src={cedric}  // Replace this path with the correct path to your image
+                                            alt="Cedric Alejo"
+                                            className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
+                                                isHovered7 ? 'hidden' : ''
+                                                }`}
+                                                onMouseEnter={() => setIsHovered7(true)}
+                                        />
+                                        <p className='mr-4 opacity-60'>Cedric Alejo</p>
                                     </div>
-                                    
-                                    <Image
-                                        src={bella}  // Replace this path with the correct path to your image
-                                        alt="Ysobella Torio"
-                                        className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
-                                            isHovered6 ? 'hidden' : ''
-                                            }`}
-                                            onMouseEnter={() => setIsHovered6(true)}
-                                    />
-                                    {/* <Image
-                                        src={bella}  // Replace this path with the correct path to your image
-                                        alt="Ysobella Torio"
-                                        className="mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform hover:scale-105"
-                                    /> */}
-                                    <p className='mr-4 opacity-60'>Ysobella Torio</p>
-                                </div>
-                                
-                                <div className='flex flex-col items-center'>
-                                <div
-                                        className={`mr-4 main flex flex-col gap-2 ${isHovered7 ? '' : 'hidden'}`}
-                                        onMouseLeave={() => setIsHovered7(false)}
-                                    >
-                                        {isHovered7 && (
-                                            <>
-                                            <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:gene_alejo@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
-                                                        <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
-                                                        <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://bantaybuddy.vercel.app/user/genecedricalejo" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
-                                                        <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
-                                                        <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com/CedricAlejo21" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
-                                                        <div className="github mt--0.6 ml-1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://www.linkedin.com/in/GeneCedricAlejo/" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
-                                                        <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            </>
-                                        )}
-                                        
-                                    </div>
-                                    
-                                    <Image
-                                        src={cedric}  // Replace this path with the correct path to your image
-                                        alt="Cedric Alejo"
-                                        className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
-                                            isHovered7 ? 'hidden' : ''
-                                            }`}
-                                            onMouseEnter={() => setIsHovered7(true)}
-                                    />
-                                    <p className='mr-4 opacity-60'>Cedric Alejo</p>
                                 </div>
 
+                                <div className='flex'>
                                 <div className='flex flex-col items-center'>
-                                <div
-                                        className={`mr-4 main flex flex-col gap-2 ${isHovered8 ? '' : 'hidden'}`}
-                                        onMouseLeave={() => setIsHovered8(false)}
-                                    >
-                                        {isHovered8 && (
-                                            <>
-                                            <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:rain_david@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
-                                                        <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
-                                                        <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
+                                    <div
+                                            className={`mr-4 main flex flex-col gap-2 ${isHovered8 ? '' : 'hidden'}`}
+                                            onMouseLeave={() => setIsHovered8(false)}
+                                        >
+                                            {isHovered8 && (
+                                                <>
+                                                <div className="up flex flex-row gap-2 -mt-3">
+                                                    <Link href="mailto:rain_david@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
+                                                            <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
+                                                            <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://bantaybuddy.vercel.app/user/rcatd" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
-                                                        <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
-                                                        <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
+                                                    </Link>
+                                                    <Link href="https://bantaybuddy.vercel.app/user/rcatd" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
+                                                            <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
+                                                            <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com/raindavid01" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
-                                                        <div className="github mt--0.6 ml-1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
+                                                    </Link>
+                                                </div>
+                                                <div className="down flex flex-row gap-2 mt-3">
+                                                    <Link href="https://github.com/raindavid01" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
+                                                            <div className="github mt--0.6 ml-1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://www.linkedin.com/in/raindavid/" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
-                                                        <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                                    </Link>
+                                                    <Link href="https://www.linkedin.com/in/raindavid/" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
+                                                            <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            </>
-                                        )}
+                                                    </Link>
+                                                </div>
+                                                </>
+                                            )}
+                                            
+                                        </div>
                                         
+                                        <Image
+                                            src={rain}  // Replace this path with the correct path to your image
+                                            alt="Rain David"
+                                            className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
+                                                isHovered8 ? 'hidden' : ''
+                                                }`}
+                                                onMouseEnter={() => setIsHovered8(true)}
+                                        />
+                                        <p className='mr-4 opacity-60'>Rain David</p>
                                     </div>
                                     
-                                    <Image
-                                        src={rain}  // Replace this path with the correct path to your image
-                                        alt="Rain David"
-                                        className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
-                                            isHovered8 ? 'hidden' : ''
-                                            }`}
-                                            onMouseEnter={() => setIsHovered8(true)}
-                                    />
-                                    <p className='mr-4 opacity-60'>Rain David</p>
-                                </div>
-                                
-                                <div className='flex flex-col items-center'>
-                                <div
-                                        className={`mr-4 main flex flex-col gap-2 ${isHovered9 ? '' : 'hidden'}`}
-                                        onMouseLeave={() => setIsHovered9(false)}
-                                    >
-                                        {isHovered9 && (
-                                            <>
-                                            <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:kimberly_c_tan@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
-                                                        <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
-                                                        <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
+                                    <div className='flex flex-col items-center'>
+                                    <div
+                                            className={`mr-4 main flex flex-col gap-2 ${isHovered9 ? '' : 'hidden'}`}
+                                            onMouseLeave={() => setIsHovered9(false)}
+                                        >
+                                            {isHovered9 && (
+                                                <>
+                                                <div className="up flex flex-row gap-2 -mt-3">
+                                                    <Link href="mailto:kimberly_c_tan@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
+                                                            <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
+                                                            <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://bantaybuddy.vercel.app/user/kmmytn" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
-                                                        <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
-                                                        <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
+                                                    </Link>
+                                                    <Link href="https://bantaybuddy.vercel.app/user/kmmytn" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
+                                                            <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
+                                                            <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com/kmmytn" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
-                                                        <div className="github mt--0.6 ml-1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
+                                                    </Link>
+                                                </div>
+                                                <div className="down flex flex-row gap-2 mt-3">
+                                                    <Link href="https://github.com/kmmytn" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
+                                                            <div className="github mt--0.6 ml-1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                                <Link href="https://www.linkedin.com/in/kimberly-tan-915375278/" target="_blank" rel="noopener noreferrer">
-                                                    <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
-                                                        <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
-                                                            <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                                    </Link>
+                                                    <Link href="https://www.linkedin.com/in/kimberly-tan-915375278/" target="_blank" rel="noopener noreferrer">
+                                                        <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
+                                                            <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
+                                                                <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                            </>
-                                        )}
+                                                    </Link>
+                                                </div>
+                                                </>
+                                            )}
+                                            
+                                        </div>
                                         
+                                        <Image
+                                            src={kim}  // Replace this path with the correct path to your image
+                                            alt="Kimberly Tan"
+                                            className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
+                                                isHovered9 ? 'hidden' : ''
+                                                }`}
+                                                onMouseEnter={() => setIsHovered9(true)}
+                                        />
+                                        <p className='mr-4 opacity-60'>Kimberly Tan</p>
                                     </div>
-                                    
-                                    <Image
-                                        src={kim}  // Replace this path with the correct path to your image
-                                        alt="Kimberly Tan"
-                                        className={`mr-4 mt-2 w-32 h-32 bg-pistachio rounded-full transition-transform transform ${
-                                            isHovered9 ? 'hidden' : ''
-                                            }`}
-                                            onMouseEnter={() => setIsHovered9(true)}
-                                    />
-                                    <p className='mr-4 opacity-60'>Kimberly Tan</p>
                                 </div>
                             </div>
                         </div>
@@ -658,7 +677,7 @@ export default function AboutUs() {
                         
                     </div>
 
-                    <div className='container mx-auto p-8 text-center flex flex-col items-center w-6/12'>
+                    <div className={`container mx-auto md:p-8 md:mb-0 text-center flex flex-col items-center w-6/12 ${hasUser ? "mb-16" : ""}`}>
                         
                         <p class="mb-6">
                             <span class="font-shining text-xl text-grass">BantayBuddy</span> was created in collaboration with Product Owner
@@ -667,6 +686,14 @@ export default function AboutUs() {
                         </p>
                         
                     </div>
+
+                    { !hasUser && 
+                        <div onClick={() => router.push('/Login')} className='mb-16 md:mb-4'>
+                            <button className='font-shining text-2xl bg-grass text-snow px-4 py-2 rounded-lg hover:bg-black transition-all'>
+                                Login
+                            </button>
+                        </div>
+                    }
 
                     <div className='fixed bottom-4 right-4'>
                         <div className='flex flex-row justify-center items-center gap-2 mr-8 transition-transform transform hover:scale-105'>
