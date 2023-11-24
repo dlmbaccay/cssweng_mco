@@ -99,7 +99,7 @@ export default function AboutUs() {
                 </div>
             }
 
-            <div className={`bg-dark_gray ${hasUser ? "" : "w-full"}`}>
+            <div className={`bg-dark_gray w-screen`}>
 
                 { hasUser && 
                     <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
@@ -129,7 +129,7 @@ export default function AboutUs() {
                 }
 
                 {/* main container */}
-                <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-5 pb-10'>
+                <div className='h-full w- overflow-y-scroll flex flex-col justify-start items-center pt-5 pb-10'>
                     <h1 className='text-raisin_black text-4xl mb-10 font-shining'>Meet the Team!</h1>
 
                     <div>
