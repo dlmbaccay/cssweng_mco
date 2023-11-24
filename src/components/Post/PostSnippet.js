@@ -237,7 +237,7 @@ export default function PostSnippet({ props }) {
             </div>
 
             { (postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') && 
-              <div className='flex flex-row items-center gap-2 mb-2'>
+              <div className='flex flex-row items-center gap-1 mb-2'>
                 <p className='text-sm'>Found At:</p>
                 <p className='line-clamp-1 overflow-hidden text-sm'>{postTrackerLocation}</p>
               </div>
@@ -245,7 +245,7 @@ export default function PostSnippet({ props }) {
 
             {
               postCategory === 'Lost Pets' && 
-              <div className='flex flex-row items-center gap-2 mb-2'>
+              <div className='flex flex-row items-center gap-1 mb-2'>
                 <p className='text-sm'>Last Seen:</p>
                 <p className='line-clamp-1 overflow-hidden text-sm'>{postTrackerLocation}</p>
               </div>

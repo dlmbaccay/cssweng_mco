@@ -511,12 +511,29 @@ function Post() {
                                 )}
                                 </div>
 
-                                { (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
+                                {/* { (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
                                     <div className='flex flex-row items-center gap-2 mb-2'>
                                     <i className='fa-solid fa-location-crosshairs text-sm md:text-base '/>
                                     <p className='line-clamp-1 overflow-hidden text-sm md:text-md'>{post?.postTrackerLocation}</p>
                                     </div>
+                                } */}
+
+                                
+                                { (post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
+                                    <div className='flex flex-row items-center gap-1 mb-2'>
+                                        <p className='text-sm md:text-base'>Found At:</p>
+                                        <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{post?.postTrackerLocation}</p>
+                                    </div>
                                 }
+
+                                { post?.postCategory === 'Lost Pets' && 
+                                    <div className='flex flex-row items-center gap-1 mb-2'>
+                                        <p className='text-sm md:text-base'>Last Seen:</p>
+                                        <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{post?.postTrackerLocation}</p>
+                                    </div>
+                                }
+                                
+                               
 
                                 <div id='post-text'>
                                     <p className='whitespace-pre-line'>{post?.postBody}</p>
