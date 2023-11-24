@@ -295,8 +295,8 @@ export default function RepostExpanded({props}) {
                 </div>
 
                 {/* Body */}
-                <div id="post-body" className='mt-3 flex flex-col'>
-                    <p className='line-clamp-2 overflow-hidden'>{postBody}</p>
+                <div id="post-body" className='mt-3 flex flex-col w-fit'>
+                    <p className='line-clamp-4'>{postBody}</p>
                 </div>
 
                 {/* Reposted Post */}

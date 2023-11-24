@@ -71,6 +71,10 @@ export default function PhoneNav( {props} ) {
             <h1 className='font-shining text-3xl text-grass'>Log Out</h1>
         </button>
         </div>
+
+        <button onClick={() => router.push('/AboutUs')} className='text-grass mb-2 mt-auto hover:text-grass'>
+            About Us
+        </button>
     </div>
   )
 }
