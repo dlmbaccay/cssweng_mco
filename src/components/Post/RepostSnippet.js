@@ -225,9 +225,11 @@ export default function RepostSnippet( {props} ) {
           rel="noopener noreferrer"
           className={`flex flex-col md:flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
         >
-          <div className='w-full text-justify'>
-            <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
-          </div>
+          {repostBody && 
+            <div className='w-full text-justify'>
+              <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
+            </div>
+          }
 
           <div className={`w-full flex ${repostBody === '' ? 'justify-center' : 'justify-end'}`}>
             {repostImage !== null ? (

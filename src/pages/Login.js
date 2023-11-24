@@ -22,6 +22,16 @@ export default function Login() {
             // Signed in 
             const user = userCredential.user;
 
+            // check if UID is admin
+            if (user.uid === 'luTr6y0B1TUOkimRQlfiCO9xQqo1') {
+                toast.success('Welcome back, Admin!', {
+                    icon: '👏',
+                });
+                // Redirect to Admin page
+                router.push('/admin');
+                return;
+            }
+
             // Check if email is verified
             if (!user.emailVerified) {
                 toast.error('Please verify your email before logging in');
@@ -70,8 +80,7 @@ export default function Login() {
             } else if (errorCode === 'auth/too-many-requests') {
                 toast.error('Too many attempts. Try again later or reset your password.')
                 return
-            }
-            toast.error('Wrong email or password!')
+            } 
         })  
     }
 
