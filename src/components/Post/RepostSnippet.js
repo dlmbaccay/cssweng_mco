@@ -219,26 +219,25 @@ export default function RepostSnippet( {props} ) {
             </div>
         </div>
 
-        <div className={`flex flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
-          onClick={() =>
-            Router.push({
-              pathname: '/post/[postID]',
-              query: { postID: repostID },
-            })
-          }>
-            <div>
-              <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
-            </div>
+        <Link
+          href={`/post/${repostID}`} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className={`flex flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
+        >
+          <div>
+            <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
+          </div>
 
-            <div>
-              {repostImage !== null ? (
-                <Image
-                  src={repostImage} alt='Repost Image' width={200} height={200}
-                  className={`rounded-md drop-shadow-sm aspect-square ${repostBody === '' ? "h-[150px] w-[150px] md:h-[200px] md:w-[200px]" : "h-[100px] w-[100px] md:h-[150px] md:w-[150px]"}`}
-                />
-              ) : null}
-            </div>
-        </div>
+          <div>
+            {repostImage !== null ? (
+              <Image
+                src={repostImage} alt='Repost Image' width={200} height={200}
+                className={`rounded-md drop-shadow-sm aspect-square ${repostBody === '' ? "h-[150px] w-[150px] md:h-[200px] md:w-[200px]" : "h-[100px] w-[100px] md:h-[150px] md:w-[150px]"}`}
+              />
+            ) : null}
+          </div>
+        </Link>
       </div>
 
        {/* Footer */}
