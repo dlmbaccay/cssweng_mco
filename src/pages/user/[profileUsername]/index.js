@@ -528,8 +528,8 @@ function UserProfilePage() {
             <div className='w-fit md:flex hidden'>
                 {(userPhotoURL && username) && <ExpandedNavBar
                     props={{
-                        userPhotoURL: userPhotoURL,
-                        username: username,
+                        userPhotoURL: currentUser.photoURL,
+                        username: currentUser.username,
                         activePage: "Profile",
                         expanded: false
                     }}
@@ -558,8 +558,8 @@ function UserProfilePage() {
                             <PhoneNav
                                 props={{
                                     setShowPhoneNavModal: setShowPhoneNavModal,
-                                    currentUserUsername: username,
-                                    currentUserPhotoURL: userPhotoURL,
+                                    currentUserUsername: currentUser.username,
+                                    currentUserPhotoURL: currentUser.photoURL,
                                 }}
                             />
                         </Modal>

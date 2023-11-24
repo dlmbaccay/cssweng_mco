@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 export default function ExpandedNavBar({ props }) {
     
-    const { userPhotoURL, username, activePage, expanded } = props;
+    const { userPhotoURL, username, activePage, expanded, isUser } = props;
     const router = Router;
 
     const [isExpanded, setIsExpanded] = useState(expanded);
