@@ -78,6 +78,8 @@ function UserProfilePage() {
     // create post variables
     const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
+    const [currentUserUsername, setCurrentUserUsername] = useState(null);
+    const [currentUserPhotoURL, setCurrentUserPhotoURL] = useState(null);
 
     // fetch current and profile user data
     useEffect(() => {
@@ -95,7 +97,7 @@ function UserProfilePage() {
 
         fetchUserData();
 
-    }, [currentUserID, profileUserID]);
+    }, []);
 
     // fetch profile user's data
     useEffect(() => {
@@ -145,8 +147,24 @@ function UserProfilePage() {
             setEditedLocation(null);
         }
 
+        if (currentUserID) { // info of the current user
+            const userRef = firestore.collection('users').doc(currentUserID);
+            unsubscribe = userRef.onSnapshot((doc) => {
+                setCurrentUser({
+                    id: doc.id,
+                    ...doc.data()
+                });
+                setCurrentUserUsername(doc.data()?.username);
+                setCurrentUserPhotoURL(doc.data()?.photoURL);
+            });
+        } else {
+            setCurrentUser(null);
+            setCurrentUserUsername(null);
+            setCurrentUserPhotoURL(null);
+        }
+
         return unsubscribe;
-    }, [profileUserID]);
+    }, [currentUserID, profileUserID]);
 
     // fetch all pets of the profile user
     useEffect(() => {
@@ -522,18 +540,20 @@ function UserProfilePage() {
 
     const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
 
+    const isUser = currentUserID == profileUserID;
+
     return (
         <div id="root" className='flex flex-row h-screen'>
 
             <div className='w-fit md:flex hidden'>
-                {(userPhotoURL && username) && <ExpandedNavBar
+                <ExpandedNavBar
                     props={{
-                        userPhotoURL: currentUser.photoURL,
-                        username: currentUser.username,
+                        userPhotoURL: currentUserPhotoURL,
+                        username: currentUserUsername,
                         activePage: "Profile",
                         expanded: false
                     }}
-                />}
+                />
             </div>
 
             {profileUser &&
@@ -558,8 +578,8 @@ function UserProfilePage() {
                             <PhoneNav
                                 props={{
                                     setShowPhoneNavModal: setShowPhoneNavModal,
-                                    currentUserUsername: currentUser.username,
-                                    currentUserPhotoURL: currentUser.photoURL,
+                                    currentUserUsername: currentUserUsername,
+                                    currentUserPhotoURL: currentUserPhotoURL
                                 }}
                             />
                         </Modal>

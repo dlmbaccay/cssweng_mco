@@ -54,6 +54,16 @@ function Post() {
 
     useEffect(() => {
         if (postID) {
+
+            // check if postID is within posts
+            const postRef = firestore.collection('posts').doc(postID);
+            postRef.get().then((doc) => {
+                if (!doc.exists) {
+                    toast.error('Post not found!');
+                    router.push('/404');
+                }
+            });
+
             const fetchPostAndTaggedPets = async () => {
                 const postRef = firestore.collection('posts').doc(postID);
                 const postDoc = await postRef.get();

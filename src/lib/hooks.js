@@ -88,6 +88,26 @@ export function usePetData(userId) {
   return pets;
 }
 
+// export function useUserIDfromUsername(username) {
+  
+//   const [currentUserId, setCurrentUserId] = useState(null);
+
+//   useEffect(() => {
+//     let unsubscribe;
+
+//     if (username) {
+//       const nameRef = firestore.collection('usernames').doc(username);
+//       unsubscribe = nameRef.onSnapshot((doc) => {
+//         setCurrentUserId(doc.data().uid)
+//       });
+//     } else{
+//       setCurrentUserId(null);
+//     }
+//     return unsubscribe;
+//   }, [username]);
+//   return currentUserId;
+// }
+
 export function useUserIDfromUsername(username) {
   
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -95,11 +115,17 @@ export function useUserIDfromUsername(username) {
   useEffect(() => {
     let unsubscribe;
 
-    if (username){
+    if (username) {
       const nameRef = firestore.collection('usernames').doc(username);
       unsubscribe = nameRef.onSnapshot((doc) => {
+        if (!doc.exists) {
+          // Redirect to home page if the username does not exist
+          toast.error("User does not exist");
+          window.location.href = '/404';
+          return;
+        }
         setCurrentUserId(doc.data().uid)
-        });
+      });
     } else{
       setCurrentUserId(null);
     }
