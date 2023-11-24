@@ -146,10 +146,10 @@ export default function Login() {
     }
             
     return (
-        <div className='h-screen
-            bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] 
-            flex flex-col justify-center items-center 
-            lg:flex-row lg:gap-32'>
+        <div className='h-screen bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] flex flex-col justify-center items-center 
+                    lg:flex-row lg:gap-32
+                    max-md:gap-20 
+                    max-sm:gap-5 max-sm:p-4'>
 
             <div id="login" className='bg-jasmine drop-shadow-md w-[300px] h-[500px] md:w-[500px] md:h-[500px] rounded-3xl flex md:pl-12 md:pr-12 pl-8 pr-8 flex-col justify-center items-center'>
 
@@ -197,7 +197,7 @@ export default function Login() {
                 </div>
             </div>            
 
-            <div id="showcase" className="hidden w-fit h-fit rounded-lg drop-shadow-md lg:flex" >
+            <div id="showcase" className=" hidden w-fit h-fit rounded-lg drop-shadow-md lg:flex md:space-x-5" >
                 <PostShowcase />
             </div>
         </div>
