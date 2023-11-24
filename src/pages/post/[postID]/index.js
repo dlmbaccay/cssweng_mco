@@ -54,6 +54,16 @@ function Post() {
 
     useEffect(() => {
         if (postID) {
+
+            // check if postID is within posts
+            const postRef = firestore.collection('posts').doc(postID);
+            postRef.get().then((doc) => {
+                if (!doc.exists) {
+                    toast.error('Post not found!');
+                    router.push('/404');
+                }
+            });
+
             const fetchPostAndTaggedPets = async () => {
                 const postRef = firestore.collection('posts').doc(postID);
                 const postDoc = await postRef.get();
@@ -447,7 +457,7 @@ function Post() {
 
                 <div className='h-full w-full flex flex-col items-center justify-start overflow-y-scroll'>
                     {/* post */}
-                    <div className='w-[350px] md:w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
+                    <div className='w-full md:w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
                         <div className='w-full rounded-lg mt-2 pr-6 pl-6 flex flex-col'>
                             {/* Header */}
                             <div id="post-header" className='flex flex-col md:flex-row justify-between'>
@@ -511,12 +521,29 @@ function Post() {
                                 )}
                                 </div>
 
-                                { (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
+                                {/* { (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
                                     <div className='flex flex-row items-center gap-2 mb-2'>
                                     <i className='fa-solid fa-location-crosshairs text-sm md:text-base '/>
                                     <p className='line-clamp-1 overflow-hidden text-sm md:text-md'>{post?.postTrackerLocation}</p>
                                     </div>
+                                } */}
+
+                                
+                                { (post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
+                                    <div className='flex flex-row items-center gap-1 mb-2'>
+                                        <p className='text-sm md:text-base'>Found At:</p>
+                                        <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{post?.postTrackerLocation}</p>
+                                    </div>
                                 }
+
+                                { post?.postCategory === 'Lost Pets' && 
+                                    <div className='flex flex-row items-center gap-1 mb-2'>
+                                        <p className='text-sm md:text-base'>Last Seen:</p>
+                                        <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{post?.postTrackerLocation}</p>
+                                    </div>
+                                }
+                                
+                               
 
                                 <div id='post-text'>
                                     <p className='whitespace-pre-line'>{post?.postBody}</p>
@@ -1042,7 +1069,7 @@ function Post() {
                 </div> 
 
                 <div className='h-full w-full flex flex-col items-center justify-start overflow-y-scroll'>
-                    <div className='w-[350px] md:w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
+                    <div className='w-full md:w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
                         <div className='w-full rounded-lg mt-2 pr-6 pl-6 flex flex-col'>
                             {/* Header */}
                             <div id='post-header' className='flex'>
@@ -1080,7 +1107,7 @@ function Post() {
                             </div>
 
                             {/* Reposted Post */}
-                            <div className='mt-3 flex flex-col w-full border border-[#d1d1d1] rounded-lg p-4 bg-[#] drop-shadow-md'>
+                            <div className='mt-3 flex flex-col w-full border border-[#d1d1d1] rounded-lg p-4 drop-shadow-md'>
                                 
                                 <div className='flex flex-row items-center'>
                                     <Image
@@ -1101,7 +1128,7 @@ function Post() {
                                     </div>
                                 </div>
 
-                                <div className='flex flex-row justify-between mt-2 gap-6 cursor-pointer' 
+                                <div className={`flex flex-row mt-2 cursor-pointer ${post?.repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
                                 onClick={() =>
                                 Router.push({
                                     pathname: '/post/[postID]',
@@ -1109,14 +1136,14 @@ function Post() {
                                 })
                                 }>
                                     <div>
-                                    <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{post?.repostBody}</p>
+                                    <p className={`overflow-hidden text-sm md:text-base ${post?.repostBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{post?.repostBody}</p>
                                     </div>
 
                                     <div>
                                     {repostImage !== null ? (
                                         <Image
-                                        src={repostImage} alt='Repost Image' width={45} height={45}
-                                        className='rounded-md drop-shadow-sm aspect-square'
+                                        src={repostImage} alt='Repost Image' width={200} height={200}
+                                        className={`rounded-md drop-shadow-sm aspect-square ${post?.repostBody === '' ? "h-[150px] w-[150px] md:h-[200px] md:w-[200px] mt-2 md:mt-0" : "h-[100px] w-[100px] md:h-[150px] md:w-[150px]"}`}
                                         />
                                     ) : null}
                                     </div>

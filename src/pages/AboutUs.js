@@ -15,15 +15,15 @@ import ExpandedNavBar from '../components/ExpandedNavBar';
 import PhoneNav from '../components/PhoneNav';
 import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
-import anne from '/public/images/team/Ysobella_Torio.jpg'
+import anne from '/public/images/team/SULIT.jpg'
 import andre from '/public/images/team/AQUINO.jpg'
 import doms from '/public/images/team/BACCAY.jpg'
 import bella from '/public/images/team/Ysobella_Torio.jpg'
 import luis from '/public/images/team/RANA.jpg'
 import bien from '/public/images/team/Miranda_Bien.jpg'
-import cedric from '/public/images/team/Ysobella_Torio.jpg'
-import rain from '/public/images/team/Ysobella_Torio.jpg'
-import kim from '/public/images/team/Ysobella_Torio.jpg'
+import cedric from '/public/images/team/ALEJO.jpg'
+import rain from '/public/images/team/DAVID.png'
+import kim from '/public/images/team/TAN.jpg'
 
 export default function AboutUs() {
 
@@ -113,7 +113,7 @@ export default function AboutUs() {
 
                 {/* main container */}
                 <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-5 pb-10'>
-                    <h1 className='text-raisin_black text-4xl mb-4 font-shining'>Meet the Team!</h1>
+                    <h1 className='text-raisin_black text-4xl mb-10 font-shining'>Meet the Team!</h1>
 
                     
 
@@ -137,7 +137,7 @@ export default function AboutUs() {
                                                 </div>
                                             </div>
                                         </Link>
-                                        <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                        <Link href="bantaybuddy.vercel.app/user/axsulit" target="_blank" rel="noopener noreferrer">
                                             <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                 <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                 <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -206,7 +206,7 @@ export default function AboutUs() {
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/andreee" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -261,7 +261,7 @@ export default function AboutUs() {
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="bantaybuddy.vercel.app/user/dlmbaccay" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -323,7 +323,7 @@ export default function AboutUs() {
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/bienmiranda" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -371,14 +371,14 @@ export default function AboutUs() {
                                         {isHovered5 && (
                                             <>
                                             <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:anne_sulit@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                <Link href="mailto:luis_rana@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
                                                     <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
                                                         <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
                                                         <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/m_finado" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -387,14 +387,14 @@ export default function AboutUs() {
                                                 </Link>
                                             </div>
                                             <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://github.com/luii-hub" target="_blank" rel="noopener noreferrer">
                                                     <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
                                                         <div className="github mt--0.6 ml-1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://www.linkedin.com/in/luis-rana-7aab14212/" target="_blank" rel="noopener noreferrer">
                                                     <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
                                                         <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
@@ -443,7 +443,7 @@ export default function AboutUs() {
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/bella" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -496,14 +496,14 @@ export default function AboutUs() {
                                         {isHovered7 && (
                                             <>
                                             <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:anne_sulit@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                <Link href="mailto:gene_alejo@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
                                                     <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
                                                         <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
                                                         <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/genecedricalejo" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -512,14 +512,14 @@ export default function AboutUs() {
                                                 </Link>
                                             </div>
                                             <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://github.com/CedricAlejo21" target="_blank" rel="noopener noreferrer">
                                                     <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
                                                         <div className="github mt--0.6 ml-1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://www.linkedin.com/in/GeneCedricAlejo/" target="_blank" rel="noopener noreferrer">
                                                     <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
                                                         <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
@@ -551,14 +551,14 @@ export default function AboutUs() {
                                         {isHovered8 && (
                                             <>
                                             <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:anne_sulit@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                <Link href="mailto:rain_david@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
                                                     <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
                                                         <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
                                                         <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/rcatd" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -567,14 +567,14 @@ export default function AboutUs() {
                                                 </Link>
                                             </div>
                                             <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://github.com/raindavid01" target="_blank" rel="noopener noreferrer">
                                                     <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
                                                         <div className="github mt--0.6 ml-1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://www.linkedin.com/in/raindavid/" target="_blank" rel="noopener noreferrer">
                                                     <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
                                                         <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
@@ -606,14 +606,14 @@ export default function AboutUs() {
                                         {isHovered9 && (
                                             <>
                                             <div className="up flex flex-row gap-2 -mt-3">
-                                                <Link href="mailto:anne_sulit@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
+                                                <Link href="mailto:kimberly_c_tan@dlsu.edu.ph" target="_blank" rel="noopener noreferrer">
                                                     <div className="card1 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-c63939">
                                                         <div className="gmail mt-1.5 ml-1.2 fill-current text-white">
                                                         <i className="fa-solid fa-envelope absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://bantaybuddy.vercel.app/user/kmmytn" target="_blank" rel="noopener noreferrer">
                                                     <div className="card2 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-xanthous">
                                                         <div className="bantaybuddy mt-1.5 ml--0.9 fill-current text-white">
                                                         <i class="fa-solid fa-paw absolute top-1/2 left-7 transform -translate-x-1/2 -translate-y-1/4"></i>
@@ -622,14 +622,14 @@ export default function AboutUs() {
                                                 </Link>
                                             </div>
                                             <div className="down flex flex-row gap-2 mt-3">
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://github.com/kmmytn" target="_blank" rel="noopener noreferrer">
                                                     <div className="card3 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-black">
                                                         <div className="github mt--0.6 ml-1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-github absolute top-7 left-1/2 transform -translate-x-1/4 -translate-y-1/2"></i>
                                                         </div>
                                                     </div>
                                                 </Link>
-                                                <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+                                                <Link href="https://www.linkedin.com/in/kimberly-tan-915375278/" target="_blank" rel="noopener noreferrer">
                                                     <div className="card4 w-20 h-20 outline-none border-none bg-white rounded-full transition-transform ease-in-out duration-200 transform hover:scale-110 hover:bg-blue-900">
                                                         <div className="linkedin mt--0.6 ml--1.2 fill-current text-white">
                                                             <i class="fa-solid fa-brands fa-linkedin absolute top-7 left-7 transform -translate-x-1/2 -translate-y-1/2"></i>
@@ -655,6 +655,16 @@ export default function AboutUs() {
                             </div>
                         </div>
 
+                        
+                    </div>
+
+                    <div className='container mx-auto p-8 text-center flex flex-col items-center w-6/12'>
+                        
+                        <p class="mb-6">
+                            <span class="font-shining text-xl text-grass">BantayBuddy</span> was created in collaboration with Product Owner
+                            <a href="https://www.linkedin.com/in/ardy-ubanos/" target="_blank" class="text-grass hover:font-bold"> Mr. Ardy Ubanos </a>
+                            as the team&apos;s major course output in the Software Engineering (CSSWENG) course at De La Salle University Manila.
+                        </p>
                         
                     </div>
 

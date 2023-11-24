@@ -6,8 +6,9 @@ import toast from 'react-hot-toast';
 
 export default function ExpandedNavBar({ props }) {
     
-    const { userPhotoURL, username, activePage, expanded } = props;
+    const { userPhotoURL, username, activePage, expanded, isUser } = props;
     const router = Router;
+
 
     const [isExpanded, setIsExpanded] = useState(expanded);
 
@@ -125,13 +126,13 @@ export default function ExpandedNavBar({ props }) {
                   fa-solid fa-user rounded-full 
                   bg-grass text-pale_yellow 
                   transition-all group-hover:bg-raisin_black 
-                  ${activePage === 'Profile' ? "bg-raisin_black" : ""}
+                  ${(activePage && isUser)  === 'Profile' ? "bg-raisin_black" : ""}
                   `}/>
                 <p className={`
                   text-grass text-2xl
                   font-shining  
                   transition-all  group-hover:text-raisin_black 
-                  ${activePage === 'Profile' ? "text-raisin_black" : ""}`}>
+                  ${(activePage && isUser) === 'Profile' ? "text-raisin_black" : ""}`}>
                     Profile</p>
               </button>
 

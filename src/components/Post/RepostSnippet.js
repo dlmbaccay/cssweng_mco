@@ -140,10 +140,10 @@ export default function RepostSnippet( {props} ) {
     };
 
   return (
-    <div className='drop-shadow-sm hover:drop-shadow-md bg-snow w-[320px] md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
+    <div className='drop-shadow-sm hover:drop-shadow-md bg-snow w-screen md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
       
       {/* Repost expanded */}
-      <Modal isOpen={showPostExpanded} onRequestClose={() => setShowPostExpanded(false)} className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[750px] md:h-[95%] overflow-auto p-2 rounded-md bg-gray-100 z-50 bg-snow '
+      <Modal isOpen={showPostExpanded} onRequestClose={() => setShowPostExpanded(false)} className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[750px] md:h-[95%] overflow-auto md:p-2 rounded-md bg-gray-100 z-50 bg-snow '
         style={{
             overlay: {
                 backgroundColor: 'rgba(0,0,0,0.5)',
@@ -219,22 +219,22 @@ export default function RepostSnippet( {props} ) {
             </div>
         </div>
 
-        <div className='flex flex-row justify-between mt-2 gap-6 cursor-pointer' 
-        onClick={() =>
-          Router.push({
-            pathname: '/post/[postID]',
-            query: { postID: repostID },
-          })
-        }>
+        <div className={`flex flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
+          onClick={() =>
+            Router.push({
+              pathname: '/post/[postID]',
+              query: { postID: repostID },
+            })
+          }>
             <div>
-              <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{repostBody}</p>
+              <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
             </div>
 
             <div>
               {repostImage !== null ? (
                 <Image
-                  src={repostImage} alt='Repost Image' width={45} height={45}
-                  className='rounded-md drop-shadow-sm aspect-square'
+                  src={repostImage} alt='Repost Image' width={200} height={200}
+                  className={`rounded-md drop-shadow-sm aspect-square ${repostBody === '' ? "h-[150px] w-[150px] md:h-[200px] md:w-[200px]" : "h-[100px] w-[100px] md:h-[150px] md:w-[150px]"}`}
                 />
               ) : null}
             </div>

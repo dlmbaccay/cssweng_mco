@@ -357,10 +357,17 @@ export default function PostExpanded({ props }) {
                     )}
                     </div>
 
-                    { (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') && 
-                        <div className='flex flex-row items-center gap-2 mb-2'>
-                        <i className='fa-solid fa-location-crosshairs'/>
-                        <p className='line-clamp-1 overflow-hidden text-md'>{postTrackerLocation}</p>
+                    { (postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') && 
+                        <div className='flex flex-row items-center gap-1 mb-2'>
+                            <p>Found At:</p>
+                            <p className='line-clamp-1 overflow-hidden text-md'>{postTrackerLocation}</p>
+                        </div>
+                    }
+
+                    { postCategory === 'Lost Pets' && 
+                        <div className='flex flex-row items-center gap-1 mb-2'>
+                            <p>Last Seen:</p>
+                            <p className='line-clamp-1 overflow-hidden text-md'>{postTrackerLocation}</p>
                         </div>
                     }
 
