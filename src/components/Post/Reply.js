@@ -182,7 +182,7 @@ export default function Reply({props}) {
 
     return (
         <div className='flex flex-row w-full items-start min-h-[60px] max-h-fit gap-2'>
-            <Image src={authorPhotoURL} alt={authorDisplayName} width={40} height={40} className='rounded-full' />
+            <Image src={authorPhotoURL} alt={authorDisplayName} width={40} height={40} className='rounded-full aspect-square' />
 
             <div className='flex flex-col w-full'>
                 <div className='flex flex-col gap-1 w-full bg-[#F5F5F5] items-start break-all py-2 px-3 text-sm rounded-xl border border-[#d1d1d1] drop-shadow-sm'>

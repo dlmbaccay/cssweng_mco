@@ -19,12 +19,13 @@ import laughReaction from '/public/images/post-reactions/haha.png'
 import wowReaction from '/public/images/post-reactions/wow.png'
 import sadReaction from '/public/images/post-reactions/sad.png'
 import angryReaction from '/public/images/post-reactions/angry.png'
-import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal } from '../../../lib/modalstyle';
+import { postDeleteConfirmationModalStyle, editPostModalStyle, sharePostModalStyle, reactionsCountModal, viewImageModalStyle, phoneNavModalStyle } from '../../../lib/modalstyle';
 import Comment from '../../../components/Post/Comment';
 import Reactions from '../../../components/Post/Reactions';
 import Share from '../../../components/Post/Share';
 
 import ExpandedNavBar from '../../../components/ExpandedNavBar';
+import PhoneNav from '../../../components/PhoneNav';
 
 function Post() {
 
@@ -53,6 +54,16 @@ function Post() {
 
     useEffect(() => {
         if (postID) {
+
+            // check if postID is within posts
+            const postRef = firestore.collection('posts').doc(postID);
+            postRef.get().then((doc) => {
+                if (!doc.exists) {
+                    toast.error('Post not found!');
+                    router.push('/404');
+                }
+            });
+
             const fetchPostAndTaggedPets = async () => {
                 const postRef = firestore.collection('posts').doc(postID);
                 const postDoc = await postRef.get();
@@ -184,10 +195,12 @@ function Post() {
 
     const handleEditPost = async () => {
 
-      if (!editedPostBody) {
-        toast.error('Bark up some words for your post!');
-        return;
-      }
+        if (post?.postType === 'original') {
+            if (!editedPostBody) {
+            toast.error('Bark up some words for your post!');
+            return;
+            }
+        }
 
       if (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') {
         if (!editedPostTrackerLocation) {
@@ -257,7 +270,7 @@ function Post() {
         }
       }
 
-      toast.success('Reaction updated!');
+        setIsOverlayVisible(false);
     }
 
     const [currentUserReaction, setCurrentUserReaction] = useState('');
@@ -363,6 +376,11 @@ function Post() {
 
     const [showReactionsModal, setShowReactionsModal] = useState(false);
 
+    const [viewImage, setViewImage] = useState(false);
+
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
+
     if (post?.postType === 'original') return (
         <div className='flex flex-row w-full h-screen overflow-hidden'>
             <div className='hidden lg:flex lg:w-[300px]'>
@@ -375,7 +393,7 @@ function Post() {
             />}
             </div>
 
-            <div className='w-fit lg:hidden'>
+            <div className='w-fit md:flex lg:hidden hidden'>
             {(userPhotoURL && username) && <ExpandedNavBar 
                 props={{
                     userPhotoURL: userPhotoURL,
@@ -386,8 +404,34 @@ function Post() {
             </div>
 
             <div className='w-full bg-dark_gray flex flex-col items-center justify-start'>            
+                
+                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                    <div className='h-full w-fit flex flex-row items-center gap-1'>
+                        <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                        <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                    </div>
+                    
+                    <button onClick={() => setShowPhoneNavModal(true)}>
+                        <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                    </button>
+
+                    <Modal 
+                        isOpen={showPhoneNavModal}
+                        onRequestClose={() => setShowPhoneNavModal(false)}
+                        style={phoneNavModalStyle}
+                    >
+                        <PhoneNav 
+                        props = {{
+                            setShowPhoneNavModal: setShowPhoneNavModal,
+                            currentUserUsername: username,
+                            currentUserPhotoURL: userPhotoURL,
+                        }}
+                        />
+                    </Modal>
+                </nav>
+
                 {/* search and logo bar */}
-                <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+                <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
                     <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
                         <i
                         className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
@@ -413,10 +457,10 @@ function Post() {
 
                 <div className='h-full w-full flex flex-col items-center justify-start overflow-y-scroll'>
                     {/* post */}
-                    <div className='w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
+                    <div className='w-full md:w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
                         <div className='w-full rounded-lg mt-2 pr-6 pl-6 flex flex-col'>
                             {/* Header */}
-                            <div id="post-header" className='flex flex-row justify-between'>
+                            <div id="post-header" className='flex flex-col md:flex-row justify-between'>
 
                                 <div className='flex flex-row justify-start items-start '>
                                     <div id="user-image">
@@ -444,11 +488,11 @@ function Post() {
                                     </div>
                                 </div>
 
-                                <div className='flex flex-col w-fit items-end'>
+                                <div className='md:mt-0 mt-3 flex flex-col w-fit items-end'>
                                     {post?.postCategory !== 'Default' && (
                                     <div className='flex flex-row items-center justify-center gap-2'>
                                         <div className='w-3 h-3 rounded-full bg-grass'></div>
-                                        <p>{post?.postCategory}</p>
+                                        <p className='md:text-base text-sm'>{post?.postCategory}</p>
                                     </div>
                                     )}
                                 </div>
@@ -456,14 +500,14 @@ function Post() {
                             </div>
 
                             {/* Body */}
-                            <div id='post-body' className='mt-3 flex flex-col'>
+                            <div id='post-body' className='mt-2 md:mt-3 flex flex-col'>
                                 <div id='post-pets' className='mr-auto mb-2'>
                                 
                                 {post?.postPets.length > 0 && ( // display pet name if post has tagged pets
                                     <div className='flex flex-row items-center justify-center gap-2'>
-                                        {taggedPets.length === 1 && <i class="fa-solid fa-tag text-md"></i>}
-                                        {taggedPets.length > 1 && <i class="fa-solid fa-tags text-md"></i>}
-                                        <p className='text-md'>
+                                        {taggedPets.length === 1 && <i class="fa-solid fa-tag text-sm md:text-md"></i>}
+                                        {taggedPets.length > 1 && <i class="fa-solid fa-tags text-sm md:text-md"></i>}
+                                        <p className='md:text-base text-sm'>
                                         {taggedPets.map((pet, index) => (
                                             <span key={pet.id}>
                                                 <Link href={`/pet/${pet.id}`} title={pet.petName} className='hover:text-grass hover:font-bold transition-all'>
@@ -477,12 +521,29 @@ function Post() {
                                 )}
                                 </div>
 
-                                { (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
+                                {/* { (post?.postCategory === 'Lost Pets' || post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
                                     <div className='flex flex-row items-center gap-2 mb-2'>
-                                    <i className='fa-solid fa-location-crosshairs'/>
-                                    <p className='line-clamp-1 overflow-hidden text-md'>{post?.postTrackerLocation}</p>
+                                    <i className='fa-solid fa-location-crosshairs text-sm md:text-base '/>
+                                    <p className='line-clamp-1 overflow-hidden text-sm md:text-md'>{post?.postTrackerLocation}</p>
+                                    </div>
+                                } */}
+
+                                
+                                { (post?.postCategory === 'Unknown Owner' || post?.postCategory === 'Retrieved Pets') && 
+                                    <div className='flex flex-row items-center gap-1 mb-2'>
+                                        <p className='text-sm md:text-base'>Found At:</p>
+                                        <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{post?.postTrackerLocation}</p>
                                     </div>
                                 }
+
+                                { post?.postCategory === 'Lost Pets' && 
+                                    <div className='flex flex-row items-center gap-1 mb-2'>
+                                        <p className='text-sm md:text-base'>Last Seen:</p>
+                                        <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>{post?.postTrackerLocation}</p>
+                                    </div>
+                                }
+                                
+                               
 
                                 <div id='post-text'>
                                     <p className='whitespace-pre-line'>{post?.postBody}</p>
@@ -492,36 +553,51 @@ function Post() {
                                     <div id="post-image" className='mt-4 h-[300px] w-auto flex items-center justify-center relative'>
                                         {post?.imageUrls.length > 1 && (
                                         <>
-                                            <i className="fa-solid fa-circle-chevron-left absolute left-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" 
+                                            <i className="fa-solid fa-circle-chevron-left absolute left-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all pl-2 md:pl-0" 
                                             onClick={() => {
                                                 setCurrentImageIndex((prevIndex) => (prevIndex - 1 + post?.imageUrls.length) % post?.imageUrls.length);
                                             }}
                                             ></i>
-                                            <i className="fa-solid fa-circle-chevron-right absolute right-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all" 
+                                            <i className="fa-solid fa-circle-chevron-right absolute right-0 cursor-pointer z-10 hover:text-grass active:scale-110 transition-all pr-2 md:pr-0" 
                                             onClick={() => {
                                                 setCurrentImageIndex((prevIndex) => (prevIndex + 1) % post?.imageUrls.length);
                                             }}></i>
                                         </>
                                         )}
                                         
-                                        <Image src={post?.imageUrls[currentImageIndex]} alt="post image" 
+                                        <Image 
+                                            src={post?.imageUrls[currentImageIndex]} alt="post image" 
                                             layout='fill'
                                             objectFit='contain'
-                                            className='rounded-lg'
+                                            className='rounded-lg cursor-pointer'
+                                            onClick={() => setViewImage(true)}
                                         />
+
+                                        {viewImage && (
+                                            <Modal isOpen={viewImage} onRequestClose={() => setViewImage(false)} className='flex flex-col items-center justify-center outline-none' style={viewImageModalStyle}>
+                                                <div className='flex flex-col items-center justify-center w-full h-full gap-4'>                                        
+                                                    <Image src={post?.imageUrls[currentImageIndex]} alt="post image"
+                                                        layout='fill'
+                                                        objectFit='contain'
+                                                        className='rounded-lg bg-black'
+                                                    />
+                                                </div>
+                                            </Modal>
+                                        )}
                                     </div>
                                 }
                             </div>
 
                             {/* Footer */}
                             <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative'>
-                                <div id="left" className='flex flex-row gap-4'>
-                                    <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                                        {currentUserReaction === '' && 
+                                <div id="left" className='flex flex-row gap-4 text-sm md:text-base items-center'>
+
+                                    <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2 w-fit h-6'>
+                                        {!currentUserReaction && 
                                         <i 
                                             className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                                            onClick={() => setIsOverlayVisible(true)}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)}
                                         />
                                         }
                                         
@@ -531,7 +607,6 @@ function Post() {
                                             alt="like reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -541,7 +616,6 @@ function Post() {
                                             alt="heart reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -551,7 +625,6 @@ function Post() {
                                             alt="haha reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -561,7 +634,6 @@ function Post() {
                                             alt="wow reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -571,7 +643,6 @@ function Post() {
                                             alt="sad reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -581,60 +652,60 @@ function Post() {
                                             alt="angry reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
-                                    <p>
-                                        {reactions.length === 0 && '0'}
 
-                                        {reactions.length > 0 && reactions.reduce((total, reaction) => total + reaction.userIDs.length, 0)}
-                                    </p>
+                                        <p>
+                                            {reactions.length === 0 && '0'}
 
-                                    {isOverlayVisible && (
+                                            {reactions.length > 0 && reactions.reduce((total, reaction) => total + reaction.userIDs.length, 0)} 
+                                        </p>
+
+                                        {isOverlayVisible && (
                                         <div 
-                                        onMouseEnter={() => setIsOverlayVisible(true)}
-                                        onMouseLeave={() => setIsOverlayVisible(false)}
-                                        id='overlay' 
-                                        className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                                            onMouseEnter={() => setIsOverlayVisible(true)}
+                                            onMouseLeave={() => setIsOverlayVisible(false)}
+                                            id='overlay' 
+                                            className='absolute -left-1 md:-left-2 flex flex-row gap-2 md:w-[300px] md:h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
                                         >
-                                        <Image 
-                                        src={likeReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('like')}
-                                        />
-                                        <Image 
-                                        src={heartReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('heart')}
-                                        />
-                                        <Image 
-                                        src={laughReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('haha')}
-                                        />
-                                        <Image 
-                                        src={wowReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('wow')}
-                                        />
-                                        <Image 
-                                        src={sadReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('sad')}
-                                        />
-                                        <Image 
-                                        src={angryReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('angry')}
-                                        />
+                                            <Image 
+                                            src={likeReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('like')}
+                                            />
+                                            <Image 
+                                            src={heartReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('heart')}
+                                            />
+                                            <Image 
+                                            src={laughReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('haha')}
+                                            />
+                                            <Image 
+                                            src={wowReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('wow')}
+                                            />
+                                            <Image 
+                                            src={sadReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('sad')}
+                                            />
+                                            <Image 
+                                            src={angryReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('angry')}
+                                            />
                                         </div>
-                                    )}
+                                        )}
                                     </div>
                                     
                                     <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
@@ -651,7 +722,14 @@ function Post() {
                                         onClick={() => setShowSharePostModal(true)} 
                                         className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
 
-                                        <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className='flex flex-col items-center justify-center outline-none' style={sharePostModalStyle}>
+                                        <Modal isOpen={showSharePostModal} onRequestClose={() => setShowSharePostModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                            style={{
+                                            overlay: {
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                zIndex: 1000,
+
+                                            }
+                                            }}>
                                             <Share 
                                                 props={{
                                                     currentUserID: currentUserID,
@@ -677,7 +755,7 @@ function Post() {
                                     </div>
                                 </div>
 
-                                <div id="right" className='flex flex-row gap-4 items-center'>
+                                <div id="right" className='flex flex-row gap-4 text-sm md:text-base items-center'>
                                     {currentUserID !== post?.authorID && 
                                     <div id='report-control'>
                                         <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"></i>
@@ -692,7 +770,14 @@ function Post() {
                                         >
                                         </i>
 
-                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={editPostModalStyle}>
+                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                            style={{
+                                            overlay: {
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                zIndex: 1000,
+
+                                            }
+                                            }}>
                                             <div className='flex flex-col w-full h-full'>
                                             <div className='flex flex-row justify-center items-center'>
                                                 <p className='font-semibold'>Edit Post</p>
@@ -809,7 +894,14 @@ function Post() {
                                     View Reactions
                                     
                                     
-                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full md:w-[35%] lg:w-[20%] h-[32%] overflow-auto p-4 rounded-md bg-gray-100 z-50 bg-snow"
+                                        style={{
+                                        overlay: {
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            zIndex: 1000,
+
+                                        }
+                                        }}>
 
                                         <Reactions props={{
                                             postID: postID,
@@ -826,7 +918,7 @@ function Post() {
                                 <form 
                                     onSubmit={handleComment}
                                     className='flex flex-row items-start justify-center w-full h-full'>
-                                    <div className='flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
+                                    <div className='hidden md:flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
                                         {userPhotoURL && <Image src={userPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>}
                                     </div>
 
@@ -914,7 +1006,7 @@ function Post() {
             />}
             </div>
 
-            <div className='w-fit lg:hidden'>
+            <div className='w-fit md:flex lg:hidden hidden'>
             {(userPhotoURL && username) && <ExpandedNavBar 
                 props={{
                     userPhotoURL: userPhotoURL,
@@ -925,8 +1017,34 @@ function Post() {
             </div>
 
             <div className='w-full bg-dark_gray flex flex-col items-center justify-start'>
+                
+                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                    <div className='h-full w-fit flex flex-row items-center gap-1'>
+                        <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                        <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                    </div>
+                    
+                    <button onClick={() => setShowPhoneNavModal(true)}>
+                        <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                    </button>
+
+                    <Modal 
+                        isOpen={showPhoneNavModal}
+                        onRequestClose={() => setShowPhoneNavModal(false)}
+                        style={phoneNavModalStyle}
+                    >
+                        <PhoneNav 
+                        props = {{
+                            setShowPhoneNavModal: setShowPhoneNavModal,
+                            currentUserUsername: username,
+                            currentUserPhotoURL: userPhotoURL,
+                        }}
+                        />
+                    </Modal>
+                </nav>
+
                 {/* search and logo bar */}
-                <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+                <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
                     <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
                         <i
                         className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
@@ -951,10 +1069,10 @@ function Post() {
                 </div> 
 
                 <div className='h-full w-full flex flex-col items-center justify-start overflow-y-scroll'>
-                    <div className='w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
+                    <div className='w-full md:w-[750px] flex flex-col bg-snow rounded-lg justify-between mt-8 mb-8 pt-4 pb-2'>
                         <div className='w-full rounded-lg mt-2 pr-6 pl-6 flex flex-col'>
                             {/* Header */}
-                            <div id='post-header' className='flex flex-row'>
+                            <div id='post-header' className='flex'>
                                 <div id='user-image' className='flex flex-row justify-start items-start'>
                                 <Image 
                                     src={post?.authorPhotoURL} alt='Profile Picture' width={45} height={45}
@@ -985,32 +1103,32 @@ function Post() {
 
                             {/* Body */}
                             <div id="post-body" className='mt-3 flex flex-col'>
-                                <p className='line-clamp-2 overflow-hidden'>{post?.postBody}</p>
+                                <p className=''>{post?.postBody}</p>
                             </div>
 
                             {/* Reposted Post */}
-                            <div className='mt-3 flex flex-col w-full border border-[#d1d1d1] rounded-lg p-4 bg-[#] drop-shadow-md'>
+                            <div className='mt-3 flex flex-col w-full border border-[#d1d1d1] rounded-lg p-4 drop-shadow-md'>
                                 
-                                <div className='flex flex-row'>
+                                <div className='flex flex-row items-center'>
                                     <Image
                                     src={post?.repostAuthorPhotoURL} alt='Profile Picture' width={45} height={45}
-                                    className='rounded-full drop-shadow-sm aspect-square'
+                                    className='rounded-full drop-shadow-sm aspect-square w-[35px] h-[35px] md:w-[45px] md:h-[45px]'
                                     />
 
                                     <div className='ml-4 items-center justify-center'>
-                                    <div className='flex flex-row gap-2'> {/* displayName, username */}
+                                    <div className='flex flex-row gap-2 text-sm md:text-base'> {/* displayName, username */}
                                         <div className='font-bold'><p>{post?.repostAuthorDisplayName}</p></div>
                                         <div className='font-bold'>·</div>
                                         <Link href={'/user/' + post?.repostAuthorUsername} id='display-name' className='hover:text-grass hover:font-bold transition-all'><p>@{post?.repostAuthorUsername}</p></Link>
                                     </div>
 
                                     <div className='flex flex-row gap-2 items-center'> {/* YYYY-MM-DD at HH-MM */}
-                                        <p className='text-sm'>{formatDate(post?.repostDate)}</p>
+                                        <p className='text-xs md:text-sm'>{formatDate(post?.repostDate)}</p>
                                     </div>
                                     </div>
                                 </div>
 
-                                <div className='flex flex-row justify-between mt-2 gap-6 cursor-pointer' 
+                                <div className={`flex flex-row mt-2 cursor-pointer ${post?.repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
                                 onClick={() =>
                                 Router.push({
                                     pathname: '/post/[postID]',
@@ -1018,14 +1136,14 @@ function Post() {
                                 })
                                 }>
                                     <div>
-                                    <p className='line-clamp-1 overflow-hidden'>{post?.repostBody}</p>
+                                    <p className={`overflow-hidden text-sm md:text-base ${post?.repostBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{post?.repostBody}</p>
                                     </div>
 
                                     <div>
                                     {repostImage !== null ? (
                                         <Image
-                                        src={repostImage} alt='Repost Image' width={45} height={45}
-                                        className='rounded-md drop-shadow-sm aspect-square'
+                                        src={repostImage} alt='Repost Image' width={200} height={200}
+                                        className={`rounded-md drop-shadow-sm aspect-square ${post?.repostBody === '' ? "h-[150px] w-[150px] md:h-[200px] md:w-[200px] mt-2 md:mt-0" : "h-[100px] w-[100px] md:h-[150px] md:w-[150px]"}`}
                                         />
                                     ) : null}
                                     </div>
@@ -1034,13 +1152,13 @@ function Post() {
 
                             {/* Footer */}
                             <div id='post-footer' className='mt-4 pb-4 flex flex-row w-full justify-between relative'>
-                                <div id="left" className='flex flex-row gap-4'>
-                                    <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                                        {currentUserReaction === '' && 
+                                <div id="left" className='flex flex-row gap-4 text-sm md:text-base items-center'>
+                                    <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2 w-fit h-6'>
+                                        {!currentUserReaction && 
                                         <i 
                                             className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
+                                            onClick={() => setIsOverlayVisible(true)}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)}
                                         />
                                         }
                                         
@@ -1050,7 +1168,6 @@ function Post() {
                                             alt="like reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -1060,7 +1177,6 @@ function Post() {
                                             alt="heart reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -1070,7 +1186,6 @@ function Post() {
                                             alt="haha reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -1080,7 +1195,6 @@ function Post() {
                                             alt="wow reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -1090,7 +1204,6 @@ function Post() {
                                             alt="sad reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
 
@@ -1100,60 +1213,60 @@ function Post() {
                                             alt="angry reaction"
                                             className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
                                             onMouseEnter={() => setIsOverlayVisible(true)}
-                                            onMouseLeave={() => setIsOverlayVisible(false)} 
                                         />
                                         }
-                                    <p>
-                                        {reactions.length === 0 && '0'}
 
-                                        {reactions.length > 0 && reactions.reduce((total, reaction) => total + reaction.userIDs.length, 0)}
-                                    </p>
+                                        <p>
+                                            {reactions.length === 0 && '0'}
 
-                                    {isOverlayVisible && (
+                                            {reactions.length > 0 && reactions.reduce((total, reaction) => total + reaction.userIDs.length, 0)} 
+                                        </p>
+
+                                        {isOverlayVisible && (
                                         <div 
-                                        onMouseEnter={() => setIsOverlayVisible(true)}
-                                        onMouseLeave={() => setIsOverlayVisible(false)}
-                                        id='overlay' 
-                                        className='absolute bottom-2 -left-2 flex flex-row gap-2 w-[300px] h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
+                                            onMouseEnter={() => setIsOverlayVisible(true)}
+                                            onMouseLeave={() => setIsOverlayVisible(false)}
+                                            id='overlay' 
+                                            className='absolute -left-1 md:-left-2 flex flex-row gap-2 md:w-[300px] md:h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
                                         >
-                                        <Image 
-                                        src={likeReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('like')}
-                                        />
-                                        <Image 
-                                        src={heartReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('heart')}
-                                        />
-                                        <Image 
-                                        src={laughReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('haha')}
-                                        />
-                                        <Image 
-                                        src={wowReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('wow')}
-                                        />
-                                        <Image 
-                                        src={sadReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('sad')}
-                                        />
-                                        <Image 
-                                        src={angryReaction} 
-                                        alt="like reaction" 
-                                        className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                                        onClick={() => handleReaction('angry')}
-                                        />
+                                            <Image 
+                                            src={likeReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('like')}
+                                            />
+                                            <Image 
+                                            src={heartReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('heart')}
+                                            />
+                                            <Image 
+                                            src={laughReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('haha')}
+                                            />
+                                            <Image 
+                                            src={wowReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('wow')}
+                                            />
+                                            <Image 
+                                            src={sadReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('sad')}
+                                            />
+                                            <Image 
+                                            src={angryReaction} 
+                                            alt="like reaction" 
+                                            className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
+                                            onClick={() => handleReaction('angry')}
+                                            />
                                         </div>
-                                    )}
+                                        )}
                                     </div>
                                     
                                     <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
@@ -1176,7 +1289,7 @@ function Post() {
                                     </div>
                                 </div>
 
-                                <div id="right" className='flex flex-row gap-4 items-center'>
+                                <div id="right" className='flex flex-row gap-4 text-sm md:text-base items-center'>
                                     {currentUserID !== post?.authorID && 
                                     <div id='report-control'>
                                         <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"></i>
@@ -1191,7 +1304,14 @@ function Post() {
                                         >
                                         </i>
 
-                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className='flex flex-col items-center justify-center outline-none' style={editPostModalStyle}>
+                                        <Modal isOpen={showEditPostModal} onRequestClose={() => setShowEditPostModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[60%] lg:w-[30%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                            style={{
+                                            overlay: {
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                zIndex: 1000,
+
+                                            }
+                                            }}>
                                             <div className='flex flex-col w-full h-full'>
                                             <div className='flex flex-row justify-center items-center'>
                                                 <p className='font-semibold'>Edit Post</p>
@@ -1250,7 +1370,14 @@ function Post() {
                                     View Reactions
                                     
                                     
-                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className='flex flex-col items-center justify-center outline-none' style={reactionsCountModal}>
+                                    <Modal isOpen={showReactionsModal} onRequestClose={() => setShowReactionsModal(false)} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full md:w-[35%] lg:w-[20%] h-[32%] overflow-auto p-4 rounded-md bg-gray-100 z-50 bg-snow"
+                                        style={{
+                                        overlay: {
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            zIndex: 1000,
+
+                                        }
+                                        }}>
 
                                         <Reactions props={{
                                             postID: postID,
@@ -1267,7 +1394,7 @@ function Post() {
                                 <form 
                                     onSubmit={handleComment}
                                     className='flex flex-row items-start justify-center w-full h-full'>
-                                    <div className='flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
+                                    <div className='hidden md:flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
                                         {userPhotoURL && <Image src={userPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>}
                                     </div>
 

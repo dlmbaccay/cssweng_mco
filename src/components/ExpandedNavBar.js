@@ -6,8 +6,9 @@ import toast from 'react-hot-toast';
 
 export default function ExpandedNavBar({ props }) {
     
-    const { userPhotoURL, username, activePage, expanded } = props;
+    const { userPhotoURL, username, activePage, expanded, isUser } = props;
     const router = Router;
+
 
     const [isExpanded, setIsExpanded] = useState(expanded);
 
@@ -125,13 +126,13 @@ export default function ExpandedNavBar({ props }) {
                   fa-solid fa-user rounded-full 
                   bg-grass text-pale_yellow 
                   transition-all group-hover:bg-raisin_black 
-                  ${activePage === 'Profile' ? "bg-raisin_black" : ""}
+                  ${(activePage && isUser)  === 'Profile' ? "bg-raisin_black" : ""}
                   `}/>
                 <p className={`
                   text-grass text-2xl
                   font-shining  
                   transition-all  group-hover:text-raisin_black 
-                  ${activePage === 'Profile' ? "text-raisin_black" : ""}`}>
+                  ${(activePage && isUser) === 'Profile' ? "text-raisin_black" : ""}`}>
                     Profile</p>
               </button>
 
@@ -186,6 +187,10 @@ export default function ExpandedNavBar({ props }) {
               >
               <i className='transition-all fa-solid fa-right-from-bracket pl-[2px] w-[35px] h-[35px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black'></i>
               <p className='transition-all text-grass text-2xl font-shining group-hover:text-raisin_black'>Log Out</p>
+            </button>
+
+            <button onClick={() => router.push('/AboutUs')} className='text-xanthous mb-2 mt-auto hover:text-grass'>
+              About Us
             </button>
           </div>
         }

@@ -21,6 +21,7 @@ export function useUserData() {
   const [gender, setGender] = useState(null);
   const [birthdate, setBirthdate] = useState(null);
   const [location, setLocation] = useState(null);
+  const [following, setFollowing] = useState([]);
 
   useEffect(() => {
   // turn off realtime subscription
@@ -35,6 +36,7 @@ export function useUserData() {
       setDescription(doc.data()?.description);
       setDisplayName(doc.data()?.displayName);
       setEmail(doc.data()?.email);
+      setFollowing(doc.data()?.following);
     });
 
   } else {
@@ -44,12 +46,18 @@ export function useUserData() {
     setDescription(null);
     setDisplayName(null);
     setEmail(null);
+    setFollowing(null);
   }
 
   return unsubscribe;
-}, [user]);
+  }, [user]); 
+    // deps
+    // user: only run if user changes, 
+    // userPhotoURL: only run if userPhotoURL changes, 
+    // displayName: only run if displayName changes, 
+    // following: only run if following changes
 
-  return { user, username, description, email, displayName, userPhotoURL, currentUserID };
+  return { user, username, description, email, displayName, userPhotoURL, currentUserID, following };
 }
 
 export function usePetData(userId) {
@@ -80,6 +88,26 @@ export function usePetData(userId) {
   return pets;
 }
 
+// export function useUserIDfromUsername(username) {
+  
+//   const [currentUserId, setCurrentUserId] = useState(null);
+
+//   useEffect(() => {
+//     let unsubscribe;
+
+//     if (username) {
+//       const nameRef = firestore.collection('usernames').doc(username);
+//       unsubscribe = nameRef.onSnapshot((doc) => {
+//         setCurrentUserId(doc.data().uid)
+//       });
+//     } else{
+//       setCurrentUserId(null);
+//     }
+//     return unsubscribe;
+//   }, [username]);
+//   return currentUserId;
+// }
+
 export function useUserIDfromUsername(username) {
   
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -87,11 +115,17 @@ export function useUserIDfromUsername(username) {
   useEffect(() => {
     let unsubscribe;
 
-    if (username){
+    if (username) {
       const nameRef = firestore.collection('usernames').doc(username);
       unsubscribe = nameRef.onSnapshot((doc) => {
+        if (!doc.exists) {
+          // Redirect to home page if the username does not exist
+          toast.error("User does not exist");
+          window.location.href = '/404';
+          return;
+        }
         setCurrentUserId(doc.data().uid)
-        });
+      });
     } else{
       setCurrentUserId(null);
     }

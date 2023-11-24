@@ -8,9 +8,10 @@ import { useRouter } from 'next/router';
 import { firestore, storage, STATE_CHANGED } from '@/src/lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
 import { useUserData, usePetData, useUserIDfromUsername, useAllUserPosts } from '@/src/lib/hooks'
-import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle } from '../../../lib/modalstyle';
+import { createPetModalStyle, confirmationModalStyle, createPostModalStyle, editUserProfileStyle, phoneNavModalStyle } from '../../../lib/modalstyle';
 
 import ExpandedNavBar from '@/src/components/ExpandedNavBar';
+import PhoneNav from '@/src/components/PhoneNav';
 import RoundIcon from '@/src/components/RoundIcon';
 import CoverPhoto from '@/src/components/CoverPhoto';
 import PostSnippet from '@/src/components/Post/PostSnippet';
@@ -77,6 +78,8 @@ function UserProfilePage() {
     // create post variables
     const [showCreatePostForm, setShowCreatePostForm] = useState(false);
 
+    const [currentUserUsername, setCurrentUserUsername] = useState(null);
+    const [currentUserPhotoURL, setCurrentUserPhotoURL] = useState(null);
 
     // fetch current and profile user data
     useEffect(() => {
@@ -94,7 +97,7 @@ function UserProfilePage() {
 
         fetchUserData();
 
-    }, [currentUserID, profileUserID]);
+    }, []);
 
     // fetch profile user's data
     useEffect(() => {
@@ -113,16 +116,16 @@ function UserProfilePage() {
                 setUserPhotoURL(doc.data()?.photoURL);
                 setCoverPhotoURL(doc.data()?.coverPhotoURL);
                 setHidden(doc.data()?.hidden);
-                
+
                 setFollowers(doc.data()?.followers);
                 setFollowing(doc.data()?.following);
-                
+
                 setBirthdate(doc.data()?.birthdate);
                 setGender(doc.data()?.gender);
                 setEmail(doc.data()?.email);
                 setPhoneNumber(doc.data()?.phoneNumber);
                 setLocation(doc.data()?.location);
-                
+
                 setEditedDisplayName(doc.data()?.displayName);
                 setEditedAbout(doc.data()?.about);
                 setEditedLocation(doc.data()?.location);
@@ -144,8 +147,24 @@ function UserProfilePage() {
             setEditedLocation(null);
         }
 
+        if (currentUserID) { // info of the current user
+            const userRef = firestore.collection('users').doc(currentUserID);
+            unsubscribe = userRef.onSnapshot((doc) => {
+                setCurrentUser({
+                    id: doc.id,
+                    ...doc.data()
+                });
+                setCurrentUserUsername(doc.data()?.username);
+                setCurrentUserPhotoURL(doc.data()?.photoURL);
+            });
+        } else {
+            setCurrentUser(null);
+            setCurrentUserUsername(null);
+            setCurrentUserPhotoURL(null);
+        }
+
         return unsubscribe;
-    }, [profileUserID]);
+    }, [currentUserID, profileUserID]);
 
     // fetch all pets of the profile user
     useEffect(() => {
@@ -262,46 +281,46 @@ function UserProfilePage() {
     const handleEditProfileSave = async () => {
         const userRef = firestore.collection('users').doc(profileUserID);
         const batch = firestore.batch();
-     
+
         try {
             const uploadFile = async (ref, file, field) => {
                 const task = ref.put(file);
                 task.on(
                     'state_changed',
                     (snapshot) => {
-                       const progress = Math.round(
-                           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                       );
+                        const progress = Math.round(
+                            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                        );
                     },
                     (error) => {
-                       toast.error('Error uploading file.');
+                        toast.error('Error uploading file.');
                     },
                     async () => {
-                       toast.success('Photo uploaded successfully!');
-                       let url = await task.snapshot.ref.getDownloadURL(); 
-                       const userRef = firestore.doc(`users/${currentUserID}`);
-                       userRef.update({ [field]: url });
+                        toast.success('Photo uploaded successfully!');
+                        let url = await task.snapshot.ref.getDownloadURL();
+                        const userRef = firestore.doc(`users/${currentUserID}`);
+                        userRef.update({ [field]: url });
                     }
                 );
             };
-     
+
             if (selectedCoverFile) {
                 await uploadFile(storage.ref(`profilePictures/${profileUserID}/coverPic`), selectedCoverFile, 'coverPhotoURL');
             }
             if (selectedProfileFile) {
                 await uploadFile(storage.ref(`profilePictures/${profileUserID}/profilePic`), selectedProfileFile, 'photoURL');
             }
-            
-           
-     
+
+
+
             const updateData = {
                 displayName: editedDisplayName,
                 about: editedAbout,
                 location: editedLocation
             };
-     
+
             batch.update(userRef, updateData);
-     
+
             await batch.commit();
             setShowEditProfile(false);
             setSelectedProfileFile(null);
@@ -309,12 +328,12 @@ function UserProfilePage() {
             setPreviewCoverUrl(null);
             setPreviewProfileUrl(null);
             toast.success('User profile updated successfully!');
-     
+
         } catch (error) {
-            toast.error('Error saving profile:'+ error);
+            toast.error('Error saving profile:' + error);
         }
     }
-    
+
     const [selectedProfileFile, setSelectedProfileFile] = useState(null);
     const [previewProfileUrl, setPreviewProfileUrl] = useState(null);
     const [selectedCoverFile, setSelectedCoverFile] = useState(null);
@@ -323,7 +342,7 @@ function UserProfilePage() {
     const handleProfileFileSelect = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
-      
+
         if (file !== undefined && allowedTypes.includes(file.type)) {
             setSelectedProfileFile(file);
             setPreviewProfileUrl(URL.createObjectURL(file));
@@ -338,7 +357,7 @@ function UserProfilePage() {
     const handleCoverFileSelect = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
-      
+
         if (file !== undefined && allowedTypes.includes(file.type)) {
             setSelectedCoverFile(file);
             setPreviewCoverUrl(URL.createObjectURL(file));
@@ -443,7 +462,7 @@ function UserProfilePage() {
         // }
     };
 
-    const [posts, setPosts] = useState([]);   
+    const [posts, setPosts] = useState([]);
     const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(false);
     const [allPostsLoaded, setAllPostsLoaded] = useState(false);
@@ -458,10 +477,10 @@ function UserProfilePage() {
             limit(5)
         );
 
-        const unsubscribe = onSnapshot(q, 
+        const unsubscribe = onSnapshot(q,
             (snapshot) => {
                 const newPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
+
                 setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
                 setPosts(newPosts);
                 setLoading(false);
@@ -519,35 +538,65 @@ function UserProfilePage() {
         setLoading(false);
     };
 
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
+    const isUser = currentUserID == profileUserID;
+
     return (
         <div id="root" className='flex flex-row h-screen'>
 
-            <div className='w-fit'>
-                {(userPhotoURL && username) && <ExpandedNavBar 
+            <div className='w-fit md:flex hidden'>
+                <ExpandedNavBar
                     props={{
-                    userPhotoURL: userPhotoURL,
-                    username: username,
-                    activePage: "Profile",
-                    expanded: false
+                        userPhotoURL: currentUserPhotoURL,
+                        username: currentUserUsername,
+                        activePage: "Profile",
+                        expanded: false
                     }}
-                />}
+                />
             </div>
 
             {profileUser &&
 
                 <div className="h-screen w-full overflow-hidden">
-                    <div id='header-container' className='h-1/5 border-l border-neutral-300'>
+
+                    <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                        <div className='h-full w-fit flex flex-row items-center gap-1'>
+                            <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full' />
+                            <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                        </div>
+
+                        <button onClick={() => setShowPhoneNavModal(true)}>
+                            <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center' />
+                        </button>
+
+                        <Modal
+                            isOpen={showPhoneNavModal}
+                            onRequestClose={() => setShowPhoneNavModal(false)}
+                            style={phoneNavModalStyle}
+                        >
+                            <PhoneNav
+                                props={{
+                                    setShowPhoneNavModal: setShowPhoneNavModal,
+                                    currentUserUsername: currentUserUsername,
+                                    currentUserPhotoURL: currentUserPhotoURL
+                                }}
+                            />
+                        </Modal>
+                    </nav>
+
+                    <div id='header-container' className='h-1/5 border-l border-neutral-300 hidden md:block'>
                         <CoverPhoto src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} />
                     </div>
 
-                    <div id='content-container' className='h-4/5 flex flex-row'>
-                        
+                    <div id='content-container' className='h-full md:h-4/5 flex flex-row'>
+
                         {/* Profile Picture */}
-                        <div className="flex absolute justify-center w-80 h-44">
+                        <div className="hidden md:flex absolute justify-center w-80 h-44">
                             <div className='rounded-full z-10
                                 -translate-y-40 w-32 h-32 -translate-x-14
                                 lg:w-44 lg:h-44 lg:-translate-y-24 lg:translate-x-0'>
-                                <Image 
+                                <Image
                                     src={userPhotoURL}
                                     alt={username + " profile picture"}
                                     fill='fill'
@@ -594,20 +643,30 @@ function UserProfilePage() {
                                 <Modal
                                     isOpen={showEditProfile}
                                     onRequestClose={() => setShowEditProfile(false)}
-                                    style={editUserProfileStyle}
+                                    className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow '
+                                    style={{
+                                        overlay: {
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            zIndex: 1000,
+
+                                        }
+                                    }}
                                 >
                                     <div className='w-full h-full flex flex-col justify-between pr-2'>
-                                        <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
+                                        <div className='flex flex-row items-center justify-between'>
+                                            <h1 className="font-bold text-lg">Edit {username}`s Profile</h1>
+                                            <i className='fa-solid fa-xmark md:hidden' onClick={handleCancelEditProfile} />
+                                        </div>
 
-                                        <div className='flex flex-row w-full h-fit gap-6 justify-evenly items-cet'>
+                                        <div className='flex flex-col md:flex-row w-full h-fit gap-6 justify-evenly'>
                                             <div className='flex flex-col items-center justify-evenly p-4 gap-8 rounded-lg h-full'>
                                                 {/* profile picture */}
                                                 <div className="items-center justify-center">
                                                     <h1 className='font-medium mb-2 text-center'>Change Profile Picture</h1>
                                                     <label htmlFor="userPhoto">
                                                         <div className="flex justify-center w-40 h-40 cursor-pointer rounded-full shadow-lg hover:opacity-50">
-                                                            {previewProfileUrl ? (<RoundIcon src={previewProfileUrl} alt={"Preview"} />): 
-                                                            (<RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />)}
+                                                            {previewProfileUrl ? (<RoundIcon src={previewProfileUrl} alt={"Preview"} />) :
+                                                                (<RoundIcon src={profileUser.photoURL} alt={profileUser.username + " profile picture"} />)}
                                                         </div>
                                                     </label>
                                                     <input type="file" id="userPhoto" onChange={handleProfileFileSelect} className='hidden' />
@@ -617,17 +676,17 @@ function UserProfilePage() {
                                                 <div>
                                                     <h1 className='font-medium mb-2 text-center'>Change Cover Photo</h1>
                                                     <label htmlFor="coverPhoto">
-                                                        <div className='relative mx-auto w-full' style={{height: '150px', width: '250px'}}>
+                                                        <div className='relative mx-auto w-full' style={{ height: '150px', width: '250px' }}>
                                                             {previewCoverUrl ? (
-                                                                <Image src={previewCoverUrl} alt="Preview" layout='fill' className='object-cover rounded-lg'/>
-                                                            ): (profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} layout='fill' className='object-cover rounded-lg'/>)}
+                                                                <Image src={previewCoverUrl} alt="Preview" layout='fill' className='object-cover rounded-lg' />
+                                                            ) : (profileUser.coverPhotoURL && <Image src={profileUser.coverPhotoURL} alt={profileUser.username + " cover photo"} layout='fill' className='object-cover rounded-lg' />)}
                                                         </div>
                                                     </label>
                                                     <input type="file" id="coverPhoto" onChange={handleCoverFileSelect} className="hidden" />
                                                 </div>
                                             </div>
 
-                                            <div className='flex flex-col w-[50%] gap-4 h-full rounded-lg justify-center items-center'>
+                                            <div className='flex flex-col md:w-[50%] w-full gap-4 h-full rounded-lg justify-center items-center mb-6 md:mb-0 pr-8 pl-8 md:pr-0 md:pl-0'>
                                                 {/* Display Name */}
                                                 <div className="w-full">
                                                     <label
@@ -690,7 +749,7 @@ function UserProfilePage() {
                                                     />
                                                 </div>
 
-                                                 <div className='flex flex-col w-full items-center h-full gap-4 rounded-lg'>
+                                                <div className='flex flex-col w-full items-center h-full gap-4 rounded-lg'>
                                                     <div className='flex flex-row gap-2 items-center'>
                                                         <i className="fa-solid fa-phone"></i>
                                                         <p>{phoneNumber}</p>
@@ -716,7 +775,7 @@ function UserProfilePage() {
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-end gap-4">
+                                        <div className="flex w-full justify-end gap-4 pb-6 md:pb-2">
                                             <button
                                                 type="button"
                                                 onClick={handleCancelEditProfile}
@@ -760,38 +819,43 @@ function UserProfilePage() {
                             </div>
 
                             {/* Details */}
-                            <div className='mt-4 mb-2 flex flex-col w-full gap-2 items-center'>
+                            <div className='mt-4 mb-2 flex flex-col w-full gap-2 items-center' alt>
                                 {hidden && !hidden.includes('location') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-location-dot"></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Location</span>
                                         <p>{location}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('gender') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-venus-mars"></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Gender</span>
                                         <p>{gender}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('birthdate') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
-                                        <i className="fa-solid fa-calendar"></i>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
+                                        <i className="fa-solid fa-calendar "></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Birthdate</span>
                                         <p>{birthdate}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('contactNumber') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
                                         <i className="fa-solid fa-phone"></i>
+                                        <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">Number</span>
                                         <p>{phoneNumber}</p>
                                     </div>
                                 ) : ''}
 
                                 {hidden && !hidden.includes('email') ? (
-                                    <div id="icons" className='flex flex-row gap-2 items-center text-sm'>
-                                        <i className="fa-solid fa-envelope"></i>
+                                    <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
+<i className="fa-solid fa-envelope "></i>
+    <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">E-mail</span>
                                         <p>{email}</p>
                                     </div>
                                 ) : ''}
@@ -801,18 +865,18 @@ function UserProfilePage() {
 
                         {/* Main Container */}
                         <div id='main-content-container' className='overflow-hidden flex flex-col lg:translate-x-80 lg:w-[calc(100%-20rem)] w-full'>
-                            <div id='flex-profile-details' className='lg:hidden w-full h-12 bg-snow flex flex-row items-center pl-10 gap-8'>
-                                <div className='flex flex-row gap-2'>
+                            <div id='flex-profile-details' className='lg:hidden w-full h-20 md:h-12 bg-snow flex flex-row items-center md:pl-10 gap-8 md:justify-start justify-center'>
+                                <div className='flex flex-col h-fit items-center md:flex-row md:gap-2'>
                                     <p className='font-bold'>
-                                    {profileUser.displayName}
+                                        {profileUser.displayName}
                                     </p>
-                                    <p className='font-bold'>·</p>
+                                    <p className='font-bold md:flex hidden'>·</p>
                                     <p className='font'>
                                         @{profileUser.username}
                                     </p>
                                 </div>
 
-                                <div className='flex flex-row gap-2'>
+                                <div className='flex flex-col h-fit items-center md:flex-row md:gap-2 gap-1'>
                                     {/* followers */}
                                     <div className='flex flex-row gap-2 items-center'>
                                         <p className='font-semibold text-sm'>{profileUser.followers.length}</p>
@@ -825,17 +889,17 @@ function UserProfilePage() {
                                     </div>
                                 </div>
 
-                                { profileUserID === currentUserID ? 
-                                    (<button 
+                                {profileUserID === currentUserID ?
+                                    (<button
                                         onClick={() => setShowEditProfile(true)}
-                                        className='text-sm font-semibold text-white bg-citron w-12 h-6 rounded-md'
+                                        className='text-sm font-semibold text-white bg-citron w-12 md:h-6 h-8 rounded-md'
                                     >
                                         Edit
-                                    </button>) : 
+                                    </button>) :
                                     (
-                                        <button 
+                                        <button
                                             onClick={handleFollow}
-                                            className='text-sm font-semibold text-white bg-citron w-16 h-6 rounded-md'
+                                            className='text-sm font-semibold text-white bg-citron w-20 md:h-6 h-8 rounded-md'
                                         >
                                             {profileUser.followers.includes(currentUserID) ? 'Following' : 'Follow'}
                                         </button>
@@ -843,24 +907,18 @@ function UserProfilePage() {
                                 }
                             </div>
 
-                            <div id="tab-actions" className="flex flex-row h-12 font-shining text-lg bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm">
+                            <div id="tab-actions" className="flex flex-row h-12 font-shining bg-snow divide-x divide-neutral-300 border-b border-t border-neutral-300 drop-shadow-sm md:justify-start justify-between">
                                 <button
-                                    className={`px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
+                                    className={`w-1/2 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Posts' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Posts')}>
                                     Posts
                                 </button>
                                 <button
-                                    className={`px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
+                                    className={`w-1/2 md:w-fit text-sm md:text-base px-14 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Pets' ? 'bg-citron text-white' : ''
                                         }`}
                                     onClick={() => handleTabEvent('Pets')}>
                                     Pets
-                                </button>
-                                <button
-                                    className={`px-14 py-2 text-raisin_black hover:bg-citron hover:text-white focus:outline-none ${activeTab === 'Media' ? 'bg-citron text-white' : ''
-                                        }`}
-                                    onClick={() => handleTabEvent('Media')}>
-                                    Media
                                 </button>
                             </div>
 
@@ -878,15 +936,15 @@ function UserProfilePage() {
                                                 {/* if no media... */}
                                                 <div className='flex flex-col items-center justify-center h-full w-full'>
                                                     <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                                    <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                                 </div>
 
                                             </div>
                                         )}
 
                                         {currentUserID === profileUserID ? (
-                                            <div 
-                                                className='group flex flex-row w-[650px] h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center mt-8 hover:drop-shadow-md'>
+                                            <div
+                                                className='group flex flex-row w-screen md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2 md:mt-8'>
 
                                                 {userPhotoURL && <Image
                                                     src={userPhotoURL}
@@ -894,114 +952,123 @@ function UserProfilePage() {
                                                     width={50}
                                                     height={50}
                                                     onClick={() => router.push(`/user/${username}`)}
-                                                    className='rounded-full h-[50px] w-[50px] hover:opacity-95 transition-all cursor-pointer'
+                                                    className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-95 transition-all cursor-pointer'
                                                 />}
 
-                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left pl-4 text-sm text-raisin_black hover:bg-gray transition-all'>
+                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
                                                     <p>What&apos;s on your mind, {displayName}?</p>
                                                 </button>
 
-                                                <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
-                                                    <i className='fa-solid fa-image'/>
+                                                <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-white rounded-full text-left text-lg text-raisin_black hover:bg-grass hover:text-pale_yellow transition-all flex items-center justify-center'>
+                                                    <i className='fa-solid fa-image' />
                                                 </button>
 
                                                 <Modal
                                                     isOpen={showCreatePostForm}
                                                     onRequestClose={() => setShowCreatePostForm(false)}
-                                                    style={createPostModalStyle}
+                                                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[80%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                                                    style={{
+                                                        overlay: {
+                                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                                            zIndex: 1000,
+
+                                                        }
+                                                    }}
                                                 >
-                                                    <CreatePost 
+                                                    <CreatePost
                                                         props={{
-                                                        createType: 'original',
-                                                        currentUserID: currentUserID,
-                                                        displayName: displayName,
-                                                        username: username,
-                                                        userPhotoURL: userPhotoURL,
-                                                        setShowCreatePostForm: setShowCreatePostForm,
+                                                            createType: 'original',
+                                                            currentUserID: currentUserID,
+                                                            displayName: displayName,
+                                                            username: username,
+                                                            userPhotoURL: userPhotoURL,
+                                                            setShowCreatePostForm: setShowCreatePostForm,
                                                         }}
                                                     />
                                                 </Modal>
                                             </div>
                                         ) : null}
 
-                                        <div className="flex mt-8 mb-8 flex-col gap-8 justify-start items-center">
-                                            {posts.map((post, index) => {
-                                                console.log(`Processing post ${index} with postType: ${post.postType}`);
+                                        {posts.length > 0 && (
+                                            <div className="flex mt-8 mb-20 md:mb-8 flex-col gap-8 justify-start items-center">
+                                                {posts.map((post, index) => {
+                                                    console.log(`Processing post ${index} with postType: ${post.postType}`);
 
-                                                if (post.postType === "original") {
-                                                    return (
-                                                        <div key={post.id}>
-                                                            <PostSnippet
-                                                                props={{
-                                                                    currentUserID: currentUserID,
-                                                                    postID: post.id,
-                                                                    postBody: post.postBody,
-                                                                    postCategory: post.postCategory,
-                                                                    postTrackerLocation: post.postTrackerLocation,
-                                                                    postPets: post.postPets,
-                                                                    postDate: post.postDate,
-                                                                    imageUrls: post.imageUrls,
-                                                                    authorID: post.authorID,
-                                                                    authorDisplayName: post.authorDisplayName,
-                                                                    authorUsername: post.authorUsername,
-                                                                    authorPhotoURL: post.authorPhotoURL,
-                                                                    isEdited: post.isEdited,
-                                                                    postType: post.postType,
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    );
-                                                } else if (post.postType === 'repost') {
-                                                    return (
-                                                        <div key={post.id}>
-                                                            <RepostSnippet
-                                                                props={{
-                                                                    currentUserID: currentUserID,
-                                                                    authorID: post.authorID,
-                                                                    authorDisplayName: post.authorDisplayName,
-                                                                    authorUsername: post.authorUsername,
-                                                                    authorPhotoURL: post.authorPhotoURL,
-                                                                    postID: post.id,
-                                                                    postDate: post.postDate,
-                                                                    postType: 'repost',
-                                                                    postBody: post.postBody,
-                                                                    isEdited: post.isEdited,
-                                                                    repostID: post.repostID,
-                                                                    repostBody: post.repostBody,
-                                                                    repostCategory: post.repostCategory,
-                                                                    repostPets: post.repostPets,
-                                                                    repostDate: post.repostDate,
-                                                                    repostImageUrls: post.repostImageUrls,
-                                                                    repostAuthorID: post.repostAuthorID,
-                                                                    repostAuthorDisplayName: post.repostAuthorDisplayName,
-                                                                    repostAuthorUsername: post.repostAuthorUsername,
-                                                                    repostAuthorPhotoURL: post.repostAuthorPhotoURL,
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    );
-                                                } 
+                                                    if (post.postType === "original") {
+                                                        return (
+                                                            <div key={post.id}>
+                                                                <PostSnippet
+                                                                    props={{
+                                                                        currentUserID: currentUserID,
+                                                                        postID: post.id,
+                                                                        postBody: post.postBody,
+                                                                        postCategory: post.postCategory,
+                                                                        postTrackerLocation: post.postTrackerLocation,
+                                                                        postPets: post.postPets,
+                                                                        postDate: post.postDate,
+                                                                        imageUrls: post.imageUrls,
+                                                                        authorID: post.authorID,
+                                                                        authorDisplayName: post.authorDisplayName,
+                                                                        authorUsername: post.authorUsername,
+                                                                        authorPhotoURL: post.authorPhotoURL,
+                                                                        isEdited: post.isEdited,
+                                                                        postType: post.postType,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    } else if (post.postType === 'repost') {
+                                                        return (
+                                                            <div key={post.id}>
+                                                                <RepostSnippet
+                                                                    props={{
+                                                                        currentUserID: currentUserID,
+                                                                        authorID: post.authorID,
+                                                                        authorDisplayName: post.authorDisplayName,
+                                                                        authorUsername: post.authorUsername,
+                                                                        authorPhotoURL: post.authorPhotoURL,
+                                                                        postID: post.id,
+                                                                        postDate: post.postDate,
+                                                                        postType: 'repost',
+                                                                        postBody: post.postBody,
+                                                                        isEdited: post.isEdited,
+                                                                        repostID: post.repostID,
+                                                                        repostBody: post.repostBody,
+                                                                        repostCategory: post.repostCategory,
+                                                                        repostPets: post.repostPets,
+                                                                        repostDate: post.repostDate,
+                                                                        repostImageUrls: post.repostImageUrls,
+                                                                        repostAuthorID: post.repostAuthorID,
+                                                                        repostAuthorDisplayName: post.repostAuthorDisplayName,
+                                                                        repostAuthorUsername: post.repostAuthorUsername,
+                                                                        repostAuthorPhotoURL: post.repostAuthorPhotoURL,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        );
+                                                    }
                                                 })}
 
                                                 {loading && <div>Loading...</div>}
 
                                                 {allPostsLoaded ? (
-                                                <button
-                                                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                                                    onClick={refreshPosts}
-                                                >
-                                                    Refresh Posts
-                                                </button>
+                                                    <button
+                                                        className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                                                        onClick={refreshPosts}
+                                                    >
+                                                        Refresh Posts
+                                                    </button>
                                                 ) : (
-                                                <button
-                                                    className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                                                    onClick={fetchMorePosts}
-                                                    disabled={loading}
-                                                >
-                                                    Load More
-                                                </button>
+                                                    <button
+                                                        className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
+                                                        onClick={fetchMorePosts}
+                                                        disabled={loading}
+                                                    >
+                                                        Load More
+                                                    </button>
                                                 )}
-                                        </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -1010,19 +1077,19 @@ function UserProfilePage() {
                                     <div className="w-full flex justify-center">
                                         {
                                             (profileUserID !== currentUserID && pets.length === 0) ? (
-                                                <div className='flex flex-col items-center justify-center h-full w-full'>
+                                                <div className='flex flex-col pt-20 items-center justify-center h-full w-full'>
                                                     <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                                    <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
+                                                    <div className='mt-2 font-bold text-grass text-sm md:text-base'>Nothing to see here yet...</div>
                                                 </div>
                                             ) : (
-                                                <div className="w-full flex flex-row gap-12 items-center justify-start 
-                                                    pt-10 pl-10 pr-10 pb-10  
+                                                <div className="w-full flex flex-col md:flex-row gap-12 items-center justify-start 
+                                                    pt-10 pl-10 pr-10 pb-28  
                                                     lg:pl-20 lg:pt-16 lg:pr-20 lg:pb-16  
                                                 ">
                                                     {pets.map((pet) => (
                                                         <div key={pet.id} className="rounded-xl">
                                                             <Link href={`/pet/${pet.id}`} className='rounded-full hover:opacity-80 flex flex-col'>
-                                                                <Image 
+                                                                <Image
                                                                     src={pet.photoURL}
                                                                     alt={pet.petName + " profile picture"}
                                                                     width={144}
@@ -1048,19 +1115,19 @@ function UserProfilePage() {
                                                         </div>
                                                     ))}
 
-                                                    { profileUserID === currentUserID && (
-                                                        <div className="flex flex-col ">
-                                                                <button onClick={() => setShowCreatePetForm(true)}
+                                                    {profileUserID === currentUserID && (
+                                                        <div className="flex flex-col">
+                                                            <button onClick={() => setShowCreatePetForm(true)}
                                                                 className=''>
-                                                                    <i className="
+                                                                <i className="
                                                                             fa-solid fa-paw text-white rounded-full 
-                                                                            w-36 h-36 responsive bg-pale_yellow flex items-center
+                                                                            md:w-36 md:h-36 p-6 responsive bg-pale_yellow flex items-center
                                                                             justify-center transition-all
-                                                                            text-7xl hover:bg-grass hover:text-pale_yellow" />
-                                                                </button>
-                                                                <p className='text-center mt-2 text-lg font-bold flex flex-row items-center justify-center'
-                                                                >Add Pet</p>
-                                                            </div>
+                                                                            md:text-7xl text-6xl hover:bg-grass hover:text-pale_yellow" />
+                                                            </button>
+                                                            <p className='text-center mt-2 text-lg font-bold flex flex-row items-center justify-center'
+                                                            >Add Pet</p>
+                                                        </div>
                                                     )}
 
                                                     {/* delete pet profile confirmation modal */}
@@ -1081,16 +1148,18 @@ function UserProfilePage() {
                                                                 </div>
 
                                                                 <div className='flex flex-row items-center gap-4'>
-                                                                    <button
-                                                                        onClick={confirmDeletePetProfile}
-                                                                        className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
-                                                                    >
-                                                                        Delete</button>
+
                                                                     <button
                                                                         onClick={() => setShowPetDeleteConfirmation(false)}
                                                                         className='rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-black hover:text-white font-bold'
                                                                     >
                                                                         Cancel</button>
+
+                                                                    <button
+                                                                        onClick={confirmDeletePetProfile}
+                                                                        className='bg-black text-white rounded-lg pl-2 pr-2 pt-1 pb-1 hover:opacity-80 hover:bg-red-600 font-bold'
+                                                                    >
+                                                                        Delete</button>
                                                                 </div>
                                                             </div>
                                                         </Modal>
@@ -1102,7 +1171,14 @@ function UserProfilePage() {
                                                             isOpen={showCreatePetForm}
                                                             onRequestClose={() => setShowCreatePetForm(false)}
                                                             contentLabel="Create Pet Profile Label"
-                                                            style={createPetModalStyle}
+                                                            className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[60%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow '
+                                                            style={{
+                                                                overlay: {
+                                                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                                                    zIndex: 1000,
+
+                                                                }
+                                                            }}
                                                         >
                                                             <PetAccountSetup
                                                                 props={{
@@ -1121,16 +1197,6 @@ function UserProfilePage() {
                                                 </div>
                                             )
                                         }
-                                    </div>
-                                )}
-
-                                {/* Media */}
-                                {activeTab === 'Media' && (
-                                    <div className="w-full p-20 pl-24 pr-24 flex justify-center">
-                                        <div className='flex flex-col items-center justify-center h-full w-full'>
-                                            <i className="fa-solid fa-hippo text-8xl text-grass"></i>
-                                            <div className='mt-2 font-bold text-grass'>Nothing to see here yet...</div>
-                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -1200,7 +1266,7 @@ function PetAccountSetup({ props }) {
     const handlePetProfileSelect = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Add more allowed types if needed
-      
+
         if (file !== undefined && allowedTypes.includes(file.type)) {
             setPetPhotoURL(file);
             setPreviewPetProfile(URL.createObjectURL(file));
@@ -1313,8 +1379,18 @@ function PetAccountSetup({ props }) {
 
     return (
         <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
+
+            <div className="font-bold text-xl gap-2 flex-row items-center h-16 flex w-full justify-between">
+                <div className='flex gap-2'>
+                    <i className='fa-solid fa-paw'></i>
+                    <p className='text-sm'>Create A Pet</p>
+                </div>
+
+                <i className='fa-solid fa-xmark' onClick={() => setShowCreatePetForm(false)} />
+            </div>
+
             <div className='h-full flex flex-col justify-start'>
-                <div className='flex flex-row w-full justify-evenly items-start gap-4 mb-4'>
+                <div className='flex flex-col md:flex-row w-full justify-evenly items-start gap-4 mb-4'>
                     {/* Display Name */}
                     <div className="w-full">
                         <label
@@ -1360,7 +1436,7 @@ function PetAccountSetup({ props }) {
                     </div>
                 </div>
 
-                <div className='flex flex-row w-full h-fit justify-evenly items-start gap-4 mb-4'>
+                <div className='flex flex-col md:flex-row w-full h-fit justify-evenly items-start gap-4 mb-4'>
                     {/* Photo */}
                     <div className='w-full h-full flex flex-col justify-center items-center'>
                         <label htmlFor="photo" className='text-start w-full text-sm font-medium text-gray-700 mb-2'>
@@ -1369,7 +1445,7 @@ function PetAccountSetup({ props }) {
                         </label>
                         <input type="file" id="photo" onChange={e => handlePetProfileSelect(e)} required className='mb-4 text-start w-full' />
                         <div className="flex justify-center w-48 h-48 cursor-pointer rounded-full hover:opacity-50">
-                            {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />): null}
+                            {previewPetProfile ? (<RoundIcon src={previewPetProfile} alt={"Preview"} />) : null}
                         </div>
                     </div>
 
@@ -1438,7 +1514,7 @@ function PetAccountSetup({ props }) {
                 </div>
 
                 {/* sex, birthdate, birthplace */}
-                <div className='flex flex-row gap-4 w-full'>
+                <div className='flex flex-col md:flex-row gap-2 md:gap-4 w-full'>
                     {/* Sex */}
                     <div className="mb-4 w-full">
                         <label
@@ -1507,17 +1583,17 @@ function PetAccountSetup({ props }) {
             </div>
 
             {/* form button controls */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-end md:justify-between items-center pt-2 pb-4 mt-8 md:mt-0 md:pb-0 w-full">
 
-                <h2 className="font-bold text-xl gap-2 flex flex-row items-center mb-2">
+                <h2 className="hidden md:flex font-bold text-xl gap-2 flex-row items-center h-10 ">
                     <i className='fa-solid fa-paw'></i>
-                    Add a New Pet
+                    <p className='text-sm'>Create A Pet</p>
                 </h2>
 
                 <div className='flex flex-row gap-4'>
                     <button
                         type="button"
-                        className="font-semibold py-2 px-4 rounded-md transition-all hover:bg-raisin_black hover:text-white"
+                        className="font-semibold text-sm md:text-base h-10 px-4 rounded-md transition-all hover:bg-raisin_black hover:text-white"
                         onClick={() => setShowCreatePetForm(false)}
                     >
                         Cancel
@@ -1525,9 +1601,9 @@ function PetAccountSetup({ props }) {
                     <button
                         type="submit"
                         disabled={!petNameValid}
-                        className={`font-semibold py-2 px-4 rounded-md bg-xanthous text-white transition-all ${petNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
-                        Create Pet Profile
-                    </button>       
+                        className={`font-semibold text-sm md:text-base h-10 px-4 rounded-md bg-xanthous text-white transition-all ${petNameValid ? 'hover:bg-pistachio' : 'opacity-50'}`}>
+                        Create Pet
+                    </button>
                 </div>
             </div>
         </form>

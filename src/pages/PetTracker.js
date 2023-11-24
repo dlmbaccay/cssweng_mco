@@ -11,8 +11,8 @@ import Image from 'next/image';
 import CreatePost from '../components/Post/CreatePost';
 import PostSnippet from '../components/Post/PostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
-import { createPostModalStyle } from '../lib/modalstyle';
-
+import PhoneNav from '../components/PhoneNav';
+import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 export default function PetTracker() {
 
@@ -195,6 +195,8 @@ export default function PetTracker() {
         setLoadingFound(false);
     };
 
+    const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+
     if (!pageLoading) {
         return (
         <div className='flex flex-row w-full h-screen overflow-hidden'>
@@ -209,7 +211,7 @@ export default function PetTracker() {
                 />}
             </div>
 
-            <div className='w-fit lg:hidden'>
+            <div className='w-fit md:flex lg:hidden hidden'>
                 {(userPhotoURL && username) && <ExpandedNavBar 
                     props={{
                         userPhotoURL: userPhotoURL,
@@ -220,9 +222,35 @@ export default function PetTracker() {
                 />}
             </div>
 
-            <div className='w-full bg-dark_gray'>            
+            <div className='w-full bg-dark_gray'>
+
+                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                    <div className='h-full w-fit flex flex-row items-center gap-1'>
+                        <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
+                        <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
+                    </div>
+                    
+                    <button onClick={() => setShowPhoneNavModal(true)}>
+                        <i className='fa-solid fa-bars text-xl w-[56px] h-[56px] flex items-center justify-center'/>
+                    </button>
+
+                    <Modal 
+                        isOpen={showPhoneNavModal}
+                        onRequestClose={() => setShowPhoneNavModal(false)}
+                        style={phoneNavModalStyle}
+                    >
+                        <PhoneNav 
+                        props = {{
+                            setShowPhoneNavModal: setShowPhoneNavModal,
+                            currentUserUsername: username,
+                            currentUserPhotoURL: userPhotoURL,
+                        }}
+                        />
+                    </Modal>
+                </nav>
+
                 {/* search and logo bar */}
-                <div className='w-full bg-snow drop-shadow-lg h-14 flex flex-row justify-between'>
+                <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
                     
                     <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
                         <i
@@ -248,11 +276,11 @@ export default function PetTracker() {
                 </div>  
 
                 {/* main container */}
-                <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center pt-10 pb-10'>
+                <div className='h-full w-full overflow-y-scroll flex flex-col justify-start items-center md:pt-10 pb-10'>
                     
                     {/* create post */}
                     <div 
-                        className='group flex flex-row w-[650px] min-h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md'>
+                        className='group flex flex-row w-screen md:w-[650px] md:h-[80px] bg-snow drop-shadow-sm rounded-lg justify-evenly items-center hover:drop-shadow-md p-3 md:p-2 gap-2'>
 
                         {userPhotoURL && <Image
                         src={userPhotoURL}
@@ -260,21 +288,28 @@ export default function PetTracker() {
                         width={50}
                         height={50}
                         onClick={() => router.push(`/user/${username}`)}
-                        className='rounded-full h-[50px] w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                        className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer'
                         />}
 
-                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left pl-4 text-sm text-raisin_black hover:opacity-60 transition-all'>
+                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
                         <p>What&apos;s on your mind, {displayName}?</p>
                         </button>
 
-                        <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:text-pale_yellow hover:bg-grass transition-all flex items-center justify-center'>
+                        <button onClick={() => setShowCreatePostForm(true)} className='min-h-[50px] min-w-[50px] bg-dark_gray rounded-full text-left text-lg text-raisin_black hover:text-pale_yellow hover:bg-grass transition-all flex items-center justify-center'>
                         <i className='fa-solid fa-image'/>
                         </button>
 
                         <Modal
                             isOpen={showCreatePostForm}
                             onRequestClose={() => setShowCreatePostForm(false)}
-                            style={createPostModalStyle}
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full h-full md:w-[70%] lg:w-[50%] md:h-[80%] overflow-auto p-5 rounded-md bg-gray-100 z-50 bg-snow"
+                            style={{
+                            overlay: {
+                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                zIndex: 1000,
+
+                            }
+                            }}
                         >
                             <CreatePost 
                             props={{
@@ -289,7 +324,7 @@ export default function PetTracker() {
                         </Modal>
                     </div>
 
-                    <div className='w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
+                    <div className='w-screen md:w-[650px] min-h-[40px] rounded-lg drop-shadow-lg bg-snow mt-8 mb-8 flex flex-row justify-center items-center'>
                         <button
                             onClick={() => setActiveContainer('Lost Pets')}
                             className={`transition-all w-1/2 h-full rounded-l-lg text-raisin_black font-shining text-xl hover:text-snow hover:bg-grass ${activeContainer === 'Lost Pets' ? "text-snow bg-grass" : ''}`}
@@ -309,6 +344,14 @@ export default function PetTracker() {
                         <div className='w-full h-full justify-start items-center flex flex-col mb-16 gap-8'>
                             {activeContainer === 'Lost Pets' && (
                                 <div className='w-full flex flex-col justify-start gap-8 items-center'>
+                                    
+                                    {/* if no lost pets */}
+                                    {lostPets.length === 0 && (
+                                        <div className='w-full flex flex-col justify-center items-center gap-4'>
+                                            <h1 className='text-2xl font-shining text-raisin_black'>No lost pets!</h1>
+                                        </div>
+                                    )}
+
                                     {lostPets.map((post, index) => (
                                         <PostSnippet key={post.id}
                                         props={{
@@ -349,6 +392,14 @@ export default function PetTracker() {
                             )}
                             {activeContainer === 'Retrieved Pets' && (
                                 <div className='w-full flex flex-col justify-start gap-8 items-center'>
+
+                                    {/* if no found pets */}
+                                    {foundPets.length === 0 && (
+                                        <div className='w-full flex flex-col justify-center items-center gap-4'>
+                                            <h1 className='text-2xl font-shining text-raisin_black'>No retrieved pets!</h1>
+                                        </div>
+                                    )}
+
                                     {foundPets.map((post, index) => (
                                         <PostSnippet key={post.id}
                                         props={{

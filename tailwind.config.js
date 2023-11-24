@@ -7,6 +7,20 @@ module.exports = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        'spin-slow': {
+          '0%, 100%': { transform: 'rotate(0)' },
+          '50%': { transform: 'rotate(-180deg)' },
+        },
+        'hamster': {
+          'from, to': { transform: 'rotate(4deg) translate(-0.8em,1.85em)' },
+          '50%': { transform: 'rotate(0) translate(-0.8em,1.85em)' },
+        },
+      },
+      animation: {
+        'spin-slow': 'spin-slow 3s linear infinite',
+        'hamster': 'hamster 1s ease-in-out infinite',
+      },
       fontFamily: {
         'shining': ['ShiningMonday', 'sans-serif'],
       },

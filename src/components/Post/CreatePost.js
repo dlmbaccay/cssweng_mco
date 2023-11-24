@@ -75,8 +75,11 @@ export default function CreatePost({ props }) {
         event.preventDefault();
 
         if (!postBody) {
-            toast.error('Bark up some words for your post!');
-            return;
+            // if no images uploaded
+            if (images.length === 0) {
+                toast.error('Please upload at least one image!');
+                return;
+            }
         }
 
          // disable submit button
@@ -223,7 +226,7 @@ export default function CreatePost({ props }) {
             <div className='h-full mt-4'>
 
                 {selectedCategory && 
-                    ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Unknown Owner')) &&
+                    (selectedCategory.value === 'Lost Pets' &&
                             <input 
                                 id='tracker-location'
                                 type='text'
@@ -231,6 +234,20 @@ export default function CreatePost({ props }) {
                                 value={postTrackerLocation}
                                 onChange={(event) => setPostTrackerLocation(event.target.value)}
                                 placeholder='Last Seen At'
+                                className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
+                            />
+                    )    
+                }
+
+                {selectedCategory && 
+                    (selectedCategory.value === 'Unknown Owner' &&
+                            <input 
+                                id='tracker-location'
+                                type='text'
+                                maxLength={50}
+                                value={postTrackerLocation}
+                                onChange={(event) => setPostTrackerLocation(event.target.value)}
+                                placeholder='Found At'
                                 className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
                             />
                     )    
@@ -245,11 +262,11 @@ export default function CreatePost({ props }) {
                 />
             </div>
 
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-col justify-between'>
                 {/* media */}
                 <div className="image-previews flex flex-row w-full mt-6 mb-6">
                     <div>
-                        <label htmlFor="post-images" className={`h-[100px] w-[100px] flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
+                        <label htmlFor="post-images" className={`md:h-[100px] md:w-[100px] h-[75px] w-[75px]  flex justify-center items-center bg-gray ${isUploadDisabled ? 'opacity-50 cursor-default' : 'hover:text-grass cursor-pointer '}`}>
                             <i className="fa-regular fa-image text-3xl"></i>
                         </label>
 
@@ -287,7 +304,7 @@ export default function CreatePost({ props }) {
                 </div>
 
                 {/* post button */}
-                <div className='flex items-end w-36'>
+                <div className='flex w-full'>
                     <button 
                         type='submit'
                         className={`

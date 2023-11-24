@@ -111,22 +111,22 @@ export default function Register() {
             max-md:gap-20 
             max-sm:gap-5 max-sm:p-4'>
 
-            <div id="login" className='bg-jasmine drop-shadow-md max-w-[500px] h-[500px] rounded-3xl flex px-12 max-sm:px-8 flex-col justify-center items-center'>
+            <div id="login" className='bg-jasmine drop-shadow-md w-[300px] h-[500px] md:w-[500px] md:h-[500px] rounded-3xl flex md:pl-12 md:pr-12 pl-8 pr-8 flex-col justify-center items-center'>
                 <div>
-                    <h1 className='text-6xl font-bold font-shining mb-4 text-grass max-sm:text-4xl'>BantayBuddy</h1>
+                    <h1 className='md:text-6xl text-[44px] font-bold font-shining md:mb-4 mb-1 text-grass cursor-pointer' onClick={() => router.push('/AboutUs')}>BantayBuddy</h1>
                 </div>
 
                 <input 
                     type="text" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value.trim())}
-                    className='bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 text-lg font-semibold outline-none' placeholder='Email Address'/>
+                    className='bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 md:text-lg font-semibold outline-none' placeholder='Email Address'/>
                 <div className='relative w-[100%] justify-evenly items-center flex flex-col lg:flex-row'>
                     <input 
                         type="password" 
                         value={password}
                         onChange={(e) => setPassword(e.target.value.trim())}
-                        className={`hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 text-lg font-semibold outline-none ${password === '' ? '': !checkPassword(password) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
+                        className={`md:hover-tooltip bg-light_yellow rounded-xl mt-3 p-4 w-full h-12 md:text-lg font-semibold outline-none ${password === '' ? '': !checkPassword(password) ? 'border border-red-500' : 'border border-green-500'}`} placeholder='Password'/>
                     
                     <div className="tooltip hidden bg-gray-800 drop-shadow-sm text-white text-xs rounded p-1 absolute top-0 right-full transform -translate-x-4 -translate-y-5 tracking-wide">
                         <p className='text-sm text-slate-700'>Password must:</p>
@@ -154,11 +154,11 @@ export default function Register() {
                     type="password" 
                     value={confirm_password}
                     onChange={(e) => setConfirmPassword(e.target.value.trim())}
-                    className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-full h-12 text-lg font-semibold outline-none' placeholder='Confirm Password'/>
+                    className='bg-light_yellow rounded-xl mt-3 mb-4 p-4 w-full h-12 md:text-lg font-semibold outline-none' placeholder='Confirm Password'/>
 
                 <button 
                     onClick={handleSignUp}
-                    className='bg-xanthous rounded-xl mt-4 mb-3 w-full h-12 text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
+                    className='bg-xanthous rounded-xl mt-4 mb-3 w-full h-12 md:text-lg font-bold  outline-none hover:bg-light_yellow transition-all'>
                     Register
                 </button>
 
@@ -166,14 +166,14 @@ export default function Register() {
                     {/* google */}
                     <button 
                         onClick={handleGooglePopUp}
-                        className='bg-snow rounded-xl mb-3 w-full h-12 text-lg font-bold text-center flex items-center justify-center gap-2 hover:bg-light_yellow transition-all'>
+                        className='bg-snow rounded-xl mb-3 w-full h-12 md:text-lg font-bold text-center flex items-center justify-center gap-2 hover:bg-light_yellow transition-all'>
                         <p> Continue with </p>
                         <Image src='/images/google.ico' alt='Google Logo' width={20} height={20} />
                     </button>
                 </span>
 
-                <div className='text-sm'>
-                    Already have an account? <Link href={'/Login'} className='font-bold hover:text-gray-600 text-black'>Log In</Link>
+                <div className='text-xs md:text-sm'>
+                    Already have an account? <Link href={'/Login'} className='font-bold hover:text-grass transition-all text-black'>Log In</Link>
                 </div>
             </div>            
 
@@ -186,15 +186,15 @@ export default function Register() {
 
 function PostShowcase() {
 
-    const authorDisplayName = 'Barker';
-    const authorUsername = 'barknplay';
-    const authorPhotoURL = '/images/user1-image.png';
-    const postDate = '23/9/6 at 16:30';
-    const postBody = 'Chaos and cuddles with this dynamic quartet! 🐾🐾🐾🐾 Our two pups and two kitties bring a whole lot of joy and a touch of mayhem to our everyday life. 🐶🐱🐶🐱 They may be different species, but they share a bond thats truly heartwarming.';
-    const imageUrls = ['/images/post1-image.png'];
+    const authorDisplayName = 'Pooch';
+    const authorUsername = 'pawsomepooch';
+    const authorPhotoURL = '/images/sample-user2-image.png';
+    const postDate = '31/11/6 at 21:00';
+    const postBody = 'Whisker Wonderland! 🐾🌿 Playtime in the park with our curious cats. Watching them explore and frolic is pure joy! #CatsofthePark #PurrfectDay';
+    const imageUrls = ['/images/sample-user2-post.png'];
 
     return (
-        <div className='shadow-sm hover:shadow-lg bg-snow w-[650px] h-[500px] rounded-3xl p-6 flex flex-col'>
+        <div className='shadow-sm bg-snow w-[650px] h-fit rounded-3xl p-6 flex flex-col'>
             {/* Header */}
             <div id="post-header" className='flex flex-row'>
 
@@ -216,9 +216,9 @@ function PostShowcase() {
                       </div>
 
                       {/* Username */}
-                      <Link href={'/user/' + authorUsername} id='display-name' className='hover:text-grass hover:font-semibold transition-all'>
+                      <div id='display-name'>
                         <p>@{authorUsername}</p>
-                      </Link>
+                      </div>
                     </div>
       
                     {/* Publish Date */}
@@ -232,45 +232,18 @@ function PostShowcase() {
             {/* Body */}
             <div id='post-body' className='mt-4 flex flex-col'>
               <div id='post-text'>
-                <p className='whitespace-pre-line line-clamp-1 overflow-hidden'>{postBody}</p>
+                <p className='whitespace-pre-line text-justify'>{postBody}</p>
               </div>
               
               {/* Image Carousel */}
               <div id="post-image" className='mt-4 h-[310px] w-auto flex items-center justify-center relative'>
                 <Image src={imageUrls[0]} alt="post image" 
                   layout='fill'
-                  objectFit='contain'
+                  objectFit='cover'
                   className='rounded-lg'
                   />
               </div>
             </div>
-
-            {/* Footer */}
-            <div id='post-footer' className='mt-4 flex flex-row w-full justify-between relative'>
-              
-              <div id="left" className='flex flex-row gap-4'>
-                <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2'>
-                  <i className="fa-solid fa-heart hover:text-grass hover:scale- hover:cursor-pointer" 
-                  ></i>
-                  <p>0</p>
-                </div>
-                
-                <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
-                  <i className="fa-solid fa-comment hover:text-grass hover:scale- hover:cursor-pointer"></i>
-                  <p>0</p>
-                </div>
-
-                <div id="share-control">
-                  <i className="fa-solid fa-share-nodes hover:text-grass hover:scale- hover:cursor-pointer"></i>
-                </div>
-              </div>
-
-              <div id="right" className='flex flex-row gap-4'>
-                <div id='bookmark-control'>
-                  <i className="fa-solid fa-bookmark hover:text-grass hover:scale- hover:cursor-pointer"></i>
-                </div>
-            </div>
-          </div>
         </div>
     )
 }
