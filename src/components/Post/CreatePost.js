@@ -226,7 +226,7 @@ export default function CreatePost({ props }) {
             <div className='h-full mt-4'>
 
                 {selectedCategory && 
-                    ((createType === 'tracker' || (selectedCategory.value === 'Lost Pets' || selectedCategory.value === 'Unknown Owner')) &&
+                    (selectedCategory.value === 'Lost Pets' &&
                             <input 
                                 id='tracker-location'
                                 type='text'
@@ -234,6 +234,20 @@ export default function CreatePost({ props }) {
                                 value={postTrackerLocation}
                                 onChange={(event) => setPostTrackerLocation(event.target.value)}
                                 placeholder='Last Seen At'
+                                className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
+                            />
+                    )    
+                }
+
+                {selectedCategory && 
+                    (selectedCategory.value === 'Unknown Owner' &&
+                            <input 
+                                id='tracker-location'
+                                type='text'
+                                maxLength={50}
+                                value={postTrackerLocation}
+                                onChange={(event) => setPostTrackerLocation(event.target.value)}
+                                placeholder='Found At'
                                 className='outline-none border border-[#d1d1d1] rounded-md text-raisin_black w-full h-[38px] p-4 mb-4'
                             />
                     )    

@@ -222,7 +222,7 @@ export default function PostSnippet({ props }) {
                   {taggedPets.length === 1 && <i className="fa-solid fa-tag text-xs md:text-md"></i>}
                   {taggedPets.length > 1 && <i className="fa-solid fa-tags text-xs md:text-md"></i>}
                   {/* <p className='line-clamp-1 overflow-hidden text-md'>{taggedPets.map(pet => pet.petName).join(', ')}</p> */}
-                  <p className='line-clamp-1 overflow-hidden text-sm md:text-base'>
+                  <p className='line-clamp-1 overflow-hidden text-sm md:text-sm'>
                     {taggedPets.map((pet, index) => (
                         <span key={pet.id}>
                             <Link href={`/pet/${pet.id}`} title={pet.petName} className='hover:text-grass hover:font-bold transition-all'>
@@ -236,10 +236,18 @@ export default function PostSnippet({ props }) {
               )}
             </div>
 
-            { (postCategory === 'Lost Pets' || postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') && 
+            { (postCategory === 'Unknown Owner' || postCategory === 'Retrieved Pets') && 
               <div className='flex flex-row items-center gap-2 mb-2'>
-                <i className='fa-solid fa-location-crosshairs text-xs md:text-md'/>
-                <p className='line-clamp-1 overflow-hidden text-sm md:text-md'>{postTrackerLocation}</p>
+                <p className='text-sm'>Found At:</p>
+                <p className='line-clamp-1 overflow-hidden text-sm'>{postTrackerLocation}</p>
+              </div>
+            }
+
+            {
+              postCategory === 'Lost Pets' && 
+              <div className='flex flex-row items-center gap-2 mb-2'>
+                <p className='text-sm'>Last Seen:</p>
+                <p className='line-clamp-1 overflow-hidden text-sm'>{postTrackerLocation}</p>
               </div>
             }
 

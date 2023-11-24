@@ -344,6 +344,14 @@ export default function PetTracker() {
                         <div className='w-full h-full justify-start items-center flex flex-col mb-16 gap-8'>
                             {activeContainer === 'Lost Pets' && (
                                 <div className='w-full flex flex-col justify-start gap-8 items-center'>
+                                    
+                                    {/* if no lost pets */}
+                                    {lostPets.length === 0 && (
+                                        <div className='w-full flex flex-col justify-center items-center gap-4'>
+                                            <h1 className='text-2xl font-shining text-raisin_black'>No lost pets!</h1>
+                                        </div>
+                                    )}
+
                                     {lostPets.map((post, index) => (
                                         <PostSnippet key={post.id}
                                         props={{
@@ -384,6 +392,14 @@ export default function PetTracker() {
                             )}
                             {activeContainer === 'Retrieved Pets' && (
                                 <div className='w-full flex flex-col justify-start gap-8 items-center'>
+
+                                    {/* if no found pets */}
+                                    {foundPets.length === 0 && (
+                                        <div className='w-full flex flex-col justify-center items-center gap-4'>
+                                            <h1 className='text-2xl font-shining text-raisin_black'>No retrieved pets!</h1>
+                                        </div>
+                                    )}
+
                                     {foundPets.map((post, index) => (
                                         <PostSnippet key={post.id}
                                         props={{
