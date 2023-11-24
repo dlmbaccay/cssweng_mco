@@ -72,9 +72,9 @@ export default function PhoneNav( {props} ) {
         </button>
         </div>
 
-        <button onClick={() => router.push('/AboutUs')} className='text-grass mb-2 mt-auto hover:text-grass'>
+        {/* <button onClick={() => router.push('/AboutUs')} className='text-grass mb-2 mt-auto hover:text-grass'>
             About Us
-        </button>
+        </button> */}
     </div>
   )
 }

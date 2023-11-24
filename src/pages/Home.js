@@ -205,7 +205,6 @@ function Home() {
   if (!pageLoading) {
     return (
       <div className='flex flex-row w-full h-screen overflow-hidden'>
-
         <div className='hidden lg:flex lg:w-[300px]'>
           {(userPhotoURL && username) && <ExpandedNavBar 
               props={{
@@ -532,5 +531,6 @@ function Home() {
     )
   } else return null;
 }
+
 
 export default withAuth(Home);

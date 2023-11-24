@@ -55,7 +55,6 @@ export default function AboutUs() {
     const router = Router;
     const [ pageLoading, setPageLoading ] = useState(true);
 
-    const [isHovered, setIsHovered] = useState(false);
     const [isHovered1, setIsHovered1] = useState(false);
     const [isHovered2, setIsHovered2] = useState(false);
     const [isHovered3, setIsHovered3] = useState(false);
