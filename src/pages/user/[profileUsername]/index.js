@@ -1380,7 +1380,7 @@ function PetAccountSetup({ props }) {
     return (
         <form onSubmit={handleCreatePetProfile} className='flex flex-col h-fit justify-between'>
 
-            <div className="font-bold text-xl gap-2 flex-row items-center h-16 flex w-full justify-between">
+            <div className="md:hidden font-bold text-xl gap-2 flex-row items-center h-10 mb-4 flex w-full justify-between">
                 <div className='flex gap-2'>
                     <i className='fa-solid fa-paw'></i>
                     <p className='text-sm'>Create A Pet</p>
