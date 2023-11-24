@@ -223,13 +223,13 @@ export default function RepostSnippet( {props} ) {
           href={`/post/${repostID}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className={`flex flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
+          className={`flex flex-col md:flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
         >
-          <div>
+          <div className='w-full text-justify'>
             <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
           </div>
 
-          <div>
+          <div className={`w-full flex ${repostBody === '' ? 'justify-center' : 'justify-end'}`}>
             {repostImage !== null ? (
               <Image
                 src={repostImage} alt='Repost Image' width={200} height={200}

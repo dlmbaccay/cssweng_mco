@@ -257,7 +257,7 @@ export default function PostSnippet({ props }) {
                   setShowPostExpanded(true)
                   setPostAction('view')
                 }} 
-                className='whitespace-pre-line line-clamp-1 text-sm md:text-base md:line-clamp-4 overflow-hidden cursor-pointer'>{postBody}</p>
+                className='whitespace-pre-line line-clamp-1 text-sm md:text-base md:line-clamp-4 overflow-hidden cursor-pointer text-justify'>{postBody}</p>
             </div>
             
             { imageUrls.length >= 1 &&

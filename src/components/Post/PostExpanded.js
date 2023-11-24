@@ -372,7 +372,7 @@ export default function PostExpanded({ props }) {
                     }
 
                     <div id='post-text'>
-                        <p className='whitespace-pre-line'>{postBody}</p>
+                        <p className='whitespace-pre-line text-justify'>{postBody}</p>
                     </div>
                 
                     { imageUrls.length >= 1 &&
