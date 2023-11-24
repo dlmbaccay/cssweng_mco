@@ -584,7 +584,15 @@ export default function PostExpanded({ props }) {
                     {currentUserID !== authorID && 
                     <div id='report-control'>
                         <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" onClick={() => setShowReportPostModal(true)}>
-                        <Modal isOpen={showReportPostModal} onRequestClose={() => setShowReportPostModal(false)} style={reportPostModalStyle}>
+                        <Modal isOpen={showReportPostModal} onRequestClose={() => setShowReportPostModal(false)} 
+                            className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[600px] md:h-[80%] overflow-auto p-6 rounded-md bg-gray-100 z-50 bg-snow '
+                            style={{
+                                overlay: {
+                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                    zIndex: 1000,
+                                }
+                            }}
+                        >
                             {currentUser && <Report 
                                 props={{
                                     currentUserID: currentUserID,
@@ -625,7 +633,6 @@ export default function PostExpanded({ props }) {
                                 overlay: {
                                     backgroundColor: 'rgba(0,0,0,0.5)',
                                     zIndex: 1000,
-
                                 }
                                 }}
                             >
