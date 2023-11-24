@@ -1128,13 +1128,12 @@ function Post() {
                                     </div>
                                 </div>
 
-                                <div className={`flex flex-row mt-2 cursor-pointer ${post?.repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
-                                onClick={() =>
-                                Router.push({
-                                    pathname: '/post/[postID]',
-                                    query: { postID: post?.repostID },
-                                })
-                                }>
+                                <Link
+                                    href={`/post/${post?.repostID}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className={`flex flex-row mt-2 cursor-pointer ${post?.repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
+                                    >
                                     <div>
                                     <p className={`overflow-hidden text-sm md:text-base ${post?.repostBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{post?.repostBody}</p>
                                     </div>
@@ -1147,7 +1146,7 @@ function Post() {
                                         />
                                     ) : null}
                                     </div>
-                                </div>
+                                </Link>
                             </div>
 
                             {/* Footer */}
