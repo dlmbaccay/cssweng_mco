@@ -6,7 +6,7 @@ export default function ErrorPage() {
     const router = Router;
   return (
     <div class="flex lg:flex-row max-sm:flex-col h-screen px-4 bg-snow justify-center items-center lg:gap-10 max-sm:gap-0">
-      <Image src='/images/error.png' alt='error' width={200} height={200} className='max-sm:h-72 max-sm:w-auto'/>
+      <Image src='/images/error.png' alt='error' width={300} height={300} className='max-sm:h-72 max-sm:w-auto'/>
       <div className='mt-20 max-sm:text-center max-sm:mt-3'>
           <h1 class="font-black text-gray-200 text-9xl max-sm:text-5xl">404</h1>
           <p class="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">Oops!</p>
