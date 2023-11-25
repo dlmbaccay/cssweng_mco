@@ -283,10 +283,10 @@ function Home() {
                     </div> 
                 </div>
                 <div id='header' className='w-full bg-snow drop-shadow-lg h-20 flex flex-row items-center justify-between max-sm:h-14 p-7 max-sm:p-3'>
-                        <p className='text-grass font-shining text-5xl max-sm:text-3xl h-full w-fit flex flex-row items-center'>Reported Posts</p> 
-                        <button onClick={() => router.push('/ReportDetails')} className="text-xl w-[75px] h-[75px]
-                        flex items-center justify-center 
-                        fa-solid fa-sliders text-grass hover:text-raisin_black transition-all"></button>
+                        <div className='flex flex-row items-center gap-4' >
+                            <button onClick={() => router.push('/SuperAdmin')} className="h-[50px] w-[50px] fa-solid fa-chevron-left text-3xl hover:bg-dark_gray rounded-full transition-all"></button>   
+                            <p className='text-grass font-shining text-5xl max-sm:text-3xl h-full w-fit flex flex-row items-center'>Report Details</p> 
+                        </div> 
                 </div> 
           </div>
           
@@ -451,25 +451,6 @@ function Home() {
                             );
                         } 
                       })}
-
-                      {loading && <div>Loading...</div>}
-
-                      {followingPostsLoaded ? (
-                        <button
-                          className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                          onClick={refreshFollowingPosts}
-                        >
-                          Refresh Posts
-                        </button>
-                      ) : (
-                        <button
-                          className={`px-4 py-2 text-white bg-grass rounded-lg text-sm hover:bg-raisin_black transition-all ${loading ? 'hidden' : 'flex'}`}
-                          onClick={fetchMoreFollowingPosts}
-                          disabled={loading}
-                        >
-                          Load More
-                        </button>
-                      )}
 
                     </div>
                   )}
