@@ -9,7 +9,7 @@ import Modal from 'react-modal';
 import Image from 'next/image';
 
 import CreatePost from '../components/Post/CreatePost';
-import ReportedPost from '../components/Post/ReportedPost';
+import SeeReportDetails from '../components/Post/SeeReportDetails';
 import Repost from '../components/Post/RepostSnippet';
 import AdminNavbar from '../components/AdminNavbar';
 import AdminPhoneNav from '../components/AdminPhoneNav';
@@ -304,7 +304,7 @@ function Home() {
                     if (post.postType === "original") {
                         return (
                           <div key={post.id}>
-                              <ReportedPost
+                              <SeeReportDetails
                                   props={{
                                       currentUserID: user.uid,
                                       postID: post.id,
@@ -400,7 +400,7 @@ function Home() {
                         if (post.postType === "original") {
                             return (
                               <div key={post.id}>
-                                  <ReportedPost
+                                  <SeeReportDetails
                                       props={{
                                           currentUserID: user.uid,
                                           postID: post.id,
