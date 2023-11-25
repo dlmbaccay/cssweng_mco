@@ -343,8 +343,8 @@ function AboutUs(){
 
         return(
             
-            <div className='h-auto w-full overflow-y-auto flex flex-col justify-start items-center pt-5 pb-10 bg-jasmine'>
-                    <h1 className='text-raisin_black text-4xl mb-10 mt-10 font-shining'>Meet the Team!</h1>
+            <div className='h-full w-full overflow-auto flex flex-col justify-start items-center pt-5 pb-5 bg-jasmine'>
+                    <h1 className='text-raisin_black text-4xl mb-5 mt-5 font-shining'>Meet the Team!</h1>
 
                     <div>
                         {/* Team Lead */}
@@ -652,7 +652,7 @@ function AboutUs(){
 
 
                         {/* Designers */}
-                        <div className='flex flex-col items-center mb-8'>
+                        <div className='flex flex-col items-center mb-6'>
                         <p className='font-shining text-2xl text-grass mt-4'>Designers</p>
                             <div className='flex flex-col md:flex-row'>
                                 <div className='flex'> 
@@ -887,13 +887,11 @@ function AboutUs(){
                                 </div>
                             </div>
                         </div>
-
-                        
                     </div>
 
-                    <div className={`container mx-auto md:p-8 md:mb-0 text-center flex flex-col items-center w-6/12 `}>
+                    <div className={`container mx-auto pl-6 pr-6 mb-6 text-center flex flex-col items-center w-6/12 `}>
                         
-                        <p class="mb-6">
+                        <p>
                             <span class="font-shining text-xl text-grass">BantayBuddy</span> was created in collaboration with Product Owner
                             <a href="https://www.linkedin.com/in/ardy-ubanos/" target="_blank" class="text-grass hover:font-bold"> Mr. Ardy Ubanos </a>
                             as the team&apos;s major course output in the Software Engineering (CSSWENG) course at De La Salle University Manila.
