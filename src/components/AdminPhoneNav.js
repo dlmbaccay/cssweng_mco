@@ -22,7 +22,7 @@ export default function AdminPhoneNav( {props} ) {
             </button>
         </div>
 
-        <div className='w-fit h-fit flex flex-col gap-4 justify-start mt-6'>
+        <div className='w-fit h-fit flex flex-col gap-4 justify-start mt-10'>
             <button className='flex flex-row items-center justify-start gap-2' onClick={(e) => {
                 e.stopPropagation();
                 setShowPhoneNavModal(false);
