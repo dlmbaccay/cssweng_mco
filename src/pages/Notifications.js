@@ -5,12 +5,14 @@ import Image from 'next/image';
 
 export default function Notifications() {
     return (
-        <div className="flex flex-col w-full md:w-1/4 md:ml-left items-center md:justify-center md:text-left bg-snow drop-shadow-xl rounded-xl">
-            <div className="flex flex-row items-center justify-stretch">
-               <div className="text-3xl font-bold mt-5 text-mustard">Notifications</div>
-           </div>
+        <div className="flex flex-col w-full md:w-1/4 md:ml-left md:text-left bg-snow drop-shadow-xl rounded-xl pl-2">
+        <div className="flex flex-row items-center text-left justify-between pl-2 pr-3">
+            <div className="text-3xl font-bold mt-5 text-mustard inline lg:text-md">Notifications</div>
+            <i className="fa-solid fa-chevron-down text-citron text-2xl"></i>
+        </div>
                 <hr className="border-1 border-dark_gray my-5 w-full h-1" />
 
+                <div className='flex flex-col items-center'>
                 <div className="flex flex-col gap-4 justify-center items-left">
                     <div className="flex items-center p-4">
                         <Image src="/images/user1-image.png" width={100} height={100} alt="user-image" className="w-16 h-16 mr-4 rounded-full" />
@@ -52,7 +54,7 @@ export default function Notifications() {
                             <p className='mt-1 text-xs text-raisin'>Sept 26, 2023</p>
                         </div>
                     </div>
-                
+                </div>
                 </div>
         </div>
     )
