@@ -91,7 +91,10 @@ export default function Report({props}) {
         <div className='flex flex-col w-full h-full justify-between'>
             <div className='flex flex-row w-full justify-between items-center'>
                 <p className='font-bold text-center w-full pl-2'>Report {authorUsername}&apos;s Post</p>
-                <i className='fa-solid fa-circle-xmark hover:text-xanthous cursor-pointer' onClick={() => setShowReportPostModal(false)}/>
+                <i className='fa-solid fa-circle-xmark hover:text-xanthous cursor-pointer' onClick={(e) => {
+                    e.stopPropagation();
+                    setShowReportPostModal(false);
+                }}/>
             </div>
 
             
