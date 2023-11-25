@@ -17,7 +17,12 @@ export default function Landing() {
 
             setTimeout(() => {
                 if (user) {
-                    router.push("/Home");
+                    // if userid is of admin, redirect to admin page
+                    if (user.uid === "luTr6y0B1TUOkimRQlfiCO9xQqo1") {
+                        router.push("/admin");
+                    } else {
+                        router.push("/Home");
+                    }
                 } else {
                     router.push("/Login");
                 }
