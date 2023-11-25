@@ -6,7 +6,7 @@ import { arrayUnion } from 'firebase/firestore';
 export default function Report({props}) {
     const {
         currentUserID, currentUserPhotoURL, currentUserUsername, 
-        currentUserDisplayName, postID, postBody, postCategory, 
+        currentUserDisplayName, postID, postBody, postCategory, postType,
         postTrackerLocation, postPets, postDate, imageUrls, 
         authorID, authorDisplayName, authorUsername, 
         authorPhotoURL, taggedPets, setShowReportPostModal
@@ -68,16 +68,29 @@ export default function Report({props}) {
         const reportRef = reportsRef.doc(reportID);
 
         await reportRef.set({
-            reportAuthorID: currentUserID,
-            reportAuthorDisplayName: currentUserDisplayName,
-            reportAuthorUsername: currentUserUsername,
-            reportAuthorPhotoURL: currentUserPhotoURL,
+            reporteeAuthorID: currentUserID,
+            reporteeAuthorDisplayName: currentUserDisplayName,
+            reporteeAuthorUsername: currentUserUsername,
+            reporteeAuthorPhotoURL: currentUserPhotoURL,
+
+            reportedAuthorID: authorID,
+            reportedAuthorDisplayName: authorDisplayName,
+            reportedAuthorUsername: authorUsername,
+            reportedAuthorPhotoURL: authorPhotoURL,
+            reportedPostType: postType,
+            reportedPostBody: postBody,
+            reportedPostCategory: postCategory,
+            reportedPostTrackerLocation: postTrackerLocation,
+            reportedPostPets: postPets,
+            reportedPostDate: postDate,
+            reportedPostImageUrls: imageUrls,
+            reportedPostID: postID,
+            reportedPostTaggedPets: taggedPets,
 
             reportID,
-            postID,
             reportDate: new Date().toISOString(),
             reportBody: reportBody.trim(),
-            selectedOptions: finalSelectedOptions, // Updated to use the finalSelectedOptions
+            selectedOptions: finalSelectedOptions,
         });
 
         toast.dismiss();

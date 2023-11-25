@@ -600,6 +600,7 @@ export default function PostExpanded({ props }) {
                                     currentUserUsername: currentUser.username,
                                     currentUserDisplayName: currentUser.displayName,
                                     postID: postID,
+                                    postType: 'original',
                                     postBody: postBody,
                                     postCategory: postCategory,
                                     postTrackerLocation: postTrackerLocation,
