@@ -271,16 +271,13 @@ function AccountSetup() {
     if (!pageLoading){
         return (
             <>
-                <div className="bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] min-h-screen justify-center items-center flex flex-col space-y-10 p-80
-                    lg:flex-row lg:space-x-20 lg:py-10
-                    md:space-x-14 md:py-10
-                    sm:space-x-10 sm:py-10">
+                <div className="bg-gradient-to-tl from-jasmine via-citron to-[#7DD184] h-screen  justify-center items-center flex">
                     <form  
                         onSubmit={onSubmit}
-                        className="bg-snow rounded-md p-8 pb-5 w-[800px]">
-                        <h1 className="font-bold">Welcome to Account Setup!</h1>
+                        className="bg-snow rounded-md p-8 pb-5 w-full md:w-[1000px] h-full md:h-fit flex flex-col overflow-y-scroll md:overflow-hidden">
+                        <h1 className="font-shining text-xl">Let&apos;s create your BantayBuddy account!</h1>
 
-                        <div className='flex flex-row w-full gap-6 mt-4'>
+                        <div className='flex flex-col md:flex-row w-full gap-6 mt-4'>
                             {/* username */}
                             <div className="w-full">
                                 <label htmlFor="username" className="block text-sm font-medium text-raisin_black">
@@ -308,7 +305,7 @@ function AccountSetup() {
                             </div>
                         </div>
 
-                        <div className='flex flex-row w-full h-fit gap-6 mt-4'>
+                        <div className='flex flex-col md:flex-row w-full h-fit gap-6 mt-4'>
                             {/* profile picture */}
                             <div className="w-full">
                                 <label className="flex gap-2 items-center text-sm font-medium text-gray-700">
@@ -363,7 +360,7 @@ function AccountSetup() {
                             </div>
                         </div>                        
 
-                        <div className='flex flex-row w-full gap-6'>
+                        <div className='flex flex-col md:flex-row w-full gap-6'>
                             {/* location */}
                             <div className="w-full">
                                 <label htmlFor="location" className="block text-sm font-medium text-gray-700">
@@ -388,12 +385,12 @@ function AccountSetup() {
                         </div>
                         
                         {/* buttons */}
-                        <div className="flex justify-end gap-4 mt-6">
-                            <button onClick={handleSignOut} className="bg-black text-white font-semibold py-2 px-4 rounded-md ml-5 transition-all hover:bg-red-600">
+                        <div className="flex flex-col-reverse md:flex-row md:justify-end gap-4 mt-6">
+                            <button onClick={handleSignOut} className="bg-black text-white font-shining py-2 px-4 rounded-md  transition-all hover:bg-red-600">
                                 Sign Out
                             </button>
 
-                            <button type='submit' className={`py-2 px-4 rounded-md bg-xanthous text-white font-semibold transition-all ${(usernameValid && displayNameValid) ? 'hover:bg-pistachio' : 'opacity-50'}`} disabled={!(usernameValid && displayNameValid)}>
+                            <button type='submit' className={`py-2 px-4 rounded-md bg-xanthous text-white font-shining transition-all ${(usernameValid && displayNameValid) ? 'hover:bg-pistachio' : 'opacity-50'}`} disabled={!(usernameValid && displayNameValid)}>
                                 Submit
                             </button>
                         </div>
