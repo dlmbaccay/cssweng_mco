@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import {firestore} from '@/src/lib/firebase'
-import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where } from 'firebase/firestore';
+import { firestore } from '@/src/lib/firebase'
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where, runTransaction, transaction } from 'firebase/firestore';
+import { toast } from 'react-hot-toast';
 import Image from 'next/image'
+import { updateDoc, doc } from 'firebase/firestore';
 
 export default function ReportedPosts() {
 
@@ -39,6 +41,41 @@ export default function ReportedPosts() {
 
   const [openReportIndex, setOpenReportIndex] = useState(null);
 
+  const handleAccept = async (report) => {
+    // delete post from posts collection
+    // delete post from user's posts collection
+    // delete report from reports collection
+
+    const postRef = firestore.collection('posts').doc(report.reportedPostID)
+    const userPostRef = firestore.collection('users').doc(report.reportedAuthorID).collection('posts').doc(report.reportedPostID)
+    const reportRef = firestore.collection('reports').doc(report.reportID)
+
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        transaction.delete(postRef)
+        transaction.delete(userPostRef)
+        transaction.delete(reportRef)
+      })
+      toast.success('Report accepted');
+    } catch (error) {
+      toast.error('Transaction failed: ', error.message);
+    }
+  }
+
+  const handleReject = async (report) => {
+    // update report status to rejected
+
+    const reportRef = firestore.collection('reports').doc(report.reportID)
+    try {
+      await updateDoc(reportRef, {
+        reportStatus: 'rejected'
+      });
+      toast.success('Report rejected');
+    } catch (error) {
+      toast.error('Transaction failed: ', error.message);
+    }
+  }
+
   return (
     <div className='w-full'>
 
@@ -75,8 +112,11 @@ export default function ReportedPosts() {
                 {reports.map((report, index) => (
                   <div key={index} className='drop-shadow-sm hover:drop-shadow-md bg-snow w-screen md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
                     
-                    <div className='border-b pb-2'>
+                    <div className='border-b pb-2 flex flex-row items-center justify-between'>
                       <h1 className='font-bold text-sm italic'>@{report.reporteeAuthorUsername} on {formatDate(report.reportDate)} reported:</h1>
+                      <h1 className={`font-bold text-sm italic uppercase ${report.reportStatus === 'accepted' ? 'text-grass' : report.reportStatus === 'rejected' ? 'text-red-500' : ''}`}>
+                        {report.reportStatus}
+                      </h1>
                     </div>
 
                     <div className='flex flex-row items-center justify-between'>
@@ -199,7 +239,7 @@ export default function ReportedPosts() {
                             <p className='mt-2 whitespace-pre-line'>{report.reportedOriginalPostBody}</p>
                           }
 
-                          {report.reportedOriginalPostImageUrls.length > 0 &&
+                          {(report.reportedOriginalPostImageUrls && report.reportedOriginalPostImageUrls.length > 0) &&
                             // only show first image
                             <div className='w-full flex items-center justify-center'> 
                               <Image src={report.reportedOriginalPostImageUrls} alt='' width={200} height={200} className='rounded-lg mt-4' />
@@ -246,8 +286,8 @@ export default function ReportedPosts() {
                     )}
 
                     <div className='flex flex-row items-center justify-center w-full gap-6 mt-4'>
-                      <button className='text-snow font-semibold bg-grass bg-opacity-60 hover:bg-opacity-100 w-16 h-8 rounded-md text-sm'>Accept</button>
-                      <button className='text-snow font-semibold bg-red-400 hover:bg-red-600 w-16 h-8 rounded-md text-sm'>Reject</button>
+                      <button className='text-snow font-semibold bg-grass bg-opacity-60 hover:bg-opacity-100 w-16 h-8 rounded-md text-sm' onClick={() => handleAccept(report)}>Accept</button>
+                      <button className='text-snow font-semibold bg-red-400 hover:bg-red-600 w-16 h-8 rounded-md text-sm' onClick={() => handleReject(report)}>Reject</button>
                     </div>
                   </div>
                 ))}

@@ -95,6 +95,7 @@ export default function Report({props}) {
                 reportedPostTaggedPets: taggedPets,
 
                 reportID,
+                reportStatus: 'unchecked',
                 reportDate: new Date().toISOString(),
                 reportBody: reportBody.trim(),
                 selectedOptions: finalSelectedOptions,
@@ -122,12 +123,13 @@ export default function Report({props}) {
                 reportedRepostDate: postDate,
                 reportedPostType : postType,
 
-                reportedRepostAuthorID: repostAuthorID,
+                reportedAuthorID: repostAuthorID,
                 reportedRepostAuthorDisplayName: repostAuthorDisplayName,
                 reportedRepostAuthorUsername: repostAuthorUsername,
                 reportedRepostAuthorPhotoURL: repostAuthorPhotoURL,
                 
                 reportID,
+                reportStatus: 'unchecked',
                 reportDate: new Date().toISOString(),
                 reportBody: reportBody.trim(),
                 selectedOptions: finalSelectedOptions,
