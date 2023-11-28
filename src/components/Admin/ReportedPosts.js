@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { firestore } from '@/src/lib/firebase'
-import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where, runTransaction, transaction } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, startAfter, getDocs, where, runTransaction, transaction, increment, FieldValue } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image'
 import { updateDoc, doc } from 'firebase/firestore';
@@ -24,8 +24,8 @@ export default function ReportedPosts() {
 
   useEffect(() => {
     // get first 10 reported posts
-    // const q = query(collection(firestore, 'reports'), orderBy('reportDate', 'desc'), limit(10))
-    const q = firestore.collection('reports').orderBy('reportDate', 'desc').limit(10)
+    setLoading(true)
+    const q = firestore.collection('reports').orderBy('reportDate', 'desc')
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const reports = []
@@ -45,20 +45,27 @@ export default function ReportedPosts() {
     // delete post from posts collection
     // delete post from user's posts collection
     // delete report from reports collection
+    // update user's report count 
 
     const postRef = firestore.collection('posts').doc(report.reportedPostID)
     const userPostRef = firestore.collection('users').doc(report.reportedAuthorID).collection('posts').doc(report.reportedPostID)
     const reportRef = firestore.collection('reports').doc(report.reportID)
+    const userRef = firestore.collection('users').doc(report.reportedAuthorID)
 
     try {
       await runTransaction(firestore, async (transaction) => {
         transaction.delete(postRef)
         transaction.delete(userPostRef)
-        transaction.delete(reportRef)
+        transaction.delete(reportRef) 
+        transaction.update(userRef, {
+          // increment reportCount by 1
+          reportCount: increment(1)
+        })
       })
       toast.success('Report accepted');
     } catch (error) {
       toast.error('Transaction failed: ', error.message);
+      console.log(error.message)
     }
   }
 
@@ -105,7 +112,7 @@ export default function ReportedPosts() {
           <div className='w-full'>
             {reports.length === 0 ?
               <div className='w-full h-full flex items-center justify-center'>
-                <h1 className='font-shining text-2xl'>No reported posts</h1>
+                <h1 className='font-shining text-2xl pt-8'>No reported posts</h1>
               </div>
             :
               <div className='flex flex-col items-center w-full pt-8 pb-8 gap-8 '>
@@ -150,12 +157,12 @@ export default function ReportedPosts() {
 
                       { report.reportedPostType === 'repost' &&
                         <div className='flex flex-row items-center mt-4'>
-                          <Image src={report.reportedRepostAuthorPhotoURL} alt='' width={50} height={50} className='rounded-full' />
+                          <Image src={report.reportedAuthorPhotoURL} alt='' width={50} height={50} className='rounded-full' />
                           <div className= 'ml-2 flex flex-col justify-start'>
                             <div className='flex flex-row gap-1 justify-start items-center'>
-                              <h1>{report.reportedRepostAuthorDisplayName}</h1>
+                              <h1>{report.reportedAuthorDisplayName}</h1>
                               <p className='font-bold'>·</p>
-                              <h1 className='font-bold'>@{report.reportedRepostAuthorUsername}</h1>
+                              <h1 className='font-bold'>@{report.reportedAuthorUsername}</h1>
                             </div>
                             <div className='text-sm '>
                               {formatDate(report.reportedRepostDate)}
