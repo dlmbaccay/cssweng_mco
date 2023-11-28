@@ -386,7 +386,9 @@ export default function RepostSnippet( {props} ) {
             {currentUserID !== authorID && 
                 <i 
                 id='report-control'
-                className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" />
+                className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all"
+                onClick={() => {setPostAction('report'); setShowPostExpanded(true)}}
+                />
             }
 
             {currentUserID === authorID && (

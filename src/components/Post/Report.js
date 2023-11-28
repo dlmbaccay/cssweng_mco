@@ -6,10 +6,16 @@ import { arrayUnion } from 'firebase/firestore';
 export default function Report({props}) {
     const {
         currentUserID, currentUserPhotoURL, currentUserUsername, 
-        currentUserDisplayName, postID, postBody, postCategory, postType,
-        postTrackerLocation, postPets, postDate, imageUrls, 
-        authorID, authorDisplayName, authorUsername, 
-        authorPhotoURL, taggedPets, setShowReportPostModal
+        currentUserDisplayName, setShowReportPostModal, 
+        authorID, authorDisplayName, authorUsername, authorPhotoURL, 
+        
+        // for original posts
+        postID, postBody, postCategory, postType,
+        postTrackerLocation, postPets, postDate, imageUrls, taggedPets,
+        
+        // (additional) for repost posts
+        repostAuthorDisplayName, repostAuthorID, repostAuthorPhotoURL, repostAuthorUsername,
+        repostBody, repostCategory, repostDate, repostID, repostImageUrls, repostPets
     } = props;
 
     // const [shareBody, setShareBody] = useState('');
@@ -67,32 +73,66 @@ export default function Report({props}) {
         const reportID = reportsRef.doc().id;
         const reportRef = reportsRef.doc(reportID);
 
-        await reportRef.set({
-            reporteeAuthorID: currentUserID,
-            reporteeAuthorDisplayName: currentUserDisplayName,
-            reporteeAuthorUsername: currentUserUsername,
-            reporteeAuthorPhotoURL: currentUserPhotoURL,
+        if (postType === 'original') {
+            await reportRef.set({
+                reporteeAuthorID: currentUserID,
+                reporteeAuthorDisplayName: currentUserDisplayName,
+                reporteeAuthorUsername: currentUserUsername,
+                reporteeAuthorPhotoURL: currentUserPhotoURL,
 
-            reportedAuthorID: authorID,
-            reportedAuthorDisplayName: authorDisplayName,
-            reportedAuthorUsername: authorUsername,
-            reportedAuthorPhotoURL: authorPhotoURL,
-            reportedPostType: postType,
-            reportedPostBody: postBody,
-            reportedPostCategory: postCategory,
-            reportedPostTrackerLocation: postTrackerLocation,
-            reportedPostPets: postPets,
-            reportedPostDate: postDate,
-            reportedPostImageUrls: imageUrls,
-            reportedPostID: postID,
-            reportedPostTaggedPets: taggedPets,
+                reportedAuthorID: authorID,
+                reportedAuthorDisplayName: authorDisplayName,
+                reportedAuthorUsername: authorUsername,
+                reportedAuthorPhotoURL: authorPhotoURL,
+                reportedPostType: postType,
+                reportedPostBody: postBody,
+                reportedPostCategory: postCategory,
+                reportedPostTrackerLocation: postTrackerLocation,
+                reportedPostPets: postPets,
+                reportedPostDate: postDate,
+                reportedPostImageUrls: imageUrls,
+                reportedPostID: postID,
+                reportedPostTaggedPets: taggedPets,
 
-            reportID,
-            reportDate: new Date().toISOString(),
-            reportBody: reportBody.trim(),
-            selectedOptions: finalSelectedOptions,
-        });
+                reportID,
+                reportDate: new Date().toISOString(),
+                reportBody: reportBody.trim(),
+                selectedOptions: finalSelectedOptions,
+            });
+        } else if (postType === 'repost') {
+            await reportRef.set({
+                reporteeAuthorID: currentUserID,
+                reporteeAuthorDisplayName: currentUserDisplayName,
+                reporteeAuthorUsername: currentUserUsername,
+                reporteeAuthorPhotoURL: currentUserPhotoURL,
 
+                reportedOriginalPostID: repostID,
+                reportedOriginalPostBody: repostBody,
+                reportedOriginalPostCategory: repostCategory,
+                reportedOriginalPostPets: repostPets,
+                reportedOriginalPostDate: repostDate,
+                reportedOriginalPostImageUrls: repostImageUrls,
+                reportedOriginalAuthorID: authorID,
+                reportedOriginalAuthorDisplayName: authorDisplayName,
+                reportedOriginalAuthorUsername: authorUsername,
+                reportedOriginalAuthorPhotoURL: authorPhotoURL,
+
+                reportedRepostBody: postBody,
+                reportedRepostID: postID,
+                reportedRepostDate: postDate,
+                reportedPostType : postType,
+
+                reportedRepostAuthorID: repostAuthorID,
+                reportedRepostAuthorDisplayName: repostAuthorDisplayName,
+                reportedRepostAuthorUsername: repostAuthorUsername,
+                reportedRepostAuthorPhotoURL: repostAuthorPhotoURL,
+                
+                reportID,
+                reportDate: new Date().toISOString(),
+                reportBody: reportBody.trim(),
+                selectedOptions: finalSelectedOptions,
+            });
+        }
         toast.dismiss();
         toast.success('Successfully reported!');
         setReporting(false);

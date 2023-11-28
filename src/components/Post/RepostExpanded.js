@@ -17,6 +17,7 @@ import angryReaction from '/public/images/post-reactions/angry.png'
 import { postDeleteConfirmationModalStyle, editPostModalStyle, reactionsCountModal } from '../../lib/modalstyle';
 import Comment from './Comment';
 import Reactions from './Reactions';
+import Report from './Report';
 
 export default function RepostExpanded({props}) {
 
@@ -60,6 +61,7 @@ export default function RepostExpanded({props}) {
     const [showDeletePostModal, setShowDeletePostModal] = useState(postAction === 'delete');
     const [showSharePostModal, setShowSharePostModal] = useState(postAction === 'share');
     const [showEditPostModal, setShowEditPostModal] = useState(postAction === 'edit');
+    const [showReportPostModal, setShowReportPostModal] = useState(postAction === 'report');
 
     const [editedPostBody, setEditedPostBody] = useState(postBody);
 
@@ -245,7 +247,9 @@ export default function RepostExpanded({props}) {
     }
 
     const [showReactionsModal, setShowReactionsModal] = useState(false);
+
     
+
     return (
         <div className='w-full h-full flex flex-col'>
             {/* expanded controls */}
@@ -486,11 +490,50 @@ export default function RepostExpanded({props}) {
 
                 <div id="right" className='flex flex-row gap-4 items-center'>
                     {currentUserID !== authorID && 
-                    <div id='report-control'>
-                        <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all">
-                        
-                        </i>
-                    </div>
+                        <div id='report-control'>
+                            <i className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" onClick={() => setShowReportPostModal(true)}>
+                            <Modal isOpen={showReportPostModal} onRequestClose={(e) => {
+                                setShowReportPostModal(false)
+                                e.stopPropagation();
+                            }} 
+                                className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-[600px] md:h-[80%] overflow-auto p-6 rounded-md bg-gray-100 z-50 bg-snow '
+                                style={{
+                                    overlay: {
+                                        backgroundColor: 'rgba(0,0,0,0.5)',
+                                        zIndex: 1000,
+                                    }
+                                }}
+                            >
+                                {currentUser && <Report 
+                                    props={{
+                                        currentUserID: currentUserID,
+                                        currentUserPhotoURL: currentUser.photoURL,
+                                        currentUserUsername: currentUser.username,
+                                        currentUserDisplayName: currentUser.displayName,
+                                        postID: postID,
+                                        postType: 'repost',
+                                        postBody: postBody,
+                                        postDate: postDate,
+                                        authorID: authorID,
+                                        authorDisplayName: authorDisplayName,
+                                        authorUsername: authorUsername,
+                                        authorPhotoURL: authorPhotoURL,
+                                        setShowReportPostModal: setShowReportPostModal,
+                                        repostAuthorDisplayName: repostAuthorDisplayName,
+                                        repostAuthorID: repostAuthorID,
+                                        repostAuthorPhotoURL: repostAuthorPhotoURL, 
+                                        repostAuthorUsername: repostAuthorUsername, 
+                                        repostBody: repostBody, 
+                                        repostCategory: repostCategory,
+                                        repostDate: repostDate,
+                                        repostID: repostID,
+                                        repostImageUrls: repostImage,
+                                        repostPets: repostPets,
+                                    }}
+                                />}
+                            </Modal>
+                            </i>
+                        </div>
                     }
 
                     {currentUserID === authorID && (

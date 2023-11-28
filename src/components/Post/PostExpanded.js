@@ -613,6 +613,16 @@ export default function PostExpanded({ props }) {
                                     authorPhotoURL: authorPhotoURL,
                                     taggedPets: taggedPets,
                                     setShowReportPostModal: setShowReportPostModal,
+                                    repostAuthorDisplayName: '', 
+                                    repostAuthorID: '', 
+                                    repostAuthorPhotoURL: '', 
+                                    repostAuthorUsername: '',
+                                    repostBody: '', 
+                                    repostCategory: '', 
+                                    repostDate: '', 
+                                    repostID: '', 
+                                    repostImageUrls: '', 
+                                    repostPets: ''
                                 }}
                             />}
                         </Modal>

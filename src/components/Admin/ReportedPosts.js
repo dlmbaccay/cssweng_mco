@@ -37,6 +37,8 @@ export default function ReportedPosts() {
     return () => unsubscribe()
   }, [])
 
+  const [openReportIndex, setOpenReportIndex] = useState(null);
+
   return (
     <div className='w-full'>
 
@@ -78,20 +80,22 @@ export default function ReportedPosts() {
                     </div>
 
                     <div className='flex flex-row items-center justify-between'>
-                      {/* reported user meta */}
-                      <div className='flex flex-row items-center mt-4'>
-                        <Image src={report.reportedAuthorPhotoURL} alt='' width={50} height={50} className='rounded-full' />
-                        <div className= 'ml-2 flex flex-col justify-start'>
-                          <div className='flex flex-row gap-1 justify-start items-center'>
-                            <h1>{report.reportedAuthorDisplayName}</h1>
-                            <p className='font-bold'>·</p>
-                            <h1 className='font-bold'>@{report.reportedAuthorUsername}</h1>
-                          </div>
-                          <div className='text-sm '>
-                            {formatDate(report.reportedPostDate)}
+                      
+                      {report.reportedPostType === 'original' &&
+                        <div className='flex flex-row items-center mt-4'>
+                          <Image src={report.reportedAuthorPhotoURL} alt='' width={50} height={50} className='rounded-full' />
+                          <div className= 'ml-2 flex flex-col justify-start'>
+                            <div className='flex flex-row gap-1 justify-start items-center'>
+                              <h1>{report.reportedAuthorDisplayName}</h1>
+                              <p className='font-bold'>·</p>
+                              <h1 className='font-bold'>@{report.reportedAuthorUsername}</h1>
+                            </div>
+                            <div className='text-sm '>
+                              {formatDate(report.reportedPostDate)}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      }
 
                       { report.reportedPostType === 'original' && 
                         <div className='flex flex-col w-fit items-end mt-3 md:mt-0 text-sm md:text-base'>
@@ -101,6 +105,22 @@ export default function ReportedPosts() {
                               <p>{report.reportedPostCategory}</p>
                             </div>
                           )}
+                        </div>
+                      }
+
+                      { report.reportedPostType === 'repost' &&
+                        <div className='flex flex-row items-center mt-4'>
+                          <Image src={report.reportedRepostAuthorPhotoURL} alt='' width={50} height={50} className='rounded-full' />
+                          <div className= 'ml-2 flex flex-col justify-start'>
+                            <div className='flex flex-row gap-1 justify-start items-center'>
+                              <h1>{report.reportedRepostAuthorDisplayName}</h1>
+                              <p className='font-bold'>·</p>
+                              <h1 className='font-bold'>@{report.reportedRepostAuthorUsername}</h1>
+                            </div>
+                            <div className='text-sm '>
+                              {formatDate(report.reportedRepostDate)}
+                            </div>
+                          </div>
                         </div>
                       }
                     </div>
@@ -153,21 +173,81 @@ export default function ReportedPosts() {
                       </div>
                     )}
 
-                    {/* {report.reportedPostType === 'repost' && (
-                      // TODO: add reposted post report functionality before styling this
-                      <div>
-                      </div>  
-                    )} */}
+                    {report.reportedPostType === 'repost' && (
+                      <div className='flex flex-col'>
+                        
+                        <div className='mt-4 whitespace-pre-line'>
+                          {report.reportedRepostBody}
+                        </div>
 
-                    <div className='w-full border-t border-b pt-4 pb-4 flex flex-row items-center justify-between pr-6 pl-6'>
+                        <div className='mt-4 flex flex-col border border-[#d1d1d1] drop-shadow-md rounded-lg p-4'>
+                          <div className='flex flex-row'>
+                            <Image src={report.reportedOriginalAuthorPhotoURL} alt='' width={50} height={50} className='rounded-full' />
+                            <div className= 'ml-2 flex flex-col justify-start'>
+                              <div className='flex flex-row gap-1 justify-start items-center'>
+                                <h1>{report.reportedOriginalAuthorDisplayName}</h1>
+                                <p className='font-bold'>·</p>
+                                <h1 className='font-bold'>@{report.reportedOriginalAuthorUsername}</h1>
+                              </div>
+                              <div className='text-sm '>
+                                {formatDate(report.reportedOriginalPostDate)}
+                              </div>
+                            </div>
+                          </div>
+
+                          {report.reportedOriginalPostBody !== '' &&
+                            <p className='mt-2 whitespace-pre-line'>{report.reportedOriginalPostBody}</p>
+                          }
+
+                          {report.reportedOriginalPostImageUrls.length > 0 &&
+                            // only show first image
+                            <div className='w-full flex items-center justify-center'> 
+                              <Image src={report.reportedOriginalPostImageUrls} alt='' width={200} height={200} className='rounded-lg mt-4' />
+                            </div>
+                          }
+                        </div>  
+                        
+                      </div>  
+                    )}
+
+                    <div 
+                      className='mt-4 w-full border-t border-b pt-4 pb-4 flex flex-row items-center justify-between pr-6 pl-6 hover:text-grass cursor-pointer'
+                      onClick={() => setOpenReportIndex(openReportIndex === index ? null : index)}
+                    >
                       <div className='flex flex-row items-center gap-2'>
                         <i className='fa-solid fa-bars' />
                         <h1 className='font-semibold text-sm '>See report details...</h1>
                       </div>
 
-                      <i className='fa-solid fa-chevron-left text-sm' />
+                      <i className={`fa-solid fa-chevron-${openReportIndex === index ? 'down' : 'left'} text-sm transition-all`} />
+                    </div>
 
+                    {openReportIndex === index && (
+                      <div className='flex flex-col'>
 
+                        <div>
+                          {report.selectedOptions.length > 0 && (
+                            <div className='mt-4 flex flex-row gap-1 items-center text-xs md:text-sm'>
+                              <h1 className='font-bold'>Reason:</h1>
+                              <div className='flex flex-row items-center justify-start gap-2'>
+                                <h1>
+                                  {report.selectedOptions.map(option => option).join(', ')}
+                                </h1>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className='mt-1 gap-1 flex flex-col text-xs md:text-sm'>
+                          <p className='font-bold'>Explanation:</p>
+                          <p className='whitespace-pre-line'>{report.reportBody}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className='flex flex-row items-center justify-center w-full gap-6 mt-4'>
+                      <button className='text-snow font-semibold bg-grass bg-opacity-60 hover:bg-opacity-100 w-16 h-8 rounded-md text-sm'>Accept</button>
+                      <button className='text-snow font-semibold bg-red-400 hover:bg-red-600 w-16 h-8 rounded-md text-sm'>Reject</button>
                     </div>
                   </div>
                 ))}
