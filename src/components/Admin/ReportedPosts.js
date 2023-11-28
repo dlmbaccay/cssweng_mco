@@ -57,7 +57,7 @@ export default function ReportedPosts() {
         </select>
       </div>
 
-      <div className='w-full overflow-scroll'>
+      <div className='w-full overflow-scroll h-screen pb-8'>
         {loading ? 
           <div className='w-full h-full flex items-center justify-center'>
             <h1 className='font-shining text-2xl'>Loading...</h1>
@@ -69,63 +69,106 @@ export default function ReportedPosts() {
                 <h1 className='font-shining text-2xl'>No reported posts</h1>
               </div>
             :
-              <div className='flex flex-col items-center w-full pt-8 pb-8 gap-8'>
+              <div className='flex flex-col items-center w-full pt-8 pb-8 gap-8 '>
                 {reports.map((report, index) => (
                   <div key={index} className='drop-shadow-sm hover:drop-shadow-md bg-snow w-screen md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
                     
-                    {/* reportee user meta */}
-                    <div className='flex flex-row'>
-                      <Image src={report.reporteeAuthorPhotoURL} alt='reportee' width={50} height={50} className='rounded-full drop-shadow-sm' />
-                      
-                      <div className='flex flex-col justify-center ml-2'>
-                        <div className='flex flex-row gap-2 text-sm md:text-base'>
-                          <h1>{report.reporteeAuthorDisplayName}</h1>
-                          <div className='font-bold'>·</div>
-                          <h1 className='font-bold'>@{report.reporteeAuthorUsername}</h1>
-                        </div>
-                        <h1 className='text-xs md:text-sm'>{formatDate(report.reportDate)}</h1>
-                      </div>
+                    <div className='border-b pb-2'>
+                      <h1 className='font-bold text-sm italic'>@{report.reporteeAuthorUsername} on {formatDate(report.reportDate)} reported:</h1>
                     </div>
 
-                    <div className='text-sm md:text-base flex flex-row gap-2 items-center mt-2'>
-                      <i className='fa-solid fa-flag' />
-                      {report.selectedOptions.join(', ')}
-                    </div>
-
-                    <div className='mt-2 text-sm md:text-base'>
-                      {report.reportBody}
-                    </div>
-
-                    {/* reported post content */}
-                    <div className='mt-4 flex flex-col border border-[#d1d1d1] drop-shadow-md p-4 min-h-fit rounded-lg'>
-                      <div className='flex flex-row gap-2'>
-                        <Image src={report.reportedAuthorPhotoURL} alt='reportee' width={50} height={50} className='rounded-full drop-shadow-sm' />
-
-                        <div className='flex flex-col justify-center'>
-                          <div className='flex flex-row gap-2 text-sm md:text-base'>
+                    <div className='flex flex-row items-center justify-between'>
+                      {/* reported user meta */}
+                      <div className='flex flex-row items-center mt-4'>
+                        <Image src={report.reportedAuthorPhotoURL} alt='' width={50} height={50} className='rounded-full' />
+                        <div className= 'ml-2 flex flex-col justify-start'>
+                          <div className='flex flex-row gap-1 justify-start items-center'>
                             <h1>{report.reportedAuthorDisplayName}</h1>
-                            <div className='font-bold'>·</div>
+                            <p className='font-bold'>·</p>
                             <h1 className='font-bold'>@{report.reportedAuthorUsername}</h1>
                           </div>
-                          <h1 className='text-xs md:text-sm'>{formatDate(report.reportedPostDate)}</h1>
+                          <div className='text-sm '>
+                            {formatDate(report.reportedPostDate)}
+                          </div>
                         </div>
                       </div>
 
-                      { report.reportedPostType === 'original' &&
-                        <div className='flex flex-row gap-2 mt-4 text-sm'>
-                          <div className='font-bold'>Category:</div>
-                          <div>{report.reportedPostCategory}</div>
-                        </div>
-                      }
-
-                      { report.reportedPostPets && 
-                        <div className='flex flex-row gap-2 mt-4 text-sm'>
-                          <div className='font-bold'>Tagged Pets:</div>
-                          <div>{report.reportedPostTaggedPets.map}</div>
+                      { report.reportedPostType === 'original' && 
+                        <div className='flex flex-col w-fit items-end mt-3 md:mt-0 text-sm md:text-base'>
+                          {report.reportedPostCategory !== 'Default' && (
+                            <div className='flex flex-row items-center justify-center gap-2'>
+                              <div className='w-3 h-3 rounded-full bg-grass'></div>
+                              <p>{report.reportedPostCategory}</p>
+                            </div>
+                          )}
                         </div>
                       }
                     </div>
 
+                    {report.reportedPostType === 'original' && (
+                      <div className='flex flex-col'>
+                        {
+                          report.reportedPostTaggedPets.length > 0 && 
+                          <div className='mt-4 flex flex-row gap-1 items-center text-xs md:text-sm'>
+                            <h1 className='font-bold'>Tagged Pets:</h1>
+                            <div className='flex flex-row items-center justify-start gap-2'>
+                              <h1>
+                                {report.reportedPostTaggedPets.map(pet => pet.petName).join(', ')}
+                              </h1>
+                            </div>
+                          </div>
+                        }
+
+                        {
+                          report.reportedPostCategory === 'Lost Pets' && 
+                          <div className='mt-2 flex flex-row gap-1 text-xs md:text-sm'>
+                            <h1 className='font-bold'>Last Seen:</h1>
+                            <p>{report.reportedPostTrackerLocation}</p>
+                          </div>
+                        }
+
+                        {
+                          (report.reportedPostCategory === 'Unknown Owner' || report.reportedPostCategory === 'Retrieved Pets')  && 
+                          <div className='mt-2 flex flex-row gap-1 text-xs md:text-sm'>
+                            <h1 className='font-bold'>Found At:</h1>
+                            <p>{report.reportedPostTrackerLocation}</p>
+                          </div>
+                        }
+
+                        {
+                          report.reportedPostBody !== '' && 
+                          <div className='mt-4'>
+                            <p className='whitespace-pre-line'>{report.reportedPostBody}</p>
+                          </div>
+                        }
+
+                        {
+                          report.reportedPostImageUrls.length > 0 && 
+                          // only show first image
+                          <div className='w-full flex items-center justify-center'> 
+                            <Image src={report.reportedPostImageUrls[0]} alt='' width={200} height={200} className='rounded-lg mt-4' />
+                          </div>
+                        }
+
+                      </div>
+                    )}
+
+                    {/* {report.reportedPostType === 'repost' && (
+                      // TODO: add reposted post report functionality before styling this
+                      <div>
+                      </div>  
+                    )} */}
+
+                    <div className='w-full border-t border-b pt-4 pb-4 flex flex-row items-center justify-between pr-6 pl-6'>
+                      <div className='flex flex-row items-center gap-2'>
+                        <i className='fa-solid fa-bars' />
+                        <h1 className='font-semibold text-sm '>See report details...</h1>
+                      </div>
+
+                      <i className='fa-solid fa-chevron-left text-sm' />
+
+
+                    </div>
                   </div>
                 ))}
               </div>
