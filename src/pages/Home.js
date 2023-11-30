@@ -33,7 +33,7 @@ function Home() {
     return () => unsubscribe(); // Cleanup subscription on unmount
   }, []);
 
-  const { user, username, description, email, displayName, userPhotoURL } = useUserData();
+  const { user, username, description, email, displayName, userPhotoURL, notifications } = useUserData();
 
   const router = Router;
   const [ pageLoading, setPageLoading ] = useState(true);
@@ -211,7 +211,8 @@ function Home() {
                 userPhotoURL: userPhotoURL,
                 username: username,
                 activePage: "Home",
-                expanded: true
+                expanded: true,
+                notifications: notifications
               }}
           />}
         </div>
@@ -222,7 +223,8 @@ function Home() {
                 userPhotoURL: userPhotoURL,
                 username: username,
                 activePage: "Home",
-                expanded: false
+                expanded: false,
+                notifications: notifications
               }}
           />}
         </div>

@@ -107,6 +107,7 @@ export default function Reply({props}) {
     const handleReplyReaction = async (newReaction) => {
         const reactionsRef = firestore.collection('posts').doc(postID).collection('comments').doc(commentID).collection('replies').doc(replyID).collection('reactions');
         const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+        const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
 
         for (let reaction of reactionTypes) {
             const reactionRef = reactionsRef.doc(reaction);
@@ -130,10 +131,42 @@ export default function Reply({props}) {
                 } else if (reaction === newReaction) {
                     // User has not reacted with this type, add user to userIDs array
                     await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+
+                    if (currentUserID !== authorID) {
+                        // Create a new document in the notificationsRef collection
+                        const notificationRef = notificationsRef.doc();
+                        const date = new Date();
+                        date.setHours(date.getHours() + 8); // Adjust to UTC+8
+                        await notificationRef.set({
+                            userID: currentUserID,
+                            action: "reacted to your reply!",
+                            date: date, // Get the server timestamp
+                            postID: postID,
+                            userPhotoURL: currentUserPhotoURL,
+                            displayname: currentUserDisplayName,
+                            username: currentUserUsername,
+                        });
+                        }
                 }
             } else if (reaction === newReaction) {
                 // Reaction does not exist, create reaction and add user to userIDs array
                 await reactionRef.set({ userIDs: [currentUserID] });
+
+                if (currentUserID !== authorID) {
+                    // Create a new document in the notificationsRef collection
+                    const notificationRef = notificationsRef.doc();
+                    const date = new Date();
+                    date.setHours(date.getHours() + 8); // Adjust to UTC+8
+                    await notificationRef.set({
+                        userID: currentUserID,
+                        action: "reacted to your reply!",
+                        date: date, // Get the server timestamp
+                        postID: postID,
+                        userPhotoURL: currentUserPhotoURL,
+                        displayname: currentUserDisplayName,
+                        username: currentUserUsername,
+                    });
+                    }
             }
         }
     }

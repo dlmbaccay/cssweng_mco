@@ -20,7 +20,7 @@ import RepostExpanded from './RepostExpanded';
 
 export default function RepostSnippet( {props} ) {
   const {
-    currentUserID,
+    currentUserID, currentUserPhotoURL, currentUserDisplayName, currentUserName,
     authorID, authorDisplayName, authorUsername, authorPhotoURL,
     postID, postDate, postType, postBody, isEdited, repostID, repostBody,
     repostCategory, repostPets, repostDate, repostImageUrls,
@@ -106,6 +106,7 @@ export default function RepostSnippet( {props} ) {
   const handleReaction = async (newReaction) => {
       const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
       const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+      const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
 
       for (let reaction of reactionTypes) {
         const reactionRef = reactionsRef.doc(reaction);
@@ -129,10 +130,42 @@ export default function RepostSnippet( {props} ) {
           } else if (reaction === newReaction) {
             // User has not reacted with this type, add user to userIDs array
             await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+
+            if (currentUserID !== authorID) {
+              // Create a new document in the notificationsRef collection
+              const notificationRef = notificationsRef.doc();
+              const date = new Date();
+              date.setHours(date.getHours() + 8); // Adjust to UTC+8
+              await notificationRef.set({
+                userID: currentUserID,
+                action: "reacted to your shared post!",
+                date: date, // Get the server timestamp
+                postID: postID,
+                userPhotoURL: currentUserPhotoURL,
+                displayname: currentUserDisplayName,
+                username: currentUserName,
+              });
+            }
           }
         } else if (reaction === newReaction) {
           // Reaction does not exist, create reaction and add user to userIDs array
           await reactionRef.set({ userIDs: [currentUserID] });
+
+          if (currentUserID !== authorID) {
+            // Create a new document in the notificationsRef collection
+            const notificationRef = notificationsRef.doc();
+            const date = new Date();
+            date.setHours(date.getHours() + 8); // Adjust to UTC+8
+            await notificationRef.set({
+              userID: currentUserID,
+              action: "reacted to your shared post!",
+              date: date, // Get the server timestamp
+              postID: postID,
+              userPhotoURL: currentUserPhotoURL,
+              displayname: currentUserDisplayName,
+              username: currentUserName,
+            });
+          }
         }
       }
 

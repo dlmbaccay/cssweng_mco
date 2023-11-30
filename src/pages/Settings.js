@@ -15,7 +15,7 @@ import PhoneNav from '../components/PhoneNav';
 import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 
 function Settings() {
-    const { user, username, userPhotoURL } = useUserData();
+    const { user, username, userPhotoURL, notifications } = useUserData();
     const router = Router;
     const [userRef, setUserRef] = useState('');
     const [petsRef, setPetsRef] = useState('');
@@ -216,7 +216,8 @@ function Settings() {
                             userPhotoURL: userPhotoURL,
                             username: username,
                             activePage: "Settings",
-                            expanded: true
+                            expanded: true,
+                            notifications: notifications,
                         }}
                     />}
                 </div>
@@ -227,7 +228,8 @@ function Settings() {
                             userPhotoURL: userPhotoURL,
                             username: username,
                             activePage: "Settings",
-                            expanded: false
+                            expanded: false,
+                            notifications: notifications,
                         }}
                     />}
                 </div>

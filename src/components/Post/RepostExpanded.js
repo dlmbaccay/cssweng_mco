@@ -35,7 +35,7 @@ export default function RepostExpanded({props}) {
     }, []);
 
     const {
-        currentUserID,
+        currentUserID, 
         authorID, authorDisplayName, authorUsername, authorPhotoURL,
         postID, postDate, postType, postBody, isEdited, repostID, repostBody,
         repostCategory, repostPets, repostDate, repostImage,
@@ -138,6 +138,7 @@ export default function RepostExpanded({props}) {
     const handleReaction = async (newReaction) => {
       const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
       const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
+      const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
 
       for (let reaction of reactionTypes) {
         const reactionRef = reactionsRef.doc(reaction);
@@ -161,10 +162,38 @@ export default function RepostExpanded({props}) {
           } else if (reaction === newReaction) {
             // User has not reacted with this type, add user to userIDs array
             await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+
+            if (currentUserID !== authorID) {
+                // Create a new document in the notificationsRef collection
+                const notificationRef = notificationsRef.doc();
+                await notificationRef.set({
+                  userID: currentUserID,
+                  action: "reacted to your repost!",
+                  date: new Date().toISOString(), // Get the server timestamp
+                  postID: postID,
+                  userPhotoURL: currentUser.photoURL,
+                displayname: currentUser.displayName,
+                username: currentUser.username,
+                });
+              }
           }
         } else if (reaction === newReaction) {
           // Reaction does not exist, create reaction and add user to userIDs array
           await reactionRef.set({ userIDs: [currentUserID] });
+
+          if (currentUserID !== authorID) {
+            // Create a new document in the notificationsRef collection
+            const notificationRef = notificationsRef.doc();
+            await notificationRef.set({
+              userID: currentUserID,
+              action: "reacted to your repost!",
+              date: new Date().toISOString(), // Get the server timestamp
+              postID: postID,
+              userPhotoURL: currentUser.photoURL,
+                displayname: currentUser.displayName,
+                username: currentUser.username,
+            });
+          }
         }
       }
 
@@ -239,6 +268,21 @@ export default function RepostExpanded({props}) {
             authorPhotoURL: currentUser.photoURL,
             isEdited: false,
         });
+
+        const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
+        if (currentUserID !== authorID) {
+            // Create a new document in the notificationsRef collection
+            const notificationRef = notificationsRef.doc();
+            await notificationRef.set({
+              userID: currentUserID,
+              action: "commented on your shared post!",
+              date: new Date().toISOString(), // Get the server timestamp
+              postID: postID,
+              userPhotoURL: currentUser.photoURL,
+                displayname: currentUser.displayName,
+                username: currentUser.username,
+            });
+        }
 
         setCommentBody('');
 
