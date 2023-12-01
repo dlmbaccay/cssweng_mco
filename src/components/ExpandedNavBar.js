@@ -104,7 +104,7 @@ export default function ExpandedNavBar({ props }) {
               </button>
 
               <button 
-                onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => router.push('/Foundations')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
