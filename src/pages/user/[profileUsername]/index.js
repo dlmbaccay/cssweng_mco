@@ -551,7 +551,8 @@ function UserProfilePage() {
                         userPhotoURL: currentUserPhotoURL,
                         username: currentUserUsername,
                         activePage: "Profile",
-                        expanded: false
+                        expanded: false,
+                        notifications: getCurrentUser.notifications
                     }}
                 />
             </div>
@@ -1000,6 +1001,9 @@ function UserProfilePage() {
                                                                 <PostSnippet
                                                                     props={{
                                                                         currentUserID: currentUserID,
+                                                                        currentUserPhotoURL: getCurrentUser.userPhotoURL, 
+                                                                        currentUserDisplayName: getCurrentUser.displayName, 
+                                                                        currentUserName: getCurrentUser.username,
                                                                         postID: post.id,
                                                                         postBody: post.postBody,
                                                                         postCategory: post.postCategory,
@@ -1023,6 +1027,9 @@ function UserProfilePage() {
                                                                 <RepostSnippet
                                                                     props={{
                                                                         currentUserID: currentUserID,
+                                                                        currentUserPhotoURL: getCurrentUser.userPhotoURL, 
+                                                                        currentUserDisplayName: getCurrentUser.displayName, 
+                                                                        currentUserName: getCurrentUser.username,
                                                                         authorID: post.authorID,
                                                                         authorDisplayName: post.authorDisplayName,
                                                                         authorUsername: post.authorUsername,

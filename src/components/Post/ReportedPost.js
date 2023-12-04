@@ -27,7 +27,7 @@ export default function PostSnippet({ props }) {
     }, []);
 
     const {
-        currentUserID, currentUserPhotoURL, currentUserDisplayName, currentUserName, postID, postBody, 
+        currentUserID, postID, postBody, 
         postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername,
@@ -112,7 +112,6 @@ export default function PostSnippet({ props }) {
     const handleReaction = async (newReaction) => {
       const reactionsRef = firestore.collection('posts').doc(postID).collection('reactions');
       const reactionTypes = ['like', 'heart', 'haha', 'wow', 'sad', 'angry']; // Replace with your actual reaction types
-      const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
 
       for (let reaction of reactionTypes) {
         const reactionRef = reactionsRef.doc(reaction);
@@ -136,42 +135,10 @@ export default function PostSnippet({ props }) {
           } else if (reaction === newReaction) {
             // User has not reacted with this type, add user to userIDs array
             await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
-            
-            if (currentUserID !== authorID) {
-              // Create a new document in the notificationsRef collection
-              const notificationRef = notificationsRef.doc();
-              const date = new Date();
-              date.setHours(date.getHours() + 8); // Adjust to UTC+8
-              await notificationRef.set({
-                userID: currentUserID,
-                action: "reacted to your post!",
-                date: date, // Get the server timestamp
-                postID: postID,
-                userPhotoURL: currentUserPhotoURL,
-                displayname: currentUserDisplayName,
-                username: currentUserName,
-              });
-            }
-            }
+          }
         } else if (reaction === newReaction) {
           // Reaction does not exist, create reaction and add user to userIDs array
           await reactionRef.set({ userIDs: [currentUserID] });
-
-          if (currentUserID !== authorID) {
-            // Create a new document in the notificationsRef collection
-            const notificationRef = notificationsRef.doc();
-            const date = new Date();
-            date.setHours(date.getHours() + 8); // Adjust to UTC+8
-            await notificationRef.set({
-              userID: currentUserID,
-              action: "reacted to your post!",
-              date: date, // Get the server timestamp
-              postID: postID,
-              userPhotoURL: currentUserPhotoURL,
-              displayname: currentUserDisplayName,
-              username: currentUserName,
-            });
-          }
         }
       }
 
@@ -322,177 +289,23 @@ export default function PostSnippet({ props }) {
           </div>
 
           {/* Footer */}
-          <div id='post-footer' className='mt-4 flex flex-row w-full justify-between relative'>
-            <div id="left" className='flex flex-row gap-4 text-sm md:text-base items-center'>
-              <div id='post-reaction-control' className='flex flex-row justify-center items-center gap-2 w-fit h-6'>
-                {!currentUserReaction && 
-                  <i 
-                    className={`fa-solid fa-heart hover:text-grass hover:cursor-pointer transition-all ${isOverlayVisible? "text-grass" : ""}`}
-                    onClick={() => setIsOverlayVisible(true)}
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                  />
-                }
-                
-                {currentUserReaction === 'like' &&
-                  <Image
-                    src={likeReaction}
-                    alt="like reaction"
-                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                  />
-                }
+          <div id='post-footer' className='mt-4 flex flex-col w-full relative'>
+            <div className='flex flex-row w-full justify-between relative border-dark_gray border-y-2 p-2 rounded-md hover:bg-dark_gray hover:cursor-pointer transition-all'>
+              <div id="left" className='flex flex-row gap-4 text-sm md:text-base items-center'>
+                <div className="text-md w-[30px] h-[30px]
+                    flex items-center justify-center
+                    fa-solid fa-file-lines rounded-full 
+                    bg-raisin_black text-snow"></div>
 
-                {currentUserReaction === 'heart' &&
-                  <Image
-                    src={heartReaction}
-                    alt="heart reaction"
-                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                  />
-                }
-
-                {currentUserReaction === 'haha' &&
-                  <Image
-                    src={laughReaction}
-                    alt="haha reaction"
-                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                  />
-                }
-
-                {currentUserReaction === 'wow' &&
-                  <Image
-                    src={wowReaction}
-                    alt="wow reaction"
-                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                  />
-                }
-
-                {currentUserReaction === 'sad' &&
-                  <Image
-                    src={sadReaction}
-                    alt="sad reaction"
-                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                  />
-                }
-
-                {currentUserReaction === 'angry' &&
-                  <Image
-                    src={angryReaction}
-                    alt="angry reaction"
-                    className={`w-fit h-[21px] flex items-center justify-center hover:transform transition-all`}
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                  />
-                }
-
-                <p>
-                  {reactionsLength}
-                </p>
-
-                {isOverlayVisible && (
-                  <div 
-                    onMouseEnter={() => setIsOverlayVisible(true)}
-                    onMouseLeave={() => setIsOverlayVisible(false)}
-                    id='overlay' 
-                    className='absolute -left-1 md:-left-2 flex flex-row gap-2 md:w-[300px] md:h-[45px] justify-center items-center bg-dark_gray rounded-full drop-shadow-sm transition-all' 
-                  >
-                    <Image 
-                      src={likeReaction} 
-                      alt="like reaction" 
-                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                      onClick={() => handleReaction('like')}
-                      />
-                    <Image 
-                      src={heartReaction} 
-                      alt="like reaction" 
-                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                      onClick={() => handleReaction('heart')}
-                      />
-                    <Image 
-                      src={laughReaction} 
-                      alt="like reaction" 
-                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                      onClick={() => handleReaction('haha')}
-                      />
-                    <Image 
-                      src={wowReaction} 
-                      alt="like reaction" 
-                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                      onClick={() => handleReaction('wow')}
-                      />
-                    <Image 
-                      src={sadReaction} 
-                      alt="like reaction" 
-                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                      onClick={() => handleReaction('sad')}
-                      />
-                    <Image 
-                      src={angryReaction} 
-                      alt="like reaction" 
-                      className='w-fit h-[40px] hover:scale-125 hover:transform transition-all'
-                      onClick={() => handleReaction('angry')}
-                      />
-                  </div>
-                )}
+                <p className='font-semibold transition-all'>See details</p>    
               </div>
-              
-              <div id="comment-control" className='flex flex-row justify-center items-center gap-2'>
-                <i 
-                  onClick={() => {
-                    setShowPostExpanded(true)
-                    setPostAction('comment')
-                  }}
-                  className="fa-solid fa-comment hover:text-grass hover:cursor-pointer transition-all"></i>
-                <p>
-                  {commentsLength}
-                </p>
-              </div>
-
-              <div>
-                <i id="share-control"
-                  onClick={() => {
-                    setShowPostExpanded(true)
-                    setPostAction('share')
-                  }} 
-                  className="fa-solid fa-share-nodes hover:text-grass hover:cursor-pointer transition-all" />
+              <div id="right" className='flex flex-row gap-4 items-center text-sm md:text-base'>
+                <div className="fa-solid fa-chevron-right"></div>            
               </div>
             </div>
-
-            <div id="right" className='flex flex-row gap-4 items-center text-sm md:text-base'>
-              {currentUserID !== authorID && 
-                  <i 
-                  id='report-control'
-                  onClick={() => {
-                    setShowPostExpanded(true)
-                    setPostAction('report')
-                  }} 
-                  className="fa-solid fa-flag hover:text-grass hover:cursor-pointer transition-all" />
-              }
-
-              {currentUserID === authorID && (
-                <>
-                    <i 
-                      id='edit-control'
-                      className="fa-solid fa-pencil hover:text-grass hover:scale- hover:cursor-pointer"
-                       onClick={() => {
-                        setShowPostExpanded(true)
-                        setPostAction('edit')
-                      }}
-                    >
-                    </i>
-
-                    <i 
-                      id='delete-control'
-                      onClick={() => {
-                        setShowPostExpanded(true)
-                        setPostAction('delete')
-                      }}
-                      className="fa-solid fa-trash hover:text-red-600 hover:scale- hover:cursor-pointer"
-                    ></i>
-                </>
-              )}
+            <div className='flex flex-row items-center justify-center gap-3 mt-5 mx-20 max-sm:mx-0'>
+              <button className='h-full w-full bg-[#9AD69C] font-bold rounded-md hover:bg-[#27C62D] transition-all'>Accept</button>
+              <button className='h-full w-full bg-[#D69A9A] font-bold rounded-md hover:bg-[#DE3939] transition-all'>Reject</button>
             </div>
           </div>
       </div>

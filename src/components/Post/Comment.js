@@ -100,7 +100,7 @@ export default function Comment( {props} ) {
     const [isReplying, setIsReplying] = useState(false);
     const [replyBody, setReplyBody] = useState('');
 
-    const handleReply = (event) => {
+    const handleReply = async (event) => {
         event.preventDefault();
 
         if (replyBody.trim() === '') {
@@ -120,6 +120,7 @@ export default function Comment( {props} ) {
             isEdited: false,
         })
         .then(() => {
+            
             toast.dismiss();
             toast.success('Reply added successfully!');
             setReplyBody('');
@@ -128,6 +129,21 @@ export default function Comment( {props} ) {
             toast.dismiss();
             toast.error(error.message);
         })
+
+        const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
+        if (currentUserID !== authorID) {
+            // Create a new document in the notificationsRef collection
+            const notificationRef = notificationsRef.doc();
+            await notificationRef.set({
+                userID: currentUserID,
+                action: "replied to your comment!",
+                date: new Date().toISOString(), // Get the server timestamp
+                postID: postID,
+                userPhotoURL: currentUserPhotoURL,
+                displayname: currentUserDisplayName,
+                username: currentUserUsername,
+            });
+            }
     }
 
     const [editedCommentBody, setEditedCommentBody] = useState(commentBody);
@@ -206,10 +222,40 @@ export default function Comment( {props} ) {
                 } else if (reaction === newReaction) {
                     // User has not reacted with this type, add user to userIDs array
                     await reactionRef.update({ userIDs: [...userIDs, currentUserID] });
+
+                    const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
+                    if (currentUserID !== authorID) {
+                        // Create a new document in the notificationsRef collection
+                        const notificationRef = notificationsRef.doc();
+                        await notificationRef.set({
+                            userID: currentUserID,
+                            action: "reacted to your comment!",
+                            date: new Date().toISOString(), // Get the server timestamp
+                            postID: postID,
+                            userPhotoURL: currentUserPhotoURL,
+                            displayname: currentUserDisplayName,
+                            username: currentUserUsername,
+                        });
+                        }
                 }
             } else if (reaction === newReaction) {
                 // Reaction does not exist, create reaction and add user to userIDs array
                 await reactionRef.set({ userIDs: [currentUserID] });
+
+                const notificationsRef = firestore.collection('users').doc(authorID).collection('notifications');
+                if (currentUserID !== authorID) {
+                    // Create a new document in the notificationsRef collection
+                    const notificationRef = notificationsRef.doc();
+                    await notificationRef.set({
+                        userID: currentUserID,
+                        action: "reacted to your comment!",
+                        date: new Date().toISOString(), // Get the server timestamp
+                        postID: postID,
+                        userPhotoURL: currentUserPhotoURL,
+                        displayname: currentUserDisplayName,
+                        username: currentUserUsername,
+                    });
+                }
             }
         }
     }

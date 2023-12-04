@@ -3,11 +3,14 @@ import Image from 'next/image';
 import Router from 'next/router';
 import { auth } from '../lib/firebase';
 import toast from 'react-hot-toast';
+import Notifications from './Notifications';
+import Modal from 'react-modal';
 
 export default function ExpandedNavBar({ props }) {
     
-    const { userPhotoURL, username, activePage, expanded, isUser } = props;
+    const { userPhotoURL, username, activePage, expanded, isUser, notifications } = props;
     const router = Router;
+    const [showNotifications, setShowNotifications] = useState(false);
 
 
     const [isExpanded, setIsExpanded] = useState(expanded);
@@ -17,10 +20,11 @@ export default function ExpandedNavBar({ props }) {
     };
 
     const handleMouseLeave = () => {
-        if (!expanded) {
+        if (!expanded && !showNotifications) {
             setIsExpanded(false);
         }
     };
+    console.log(notifications)
 
     return (
     <>
@@ -44,6 +48,7 @@ export default function ExpandedNavBar({ props }) {
 
         {
           (isExpanded) && 
+          <>
           <div 
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -99,7 +104,7 @@ export default function ExpandedNavBar({ props }) {
               </button>
 
               <button 
-                onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => router.push('/Foundations')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
@@ -137,7 +142,7 @@ export default function ExpandedNavBar({ props }) {
               </button>
 
               <button 
-                onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => setShowNotifications(!showNotifications)} className='group flex flex-row items-center gap-2 pl-10 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
@@ -193,6 +198,14 @@ export default function ExpandedNavBar({ props }) {
               About Us
             </button> */}
           </div>
+        
+          {showNotifications &&
+            <div className='w-[300px] h-screen'>
+              <Notifications notifications={notifications} />
+            </div>
+          }
+          
+        </>
         }
         
     </>

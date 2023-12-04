@@ -22,6 +22,7 @@ export function useUserData() {
   const [birthdate, setBirthdate] = useState(null);
   const [location, setLocation] = useState(null);
   const [following, setFollowing] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
   // turn off realtime subscription
@@ -37,6 +38,15 @@ export function useUserData() {
       setDisplayName(doc.data()?.displayName);
       setEmail(doc.data()?.email);
       setFollowing(doc.data()?.following);
+    });
+
+    const notificationsRef = userRef.collection('notifications');
+    unsubscribe = notificationsRef.onSnapshot((snapshot) => {
+      const notifications = [];
+      snapshot.forEach((doc) => {
+        notifications.push({ id: doc.id, ...doc.data() });
+      });
+      setNotifications(notifications);
     });
 
   } else {
@@ -57,7 +67,7 @@ export function useUserData() {
     // displayName: only run if displayName changes, 
     // following: only run if following changes
 
-  return { user, username, description, email, displayName, userPhotoURL, currentUserID, following };
+  return { user, username, description, email, displayName, userPhotoURL, currentUserID, following, notifications };
 }
 
 export function usePetData(userId) {
