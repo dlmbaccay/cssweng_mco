@@ -50,7 +50,7 @@ export default function Login() {
             const user = userCredential.user;
 
             // check if UID is admin
-            if (user.uid === 'luTr6y0B1TUOkimRQlfiCO9xQqo1') {
+            if (user.uid === 'DX1Zzib1x5Ny0J42pNwzfdMTynE3') {
                 toast.success('Welcome back, Admin!', {
                     icon: '👏',
                 });

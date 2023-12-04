@@ -99,25 +99,6 @@ export default function AdminNavbar({ props }) {
                     Foundations</p>
                 </button>
 
-                <button
-                onClick={() => setActiveContainer('Settings')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-                <i 
-                    className={`
-                    text-md w-[35px] h-[35px]
-                    flex items-center justify-center
-                    fa-solid fa-gear rounded-full 
-                    bg-grass text-pale_yellow 
-                    transition-all group-hover:bg-raisin_black 
-                    ${activeContainer === 'Settings' ? "bg-raisin_black" : ""}
-                    `}/>
-                <p className={`
-                    text-grass text-2xl
-                    font-shining 
-                    transition-all  group-hover:text-raisin_black 
-                    ${activeContainer === 'Settings' ? "text-raisin_black" : ""}`}>
-                    Settings</p>
-                </button>
-
                 <hr className='border border-xanthous opacity-30 ml-6 mr-6 mt-2 mb-2'/>
 
                 <button 

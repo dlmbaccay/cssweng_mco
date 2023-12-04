@@ -66,10 +66,9 @@ function Admin() {
           
           { activeContainer === 'Reported Posts' && <ReportedPosts /> }
           { activeContainer === 'Foundation Applications' && <FoundationApps /> }
-          { activeContainer === 'Settings' && <AdminSettings /> }
         </div>
     </div>
   )
 }
 
-export default withSpecialAuth('luTr6y0B1TUOkimRQlfiCO9xQqo1')(Admin)
+export default withSpecialAuth('DX1Zzib1x5Ny0J42pNwzfdMTynE3')(Admin)
