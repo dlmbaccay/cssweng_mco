@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 export default function Landing() {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
-    const { user, username } = useUserData();
+    const { user, username, reportCount } = useUserData();
 
     useEffect(() => {
         const auth = getAuth();
@@ -22,7 +22,11 @@ export default function Landing() {
                     if (user.uid === "DX1Zzib1x5Ny0J42pNwzfdMTynE3") {
                         router.push("/admin");
                     } else {
-                        router.push("/Home");
+                        if (reportCount >= 10) {
+                            router.push("/banned");
+                        } else {
+                            router.push("/Home");
+                        }
                     }
                 } else {
                     router.push("/Login");

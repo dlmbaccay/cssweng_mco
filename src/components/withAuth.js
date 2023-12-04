@@ -20,6 +20,10 @@ const withAuth = (WrappedComponent) => {
             if (router.pathname !== '/AccountSetup') {
               router.push('/AccountSetup');
             }
+          } else {
+            if (doc.data()?.reportCount >= 10) {
+              router.push('/banned');
+            }
           }
         })
         .catch((error) => {

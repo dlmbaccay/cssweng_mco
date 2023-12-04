@@ -83,14 +83,19 @@ export default function ReportedPosts() {
     // update user's report count 
 
     const postRef = firestore.collection('posts').doc(report.reportedPostID)
-    const userPostRef = firestore.collection('users').doc(report.reportedAuthorID).collection('posts').doc(report.reportedPostID)
     const reportRef = firestore.collection('reports').doc(report.reportID)
     const userRef = firestore.collection('users').doc(report.reportedAuthorID)
 
     try {
       await runTransaction(firestore, async (transaction) => {
         transaction.delete(postRef)
-        transaction.delete(userPostRef)
+
+        // Delete post from user's posts collection
+        const userSnapshot = await transaction.get(userRef);
+        const userPosts = userSnapshot.data().posts || [];
+        const updatedPosts = userPosts.filter((postId) => postId !== report.reportedPostID);
+        transaction.update(userRef, { posts: updatedPosts });
+
         transaction.delete(reportRef) 
         transaction.update(userRef, {
           // increment reportCount by 1

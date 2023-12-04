@@ -73,6 +73,7 @@ export default function Login() {
 
             ref.get().then((doc) => {
                 const username = doc.data()?.username;
+                const reportCount = doc.data()?.reportCount;
 
                 if (!username) {
                     // If email is verified but no username, redirect to AccountSetup
@@ -80,6 +81,9 @@ export default function Login() {
                         icon: '👏',
                     });
                     router.push('/AccountSetup');
+                } else if (reportCount >= 10) {
+                    // If user is banned, redirect to banned page
+                    router.push('/banned');
                 } else {
                     // If old user (email verified and has username), redirect to Home
 

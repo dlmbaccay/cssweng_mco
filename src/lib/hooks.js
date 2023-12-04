@@ -22,6 +22,7 @@ export function useUserData() {
   const [birthdate, setBirthdate] = useState(null);
   const [location, setLocation] = useState(null);
   const [following, setFollowing] = useState([]);
+  const [reportCount, setReportCount] = useState([]);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export function useUserData() {
       setDisplayName(doc.data()?.displayName);
       setEmail(doc.data()?.email);
       setFollowing(doc.data()?.following);
+      setReportCount(doc.data()?.reportCount);
     });
 
     const notificationsRef = userRef.collection('notifications');
@@ -57,6 +59,7 @@ export function useUserData() {
     setDisplayName(null);
     setEmail(null);
     setFollowing(null);
+    setReportCount(null);
   }
 
   return unsubscribe;
@@ -67,7 +70,7 @@ export function useUserData() {
     // displayName: only run if displayName changes, 
     // following: only run if following changes
 
-  return { user, username, description, email, displayName, userPhotoURL, currentUserID, following, notifications };
+  return { user, username, description, email, displayName, userPhotoURL, currentUserID, following, notifications, reportCount };
 }
 
 export function usePetData(userId) {
