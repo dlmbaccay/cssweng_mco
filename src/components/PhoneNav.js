@@ -30,7 +30,7 @@ export default function PhoneNav( {props} ) {
         </div>
 
         <div className='w-fit h-fit flex flex-col items-center mt-8 gap-4' onClick={() => router.push(`/user/${currentUserUsername}`)}>
-            <Image src={currentUserPhotoURL} alt='profile picture' width={100} height={100} className='rounded-full'/>
+            <Image src={currentUserPhotoURL} alt='profile picture' width={100} height={100} className='rounded-full  aspect-square object-cover'/>
             <h1 className='font-shining text-2xl text-raisin_black'>@{currentUserUsername}</h1>
         </div>
 

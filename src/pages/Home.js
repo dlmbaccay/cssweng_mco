@@ -251,6 +251,7 @@ function Home() {
                     setShowPhoneNavModal: setShowPhoneNavModal,
                     currentUserUsername: username,
                     currentUserPhotoURL: userPhotoURL,
+                    notifications: notifications,
                   }}
                 />
               </Modal>
@@ -295,7 +296,7 @@ function Home() {
                     width={50}
                     height={50}
                     onClick={() => router.push(`/user/${username}`)}
-                    className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                    className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer aspect-square object-cover'
                   />}
 
                   <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>

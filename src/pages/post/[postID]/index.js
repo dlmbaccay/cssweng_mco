@@ -1004,7 +1004,8 @@ function Post() {
                 props={{
                     userPhotoURL: userPhotoURL,
                     username: username,
-                    expanded: true
+                    expanded: true,
+                    notifications: notifications,
                 }}
             />}
             </div>
@@ -1014,7 +1015,8 @@ function Post() {
                 props={{
                     userPhotoURL: userPhotoURL,
                     username: username,
-                    expanded: false
+                    expanded: false,
+                    notifications: notifications,
                 }}
             />}
             </div>
@@ -1041,6 +1043,7 @@ function Post() {
                             setShowPhoneNavModal: setShowPhoneNavModal,
                             currentUserUsername: username,
                             currentUserPhotoURL: userPhotoURL,
+                            notifications: notifications,
                         }}
                         />
                     </Modal>

@@ -454,7 +454,7 @@ function PetProfilePage() {
                   alt={petName + " profile picture"}
                   fill="fill"
                   objectFit="cover"
-                  className="rounded-full shadow-lg"
+                  className="rounded-full shadow-lg aspect-square object-cover"
                 />
               </div>
             </div>
@@ -537,7 +537,7 @@ function PetProfilePage() {
                                     src={previewProfileUrl}
                                     alt="Preview"
                                     layout="fill"
-                                    className="object-cover rounded-full"
+                                    className="object-cover rounded-full aspect-square object-cover"
                                   />
                                 ) : (
                                   petPhotoURL && (
@@ -545,7 +545,7 @@ function PetProfilePage() {
                                       src={petPhotoURL}
                                       alt={petName + " cover photo"}
                                       layout="fill"
-                                      className="object-cover rounded-full"
+                                      className="object-cover rounded-full aspect-square object-cover"
                                     />
                                   )
                                 )}
@@ -806,7 +806,7 @@ function PetProfilePage() {
                   alt={petName + " profile picture"}
                   width={45}
                   height={45}
-                  className="rounded-full drop-shadow-sm"
+                  className="rounded-full drop-shadow-sm aspect-square object-cover"
                 />
 
                 <div className="flex flex-col h-fit items-center md:flex-row md:gap-2">
