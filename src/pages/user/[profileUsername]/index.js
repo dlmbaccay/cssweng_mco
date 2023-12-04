@@ -580,7 +580,8 @@ function UserProfilePage() {
                                 props={{
                                     setShowPhoneNavModal: setShowPhoneNavModal,
                                     currentUserUsername: currentUserUsername,
-                                    currentUserPhotoURL: currentUserPhotoURL
+                                    currentUserPhotoURL: currentUserPhotoURL,
+                                    notifications: getCurrentUser.notifications,
                                 }}
                             />
                         </Modal>

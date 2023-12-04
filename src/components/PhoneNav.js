@@ -12,6 +12,10 @@ export default function PhoneNav( {props} ) {
 
     const [showNotifications, setShowNotifications] = useState(false);
 
+    const handleToggleNotifications = () => {
+        setShowNotifications(!showNotifications);
+    };
+
     return (
     <div className='w-full h-full flex flex-col items-center'>
         <div className='bg-snow w-full h-14 flex justify-between items-center md:hidden drop-shadow-md'>
@@ -77,7 +81,7 @@ export default function PhoneNav( {props} ) {
 
         {showNotifications && (
         <div className='fixed top-0 left-0 w-full h-screen z-50 overflow-y-auto'>
-            <Notifications notifications={notifications} />
+            <Notifications notifications={notifications} toggleNotifs={handleToggleNotifications}/>
         </div>
         )}
 

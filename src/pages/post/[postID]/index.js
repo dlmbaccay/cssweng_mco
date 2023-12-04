@@ -118,7 +118,7 @@ function Post() {
         return `${year}-${month}-${day} at ${hours}:${minutes}`;
     };
 
-    const { user, username, description, email, displayName, userPhotoURL, currentUserID } = useUserData();
+    const { user, username, description, email, displayName, userPhotoURL, currentUserID, notifications } = useUserData();
 
     const [ pageLoading, setPageLoading ] = useState(true);
     const [ isSearchInputFocused, setIsSearchInputFocused ] = useState(false);
@@ -388,7 +388,8 @@ function Post() {
                 props={{
                     userPhotoURL: userPhotoURL,
                     username: username,
-                    expanded: true
+                    expanded: true,
+                    notifications: notifications,
                 }}
             />}
             </div>
@@ -398,7 +399,8 @@ function Post() {
                 props={{
                     userPhotoURL: userPhotoURL,
                     username: username,
-                    expanded: false
+                    expanded: false,
+                    notifications: notifications,
                 }}
             />}
             </div>
@@ -425,6 +427,7 @@ function Post() {
                             setShowPhoneNavModal: setShowPhoneNavModal,
                             currentUserUsername: username,
                             currentUserPhotoURL: userPhotoURL,
+                            notifications: notifications,
                         }}
                         />
                     </Modal>

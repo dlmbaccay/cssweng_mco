@@ -425,6 +425,7 @@ function PetProfilePage() {
                   setShowPhoneNavModal: setShowPhoneNavModal,
                   currentUserUsername: currentUser.username,
                   currentUserPhotoURL: currentUser.userPhotoURL,
+                  notifications: currentUser.notifications,
                 }}
               />
             </Modal>
@@ -896,6 +897,9 @@ function PetProfilePage() {
                             <PostSnippet
                               props={{
                                 currentUserID: currentUserID,
+                                currentUserPhotoURL: currentUser.userPhotoURL,
+                                currentUserDisplayName: currentUser.displayName,
+                                currentUserName: currentUser.username,
                                 postID: post.id,
                                 postBody: post.postBody,
                                 postCategory: post.postCategory,
@@ -962,6 +966,9 @@ function PetProfilePage() {
                           <PostSnippet
                             props={{
                               currentUserID: currentUserID,
+                              currentUserPhotoURL: currentUser.userPhotoURL,
+                              currentUserDisplayName: currentUser.displayName,
+                              currentUserName: currentUser.username,
                               postID: post.id,
                               postBody: post.postBody,
                               postCategory: post.postCategory,

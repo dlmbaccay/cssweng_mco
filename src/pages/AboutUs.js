@@ -50,7 +50,7 @@ export default function AboutUs() {
         return () => unsubscribeAuth();
     }, []);
 
-    const { username, userPhotoURL } = useUserData();
+    const { username, userPhotoURL, notifications } = useUserData();
 
     const router = Router;
     const [ pageLoading, setPageLoading ] = useState(true);
@@ -79,7 +79,8 @@ export default function AboutUs() {
                             userPhotoURL: userPhotoURL,
                             username: username,
                             activePage: "",
-                            expanded: true
+                            expanded: true,
+                            notifications: notifications,
                         }}
                         />}
                 </div>
@@ -92,7 +93,8 @@ export default function AboutUs() {
                             userPhotoURL: userPhotoURL,
                             username: username,
                             activePage: "",
-                            expanded: false
+                            expanded: false,
+                            notifications: notifications,
                         }}
                         />}
                 </div>
@@ -121,6 +123,7 @@ export default function AboutUs() {
                                 setShowPhoneNavModal: setShowPhoneNavModal,
                                 currentUserUsername: username,
                                 currentUserPhotoURL: userPhotoURL,
+                                notifications: notifications,
                             }}
                             />
                         </Modal>

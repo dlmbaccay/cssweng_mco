@@ -246,6 +246,7 @@ export default function PetTracker() {
                             setShowPhoneNavModal: setShowPhoneNavModal,
                             currentUserUsername: username,
                             currentUserPhotoURL: userPhotoURL,
+                            notifications: notifications,
                         }}
                         />
                     </Modal>

@@ -205,7 +205,7 @@ function Home() {
   if (!pageLoading) {
     return (
       <div className='flex flex-row w-full h-screen overflow-hidden'>
-        <div className='hidden lg:flex lg:w-[300px]'>
+        <div className='hidden lg:flex lg:w-fit'>
           {(userPhotoURL && username) && <ExpandedNavBar 
               props={{
                 userPhotoURL: userPhotoURL,
@@ -214,7 +214,7 @@ function Home() {
                 expanded: true,
                 notifications: notifications
               }}
-          />}
+          />} 
         </div>
 
         <div className='w-fit md:flex lg:hidden hidden'>
@@ -357,6 +357,9 @@ function Home() {
                               <PostSnippet
                                   props={{
                                       currentUserID: user.uid,
+                                      currentUserPhotoURL: userPhotoURL,
+                                      currentUserDisplayName: displayName,
+                                      currentUserName: username,
                                       postID: post.id,
                                       postBody: post.postBody,
                                       postCategory: post.postCategory,
@@ -380,6 +383,9 @@ function Home() {
                               <Repost
                                   props={{
                                       currentUserID: user.uid,
+                                      currentUserPhotoURL: userPhotoURL,
+                                      currentUserDisplayName: displayName,
+                                      currentUserName: username,
                                       authorID: post.authorID,
                                       authorDisplayName: post.authorDisplayName,
                                       authorUsername: post.authorUsername,
@@ -453,6 +459,9 @@ function Home() {
                                   <PostSnippet
                                       props={{
                                           currentUserID: user.uid,
+                                          currentUserPhotoURL: userPhotoURL,
+                                          currentUserDisplayName: displayName,
+                                          currentUserName: username,
                                           postID: post.id,
                                           postBody: post.postBody,
                                           postCategory: post.postCategory,
@@ -476,6 +485,9 @@ function Home() {
                                   <Repost
                                       props={{
                                           currentUserID: user.uid,
+                                          currentUserPhotoURL: userPhotoURL,
+                                          currentUserDisplayName: displayName,
+                                          currentUserName: username,
                                           authorID: post.authorID,
                                           authorDisplayName: post.authorDisplayName,
                                           authorUsername: post.authorUsername,

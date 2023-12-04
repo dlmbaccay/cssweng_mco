@@ -1,9 +1,11 @@
 import React from 'react'
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 
 
-export default function Notifications({notifications}) {
+export default function Notifications({notifications, toggleNotifs}) {
+    const router = useRouter();
     const notificationsList = notifications === undefined ? [] : notifications ;
     notificationsList.sort((a, b) => {
         // Convert the date strings into Date objects
@@ -40,21 +42,29 @@ export default function Notifications({notifications}) {
     }
 
     return (
-        <div className="flex flex-col relative z-10 w-full bg-snow drop-shadow-xl rounded-xl pl-2 pr-2 h-full ">
+        <div className="flex flex-col relative z-10 w-full bg-snow drop-shadow-xl pl-2 pr-2 h-full ">
         <div className="flex flex-row items-center text-left justify-between pl-2 pr-3">
             <div className="text-2xl font-bold mt-5 text-mustard inline lg:text-md">Notifications</div>
-            <i className="fa-solid fa-chevron-down text-citron text-2xl "></i>
+            <i className="fa-solid fa-x text-citron text-xl self-end" onClick={()=>toggleNotifs()}></i>
         </div>
         <hr className="border-1 border-dark_gray my-5 w-full h-1" />
 
             <div className="flex flex-col overflow-y-auto">
                 <div className="flex flex-col gap-4 justify-start items-left">
                     {notificationsList.map((notification, index) => (
-                      <div key={index} className="flex items-center p-3 hover:bg-gray leading-3">
-                          <Image src={notification.userPhotoURL} width={100} height={100} alt="user-image" className="w-12 h-12 mr-4 rounded-full" />
+                      <div key={index} className="flex items-center p-3 hover:bg-gray leading-3 cursor-pointer" onClick={() =>{ toggleNotifs();router.push(`/post/${notification.postID}`)}}>
+                          <Image src={notification.userPhotoURL} width={100} height={100} alt="user-image" className="w-12 h-12 mr-4 rounded-full hover:drop-shadow-lg" onClick={(e) => {
+                                toggleNotifs();
+                                e.stopPropagation(); // Prevent the outer click event from being triggered
+                                router.push(`/user/${notification.username}`);
+                            }}/>
                           <div>
                               <div style={{ wordWrap: 'break-word' }} className=''>
-                                 <span className="text-sm font-bold">{notification.username}</span> 
+                                 <span className="text-sm font-bold hover:drop-shadow-lg hover:text-base" onClick={(e) => {
+                                    toggleNotifs();
+                                    e.stopPropagation(); // Prevent the outer click event from being triggered
+                                    router.push(`/user/${notification.username}`);
+                                }}>{notification.username}</span> 
                                  <span className="text-sm"> {notification.action}</span>
                               </div>
                               <p className='mt-1 text-xs text-raisin'>{formatNotifDate(notification.date)}</p>

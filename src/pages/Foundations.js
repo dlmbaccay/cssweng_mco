@@ -98,6 +98,7 @@ function Foundations() {
                     setShowPhoneNavModal: setShowPhoneNavModal,
                     currentUserUsername: username,
                     currentUserPhotoURL: userPhotoURL,
+                    notifications: notifications,
                   }}
                 />
               </Modal>

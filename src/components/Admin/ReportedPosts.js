@@ -8,6 +8,8 @@ import { updateDoc, doc } from 'firebase/firestore';
 export default function ReportedPosts() {
 
   const [reports, setReports] = useState([])
+  const [filteredReports, setFilteredReports] = useState([])
+  const [filterValue, setFilterValue] = useState('')
   const [loading, setLoading] = useState(true)
 
   // Function to format the date
@@ -33,11 +35,44 @@ export default function ReportedPosts() {
         reports.push(doc.data())
       })
       setReports(reports)
+      setFilteredReports(reports)
       setLoading(false)
     })
 
     return () => unsubscribe()
   }, [])
+
+  const reasons = ['Nudity', 'Harassment', 'Violence', 'Self-Injury', 'False Information', 'Spam', 'Hate Speech', 'Others'];
+
+  useEffect(() => {
+    // filter reports based on filterValue
+    if (filterValue === 'time') {
+      const sortedReports = [...reports].sort((a, b) => {
+        // Convert the date strings into Date objects
+        const dateA = new Date(a.reportDate);
+        const dateB = new Date(b.reportDate);
+       
+        // Subtract the dates to get a value for sorting
+        return dateB - dateA;
+      });
+      setFilteredReports(sortedReports)
+    } else {
+      if (filterValue === 'Others') {
+        // Filter reports wherein the selectedOptions array contains a value that does not exist in reasons array
+        const sortedReports = reports.filter((report) => report.selectedOptions.some(option => !reasons.includes(option)))
+        setFilteredReports(sortedReports)
+      } else {
+        // Filter reports wherein the selectedOptions array contains the filterValue
+        const sortedReports = reports.filter((report) => report.selectedOptions.includes(filterValue))
+        setFilteredReports(sortedReports)
+      }
+    }
+    // } else if (filterValue === 'times') {
+    //   setFilteredReports(sortedReports)
+    // }
+  }, [filterValue])
+
+
 
   const [openReportIndex, setOpenReportIndex] = useState(null);
 
@@ -95,11 +130,14 @@ export default function ReportedPosts() {
         {/* via Times Reported */}
         <select 
           className='w-[200px] h-10 bg-snow border-2 border-grass rounded-md text-grass font-shining text-xl pl-2 pr-2'
-          name="reportFilter" id="reportFilter">
+          name="reportFilter" id="reportFilter" onChange={(e) => setFilterValue(e.target.value)}>
           <option value="filter" disabled selected>Filter</option>
-          <option value="time">Reported Post Time</option>
-          <option value="reason">Reason for Reporting</option>
-          <option value="times">Times Reported</option>
+          <option value="time" className='cursor-pointer'>Reported Post Time</option>
+          <option value="reason" disabled>Reason for Reporting</option>
+          {reasons.map((reason) => (
+            <option value={reason} className='cursor-pointer'> → {reason}</option>
+          ))}
+          {/* <option value="times" className='cursor-pointer' >Times Reported</option> */}
         </select>
       </div>
 
@@ -110,13 +148,13 @@ export default function ReportedPosts() {
           </div>
         :
           <div className='w-full'>
-            {reports.length === 0 ?
+            {filteredReports.length === 0 ?
               <div className='w-full h-full flex items-center justify-center'>
                 <h1 className='font-shining text-2xl pt-8'>No reported posts</h1>
               </div>
             :
               <div className='flex flex-col items-center w-full pt-8 pb-8 gap-8 '>
-                {reports.map((report, index) => (
+                {filteredReports.map((report, index) => (
                   <div key={index} className='drop-shadow-sm hover:drop-shadow-md bg-snow w-screen md:w-[650px] min-h-fit rounded-lg p-6 flex flex-col'>
                     
                     <div className='border-b pb-2 flex flex-row items-center justify-between'>

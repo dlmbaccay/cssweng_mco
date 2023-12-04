@@ -26,13 +26,18 @@ export default function ExpandedNavBar({ props }) {
     };
     console.log(notifications)
 
+    const handleToggleNotifications = () => {
+      setShowNotifications(!showNotifications);
+    };
+
+
     return (
     <>
         { !isExpanded && 
           <div
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className='w-3 pl-1 pr-1 pt-2 pb-4 h-screen bg-pale_yellow drop-shadow-xl flex flex-col justify-between items-center'
+            className='w-14 pl-1 pr-1 pt-2 pb-4 h-screen bg-pale_yellow drop-shadow-xl flex flex-col justify-between items-center '
           >
             <Image 
               src={'/images/logo.png'}
@@ -52,7 +57,7 @@ export default function ExpandedNavBar({ props }) {
           <div 
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className='w-[300px] h-screen bg-pale_yellow drop-shadow-xl flex flex-col p-10'>
+            className='relative w-[300px] h-screen bg-pale_yellow drop-shadow-xl flex flex-col p-10'>
             
             {/* user meta */}
             <button 
@@ -200,8 +205,8 @@ export default function ExpandedNavBar({ props }) {
           </div>
         
           {showNotifications &&
-            <div className='w-[300px] h-screen'>
-              <Notifications notifications={notifications} />
+            <div className='absolute top-0 left-[300px] w-[350px] h-screen z-20'>
+              <Notifications notifications={notifications}  toggleNotifs={handleToggleNotifications}/>
             </div>
           }
           
