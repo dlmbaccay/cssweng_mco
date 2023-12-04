@@ -134,8 +134,8 @@ export default function ReportedPosts() {
           <option value="filter" disabled selected>Filter</option>
           <option value="time" className='cursor-pointer'>Reported Post Time</option>
           <option value="reason" disabled>Reason for Reporting</option>
-          {reasons.map((reason) => (
-            <option value={reason} className='cursor-pointer'> → {reason}</option>
+          {reasons.map((reason, index) => (
+            <option key={index} value={reason} className='cursor-pointer'> → {reason}</option>
           ))}
           {/* <option value="times" className='cursor-pointer' >Times Reported</option> */}
         </select>
