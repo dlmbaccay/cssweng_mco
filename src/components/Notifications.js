@@ -40,10 +40,10 @@ export default function Notifications({notifications}) {
     }
 
     return (
-        <div className="flex flex-col w-full bg-snow drop-shadow-xl rounded-xl pl-2 pr-2 h-full">
+        <div className="flex flex-col relative z-10 w-full bg-snow drop-shadow-xl rounded-xl pl-2 pr-2 h-full ">
         <div className="flex flex-row items-center text-left justify-between pl-2 pr-3">
             <div className="text-2xl font-bold mt-5 text-mustard inline lg:text-md">Notifications</div>
-            <i className="fa-solid fa-chevron-down text-citron text-2xl sm:hidden"></i>
+            <i className="fa-solid fa-chevron-down text-citron text-2xl "></i>
         </div>
         <hr className="border-1 border-dark_gray my-5 w-full h-1" />
 

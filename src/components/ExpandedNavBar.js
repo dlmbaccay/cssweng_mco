@@ -32,7 +32,7 @@ export default function ExpandedNavBar({ props }) {
           <div
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className='w-14 pl-1 pr-1 pt-2 pb-4 h-screen bg-pale_yellow drop-shadow-xl flex flex-col justify-between items-center'
+            className='w-3 pl-1 pr-1 pt-2 pb-4 h-screen bg-pale_yellow drop-shadow-xl flex flex-col justify-between items-center'
           >
             <Image 
               src={'/images/logo.png'}
@@ -52,7 +52,7 @@ export default function ExpandedNavBar({ props }) {
           <div 
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className='w-[300px] h-screen bg-pale_yellow drop-shadow-xl flex flex-col'>
+            className='w-[300px] h-screen bg-pale_yellow drop-shadow-xl flex flex-col p-10'>
             
             {/* user meta */}
             <button 

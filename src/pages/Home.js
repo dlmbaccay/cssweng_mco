@@ -257,7 +257,7 @@ function Home() {
           </nav>
 
           {/* search and logo bar */}
-          <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
+          <div className='w-full relative bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
               <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
                   <i
                   className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
