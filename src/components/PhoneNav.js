@@ -1,13 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react';
 import Image from 'next/image'
 import Router from 'next/router'
 import { auth } from '../lib/firebase';
 import toast from 'react-hot-toast';
+import Notifications from './Notifications';
 
 export default function PhoneNav( {props} ) {
     
-    const { setShowPhoneNavModal, currentUserUsername, currentUserPhotoURL } = props
+    const { setShowPhoneNavModal, currentUserUsername, currentUserPhotoURL, notifications} = props
     const router = Router
+
+    const [showNotifications, setShowNotifications] = useState(false);
 
     return (
     <div className='w-full h-full flex flex-col items-center'>
@@ -22,7 +25,7 @@ export default function PhoneNav( {props} ) {
               </button>
         </div>
 
-        <div className='w-[50%] h-fit flex flex-col items-center mt-8 gap-4' onClick={() => router.push(`/user/${currentUserUsername}`)}>
+        <div className='w-fit h-fit flex flex-col items-center mt-8 gap-4' onClick={() => router.push(`/user/${currentUserUsername}`)}>
             <Image src={currentUserPhotoURL} alt='profile picture' width={100} height={100} className='rounded-full'/>
             <h1 className='font-shining text-2xl text-raisin_black'>@{currentUserUsername}</h1>
         </div>
@@ -50,7 +53,7 @@ export default function PhoneNav( {props} ) {
             <h1 className='font-shining text-3xl text-grass'>Profile</h1>
         </button>
 
-        <button className='flex flex-row items-center justify-start gap-2' onClick={() => router.push('/Home')}>
+        <button className='flex flex-row items-center justify-start gap-2'  onClick={() => setShowNotifications(!showNotifications)}>
             <i className='fa-solid fa-bell text-xl w-[40px] h-[40px] flex items-center justify-center rounded-full bg-grass text-pale_yellow'/>
             <h1 className='font-shining text-3xl text-grass'>Notifications</h1>
         </button>
@@ -71,6 +74,12 @@ export default function PhoneNav( {props} ) {
             <h1 className='font-shining text-3xl text-grass'>Log Out</h1>
         </button>
         </div>
+
+        {showNotifications && (
+        <div className='fixed top-0 left-0 w-full h-screen z-50 overflow-y-auto'>
+            <Notifications notifications={notifications} />
+        </div>
+        )}
 
         {/* <button onClick={() => router.push('/AboutUs')} className='text-grass mb-2 mt-auto hover:text-grass'>
             About Us
