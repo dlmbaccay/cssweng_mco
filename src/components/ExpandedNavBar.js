@@ -71,7 +71,7 @@ export default function ExpandedNavBar({ props }) {
 
             <div className='flex flex-col gap-4'>
               <button 
-                onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => router.push('/Home')} className='group flex flex-row items-center gap-2 pl-6 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
@@ -90,7 +90,7 @@ export default function ExpandedNavBar({ props }) {
               </button>
 
               <button 
-                onClick={() => router.push('/PetTracker')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => router.push('/PetTracker')} className='group flex flex-row items-center gap-2 pl-6 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
@@ -109,26 +109,7 @@ export default function ExpandedNavBar({ props }) {
               </button>
 
               <button 
-                onClick={() => router.push('/Foundations')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
-                <i 
-                  className={`
-                  text-md w-[35px] h-[35px]
-                  flex items-center justify-center
-                  fa-solid fa-earth-asia rounded-full 
-                  bg-grass text-pale_yellow 
-                  transition-all group-hover:bg-raisin_black 
-                  ${activePage === 'Foundations' ? "bg-raisin_black" : ""}
-                  `}/>
-                <p className={`
-                  text-grass text-2xl
-                  font-shining  
-                  transition-all  group-hover:text-raisin_black 
-                  ${activePage === 'Foundations' ? "text-raisin_black" : ""}`}>
-                    Foundations</p>
-              </button>
-
-              <button 
-                onClick={() => router.push(`/user/${username}`)} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => router.push(`/user/${username}`)} className='group flex flex-row items-center gap-2 pl-6 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
@@ -147,7 +128,7 @@ export default function ExpandedNavBar({ props }) {
               </button>
 
               <button 
-                onClick={() => setShowNotifications(!showNotifications)} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => setShowNotifications(!showNotifications)} className='group flex flex-row items-center gap-2 pl-6 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
@@ -166,7 +147,7 @@ export default function ExpandedNavBar({ props }) {
               </button>
 
               <button
-                onClick={() => router.push('/Settings')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
+                onClick={() => router.push('/Settings')} className='group flex flex-row items-center gap-2 pl-6 h-10'>
                 <i 
                   className={`
                   text-md w-[35px] h-[35px]
@@ -193,7 +174,7 @@ export default function ExpandedNavBar({ props }) {
                 router.push('/');
                 toast.success('Successfully logged out!');
               }} 
-              className='group flex flex-row items-center gap-2 pl-10 h-10'
+              className='group flex flex-row items-center gap-2 pl-6 h-10'
               >
               <i className='transition-all fa-solid fa-right-from-bracket pl-[2px] w-[35px] h-[35px] rounded-full bg-grass flex items-center justify-center text-lg text-pale_yellow group-hover:bg-raisin_black'></i>
               <p className='transition-all text-grass text-2xl font-shining group-hover:text-raisin_black'>Log Out</p>

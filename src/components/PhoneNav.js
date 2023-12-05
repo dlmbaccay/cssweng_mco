@@ -47,11 +47,6 @@ export default function PhoneNav( {props} ) {
             <h1 className='font-shining text-3xl text-grass'>Pet Tracker</h1>
         </button>
 
-        <button className='flex flex-row items-center justify-start gap-2' onClick={() => router.push('/Home')}>
-            <i className='fa-solid fa-earth-asia text-2xl w-[40px] h-[40px] flex items-center justify-center rounded-full bg-grass text-pale_yellow'/>
-            <h1 className='font-shining text-3xl text-grass'>Foundations</h1>
-        </button>
-
         <button className='flex flex-row items-center justify-start gap-2' onClick={() => router.push(`/user/${currentUserUsername}`)}>
             <i className='fa-solid fa-user text-xl w-[40px] h-[40px] flex items-center justify-center rounded-full bg-grass text-pale_yellow'/>
             <h1 className='font-shining text-3xl text-grass'>Profile</h1>
