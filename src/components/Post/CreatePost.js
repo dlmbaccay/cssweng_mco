@@ -10,7 +10,7 @@ export default function CreatePost({ props }) {
 
     const { 
         createType,
-        currentUserID, displayName,
+        currentUserID, displayName, reportCount,
         username, userPhotoURL, setShowCreatePostForm 
     } = props
 
@@ -73,6 +73,11 @@ export default function CreatePost({ props }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (reportCount >= 10 ){
+            toast.error('You are restricted from posting, commenting, and sharing.');
+            return;
+        }
 
         if (!postBody) {
             // if no images uploaded

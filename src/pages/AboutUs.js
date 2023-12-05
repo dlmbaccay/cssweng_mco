@@ -50,7 +50,7 @@ export default function AboutUs() {
         return () => unsubscribeAuth();
     }, []);
 
-    const { username, userPhotoURL, notifications } = useUserData();
+    const { username, userPhotoURL, notifications, lostPetPostsCount } = useUserData();
 
     const router = Router;
     const [ pageLoading, setPageLoading ] = useState(true);
@@ -81,6 +81,7 @@ export default function AboutUs() {
                             activePage: "",
                             expanded: true,
                             notifications: notifications,
+                            lostPetPostsCount: lostPetPostsCount
                         }}
                         />}
                 </div>
@@ -95,6 +96,7 @@ export default function AboutUs() {
                             activePage: "",
                             expanded: false,
                             notifications: notifications,
+                            lostPetPostsCount: lostPetPostsCount
                         }}
                         />}
                 </div>

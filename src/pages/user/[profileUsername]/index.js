@@ -552,7 +552,8 @@ function UserProfilePage() {
                         username: currentUserUsername,
                         activePage: "Profile",
                         expanded: false,
-                        notifications: getCurrentUser.notifications
+                        notifications: getCurrentUser.notifications,
+                        lostPetPostsCount: getCurrentUser.lostPetPostsCount
                     }}
                 />
             </div>
@@ -981,6 +982,7 @@ function UserProfilePage() {
                                                         props={{
                                                             createType: 'original',
                                                             currentUserID: currentUserID,
+                                                            reportCount: getCurrentUser.reportCount,
                                                             displayName: displayName,
                                                             username: username,
                                                             userPhotoURL: userPhotoURL,

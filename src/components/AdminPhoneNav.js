@@ -32,14 +32,14 @@ export default function AdminPhoneNav( {props} ) {
                 <h1 className='font-shining text-3xl text-grass'>Reported Posts</h1>
             </button>
 
-            <button className='flex flex-row items-center justify-start gap-2' onClick={(e) => {
+            {/* <button className='flex flex-row items-center justify-start gap-2' onClick={(e) => {
                 e.stopPropagation();
                 setShowPhoneNavModal(false);
                 setActiveContainer('Foundation Applications')
             }}>
                 <i className='fa-solid fa-earth-asia text-2xl w-[40px] h-[40px] flex items-center justify-center rounded-full bg-grass text-pale_yellow'/>
                 <h1 className='font-shining text-3xl text-grass'>Foundations</h1>
-            </button>
+            </button> */}
 
             <div className='border w-full mt-2 opacity-30 text-xanthous' />
 

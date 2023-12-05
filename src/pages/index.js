@@ -22,11 +22,7 @@ export default function Landing() {
                     if (user.uid === "DX1Zzib1x5Ny0J42pNwzfdMTynE3") {
                         router.push("/admin");
                     } else {
-                        if (reportCount >= 10) {
-                            router.push("/banned");
-                        } else {
-                            router.push("/Home");
-                        }
+                        router.push("/Home");
                     }
                 } else {
                     router.push("/Login");

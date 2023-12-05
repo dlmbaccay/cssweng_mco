@@ -118,7 +118,7 @@ function Post() {
         return `${year}-${month}-${day} at ${hours}:${minutes}`;
     };
 
-    const { user, username, description, email, displayName, userPhotoURL, currentUserID, notifications } = useUserData();
+    const { user, username, description, email, displayName, userPhotoURL, currentUserID, notifications, reportCount, lostPetPostsCount } = useUserData();
 
     const [ pageLoading, setPageLoading ] = useState(true);
     const [ isSearchInputFocused, setIsSearchInputFocused ] = useState(false);
@@ -390,6 +390,7 @@ function Post() {
                     username: username,
                     expanded: true,
                     notifications: notifications,
+                    lostPetPostsCount: lostPetPostsCount,
                 }}
             />}
             </div>
@@ -401,6 +402,7 @@ function Post() {
                     username: username,
                     expanded: false,
                     notifications: notifications,
+                    lostPetPostsCount: lostPetPostsCount,
                 }}
             />}
             </div>
@@ -966,6 +968,7 @@ function Post() {
                                                         currentUserPhotoURL: userPhotoURL,
                                                         currentUserUsername: username,
                                                         currentUserDisplayName: displayName,
+                                                        reportCount: reportCount,
                                                         postID: postID,
                                                         isEdited: comment.isEdited,
                                                         commentID: comment.commentID,

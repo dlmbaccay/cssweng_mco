@@ -37,7 +37,7 @@ export default function PostExpanded({ props }) {
     }, []);
 
     const {
-        currentUserID, postID, postBody, 
+        currentUserID, reportCount, postID, postBody, 
         postCategory, postTrackerLocation,
         postPets, postDate, imageUrls,
         authorID, authorDisplayName, authorUsername, 
@@ -276,6 +276,11 @@ export default function PostExpanded({ props }) {
 
     const handleComment = async (event) => {
         event.preventDefault();
+
+        if (reportCount >= 10 ){
+            toast.error('You are restricted from posting, commenting, and sharing.');
+            return;
+        }
 
         if(!commentBody) {
             toast.error('Comments cannot be empty!');
@@ -604,6 +609,7 @@ export default function PostExpanded({ props }) {
                                         currentUserPhotoURL: currentUser.photoURL,
                                         currentUserUsername: currentUser.username,
                                         currentUserDisplayName: currentUser.displayName,
+                                        reportCount: currentUser.reportCount,
                                         postID: postID,
                                         postBody: postBody,
                                         postCategory: postCategory,
@@ -838,6 +844,7 @@ export default function PostExpanded({ props }) {
                                             currentUserPhotoURL: currentUser.photoURL,
                                             currentUserUsername: currentUser.username,
                                             currentUserDisplayName: currentUser.displayName,
+                                            reportCount: currentUser.reportCount,
                                             postID: postID,
                                             isEdited: comment.isEdited,
                                             commentID: comment.commentID,

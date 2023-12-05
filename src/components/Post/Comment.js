@@ -28,6 +28,7 @@ export default function Comment( {props} ) {
         currentUserUsername,
         currentUserPhotoURL,
         currentUserDisplayName,
+        reportCount,
         postID, commentID,
         commentBody, commentDate, isEdited,
         authorID, authorDisplayName, 
@@ -102,6 +103,11 @@ export default function Comment( {props} ) {
 
     const handleReply = async (event) => {
         event.preventDefault();
+
+        if (reportCount >= 10 ){
+            toast.error('You are restricted from posting, commenting, and sharing.');
+            return;
+        }
 
         if (replyBody.trim() === '') {
             toast.error('Reply cannot be empty!');
@@ -520,6 +526,7 @@ export default function Comment( {props} ) {
                                     currentUserUsername: currentUserUsername,
                                     currentUserPhotoURL: currentUserPhotoURL,
                                     currentUserDisplayName: currentUserDisplayName,
+                                    reportCount: reportCount,
                                     postID: postID,
                                     commentID: commentID,
                                     isEdited: reply.isEdited,

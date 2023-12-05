@@ -391,7 +391,8 @@ function PetProfilePage() {
               username: petOwnerUsername,
               activePage: "Profile",
               expanded: false,
-              notifications: currentUser.notifications
+              notifications: currentUser.notifications,
+              lostPetPostsCount: currentUser.lostPetPostsCount
             }}
           />
         )}

@@ -88,11 +88,13 @@ export default function ReportedPosts() {
 
     try {
       await runTransaction(firestore, async (transaction) => {
+        // Get user snapshot first
+        const userSnapshot = await transaction.get(userRef);
+        const userPosts = userSnapshot.data().posts || [];
+
         transaction.delete(postRef)
 
         // Delete post from user's posts collection
-        const userSnapshot = await transaction.get(userRef);
-        const userPosts = userSnapshot.data().posts || [];
         const updatedPosts = userPosts.filter((postId) => postId !== report.reportedPostID);
         transaction.update(userRef, { posts: updatedPosts });
 
@@ -114,9 +116,12 @@ export default function ReportedPosts() {
 
     const reportRef = firestore.collection('reports').doc(report.reportID)
     try {
-      await updateDoc(reportRef, {
-        reportStatus: 'rejected'
-      });
+      // await updateDoc(reportRef, {
+      //   reportStatus: 'rejected'
+      // });
+      await runTransaction(firestore, async (transaction) => {
+        transaction.delete(reportRef) 
+      })
       toast.success('Report rejected');
     } catch (error) {
       toast.error('Transaction failed: ', error.message);
@@ -127,7 +132,7 @@ export default function ReportedPosts() {
     <div className='w-full'>
 
       <div className='flex flex-row h-14 pl-6 pr-6 bg-snow items-center justify-between'>
-        <h1 className='font-shining text-grass text-3xl'>Reported Posts</h1>
+        <h1 className='font-shining text-grass text-3xl'>View Reported Posts</h1>
         
         {/* drop down for filter */}
         {/* via Reported Post Time */}

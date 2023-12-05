@@ -81,9 +81,6 @@ export default function Login() {
                         icon: '👏',
                     });
                     router.push('/AccountSetup');
-                } else if (reportCount >= 10) {
-                    // If user is banned, redirect to banned page
-                    router.push('/banned');
                 } else {
                     // If old user (email verified and has username), redirect to Home
 

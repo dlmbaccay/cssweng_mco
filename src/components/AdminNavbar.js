@@ -80,7 +80,7 @@ export default function AdminNavbar({ props }) {
                     Reported Posts</p>
                 </button>
 
-                <button 
+                {/* <button 
                 onClick={() => setActiveContainer('Foundation Applications')} className='group flex flex-row items-center gap-2 pl-10 h-10'>
                 <i 
                     className={`
@@ -97,7 +97,7 @@ export default function AdminNavbar({ props }) {
                     transition-all  group-hover:text-raisin_black 
                     ${activeContainer === 'Foundation Applications' ? "text-raisin_black" : ""}`}>
                     Foundations</p>
-                </button>
+                </button> */}
 
                 <hr className='border border-xanthous opacity-30 ml-6 mr-6 mt-2 mb-2'/>
 

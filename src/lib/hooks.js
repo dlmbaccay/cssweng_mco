@@ -24,6 +24,7 @@ export function useUserData() {
   const [following, setFollowing] = useState([]);
   const [reportCount, setReportCount] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [lostPetPostsCount, setLostPetPostsCount] = useState(null);
 
   useEffect(() => {
   // turn off realtime subscription
@@ -42,6 +43,13 @@ export function useUserData() {
       setReportCount(doc.data()?.reportCount);
     });
 
+    // get the list of posts from the posts collection that have authorID equal to the user's ID and postCategory == 'Lost Pets'
+    const lostPetPostsRef = firestore.collection('posts').where("authorID", "==", user.uid).where("postCategory", "==", "Lost Pets");
+
+    // assign the list to the lostPetPosts variable
+    lostPetPostsRef.get().then((querySnapshot) => {
+      setLostPetPostsCount(querySnapshot.size);
+    });
     const notificationsRef = userRef.collection('notifications');
     unsubscribe = notificationsRef.onSnapshot((snapshot) => {
       const notifications = [];
@@ -60,6 +68,7 @@ export function useUserData() {
     setEmail(null);
     setFollowing(null);
     setReportCount(null);
+    setLostPetPostsCount(null);
   }
 
   return unsubscribe;
@@ -70,7 +79,7 @@ export function useUserData() {
     // displayName: only run if displayName changes, 
     // following: only run if following changes
 
-  return { user, username, description, email, displayName, userPhotoURL, currentUserID, following, notifications, reportCount };
+  return { user, username, description, email, displayName, userPhotoURL, currentUserID, following, notifications, reportCount, lostPetPostsCount };
 }
 
 export function usePetData(userId) {

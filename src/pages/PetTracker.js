@@ -31,7 +31,7 @@ export default function PetTracker() {
         return () => unsubscribe(); // Cleanup subscription on unmount
     }, []);
 
-    const { user, username, description, email, displayName, userPhotoURL, notifications } = useUserData();
+    const { user, username, description, email, displayName, userPhotoURL, notifications, reportCount, lostPetPostsCount } = useUserData();
     const router = Router;
     const [ pageLoading, setPageLoading ] = useState(true);
     const [ isSearchInputFocused, setIsSearchInputFocused ] = useState(false);
@@ -207,7 +207,8 @@ export default function PetTracker() {
                         username: username,
                         activePage: "PetTracker",
                         expanded: true,
-                        notifications: notifications
+                        notifications: notifications,
+                        lostPetPostsCount: lostPetPostsCount
                     }}
                 />}
             </div>
@@ -219,7 +220,8 @@ export default function PetTracker() {
                         username: username,
                         activePage: "PetTracker",
                         expanded: false,
-                        notifications: notifications
+                        notifications: notifications,
+                        lostPetPostsCount: lostPetPostsCount
                     }}
                 />}
             </div>
@@ -318,6 +320,7 @@ export default function PetTracker() {
                             props={{
                                 createType: 'tracker',
                                 currentUserID: user.uid,
+                                reportCount: reportCount,
                                 displayName: displayName,
                                 username: username,
                                 userPhotoURL: userPhotoURL,

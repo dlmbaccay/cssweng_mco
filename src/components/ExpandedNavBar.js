@@ -8,7 +8,7 @@ import Modal from 'react-modal';
 
 export default function ExpandedNavBar({ props }) {
     
-    const { userPhotoURL, username, activePage, expanded, isUser, notifications } = props;
+    const { userPhotoURL, username, activePage, expanded, isUser, notifications, lostPetPostsCount } = props;
     const router = Router;
     const [showNotifications, setShowNotifications] = useState(false);
 
@@ -57,7 +57,7 @@ export default function ExpandedNavBar({ props }) {
           <div 
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className='relative w-[300px] h-screen bg-pale_yellow drop-shadow-xl flex flex-col p-10'>
+            className='relative w-[330px] h-screen bg-pale_yellow drop-shadow-xl flex flex-col p-10'>
             
             {/* user meta */}
             <button 
@@ -106,6 +106,23 @@ export default function ExpandedNavBar({ props }) {
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'PetTracker' ? "text-raisin_black" : ""}`}>
                     Pet Tracker</p>
+
+
+                <div
+                  className={`
+                    w-6 h-6 flex items-center justify-center
+                    bg-mustard rounded-full overflow-hidden
+                    ${activePage === 'PetTracker' ? "border-2 border-raisin_black" : ""}
+                  `}
+                >
+                  <p className={`
+                    text-snow text-xl font-shining 
+                    transition-all group-hover:text-raisin_black 
+                    ${activePage === 'PetTracker' ? "text-raisin_black" : ""}
+                  `}>
+                    {lostPetPostsCount === undefined ? 0 : lostPetPostsCount}
+                  </p>
+                </div>
               </button>
 
               <button 
@@ -144,6 +161,21 @@ export default function ExpandedNavBar({ props }) {
                   transition-all  group-hover:text-raisin_black 
                   ${activePage === 'Notifications' ? "text-raisin_black" : ""}`}>
                     Notifications</p>
+                <div
+                  className={`
+                    w-6 h-6 flex items-center justify-center
+                    bg-xanthous rounded-full overflow-hidden
+                    ${activePage === 'Notifications' ? "border-2 border-raisin_black" : ""}
+                  `}
+                >
+                  <p className={`
+                    text-snow text-xl font-shining 
+                    transition-all group-hover:text-raisin_black 
+                    ${activePage === 'Notifications' ? "text-raisin_black" : ""}
+                  `}>
+                    {notifications === undefined ? 0 : notifications.length}
+                  </p>
+                </div>
               </button>
 
               <button

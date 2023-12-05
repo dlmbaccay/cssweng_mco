@@ -33,7 +33,7 @@ function Home() {
     return () => unsubscribe(); // Cleanup subscription on unmount
   }, []);
 
-  const { user, username, description, email, displayName, userPhotoURL, notifications } = useUserData();
+  const { user, username, description, email, displayName, userPhotoURL, notifications, reportCount, lostPetPostsCount } = useUserData();
 
   const router = Router;
   const [ pageLoading, setPageLoading ] = useState(true);
@@ -212,7 +212,8 @@ function Home() {
                 username: username,
                 activePage: "Home",
                 expanded: true,
-                notifications: notifications
+                notifications: notifications,
+                lostPetPostsCount: lostPetPostsCount
               }}
           />} 
         </div>
@@ -224,7 +225,8 @@ function Home() {
                 username: username,
                 activePage: "Home",
                 expanded: false,
-                notifications: notifications
+                notifications: notifications,
+                lostPetPostsCount: lostPetPostsCount
               }}
           />}
         </div>
@@ -323,6 +325,7 @@ function Home() {
                       props={{
                         createType: 'original',
                         currentUserID: user.uid,
+                        reportCount: reportCount,
                         displayName: displayName,
                         username: username,
                         userPhotoURL: userPhotoURL,
