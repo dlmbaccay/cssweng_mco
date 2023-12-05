@@ -373,7 +373,7 @@ export default function RepostExpanded({props}) {
                     href={`/post/${repostID}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className={`flex flex-col md:flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
+                    className={`flex flex-col mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
                     >
                         {repostBody && 
             <div className='w-full text-justify'>

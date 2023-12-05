@@ -256,11 +256,11 @@ export default function RepostSnippet( {props} ) {
           href={`/post/${repostID}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className={`flex flex-col md:flex-row mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-6"}`}
+          className={`flex flex-col mt-2 cursor-pointer ${repostBody === '' ? "justify-center" : "justify-between gap-2"}`}
         >
           {repostBody && 
             <div className='w-full text-justify'>
-              <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-1"}`}>{repostBody}</p>
+              <p className={`overflow-hidden text-sm md:text-base ${postBody === '' ? "whitespace-pre-line line-clamp-4" : "line-clamp-4"}`}>{repostBody}</p>
             </div>
           }
 
