@@ -105,7 +105,7 @@ export default function Comment( {props} ) {
         event.preventDefault();
 
         if (reportCount >= 10 ){
-            toast.error('You are restricted from posting, commenting, and sharing.');
+            toast.error('You are restricted from posting, commenting, and reposting.');
             return;
         }
 
@@ -311,7 +311,7 @@ export default function Comment( {props} ) {
     return (
     <div className='flex flex-row w-full items-start min-h-[60px] max-h-fit gap-2'>
         <Image src={authorPhotoURL} alt={authorUsername} 
-            width={40} height={40} className='rounded-full'   
+            width={100} height={100} className='h-[40px] w-[40px] rounded-full aspect-square object-cover'   
         />
 
         <div className='flex flex-col w-full'>

@@ -134,12 +134,10 @@ export default function RepostSnippet( {props} ) {
             if (currentUserID !== authorID) {
               // Create a new document in the notificationsRef collection
               const notificationRef = notificationsRef.doc();
-              const date = new Date();
-              date.setHours(date.getHours() + 8); // Adjust to UTC+8
               await notificationRef.set({
                 userID: currentUserID,
                 action: "reacted to your shared post!",
-                date: date, // Get the server timestamp
+                date: new Date().toISOString(),  // Get the server timestamp
                 postID: postID,
                 userPhotoURL: currentUserPhotoURL,
                 displayname: currentUserDisplayName,
@@ -154,12 +152,10 @@ export default function RepostSnippet( {props} ) {
           if (currentUserID !== authorID) {
             // Create a new document in the notificationsRef collection
             const notificationRef = notificationsRef.doc();
-            const date = new Date();
-            date.setHours(date.getHours() + 8); // Adjust to UTC+8
             await notificationRef.set({
               userID: currentUserID,
               action: "reacted to your shared post!",
-              date: date, // Get the server timestamp
+              date: new Date().toISOString(),  // Get the server timestamp
               postID: postID,
               userPhotoURL: currentUserPhotoURL,
               displayname: currentUserDisplayName,
@@ -199,8 +195,8 @@ export default function RepostSnippet( {props} ) {
       <div id='post-header' className='flex flex-row'>
         <div id='user-image' className='flex flex-row justify-start items-start'>
           <Image 
-            src={authorPhotoURL} alt='Profile Picture' width={45} height={45}
-            className='rounded-full drop-shadow-sm aspect-square h-[40px] w-[40px] md:h-[45px] md:w-[45px]'
+            src={authorPhotoURL} alt='Profile Picture' width={100} height={100}
+            className='rounded-full drop-shadow-sm aspect-square object-cover h-[40px] w-[40px] md:h-[45px] md:w-[45px]'
           />
         </div>
 
@@ -235,8 +231,8 @@ export default function RepostSnippet( {props} ) {
         
         <div className='flex flex-row'>
             <Image
-              src={repostAuthorPhotoURL} alt='Profile Picture' width={45} height={45}
-              className='rounded-full drop-shadow-sm aspect-square h-[40px] w-[40px] md:h-[45px] md:w-[45px]'
+              src={repostAuthorPhotoURL} alt='Profile Picture' width={100} height={100}
+              className='rounded-full drop-shadow-sm aspect-square object-cover h-[40px] w-[40px] md:h-[45px] md:w-[45px]'
             />
 
             <div className='ml-4 items-center justify-center'>
@@ -268,7 +264,7 @@ export default function RepostSnippet( {props} ) {
             {repostImage !== null ? (
               <Image
                 src={repostImage} alt='Repost Image' width={200} height={200}
-                className={`rounded-md drop-shadow-sm aspect-square ${repostBody === '' ? "h-[150px] w-[150px] md:h-[200px] md:w-[200px]" : "h-[100px] w-[100px] md:h-[150px] md:w-[150px]"}`}
+                className={`rounded-md drop-shadow-sm aspect-square object-cover ${repostBody === '' ? "h-[150px] w-[150px] md:h-[200px] md:w-[200px]" : "h-[100px] w-[100px] md:h-[150px] md:w-[150px]"}`}
               />
             ) : null}
           </div>

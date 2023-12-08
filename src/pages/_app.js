@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
     <UserContext.Provider value={userData}>
       <Head>
         <title>BantayBuddy</title>
-        <link rel="icon" href="/public/images/logo.ico" />
+        <link rel="icon" href="images/logo.ico" />
       </Head>
       <Layout>
         <Component {...pageProps} />

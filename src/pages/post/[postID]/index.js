@@ -469,7 +469,7 @@ function Post() {
 
                                 <div className='flex flex-row justify-start items-start '>
                                     <div id="user-image">
-                                    <Image width={45} height={45} src={post?.authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm aspect-square'/>
+                                    <Image width={100} height={100} src={post?.authorPhotoURL} alt="user image" className='h-[45px] w-[45px] rounded-full drop-shadow-sm aspect-square object-cover'/>
                                     </div>
 
                                     <div id='post-meta' className='ml-4 items-center justify-center'>
@@ -924,7 +924,7 @@ function Post() {
                                     onSubmit={handleComment}
                                     className='flex flex-row items-start justify-center w-full h-full'>
                                     <div className='hidden md:flex aspect-square w-[40px] h-[40px] mr-2 mt-1'>
-                                        {userPhotoURL && <Image src={userPhotoURL} alt="user image" width={40} height={40} className='rounded-full drop-shadow-sm '/>}
+                                        {userPhotoURL && <Image src={userPhotoURL} alt="user image" width={100} height={100} className='h-[40px] w-[40px] rounded-full aspect-square object-cover drop-shadow-sm' />}
                                     </div>
 
                                     <textarea 

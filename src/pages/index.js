@@ -36,11 +36,6 @@ export default function Landing() {
 
     return (
         <>
-            <Head>
-                <title>BantayBuddy</title>
-                <link rel="icon" href="/images/logo.ico"/>
-            </Head>
-
             {loading ? <Loader show={true}/> : null}
         </>
     );

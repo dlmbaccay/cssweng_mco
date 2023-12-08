@@ -278,7 +278,7 @@ export default function PostExpanded({ props }) {
         event.preventDefault();
 
         if (reportCount >= 10 ){
-            toast.error('You are restricted from posting, commenting, and sharing.');
+            toast.error('You are restricted from posting, commenting, and reposting.');
             return;
         }
 

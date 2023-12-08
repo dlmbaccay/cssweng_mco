@@ -5,7 +5,7 @@ import { arrayUnion } from 'firebase/firestore';
 
 export default function Share({props}) {
     const {
-        currentUserID, currentUserPhotoURL, currentUserUsername, 
+        currentUserID, currentUserPhotoURL, currentUserUsername, reportCount,
         currentUserDisplayName, postID, postBody, postCategory, 
         postTrackerLocation, postPets, postDate, imageUrls, 
         authorID, authorDisplayName, authorUsername, 
@@ -18,6 +18,11 @@ export default function Share({props}) {
 
     const handleRepost = async (e) => {
         e.preventDefault();
+
+        if (reportCount >= 10) {
+            toast.error("You are restricted from posting, commenting, and reposting.")
+            return 
+        }
 
         setReposting(true);
         toast.loading('Reposting...');

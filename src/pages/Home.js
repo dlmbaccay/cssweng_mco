@@ -15,6 +15,7 @@ import ExpandedNavBar from '../components/ExpandedNavBar';
 import PhoneNav from '../components/PhoneNav';
 import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
 import toast from 'react-hot-toast'
+import Loader from '../components/Loader';
 
 function Home() {
 
@@ -73,10 +74,12 @@ function Home() {
             setAllPostsLastVisible(snapshot.docs[snapshot.docs.length - 1]);
             setAllPosts(newPosts);
             setLoading(false);
+            setPageLoading(false);
         }, (error) => {
             console.error("Error fetching posts:", error);
-            setPageLoading(false);
         });
+
+        setPageLoading(false);
 
         // Only make the query if 'following' is not empty
         if (following.length > 0) {
@@ -92,9 +95,9 @@ function Home() {
                 setFollowingLastVisible(snapshot.docs[snapshot.docs.length - 1]);
                 setFollowingPosts(newPosts);
                 setLoading(false);
+                
             }, (error) => {
                 console.error("Error fetching posts:", error);
-                setPageLoading(false);
             });
 
             // Return the cleanup function to unsubscribe from the listener
@@ -108,6 +111,7 @@ function Home() {
                 allPostsUnsubscribe();
             };
         }
+        
     });
 }, []); // Ensure this effect only runs once on component mount
 
@@ -203,6 +207,7 @@ function Home() {
   const [activeContainer, setActiveContainer] = useState('For You');
 
   if (!pageLoading) {
+    setTimeout('',1000)
     return (
       <div className='flex flex-row w-full h-screen overflow-hidden'>
         <div className='hidden lg:flex lg:w-fit'>
@@ -260,9 +265,9 @@ function Home() {
           </nav>
 
           {/* search and logo bar */}
-          <div className='w-full relative bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
+          <div className='w-full relative bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden z-10'>
               <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
-                  <i
+                  {/* <i
                   className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
                   // onClick={}
                   />
@@ -272,7 +277,8 @@ function Home() {
                   className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
                   onFocus={() => setIsSearchInputFocused(true)}
                   onBlur={() => setIsSearchInputFocused(false)}
-                  />
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  /> */}
               </div>
 
               <div className='flex flex-row justify-center items-center gap-2 mr-8'>
@@ -547,7 +553,7 @@ function Home() {
         </div>
       </div>   
     )
-  } else return null;
+  } else return <Loader show={true}/>;
 }
 
 

@@ -378,7 +378,7 @@ function PetProfilePage() {
   const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
 
   if (!pet) {
-    return <Loader />;
+    return <Loader show={true}/>;
   }
 
   return (

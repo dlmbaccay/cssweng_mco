@@ -19,6 +19,7 @@ import CreatePost from '@/src/components/Post/CreatePost';
 import RepostSnippet from '@/src/components/Post/RepostSnippet';
 import withAuth from '@/src/components/withAuth';
 import { arrayUnion } from 'firebase/firestore';
+import Loader from '@/src/components/Loader';
 
 
 function UserProfilePage() {
@@ -543,8 +544,10 @@ function UserProfilePage() {
     const isUser = currentUserID == profileUserID;
 
     return (
+        
         <div id="root" className='flex flex-row h-screen'>
-
+            {loading ? <Loader show={loading}/> : 
+            (<>
             <div className='w-fit md:flex hidden'>
                 <ExpandedNavBar
                     props={{
@@ -604,7 +607,7 @@ function UserProfilePage() {
                                     alt={username + " profile picture"}
                                     fill='fill'
                                     objectFit='cover'
-                                    className='rounded-full shadow-lg'
+                                    className='rounded-full shadow-lg aspect-square object-cover'
                                 />
                             </div>
                         </div>
@@ -857,8 +860,8 @@ function UserProfilePage() {
 
                                 {hidden && !hidden.includes('email') ? (
                                     <div id="icons" className='group flex flex-row gap-2 items-center text-sm'>
-<i className="fa-solid fa-envelope "></i>
-    <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">E-mail</span>
+                                        <i className="fa-solid fa-envelope "></i>
+                                            <span class="group-hover:opacity-100 transition-opacity text-white bg-black px-1 text-sm text-gray-100 rounded-md absolute left-1/2 -translate-x-1/2 -translate-y-full opacity-0 m-4 mx-auto">E-mail</span>
                                         <p>{email}</p>
                                     </div>
                                 ) : ''}
@@ -952,10 +955,10 @@ function UserProfilePage() {
                                                 {userPhotoURL && <Image
                                                     src={userPhotoURL}
                                                     alt="user photo"
-                                                    width={50}
-                                                    height={50}
+                                                    width={100}
+                                                    height={100}
                                                     onClick={() => router.push(`/user/${username}`)}
-                                                    className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-95 transition-all cursor-pointer'
+                                                    className='rounded-full h-[50px] w-[50px] hover:opacity-95 transition-all cursor-pointer aspect-square object-cover'
                                                 />}
 
                                                 <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-white rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>
@@ -1104,7 +1107,7 @@ function UserProfilePage() {
                                                                     alt={pet.petName + " profile picture"}
                                                                     width={144}
                                                                     height={144}
-                                                                    className='rounded-full shadow-lg aspect-square'
+                                                                    className='rounded-full shadow-lg aspect-square object-cover'
                                                                 />
                                                             </Link>
 
@@ -1154,7 +1157,7 @@ function UserProfilePage() {
                                                                 </div>
 
                                                                 <div className='flex flex-row items-center'>
-                                                                    <Image src={deletingPetPicture} alt="pet profile picture" width={100} height={100} className='rounded-full shadow-lg h-[125px] w-[125px]' />
+                                                                    <Image src={deletingPetPicture} alt="pet profile picture" width={100} height={100} className='rounded-full shadow-lg h-[125px] w-[125px] aspect-square object-cover' />
                                                                 </div>
 
                                                                 <div className='flex flex-row items-center gap-4'>
@@ -1214,6 +1217,7 @@ function UserProfilePage() {
                     </div>
                 </div>
             }
+            </>)}
         </div>
     )
 }

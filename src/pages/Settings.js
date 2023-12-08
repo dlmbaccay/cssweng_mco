@@ -13,6 +13,7 @@ import withAuth from '../components/withAuth';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 import PhoneNav from '../components/PhoneNav';
 import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
+import Loader from '../components/Loader';
 
 function Settings() {
     const { user, username, userPhotoURL, notifications, lostPetPostsCount } = useUserData();
@@ -20,6 +21,7 @@ function Settings() {
     const [userRef, setUserRef] = useState('');
     const [petsRef, setPetsRef] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const [userSwitches, setUserSwitches] = useState([
         { id: 'Gender', value: 'gender',enabled: true },
@@ -84,6 +86,7 @@ function Settings() {
 
             const newDisabledPetSwitches = newSwitches.filter(switchItem => !switchItem.enabled).map(switchItem => switchItem.value);
             setDisabledPetSwitches(newDisabledPetSwitches);
+            setLoading(false);
         }).catch((error) => {
           console.log("Error getting documents: ", error);
         });
@@ -206,11 +209,14 @@ function Settings() {
     }
     
     const [showPhoneNavModal, setShowPhoneNavModal] = useState(false);
+    if (loading) {
+        return <Loader show={true}/>
+    }
     
     return (
         <div>
             <div id="root" className='flex flex-row h-screen paw-background overflow-hidden'>
-                <div className='hidden lg:flex lg:w-[300px]'>
+                <div className='hidden lg:flex lg:w-[330px]'>
                     {(userPhotoURL && username) && <ExpandedNavBar 
                         props={{
                             userPhotoURL: userPhotoURL,

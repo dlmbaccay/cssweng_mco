@@ -13,6 +13,7 @@ import PostSnippet from '../components/Post/PostSnippet';
 import ExpandedNavBar from '../components/ExpandedNavBar';
 import PhoneNav from '../components/PhoneNav';
 import { createPostModalStyle, phoneNavModalStyle } from '../lib/modalstyle';
+import Loader from '../components/Loader';
 
 export default function PetTracker() {
 
@@ -54,6 +55,7 @@ export default function PetTracker() {
     // Initial fetch for Lost Pets & Unknown Owner
     useEffect(() => {
         setLoadingLost(true);
+        setPageLoading(true);
 
         const q = query(
             collection(firestore, "posts"), 
@@ -68,10 +70,12 @@ export default function PetTracker() {
                 setLastVisibleLost(snapshot.docs[snapshot.docs.length - 1]);
                 setLostPets(newPosts);
                 setLoadingLost(false);
+                setPageLoading(false);
             },
             (error) => {
                 console.error("Error fetching lost pets posts:", error);
                 setLoadingLost(false);
+                setPageLoading(false);
             }
         );
 
@@ -81,6 +85,7 @@ export default function PetTracker() {
     // Initial fetch for Unknown Pets
     useEffect(() => {
         setLoadingFound(true);
+        setPageLoading(true);
 
         const q = query(
             collection(firestore, "posts"), 
@@ -95,10 +100,12 @@ export default function PetTracker() {
                 setLastVisibleFound(snapshot.docs[snapshot.docs.length - 1]);
                 setFoundPets(newPosts);
                 setLoadingFound(false);
+                setPageLoading(false);
             },
             (error) => {
                 console.error("Error fetching found pets posts:", error);
                 setLoadingFound(false);
+                setPageLoading(false);
             }
         );
 
@@ -200,7 +207,7 @@ export default function PetTracker() {
     if (!pageLoading) {
         return (
         <div className='flex flex-row w-full h-screen overflow-hidden'>
-            <div className='hidden lg:flex lg:w-[300px]'>
+            <div className='hidden lg:flex lg:w-[330px]'>
                 {(userPhotoURL && username) && <ExpandedNavBar 
                     props={{
                         userPhotoURL: userPhotoURL,
@@ -255,10 +262,10 @@ export default function PetTracker() {
                 </nav>
 
                 {/* search and logo bar */}
-                <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
+                <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden z-10'>
                     
                     <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
-                        <i
+                        {/* <i
                         className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
                         // onClick={}
                         />
@@ -268,7 +275,7 @@ export default function PetTracker() {
                         className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
                         onFocus={() => setIsSearchInputFocused(true)}
                         onBlur={() => setIsSearchInputFocused(false)}
-                        />
+                        /> */}
                     </div>
 
                     <div className='flex flex-row justify-center items-center gap-2 mr-8'>
@@ -290,10 +297,10 @@ export default function PetTracker() {
                         {userPhotoURL && <Image
                         src={userPhotoURL}
                         alt="user photo"
-                        width={50}
-                        height={50}
+                        width={100}
+                        height={100}
                         onClick={() => router.push(`/user/${username}`)}
-                        className='rounded-full min-h-[50px] min-w-[50px] hover:opacity-60 transition-all cursor-pointer'
+                        className='rounded-full h-[50px] w-[50px] hover:opacity-60 transition-all cursor-pointer aspect-square object-cover'
                         />}
 
                         <button onClick={() => setShowCreatePostForm(true)} className='h-[50px] w-[75%] bg-dark_gray rounded-md text-left md:pl-4 pl-4 pr-4 text-[11px] lg:text-sm text-raisin_black hover:opacity-60 transition-all'>

@@ -140,12 +140,10 @@ export default function PostSnippet({ props }) {
             if (currentUserID !== authorID) {
               // Create a new document in the notificationsRef collection
               const notificationRef = notificationsRef.doc();
-              const date = new Date();
-              date.setHours(date.getHours() + 8); // Adjust to UTC+8
               await notificationRef.set({
                 userID: currentUserID,
                 action: "reacted to your post!",
-                date: date, // Get the server timestamp
+                date: new Date().toISOString(), // Get the server timestamp
                 postID: postID,
                 userPhotoURL: currentUserPhotoURL,
                 displayname: currentUserDisplayName,
@@ -160,12 +158,10 @@ export default function PostSnippet({ props }) {
           if (currentUserID !== authorID) {
             // Create a new document in the notificationsRef collection
             const notificationRef = notificationsRef.doc();
-            const date = new Date();
-            date.setHours(date.getHours() + 8); // Adjust to UTC+8
             await notificationRef.set({
               userID: currentUserID,
               action: "reacted to your post!",
-              date: date, // Get the server timestamp
+              date: new Date().toISOString(),  // Get the server timestamp
               postID: postID,
               userPhotoURL: currentUserPhotoURL,
               displayname: currentUserDisplayName,
@@ -211,7 +207,7 @@ export default function PostSnippet({ props }) {
 
             <div className='flex flex-row justify-start items-start '>
               <div id="user-image">
-                <Image width={45} height={45} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm aspect-square h-[40px] w-[40px] md:h-[45px] md:w-[45px]'/>
+                <Image width={100} height={100} src={authorPhotoURL} alt="user image" className='rounded-full drop-shadow-sm aspect-square object-cover h-[40px] w-[40px] md:h-[45px] md:w-[45px]'/>
               </div>
 
               <div id='post-meta' className='ml-4 items-center justify-center'>
