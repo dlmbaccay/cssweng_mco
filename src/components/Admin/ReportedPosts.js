@@ -341,8 +341,8 @@ export default function ReportedPosts() {
                     )}
 
                     <div className='flex flex-row items-center justify-center w-full gap-6 mt-4'>
-                      <button className='text-snow font-semibold bg-grass bg-opacity-60 hover:bg-opacity-100 w-16 h-8 rounded-md text-sm' onClick={() => handleAccept(report)}>Accept</button>
-                      <button className='text-snow font-semibold bg-red-400 hover:bg-red-600 w-16 h-8 rounded-md text-sm' onClick={() => handleReject(report)}>Reject</button>
+                      <button className='text-snow font-semibold bg-grass bg-opacity-60 hover:bg-opacity-100 w-24 h-8 rounded-md text-sm' onClick={() => handleAccept(report)}>Fine by me</button>
+                      <button className='text-snow font-semibold bg-red-400 hover:bg-red-600 w-24 h-8 rounded-md text-sm' onClick={() => handleReject(report)}>Delete Post!</button>
                     </div>
                   </div>
                 ))}
