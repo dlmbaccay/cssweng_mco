@@ -438,7 +438,7 @@ function Post() {
                 {/* search and logo bar */}
                 <div className='w-full bg-snow drop-shadow-lg h-14 md:flex flex-row justify-between hidden'>
                     <div className='group flex flex-row w-[400px] items-center justify-center h-full ml-8 drop-shadow-sm'>
-                        <i
+                        {/* <i
                         className={`fa-solid fa-search w-[40px] h-8 text-sm font-bold flex justify-center items-center rounded-l-lg transition-all cursor-pointer group-hover:bg-grass group-hover:text-pale_yellow ${isSearchInputFocused ? 'bg-grass text-pale_yellow' : 'bg-dark_gray'}`}
                         // onClick={}
                         />
@@ -448,7 +448,7 @@ function Post() {
                         className={`w-full h-8 pl-2 pr-4 outline-none rounded-r-lg bg-dark_gray transition-all text-sm group-hover:bg-white ${isSearchInputFocused ? 'bg-white' : 'bg_dark_gray'}`}
                         onFocus={() => setIsSearchInputFocused(true)}
                         onBlur={() => setIsSearchInputFocused(false)}
-                        />
+                        /> */}
                     </div>
 
                     <div className='flex flex-row justify-center items-center gap-2 mr-8'>
