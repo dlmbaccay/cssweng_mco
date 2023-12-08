@@ -427,6 +427,7 @@ function PetProfilePage() {
                   currentUserUsername: currentUser.username,
                   currentUserPhotoURL: currentUser.userPhotoURL,
                   notifications: currentUser.notifications,
+                  lostPetPostsCount: currentUser.lostPetPostsCount,
                 }}
               />
             </Modal>

@@ -430,6 +430,7 @@ function Post() {
                             currentUserUsername: username,
                             currentUserPhotoURL: userPhotoURL,
                             notifications: notifications,
+                            lostPetPostsCount: lostPetPostsCount,
                         }}
                         />
                     </Modal>
@@ -1009,6 +1010,7 @@ function Post() {
                     username: username,
                     expanded: true,
                     notifications: notifications,
+                    lostPetPostsCount: lostPetPostsCount,
                 }}
             />}
             </div>
@@ -1020,6 +1022,7 @@ function Post() {
                     username: username,
                     expanded: false,
                     notifications: notifications,
+                    lostPetPostsCount: lostPetPostsCount,
                 }}
             />}
             </div>
@@ -1047,6 +1050,7 @@ function Post() {
                             currentUserUsername: username,
                             currentUserPhotoURL: userPhotoURL,
                             notifications: notifications,
+                            lostPetPostsCount: lostPetPostsCount,
                         }}
                         />
                     </Modal>

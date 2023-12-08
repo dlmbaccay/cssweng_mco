@@ -7,7 +7,7 @@ import Notifications from './Notifications';
 
 export default function PhoneNav( {props} ) {
     
-    const { setShowPhoneNavModal, currentUserUsername, currentUserPhotoURL, notifications} = props
+    const { setShowPhoneNavModal, currentUserUsername, currentUserPhotoURL, notifications, lostPetPostsCount} = props
     const router = Router
 
     const [showNotifications, setShowNotifications] = useState(false);
@@ -18,7 +18,7 @@ export default function PhoneNav( {props} ) {
 
     return (
     <div className='w-full h-full flex flex-col items-center'>
-        <div className='bg-snow w-full h-14 flex justify-between items-center md:hidden drop-shadow-md'>
+        <div className='bg-snow w-full h-14 flex justify-between items-center md:hidden drop-shadow-md z-10'>
               <div className='h-full flex flex-row items-center gap-1'>
                 <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
                 <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
@@ -45,6 +45,19 @@ export default function PhoneNav( {props} ) {
         <button className='flex flex-row items-center justify-start gap-2' onClick={() => router.push('/PetTracker')}>
             <i className='fa-solid fa-paw text-xl w-[40px] h-[40px] flex items-center justify-center rounded-full bg-grass text-pale_yellow'/>
             <h1 className='font-shining text-3xl text-grass'>Pet Tracker</h1>
+            <div
+                className={`
+                    w-6 h-6 flex items-center justify-center
+                    bg-mustard rounded-full overflow-hidden\
+                `}
+                >
+                <p className={`
+                    text-snow text-xl font-shining 
+                    transition-all group-hover:text-raisin_black
+                `}>
+                    {lostPetPostsCount === undefined ? 0 : lostPetPostsCount}
+                </p>
+            </div>
         </button>
 
         <button className='flex flex-row items-center justify-start gap-2' onClick={() => router.push(`/user/${currentUserUsername}`)}>
@@ -55,6 +68,19 @@ export default function PhoneNav( {props} ) {
         <button className='flex flex-row items-center justify-start gap-2'  onClick={() => setShowNotifications(!showNotifications)}>
             <i className='fa-solid fa-bell text-xl w-[40px] h-[40px] flex items-center justify-center rounded-full bg-grass text-pale_yellow'/>
             <h1 className='font-shining text-3xl text-grass'>Notifications</h1>
+            <div
+                className={`
+                    w-6 h-6 flex items-center justify-center
+                    bg-xanthous rounded-full overflow-hidden
+                `}
+            >
+                <p className={`
+                    text-snow text-xl font-shining 
+                    transition-all group-hover:text-raisin_black 
+                `}>
+                    {notifications === undefined ? 0 : notifications.length}
+                </p>
+            </div>
         </button>
 
         <button className='flex flex-row items-center justify-start gap-2' onClick={() => router.push('/Settings')}>

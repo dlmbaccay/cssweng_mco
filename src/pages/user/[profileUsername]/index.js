@@ -586,6 +586,7 @@ function UserProfilePage() {
                                     currentUserUsername: currentUserUsername,
                                     currentUserPhotoURL: currentUserPhotoURL,
                                     notifications: getCurrentUser.notifications,
+                                    lostPetPostsCount: getCurrentUser.lostPetPostsCount,
                                 }}
                             />
                         </Modal>

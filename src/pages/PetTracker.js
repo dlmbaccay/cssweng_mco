@@ -235,7 +235,7 @@ export default function PetTracker() {
 
             <div className='w-full bg-dark_gray'>
 
-                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-sm'>
+                <nav className='w-full h-14 bg-snow flex justify-between items-center md:hidden drop-shadow-lg z-10'>
                     <div className='h-full w-fit flex flex-row items-center gap-1'>
                         <Image src='/images/logo.png' alt='logo' width={40} height={40} className='ml-2 rounded-full'/>
                         <h1 className='font-shining text-4xl text-grass'>BantayBuddy</h1>
@@ -256,6 +256,7 @@ export default function PetTracker() {
                             currentUserUsername: username,
                             currentUserPhotoURL: userPhotoURL,
                             notifications: notifications,
+                            lostPetPostsCount: lostPetPostsCount,
                         }}
                         />
                     </Modal>

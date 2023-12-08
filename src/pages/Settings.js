@@ -265,6 +265,7 @@ function Settings() {
                                 currentUserUsername: username,
                                 currentUserPhotoURL: userPhotoURL,
                                 notifications: notifications,
+                                lostPetPostsCount: lostPetPostsCount,
                             }}
                             />
                         </Modal>
